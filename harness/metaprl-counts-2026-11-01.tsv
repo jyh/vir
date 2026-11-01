@@ -3,6 +3,8 @@ metaprl	C2genWf	3	MEASURED
 metaprl	C2genEq	0	MEASURED
 metaprl	C2genCond	10	MEASURED
 metaprl	C2gen	13	MEASURED
+metaprl	C2genWf.stmt	0	EXPLORATORY
+metaprl	C2genWf.proof	3	EXPLORATORY
 metaprl	C2wf	5	MEASURED
 metaprl	C2eq	0	MEASURED
 metaprl	C2cond	10	MEASURED

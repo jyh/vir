@@ -34,7 +34,7 @@ The arms:
 | R1 (amend-7) | Int offsets: the rewrite stays but is context-free | P2Z.C3 **6** = 6; cleared-guard proof builds; Nat control RED | — | **HOLDS** | amend-7 | pre-build (vir 8c163d0) |
 | S1 (amend-8) | the deep chain's 2nd context-dependent rule is a statement choice | P2S.C3deep **7** = 7; ctxHolds 2 → **1**; `i ≤ m` control RED | — | **HOLDS** | amend-8 | pre-build (vir 5c27056) |
 | T1 (program 3) | Lean pays the ValidFrame boundary as coercions | C1coe **54** | C1 **0** | **HOLDS** (RESULTS-3 addendum 3) | pinned extractor | pre-proof (vir 98d9329) |
-| T2 (program 3) | CTT pays it as well-formedness | C2cond **0** | C2genWf **7** (3 statement-wf · 4 guard typing, Q) | **HOLDS** | pinned extractor | pre-proof |
+| T2 (program 3) | CTT pays it as well-formedness | C2cond **0** | C2genWf **7** (3 statement-wf · 4 proof-wf, H since row 31, exploratory rows) | **HOLDS** | pinned extractor | pre-proof |
 | T3 / T4 (program 3) | no aux rule · no extra axiom | C3 0 · C4 0 | C3strict 0 · C4 0 | **HOLD on both arms** | — | pre-proof |
 | F1/F2 (amend-9) | the 54 is the subtype; ValidFrame carries no load | C1coe 54 → **0**; builds with `hv` cleared | — | **HOLD** | amend-9 | pre-build (vir bbeac50) |
 

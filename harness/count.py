@@ -239,6 +239,7 @@ def metaprl(d, sfx=''):
                 lab[m.group(1)] += 1
     # GENERATED convention (row 12): mpdrive's `=== CHILDREN k: <labels>` line (direct children of each refine; mojave c7df66d)
     gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False; off_path = {}
+    wf_stmt = 0   # row 31 (EXPLORATORY, post-proof): wf children of a bare `refine (dT 0);;` = the statement's well-formedness
     for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt', 'runs-c2-lemmas.txt')):
         fp = os.path.join(tools, f)
         if os.path.isfile(fp):
@@ -267,9 +268,12 @@ def metaprl(d, sfx=''):
                 for w in m.group(2).split():
                     if w in gen:
                         gen[w] += 1
+                        if w == 'wf' and re.fullmatch(r'refine \(dT 0\);;\s*', cmds.get(m.group(1), '')):
+                            wf_stmt += 1
     if have_children:
         rows += [('C2genWf', gen['wf'], 'MEASURED'), ('C2genEq', gen['equality'], 'MEASURED'),
-                 ('C2genCond', gen['assertion'], 'MEASURED'), ('C2gen', sum(gen.values()), 'MEASURED')]
+                 ('C2genCond', gen['assertion'], 'MEASURED'), ('C2gen', sum(gen.values()), 'MEASURED'),
+                 ('C2genWf.stmt', wf_stmt, 'EXPLORATORY'), ('C2genWf.proof', gen['wf'] - wf_stmt, 'EXPLORATORY')]
         for lem, n in sorted((k or '?', v) for k, v in off_path.items()):
             rows.append(('C2genOffPath:' + lem, n, 'EXCLUDED'))
     rows += [('C2wf', lab['wf'], 'MEASURED'), ('C2eq', lab['equality'], 'MEASURED'),

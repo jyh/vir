@@ -33,7 +33,7 @@ H for every figure. The chain compiled at its FIRST full elaboration (build 13).
 ## Findings
 - **L-F4** Nat truncated subtraction manufactures a context-dependent rewrite (`12 + (off − 12) = off` needs `12 ≤ off`), and Int offsets (model B) do not. Some of Lean's cost is the CHOICE OF NUMBER TYPE, not the logic. *(Refined by addendum 4, measured: with Int offsets the rewrite is still NEEDED (aux count 6 = 6), but it is CONTEXT-FREE. The number type decides whether the rewrite needs an enclosing guard. It does not decide whether the rewrite exists.)*
 - **L-F5** the HEq cost is FIXED per representation and does not scale with dynamic indices here (Q1's premise).
-- mojave's D1–D3 (MetaPRL defects: archive id ≥ 2^30 fails to load, a ~1,024-char line limit, an export after a failed step overwrote program 1's .prla and was restored from git) are mojave's, recorded in FINDINGS.md.
+- mojave's D1–D3 (MetaPRL defects: archive id ≥ 2^30 fails to load, a ~1,024-char line limit, an export after a failed step overwrote program 1's .prla and was restored from git) are mojave's, recorded in FINDINGS.md. *(Correction, 2026-11-01, 3rd vir head, on mojave @[bus]: D3 is a defect of mojave's DRIVER, which read the failed step as ok, not of MetaPRL; FINDINGS M-D3. No count moves.)*
 
 ## ADDENDUM 1 (03:1x): row 14, the MetaPRL program-2 C2gen difference narrowed from 7 to 3, named, not closed
 mojave @[bus]: its 18 EXCLUDES the two `omegaT` closer steps (CHILDREN 36, 42: wf 2 + assertion 3 each = 10 closer residuals) and ADDS the 3 lemma wf from runs-c2-lemmas.txt.

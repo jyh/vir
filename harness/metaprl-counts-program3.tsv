@@ -3,6 +3,8 @@ metaprl	C2genWf	7	MEASURED
 metaprl	C2genEq	0	MEASURED
 metaprl	C2genCond	0	MEASURED
 metaprl	C2gen	7	MEASURED
+metaprl	C2genWf.stmt	3	EXPLORATORY
+metaprl	C2genWf.proof	4	EXPLORATORY
 metaprl	C2genOffPath:aux_guard_swap	2	EXCLUDED
 metaprl	C2genOffPath:guard_merge_c	1	EXCLUDED
 metaprl	C2genOffPath:slice_fuse_c	3	EXCLUDED
