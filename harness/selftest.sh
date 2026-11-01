@@ -22,15 +22,18 @@ toks=(HEq cast Eq.mpr ▸ Eq.rec heq_of_eq Nat.sub_sub)
 i=0; while [ $i -lt $N ]; do printf 'theorem t%d := %s x  -- decoy: castle Eq.mprX recast\n' $i "${toks[$((i % ${#toks[@]}))]}" >> "$F/a/out/terms.txt"; i=$((i+1)); done
 : > "$F/a/VIR/Rules.lean"
 i=0; while [ $i -lt $K ]; do printf 'theorem aux_r%d : True := trivial\n' $i >> "$F/a/VIR/Rules.lean"; i=$((i+1)); done
-printf 'theorem slice_fuse : True := trivial\n' >> "$F/a/VIR/Rules.lean"
+printf 'theorem aux_unused : True := trivial\n' >> "$F/a/VIR/Rules.lean"
+uses=""; i=0; while [ $i -lt $K ]; do uses="$uses aux_r$i"; i=$((i+1)); done
+printf 'theorem router_fusion : True := by\n  have := (by omega)\n  exact%s\n' "$uses" >> "$F/a/VIR/Rules.lean"
+printf 'theorem router_fusion_casesplit : True := by\n  exact aux_unused (by omega)\n' >> "$F/a/VIR/Rules.lean"
 printf "'slice_fuse' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]\n" > "$F/a/out/axioms.txt"
 i=0; while [ $i -lt $B ]; do printf 'noise\nsaltbuild EXIT=%d\n' $((i % 2)) > "$F/a/logs/b$i.log"; i=$((i+1)); done
 
 check2() { # $1 = count.py path
   local o; o=$(python3 "$1" --arm lean "$F/a") || return 1
   local g; g() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
-  [ "$(g C1)" = "$N" ] && [ "$(g C3)" = "$K" ] && [ "$(g C4)" = 1 ] && [ "$(g C6)" = "$B" ] \
-    && [ "$(g C5)" = "$((K+1))" ] && printf '%s\n' "$o" | awk -F'\t' '$2=="C2"{print $4}' | grep -qx UNMEASURED
+  [ "$(g C1)" = "$N" ] && [ "$(g C3)" = "$K" ] && [ "$(g C3declared)" = "$((K+1))" ] && [ "$(g C4)" = 1 ] \
+    && [ "$(g C6)" = "$B" ] && [ "$(g C2cond)" = 1 ] && [ "$(g C2)" = 1 ] 
 }
 if check2 "$H/count.py"; then say "ARM2 fixture OK (C1=$N C3=$K C4=1 C6=$B)"; else say "ARM2 fixture FAIL"; fail=1; fi
 

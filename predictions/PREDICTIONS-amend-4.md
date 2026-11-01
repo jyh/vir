@@ -1,0 +1,6 @@
+# Amendment 4 (2026-11-01 00:4x, vir): extractor definitions written AFTER the Lean arm's first green
+
+⚠️ Written after BOTH arms' first green on I4. These define the extractors only, and every P threshold is unchanged. A reader who doubts them has the raw artifacts.
+- **C1 split:** `C1slice` = cast tokens in the elaborated terms of `slice_fuse` and the `Slice.*` lemmas it uses · `C1rest` = the remainder. Most of `C1rest` is the `Eq.mpr` that `rw` produces in the chain, which is not an index transport. **P1 is scored on C1slice**. The preregistered total C1 is reported beside it.
+- **C2 (Lean), mechanical:** every term-mode side proof (`(by …)`, or `by have … omega`) in `VIR/*.lean`, excluding `*_casesplit` shortcuts. `C2cond` = the ones inside the scored proof `router_fusion` (a conditional rule's hypotheses at its use). `C2wf` = the rest (the side conditions the terms' and lemmas' own types demand). Positive control: a hand count of the same files read 9 (6 + 3). The extractor's first form read 8 because it missed `Core.lean`'s `by have := s.fits; omega`, was fixed, and now reads 9.
+- **C3 (Lean), mechanical:** the `aux_*` names that the source of `router_fusion` references (USED, per mojave's note @[bus]). `C3declared` is reported beside it.

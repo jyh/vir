@@ -1,0 +1,51 @@
+saltqueue: ticket P2 seat=root pid=83846
+✔ [3/6] Built VIR.Rules (196ms)
+✖ [4/6] Building VIR.Router (210ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Router.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Router.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Router.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Router.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Router.setup.json --json
+error: VIR/Router.lean:88:2: unsolved goals
+case neg
+acl : Principal → TopicId → Bool
+n : Nat
+b0 : Slice n
+st : State
+h24 : 24 ≤ n
+fuse :
+  (advance b0 12 ⋯ fun s₁ => advance s₁ 12 ⋯ fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - 12 - 12) s₂) =
+    advance b0 (12 + 12) h24 fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - (12 + 12)) s₂
+hm : b0.rd 0 = MAGIC
+ha : canAccess acl (b0.rd 4) (b0.rd 8)
+ht : ¬hasTokens st (b0.rd 4)
+⊢ (advance b0 12 ⋯ fun s => Out.drop Code.unauthOrRate) = Out.drop Code.unauthOrRate
+
+case pos
+acl : Principal → TopicId → Bool
+n : Nat
+b0 : Slice n
+st : State
+h24 : 24 ≤ n
+fuse :
+  (advance b0 12 ⋯ fun s₁ => advance s₁ 12 ⋯ fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - 12 - 12) s₂) =
+    advance b0 (12 + 12) h24 fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - (12 + 12)) s₂
+hm : b0.rd 0 = MAGIC
+ha : ¬canAccess acl (b0.rd 4) (b0.rd 8)
+ht : hasTokens st (b0.rd 4)
+⊢ (advance b0 12 ⋯ fun s => Out.drop Code.unauthOrRate) = Out.drop Code.unauthOrRate
+
+case neg
+acl : Principal → TopicId → Bool
+n : Nat
+b0 : Slice n
+st : State
+h24 : 24 ≤ n
+fuse :
+  (advance b0 12 ⋯ fun s₁ => advance s₁ 12 ⋯ fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - 12 - 12) s₂) =
+    advance b0 (12 + 12) h24 fun s₂ => Out.ret (decTokens st (b0.rd 4)) (n - (12 + 12)) s₂
+hm : b0.rd 0 = MAGIC
+ha : ¬canAccess acl (b0.rd 4) (b0.rd 8)
+ht : ¬hasTokens st (b0.rd 4)
+⊢ (advance b0 12 ⋯ fun s => Out.drop Code.unauthOrRate) = Out.drop Code.unauthOrRate
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Router
+error: build failed
+saltbuild EXIT=1

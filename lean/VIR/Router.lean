@@ -89,8 +89,7 @@ theorem router_fusion_casesplit {n : Nat} (b0 : Slice n) (st : State) : U acl b0
       (fun m s => Out.ret (decTokens st (b0.rd 4)) m s)
     simp only [guard, readU32, letLin, h24, dite_true] at fuse ⊢
     by_cases hm : b0.rd 0 = MAGIC <;> by_cases ha : canAccess acl (b0.rd 4) (b0.rd 8) <;>
-      by_cases ht : hasTokens st (b0.rd 4) <;> simp [hm, ha, ht]
-    exact fuse
+      by_cases ht : hasTokens st (b0.rd 4) <;> simp [hm, ha, ht] <;> first | rfl | exact fuse
   · simp [guard, h24]
 
 end VIR

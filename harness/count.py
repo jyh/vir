@@ -20,6 +20,29 @@ STD_AXIOMS = {'propext', 'Classical.choice', 'Quot.sound'}
 AUX_RE = re.compile(r'^\s*(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+(?:[A-Za-z0-9_.]*\.)?aux_[A-Za-z0-9_]*', re.M)
 
 
+AUX_NAME_RE = re.compile(r'^\s*(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+(?:[A-Za-z0-9_.]*\.)?(aux_[A-Za-z0-9_]*)', re.M)
+DECL_RE = re.compile(r'^(?:/-[\s\S]*?-/\s*)?(?:@\[[^\]]*\]\s*)?(?:theorem|lemma|def|structure|inductive|instance|abbrev)\b', re.M)
+
+
+def blocks(text):
+    starts = [m.start() for m in re.finditer(r'^(?:@\[[^\]]*\]\s*)?(?:theorem|lemma|def|structure|inductive|instance|abbrev)\b', text, re.M)]
+    starts.append(len(text))
+    return [text[a:b] for a, b in zip(starts, starts[1:])]
+
+
+def strip_shortcuts(text):
+    # a theorem named *_casesplit is a recorded SHORTCUT (inputs I7) and is never scored
+    return ''.join(b for b in blocks(text) if not re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+\S*_casesplit\b', b))
+
+
+def scored_body(text):
+    # the scored I4 proof: the theorem named router_fusion
+    for b in blocks(text):
+        if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+(?:\S*\.)?router_fusion\b', b):
+            return b
+    return ''
+
+
 def read(p):
     with open(p, 'rb') as f:
         return f.read().decode('utf-8', 'replace')
@@ -37,11 +60,30 @@ def files(d, exts):
 def lean(d):
     rows = []
     t = os.path.join(d, 'out', 'terms.txt')
-    rows.append(('C1', len(CAST_RE.findall(read(t))), 'MEASURED') if os.path.isfile(t) else ('C1', 0, 'EMPTY'))
-    rows.append(('C2', 0, 'UNMEASURED'))
+    if os.path.isfile(t):
+        tt = read(t)
+        rows.append(('C1', len(CAST_RE.findall(tt)), 'MEASURED'))
+        # split (amend-4): the slice_fuse path (slice_fuse and the Slice.* lemmas it uses) vs the rest
+        tb = re.split(r'\n(?=(?:@\[[^\]]*\]\s*)?theorem\s)', tt)
+        sl = sum(len(CAST_RE.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+\S*(slice_fuse|\.Slice\.)', b))
+        rows += [('C1slice', sl, 'MEASURED'), ('C1rest', len(CAST_RE.findall(tt)) - sl, 'MEASURED')]
+    else:
+        rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))
     text = ''.join(read(p) for p in src)
-    rows.append(('C3', len(AUX_RE.findall(text)), 'MEASURED') if src else ('C3', 0, 'EMPTY'))
+    scored = strip_shortcuts(text)
+    if src:
+        # C2 (provisional extractor, written after the Lean arm's first green; amend-4): term-mode side proofs.
+        # cond = the hypotheses a conditional rule demands at its use inside the scored I4 proof; wf = all others.
+        side = len(re.findall(r'\(by |\bby have[^\n]*omega', scored))
+        body = scored_body(scored)
+        cond = len(re.findall(r'\(by ', body))
+        rows += [('C2wf', side - cond, 'MEASURED'), ('C2cond', cond, 'MEASURED'), ('C2', side, 'MEASURED')]
+        declared = set(m.group(1) for m in AUX_NAME_RE.finditer(text))
+        used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
+        rows += [('C3', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
+    else:
+        rows += [('C2', 0, 'EMPTY'), ('C3', 0, 'EMPTY')]
     a = os.path.join(d, 'out', 'axioms.txt')
     if os.path.isfile(a):
         found = set()
