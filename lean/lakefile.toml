@@ -1,0 +1,6 @@
+name = "vir"
+version = "0.1.0"
+defaultTargets = ["VIR"]
+
+[[lean_lib]]
+name = "VIR"
