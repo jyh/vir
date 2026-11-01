@@ -175,23 +175,40 @@ def metaprl(d, sfx=''):
             for m in re.finditer(r'^[ \t]+\.\.\.\.(wf|equality|assertion)\.\.\.\.', read(fp), re.M):
                 lab[m.group(1)] += 1
     # GENERATED convention (row 12): mpdrive's `=== CHILDREN k: <labels>` line (direct children of each refine; mojave c7df66d)
-    gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False
+    gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False; off_path = {}
     for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt', 'runs-c2-lemmas.txt')):
         fp = os.path.join(tools, f)
         if os.path.isfile(fp):
             txt = read(fp)
             cmds = dict(re.findall(r'^=== STEP (\d+) \[[^\]]*\][^:]*:: (.*)$', txt, re.M))
+            # PATH RULE (row 14): a lemma replay counts only for a lemma the program's scored chain USES.
+            # The replay file switches lemma at `cd "/vir/vir/<name>"`; the router replay is the path itself.
+            lemma_at = {}; cur = None
+            for k in sorted(cmds, key=int):
+                lm = re.match(r'cd "/vir/vir/([A-Za-z0-9_]+)"', cmds[k])
+                if lm:
+                    cur = lm.group(1)
+                lemma_at[k] = cur
+            chain_fp = os.path.join(tools, 'steps', 'c2-router' + sfx + '.mp')
+            chain_txt = read(chain_fp) if os.path.isfile(chain_fp) else ''
             for m in re.finditer(r'^=== CHILDREN (\d+):(.*)$', txt, re.M):
                 have_children = True
                 # CLOSER residuals are not generated obligations (mojave @[bus]): a step that runs omegaT
                 if 'omegaT' in cmds.get(m.group(1), ''):
                     continue
+                if f == 'runs-c2-lemmas.txt':
+                    lem = lemma_at.get(m.group(1))
+                    if lem is None or not re.search(r'(?<![A-Za-z0-9_])' + re.escape(lem) + r'(?![A-Za-z0-9_])', chain_txt):
+                        off_path[lem] = off_path.get(lem, 0) + sum(1 for w in m.group(2).split() if w in gen)
+                        continue
                 for w in m.group(2).split():
                     if w in gen:
                         gen[w] += 1
     if have_children:
         rows += [('C2genWf', gen['wf'], 'MEASURED'), ('C2genEq', gen['equality'], 'MEASURED'),
                  ('C2genCond', gen['assertion'], 'MEASURED'), ('C2gen', sum(gen.values()), 'MEASURED')]
+        for lem, n in sorted((k or '?', v) for k, v in off_path.items()):
+            rows.append(('C2genOffPath:' + lem, n, 'EXCLUDED'))
     rows += [('C2wf', lab['wf'], 'MEASURED'), ('C2eq', lab['equality'], 'MEASURED'),
              ('C2cond', lab['assertion'], 'MEASURED'), ('C2', sum(lab.values()), 'MEASURED')]
     # C3: aux rules USED by the scored chain script, plus A.2-form unfolds (amend-3)
