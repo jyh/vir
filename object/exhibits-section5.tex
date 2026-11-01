@@ -1,0 +1,39 @@
+
+
+\subsubsection*{Contrast Exhibit: Idiomatic Lean vs. Extensional CTT}
+Comparing each logic in its best idiomatic style illustrates the boundary distinction analyzed in Section 3.1.
+
+
+\par\medskip\noindent\textbf{Exhibit A.1 --- Lean Specification (idiomatic Prop-carrying subtype, total accessors):}\par\nopagebreak
+\begin{lstlisting}
+abbrev WireBuf := ByteArray
+def readU32 (b : WireBuf) (i : Nat) : UInt32 := `\uc{$\ldots$}`   -- total; exact on a ValidFrame
+
+def ValidFrame := { b : WireBuf // 24 `\uc{$\le$}` b.size `\uc{$\wedge$}` readU32 b 0 = MAGIC }
+def frameTopic (b : ValidFrame) : TopicId := readU32 b 8
+
+theorem route_acl_safe (b : ValidFrame) (p : Principal) :
+    IsRouted (route p b) `\uc{$\rightarrow$}` CanAccess p (frameTopic b)
+\end{lstlisting}
+
+\par\medskip\noindent\textbf{Exhibit A.2 --- CTT Specification (Extensional Subset Types --- Zero Clutter):}\par\nopagebreak
+\begin{lstlisting}
+`\uc{$\forall$}` b : ValidFrame, p : Principal.
+  IsRouted(route(p, b)) `\uc{$\Rightarrow$}` CanAccess(p, frame_topic(b))
+\end{lstlisting}
+Both statements share the same top-level shape: fuel is absent from the Lean version because route is defined by well-founded recursion at the definition, and the proof witness is erased in Prop. The remaining difference lies at the module boundary: a CTT ValidFrame is a WireBuf, whereas a Lean ValidFrame is a pair whose value crosses boundaries through a coercion (\ensuremath{\uparrow}b, .val) visible in goals and error messages, while CTT shifts statement well-formedness to CI Gate 2.
+
+
+\subsection*{5.2 Agent VIR Synthesis and HOAS Loop Fusion}
+Starting from the conjunction Spec A \ensuremath{\cap} Spec B \ensuremath{\cap} Spec C, a naive compositional implementation executes three sequential passes over the packet buffer:
+
+
+\par\medskip\noindent\textbf{Exhibit B.1 --- Unfused Compositional VIR Term:}\par\nopagebreak
+\begin{lstlisting}
+let_lin{ (b1, hdr) = parse_header(b0) in
+let_lin{ (b2, tok) = check_rate_limit(b1, hdr.sender) in
+let_lin{ (b3, ok)  = verify_acl(b2, hdr.sender, hdr.topic) in
+  emit_payload(b3, hdr.payload_offset) }}}
+\end{lstlisting}
+Directly under the let\_lin HOAS binders, the synthesis agent inlines verify\_acl and check\_rate\_limit via meta-level \ensuremath{\beta}-reduction and applies the algebraic slice-coalescing rewrite advance(advance(b, i), j) \ensuremath{\leftrightarrow} advance(b, i + j) (subject to i \ensuremath{\ge} 0 \ensuremath{\wedge} j \ensuremath{\ge} 0 \ensuremath{\wedge} i + j \ensuremath{\le} len(b)). Because CTT binders are untyped, rewriting inside let\_lin\{b2 = ...\} folds all separate header and topic bounds checks into a single upfront guard (len(b0) \ensuremath{\ge} 24) and eliminates the intermediate hdr structure without requiring dependent HEq transport casts across length-indexed slice types (Slice (n - 4 - k) to Slice (n - (4 + k))).
+

@@ -1,0 +1,112 @@
+\section*{Appendix: Formal CTT Specifications and HOAS VIR Rewrite Rules}
+This appendix presents the concrete mathematical definitions and bidirectional term-rewriting rules underpinning Case Study 1 (Section 5), following the HOAS and second-order substitution conventions of Computational Type Theory (Hickey and Nogin) where syntax nodes take the canonical form opname[params]\{v\ensuremath{_{1}}. t\ensuremath{_{1}}; ...; v\ensuremath{_{m}}. t\ensuremath{_{m}}\} and second-order metavariable e[v] performs automatic capture-avoiding substitution e[t].
+
+
+\subsection*{A.1 Shared Domain Ontology and Extensional Subset Types (CTT)}
+Because subset membership proofs in CTT \{ x : A \ensuremath{\mid} P(x) \} are semantic judgments over PERs rather than syntactic pair components, runtime VIR terms carry zero proof-term overhead:
+
+\begin{lstlisting}
+(* Base Types and Wire Layout Constants *)
+Byte       `\uc{$\equiv$}` { i : Int `\uc{$\mid$}` 0 `\uc{$\le$}` i < 256 }
+U32        `\uc{$\equiv$}` { i : Int `\uc{$\mid$}` 0 `\uc{$\le$}` i < 2`\uc[2]{$^{32}$}` }
+WireBuf    `\uc{$\equiv$}` Array(Byte)
+Principal  `\uc{$\equiv$}` U32
+TopicId    `\uc{$\equiv$}` U32
+MAGIC      `\uc{$\equiv$}` 0x4D534731  (* "MSG1" wire header magic *)
+
+(* Extensional Subset Type for Valid Network Frames *)
+ValidFrame `\uc{$\equiv$}` { b : WireBuf `\uc{$\mid$}` len(b) `\uc{$\ge$}` 24 `\uc{$\wedge$}` read_u32(b, 0) = MAGIC }
+
+(* Semantic Projections over ValidFrame (No Bounds Witnesses Required) *)
+frame_sender(b)  `\uc{$\equiv$}` read_u32(b, 4)
+frame_topic(b)   `\uc{$\equiv$}` read_u32(b, 8)
+frame_pay_off(b) `\uc{$\equiv$}` read_u32(b, 12)
+frame_pay_len(b) `\uc{$\equiv$}` read_u32(b, 16)
+\end{lstlisting}
+
+\subsection*{A.2 Linear Functional SSA VIR Grammar and Foundational Rewrite Rules}
+The VIR is an A-Normal Form (Functional SSA) language where every intermediate operation is bound by an untyped HOAS binder and let\_lin enforces single-use linear ownership:
+
+\begin{lstlisting}
+(* Atoms a and Linear Functional SSA Expressions e *)
+a ::= i | true | false | v | a`\uc{$_{1}$}` binop a`\uc{$_{2}$}` | a`\uc{$_{1}$}` relop a`\uc{$_{2}$}`
+
+e ::= let_atom{a; v. e[v]}                    (* Pure atom binding *)
+    | let_lin{op(a`\uc{$_{1}$}`, ..., a`\uc{$_{n}$}`); b. e[b]}       (* Linear buffer/state binding *)
+    | advance{b; offset; s. e[s]}             (* Zero-copy slice advance *)
+    | read_u32{b; offset; v. e[v]}            (* Bounded 32-bit wire read *)
+    | guard{a_cond; e_ok; e_err}              (* Branching bounds/ACL guard *)
+    | return{a} | drop{code}                  (* Terminal outcomes *)
+\end{lstlisting}
+Capture-avoiding inlining, dead-code elimination, constant folding, and branch pruning require four bidirectional equivalence rules (redex \ensuremath{\leftrightarrow} contractum).
+
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}LLL@{}}
+\toprule
+\textbf{Rule Name} & \textbf{Bidirectional HOAS Rewrite Rule} & \textbf{Side-Condition and Role} \tabularnewline
+\midrule
+{}[beta\_lin] & let\_lin\{v\ensuremath{_{1}}; v\ensuremath{_{2}}. e[v\ensuremath{_{2}}]\} \ensuremath{\leftrightarrow} e[v\ensuremath{_{1}}] & Meta-level capture-avoiding substitution for cross-module inlining \tabularnewline
+{}[dce\_atom] & let\_atom\{a; v. e[]\} \ensuremath{\leftrightarrow} e[] & Second-order pattern e[] ensures v \ensuremath{\notin} FV(e) for non-trapping a \tabularnewline
+{}[const\_fold] & (i binop j) \ensuremath{\leftrightarrow} \ensuremath{[\![}binop\ensuremath{]\!]}(i, j) & Evaluates constant 32/64-bit arithmetic and guards at synthesis time \tabularnewline
+{}[guard\_true] & guard\{true; e\ensuremath{_{1}}; e\ensuremath{_{2}}\} \ensuremath{\leftrightarrow} e\ensuremath{_{1}} & Prunes unreachable error branches once composite guard holds \tabularnewline
+\bottomrule
+\end{tabularx}
+\end{center}
+
+
+\subsection*{A.3 Step-by-Step Derivation: Fusing the Message Router Pipeline}
+To fuse Wire Header Parsing (Spec A), Token-Bucket Rate Limiting (Spec C), and Security ACL Verification (Spec B) into a single zero-copy pass, the agent applies three domain-specific algebraic rewrites over buffer slices:
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+(* Rule 1: Slice-Advance Coalescing *)
+[slice_fuse]   advance{b; i; s`\uc{$_{1}$}`. advance{s`\uc{$_{1}$}`; j; s`\uc{$_{2}$}`. e[s`\uc{$_{2}$}`]}}
+           `\uc{$\leftrightarrow$}`   advance{b; i + j; s`\uc{$_{2}$}`. e[s`\uc{$_{2}$}`]}      (when i `\uc{$\ge$}` 0 `\uc{$\wedge$}` j `\uc{$\ge$}` 0 `\uc{$\wedge$}` i + j `\uc{$\le$}` len(b))
+
+(* Rule 2: Guard Hoisting & Conjunction Merging *)
+[guard_merge]  guard{c`\uc{$_{1}$}`; guard{c`\uc{$_{2}$}`; e_ok; e_err}; e_err}
+           `\uc{$\leftrightarrow$}`   guard{c`\uc{$_{1}$}` `\uc{$\wedge$}` c`\uc{$_{2}$}`; e_ok; e_err}
+
+(* Rule 3: Offset Read Commutation Across Disjoint State *)
+[read_comm]    read_u32{b; i; v`\uc{$_{1}$}`. let_lin{upd_bucket(st, v`\uc{$_{1}$}`); st'. read_u32{b; j; v`\uc{$_{2}$}`. e[v`\uc{$_{1}$}`; st'; v`\uc{$_{2}$}`]}}}
+           `\uc{$\leftrightarrow$}`   read_u32{b; i; v`\uc{$_{1}$}`. read_u32{b; j; v`\uc{$_{2}$}`. let_lin{upd_bucket(st, v`\uc{$_{1}$}`); st'. e[v`\uc{$_{1}$}`; st'; v`\uc{$_{2}$}`]}}}
+\end{lstlisting}
+Applying [beta\_lin], [guard\_merge], [slice\_fuse], and [dce\_atom] in sequence yields the fused single-pass, zero-allocation VIR term:
+
+\begin{lstlisting}
+(* Synthesized & Fused Single-Pass VIR Term *)
+guard{ len(b`\uc{$_{0}$}`) `\uc{$\ge$}` 24;
+  read_u32{ b`\uc{$_{0}$}`; 0; magic.
+  read_u32{ b`\uc{$_{0}$}`; 4; sender.
+  read_u32{ b`\uc{$_{0}$}`; 8; topic.
+  guard{ magic = MAGIC `\uc{$\wedge$}` can_access(sender, topic) `\uc{$\wedge$}` has_tokens(bucket_st, sender);
+    let_lin{ dec_tokens(bucket_st, sender); bucket_st'.
+    advance{ b`\uc{$_{0}$}`; 24; payload_slice.
+      return{ (bucket_st', payload_slice) } } };
+    drop{ ERR_UNAUTHORIZED_OR_RATE_LIMITED } } } } };
+  drop{ ERR_TRUNCATED_FRAME } }
+\end{lstlisting}
+
+\subsection*{A.4 Lowering to Scoped Assembly and Register Allocation via \ensuremath{\alpha}-Conversion}
+Following Section 4 of Hickey and Nogin, the target instruction set is formalized using scoped immutable register bindings where instructions modifying a destination register bind a fresh meta-variable for the continuation (ADD o\ensuremath{_{1}}, \%v\ensuremath{_{2}}, \ensuremath{\lambda}v\ensuremath{_{3}}. e[v\ensuremath{_{3}}]), memory writes use non-binding forms (MOV \%v\ensuremath{_{1}}, offset(\%v\ensuremath{_{2}}); e), and register pressure spills use scoped spill instructions (SPILL \%v\ensuremath{_{1}}, \ensuremath{\lambda}s. e[spill[v\ensuremath{_{1}}, s]]). An untrusted Chaitin-style graph-coloring heuristic proposes a mapping from VIR variables (b\ensuremath{_{0}}, magic, sender, topic, payload\_slice) to physical x86-64 registers (\%rdi, \%eax, \%ecx, \%edx, \%rsi), which the proof kernel verifies purely as a capture-avoiding \ensuremath{\alpha}-conversion:
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+(* Exhibit A.4: Lowered Scoped x86-64 Assembly for the Fused Router Fast-Path *)
+(* Input: %rdi = b`\uc{$_{0}$}` base ptr, %rsi = b`\uc{$_{0}$}` byte len, %rdx = bucket_st ptr *)
+CMP   $24, %rsi
+JLT   then drop_truncated else
+MOV   0(%rdi), `\uc{$\lambda$}`%eax.                  (* magic  `\uc{$\leftarrow$}` b`\uc{$_{0}$}`[0..3]  *)
+CMP   $0x4D534731, %eax
+JNE   then drop_unauthorized else
+MOV   4(%rdi), `\uc{$\lambda$}`%ecx.                  (* sender `\uc{$\leftarrow$}` b`\uc{$_{0}$}`[4..7]  *)
+MOV   8(%rdi), `\uc{$\lambda$}`%r8d.                  (* topic  `\uc{$\leftarrow$}` b`\uc{$_{0}$}`[8..11] *)
+BT    %r8, ACL_BITMAP(%rip, %rcx, 8)   (* constant-time ACL bit test *)
+JNC   then drop_unauthorized else
+SUB   $1, BUCKET_ARR(%rdx, %rcx, 4)    (* in-place linear token update *)
+JLT   then drop_rate_limited else
+LEA   24(%rdi), `\uc{$\lambda$}`%rax.                 (* payload_slice `\uc{$\leftarrow$}` b`\uc{$_{0}$}` + 24 *)
+JMP   emit_slice(%rax, %rdx)
+\end{lstlisting}
+At lowering time, the functional linear state token bucket\_st erases into the exclusive base-pointer capability \%rdx, allowing let\_lin\{dec\_tokens(bucket\_st, sender); bucket\_st'. ...\} to lower soundly to the in-place memory instruction SUB \$1, BUCKET\_ARR(\%rdx, \%rcx, 4) while processor condition flags (JLT, JNC, JNE) are modeled as scoped branching continuations.
+
+
