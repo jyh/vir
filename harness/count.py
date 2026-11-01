@@ -43,6 +43,15 @@ def scored_body(text):
     return ''
 
 
+def chain_tokens(block):
+    # C5chain (row 10, one unit for both arms): whitespace tokens of the scored chain's proof script,
+    # comments dropped; Lean: the text after the first `:= by`; MetaPRL: the c2-router.mp lines that `refine`
+    if ':= by' in block:
+        block = block.split(':= by', 1)[1]
+    block = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', block)
+    return len(block.split())
+
+
 def read(p):
     with open(p, 'rb') as f:
         return f.read().decode('utf-8', 'replace')
@@ -85,6 +94,7 @@ def lean(d):
         declared = set(m.group(1) for m in AUX_NAME_RE.finditer(text))
         used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
         rows += [('C3', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
+        rows.append(('C5chain', chain_tokens(body), 'MEASURED'))
         # L-DEEP (row 9): aux rules are constructors of Step; used = referenced in router_fusion_deep_steps
         dblk = next((b for b in blocks(scored) if re.match(r'theorem\s+router_fusion_deep_steps\b', b)), '')
         if dblk:
@@ -92,7 +102,7 @@ def lean(d):
             giv = set(re.findall(r'^\s*\|\s*(slice_fuse|guard_merge|read_comm|beta_lin|dce_atom|const_fold|guard_true)\b', text, re.M))
             u = {a for a in dec if re.search(r'\.' + a + r'\b', dblk)}
             g = {a for a in giv if re.search(r'\.' + a + r'\b', dblk)}
-            rows += [('C3deep', len(u), 'MEASURED'), ('C3deepGivenUsed', len(g), 'MEASURED'),
+            rows += [('C3deep', len(u), 'MEASURED'), ('C3deepGivenUsed', len(g), 'MEASURED'), ('C5chainDeep', chain_tokens(dblk), 'MEASURED'),
                      ('C2deepCond', len(re.findall(r'\(by ', dblk)), 'MEASURED')]
     else:
         rows += [('C2', 0, 'EMPTY'), ('C3', 0, 'EMPTY')]
@@ -143,6 +153,19 @@ def metaprl(d):
         if os.path.isfile(fp):
             for m in re.finditer(r'^[ \t]+\.\.\.\.(wf|equality|assertion)\.\.\.\.', read(fp), re.M):
                 lab[m.group(1)] += 1
+    # GENERATED convention (row 12): mpdrive's `=== CHILDREN k: <labels>` line (direct children of each refine; mojave c7df66d)
+    gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False
+    for f in ('runs-c2-router.txt', 'runs-c2-lemmas.txt'):
+        fp = os.path.join(tools, f)
+        if os.path.isfile(fp):
+            for m in re.finditer(r'^=== CHILDREN \d+:(.*)$', read(fp), re.M):
+                have_children = True
+                for w in m.group(1).split():
+                    if w in gen:
+                        gen[w] += 1
+    if have_children:
+        rows += [('C2genWf', gen['wf'], 'MEASURED'), ('C2genEq', gen['equality'], 'MEASURED'),
+                 ('C2genCond', gen['assertion'], 'MEASURED'), ('C2gen', sum(gen.values()), 'MEASURED')]
     rows += [('C2wf', lab['wf'], 'MEASURED'), ('C2eq', lab['equality'], 'MEASURED'),
              ('C2cond', lab['assertion'], 'MEASURED'), ('C2', sum(lab.values()), 'MEASURED')]
     # C3: aux rules USED by the scored chain script, plus A.2-form unfolds (amend-3)
@@ -155,6 +178,7 @@ def metaprl(d):
     rows += [('C3', len(used) + len(forms), 'MEASURED'), ('C3strict', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
     rows.append(('C4', len(re.findall(r'^\s*prim(?:_rw)?\s', ml, re.M)), 'MEASURED'))
     rows.append(('C5', 0, 'UNMEASURED'))   # mojave measures the stored tactic text in vir.prla; no extractor yet
+    rows.append(('C5chain', len(' '.join(l for l in body.splitlines() if l.strip().startswith('refine')).split()), 'MEASURED'))
     runs = [p for p in files(tools, ('.txt',)) if re.search(r'/runs-\d+\.txt$', p)]
     refines = sum(len(re.findall(r'^=== STEP .*:: refine', read(p), re.M)) for p in runs)
     rows += [('C6sessions', len(runs), 'MEASURED'), ('C6refines', refines, 'MEASURED')]
