@@ -1,0 +1,10 @@
+saltqueue: ticket P2 seat=root pid=2309
+Audit.lean:2:8: warning: declaration uses `sorry`
+'control_sorry' depends on axioms: [sorryAx]
+'VIR.Compose.den_U_eq_F' depends on axioms: [propext, Quot.sound]
+'VIR.Compose.lowered_refines_U' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIR.Compose.w_buf' depends on axioms: [propext, Quot.sound]
+'VIR.Compose.w_disj' depends on axioms: [propext, Quot.sound]
+'VIR.Compose.witness_applies' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIR.Compose.witness_ok_control' depends on axioms: [propext, Quot.sound]
+saltbuild EXIT=0
