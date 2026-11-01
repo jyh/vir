@@ -75,6 +75,6 @@ This repository's history was rewritten once, on 2026-11-01, before its first pu
 session trailers from 10 commit messages and replaced home-directory, scratch and internal-log
 references with placeholders (`~/fleet/`, `<scratch>/`, `@[bus]`), including inside committed build logs.
 It also dropped one tracked `.pyc`. Nothing else in any file was changed. Author and commit dates are the
-originals. Prose in the tree cites pre-rewrite shas, which `HISTORY-MAP.tsv` resolves.
+originals. Prose in the tree cites pre-rewrite shas, which `PREREGISTRATION-SHA-MAP.tsv` resolves (old sha, new sha, original author date, role, subject; one row per commit).
 
 Licence: Apache-2.0.

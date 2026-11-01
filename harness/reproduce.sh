@@ -1,14 +1,25 @@
 #!/bin/bash
 # vir: re-derive EVERY committed count file from the arms' artifacts and diff (STATUS-vir row 30).
 # rc 0 = every file reproduces byte-for-byte; rc 1 = a named file does not; rc 2 = an input is missing.
-# Usage: harness/reproduce.sh [MOJAVE_ROOT]   (default ~/projects/claude/seats/mojave)
+# Usage: harness/reproduce.sh [MOJAVE_ROOT]   (a dir holding clones of vir-metaprl and vir-arm-tools; both are read at pinned shas)
 # LIMIT, printed with the verdict: it re-derives what count.py extracts. It does not rebuild Lean (judge a
 # build by its saltbuild EXIT line) and does not re-run MetaPRL's verdict.sh; rows marked Q stay Q.
 set -u
 V=$(cd "$(dirname "$0")/.." && pwd)
-M=${1:-$HOME/projects/claude/seats/mojave}
+M0=${1:-$HOME/projects/claude/seats/mojave}
 C="$V/harness/count.py"
-[ -d "$V/lean" ] && [ -d "$M/vir-metaprl" ] || { echo "REPRODUCE MISSING-INPUT lean=$V/lean metaprl=$M"; exit 2; }
+[ -d "$V/lean" ] && [ -d "$M0/vir-metaprl" ] || { echo "REPRODUCE MISSING-INPUT lean=$V/lean metaprl=$M0"; exit 2; }
+# FINDINGS V-F2: the MetaPRL arm is read at PINNED commits, never from its working tree (which carries
+# uncommitted edits). Both repos are cloned at the pins into a scratch dir; override with the env vars.
+METAPRL_SHA=${METAPRL_SHA:-26b4e01d6d8ddb2ba1641323ae4b5610a2ab53ef}
+TOOLS_SHA=${TOOLS_SHA:-b754500}
+M=$(mktemp -d "${TMPDIR:-/tmp}/vir-repro-mj.XXXXXX")
+for pair in "vir-metaprl:$METAPRL_SHA" "vir-arm-tools:$TOOLS_SHA"; do
+  r=${pair%%:*}; s=${pair#*:}
+  git clone -q --no-checkout "$M0/$r" "$M/$r" 2>/dev/null && git -C "$M/$r" checkout -q "$s" 2>/dev/null \
+    || { echo "REPRODUCE MISSING-INPUT $r at $s (from $M0/$r)"; exit 2; }
+done
+echo "  PINNED   metaprl vir-metaprl@${METAPRL_SHA:0:12} vir-arm-tools@${TOOLS_SHA:0:12} (from $M0)"
 fail=0; n=0
 chk() {  # chk <committed-file> <count.py args...>
   local f=$1; shift; n=$((n+1))

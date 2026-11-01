@@ -1,0 +1,25 @@
+# Zenodo reads this file when archiving a GitHub release; GitHub renders it as "Cite this repository".
+# Do not add a .zenodo.json beside it: Zenodo then ignores this file entirely.
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "vir: a Verification IR measured in two logics (Lean 4 and MetaPRL)"
+abstract: >-
+  One frozen object, the appendix of the O94 paper on verification agents, mechanised
+  in Lean 4 and in MetaPRL's Computational Type Theory against predictions committed
+  before either arm's first proof, with a harness that re-derives every count from
+  the artifacts. Its first application is a compiler: the appendix's lowering to x86-64
+  joined to the specification over x86lean.
+authors:
+  - family-names: Hickey
+    given-names: Jason
+    affiliation: Independent
+repository-code: "https://github.com/jyh/vir"
+license: Apache-2.0
+keywords:
+  - verification
+  - intermediate representation
+  - Lean 4
+  - MetaPRL
+  - computational type theory
+  - preregistration
