@@ -1,3 +1,5 @@
 'VIR.router_fusion' depends on axioms: [propext, Quot.sound]
 'VIR.router_fusion_casesplit' depends on axioms: [propext, Quot.sound]
 'VIR.Flat.slice_fuse_flat' depends on axioms: [propext]
+'VIR.Deep.router_fusion_deep' depends on axioms: [propext, Quot.sound]
+'VIR.Deep.router_fusion_deep_steps' does not depend on any axioms

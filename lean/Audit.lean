@@ -16,3 +16,5 @@ open VIR
 #print axioms router_fusion_casesplit
 #print VIR.Flat.slice_fuse_flat
 #print axioms VIR.Flat.slice_fuse_flat
+#print axioms VIR.Deep.router_fusion_deep
+#print axioms VIR.Deep.router_fusion_deep_steps

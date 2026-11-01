@@ -85,6 +85,15 @@ def lean(d):
         declared = set(m.group(1) for m in AUX_NAME_RE.finditer(text))
         used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
         rows += [('C3', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
+        # L-DEEP (row 9): aux rules are constructors of Step; used = referenced in router_fusion_deep_steps
+        dblk = next((b for b in blocks(scored) if re.match(r'theorem\s+router_fusion_deep_steps\b', b)), '')
+        if dblk:
+            dec = set(re.findall(r'^\s*\|\s*(aux_[A-Za-z0-9_]*)', text, re.M))
+            giv = set(re.findall(r'^\s*\|\s*(slice_fuse|guard_merge|read_comm|beta_lin|dce_atom|const_fold|guard_true)\b', text, re.M))
+            u = {a for a in dec if re.search(r'\.' + a + r'\b', dblk)}
+            g = {a for a in giv if re.search(r'\.' + a + r'\b', dblk)}
+            rows += [('C3deep', len(u), 'MEASURED'), ('C3deepGivenUsed', len(g), 'MEASURED'),
+                     ('C2deepCond', len(re.findall(r'\(by ', dblk)), 'MEASURED')]
     else:
         rows += [('C2', 0, 'EMPTY'), ('C3', 0, 'EMPTY')]
     a = os.path.join(d, 'out', 'axioms.txt')

@@ -1,0 +1,20 @@
+saltqueue: ticket P2 seat=root pid=24525
+✖ [6/8] Building VIR.Deep (301ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Deep.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.setup.json --json
+error: VIR/Deep.lean:111:34: Tactic `generalize` failed: result is not type correct
+  ∀ (x : Bool),
+    (if x = true then if Cond.eval acl c₂ = true then den acl ok else den acl err else den acl err) =
+      if (x && Cond.eval acl c₂) = true then den acl ok else den acl err
+
+case guard_merge
+acl : Principal → TopicId → Bool
+a b : Tm Val
+c₁ c₂ : Cond Val
+ok err : Tm Val
+⊢ (if Cond.eval acl c₁ = true then if Cond.eval acl c₂ = true then den acl ok else den acl err else den acl err) =
+    if (Cond.eval acl c₁ && Cond.eval acl c₂) = true then den acl ok else den acl err
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Deep
+error: build failed
+saltbuild EXIT=1

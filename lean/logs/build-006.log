@@ -1,0 +1,401 @@
+saltqueue: ticket P2 seat=root pid=19395
+✖ [6/8] Building VIR.Deep (311ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Deep.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.setup.json --json
+error: VIR/Deep.lean:33:20: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.2
+in the application
+  advance b
+error: VIR/Deep.lean:33:45: Application type mismatch: The argument
+  k
+has type
+  V → Tm V
+of sort `Type` but is expected to have type
+  j ≤ ?m.5
+of sort `Prop` in the application
+  advance s j k
+error: VIR/Deep.lean:33:57: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.6
+in the application
+  advance b
+error: VIR/Deep.lean:35:18: Application type mismatch: The argument
+  c₁
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c₁
+error: VIR/Deep.lean:35:28: Application type mismatch: The argument
+  c₂
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c₂
+error: VIR/Deep.lean:35:52: Invalid dotted identifier notation: Not supported on type universe
+  Prop
+error: VIR/Deep.lean:38:18: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:38:29: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.19
+in the application
+  readU32 b
+error: VIR/Deep.lean:38:48: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.22
+in the application
+  readU32 b
+error: VIR/Deep.lean:38:67: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:38:72: Application type mismatch: The argument
+  v
+has type
+  UInt32
+but is expected to have type
+  V
+in the application
+  k v
+error: VIR/Deep.lean:40:20: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.27
+in the application
+  advance b
+error: VIR/Deep.lean:40:39: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:40:57: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:40:68: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.34
+in the application
+  advance b
+error: VIR/Deep.lean:42:20: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.37
+in the application
+  advance b
+error: VIR/Deep.lean:42:97: Application type mismatch: The argument
+  b
+has type
+  V
+but is expected to have type
+  Slice ?m.43
+in the application
+  advance b
+error: VIR/Deep.lean:44:42: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:44:60: Application type mismatch: The argument
+  c
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard c
+error: VIR/Deep.lean:46:18: Application type mismatch: The argument
+  a
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard a
+error: VIR/Deep.lean:46:27: Application type mismatch: The argument
+  b
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard b
+error: VIR/Deep.lean:46:44: Application type mismatch: The argument
+  b
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard b
+error: VIR/Deep.lean:46:53: Application type mismatch: The argument
+  a
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard a
+error: VIR/Deep.lean:48:61: Application type mismatch: The argument
+  ok
+has type
+  Tm ?m.65
+but is expected to have type
+  c → Out
+in the application
+  guard c ok
+error: VIR/Deep.lean:48:53: failed to synthesize instance of type class
+  Decidable c
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: VIR/Deep.lean:48:78: Application type mismatch: The argument
+  ok'
+has type
+  Tm ?m.65
+but is expected to have type
+  c → Out
+in the application
+  guard c ok'
+error: VIR/Deep.lean:48:70: failed to synthesize instance of type class
+  Decidable c
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: VIR/Deep.lean:49:57: Application type mismatch: The argument
+  readU32 b j k
+has type
+  Out
+but is expected to have type
+  Tm ?m.82
+in the application
+  Step (readU32 b j k)
+error: VIR/Deep.lean:49:37: Type mismatch
+  k v
+has type
+  Out
+but is expected to have type
+  Tm (?m.79 v)
+error: VIR/Deep.lean:49:43: Type mismatch
+  k' v
+has type
+  Out
+but is expected to have type
+  Tm (?m.79 v)
+error: VIR/Deep.lean:50:60: Application type mismatch: The argument
+  advance b i k
+has type
+  (Slice (?m.100 - i) → Out) → Out
+but is expected to have type
+  Tm ?m.98
+in the application
+  Step (advance b i k)
+error: VIR/Deep.lean:50:40: Function expected at
+  k
+but this term has type
+  i ≤ ?m.100
+
+Note: Expected a function because this term is being applied to the argument
+  v
+error: VIR/Deep.lean:50:46: Function expected at
+  k'
+but this term has type
+  i ≤ ?m.100
+
+Note: Expected a function because this term is being applied to the argument
+  v
+error: VIR/Deep.lean:108:39: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIR/Deep.lean:130:8: Application type mismatch: The argument
+  lenGe b0 24
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard (lenGe b0 24)
+error: VIR/Deep.lean:131:13: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.5
+in the application
+  readU32 b0
+error: VIR/Deep.lean:131:37: Application type mismatch: The argument
+  isMagic magic
+has type
+  Cond UInt32
+but is expected to have type
+  Prop
+in the application
+  @guard (isMagic magic)
+error: VIR/Deep.lean:132:15: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.11
+in the application
+  readU32 b0
+error: VIR/Deep.lean:132:42: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.15
+in the application
+  readU32 b0
+error: VIR/Deep.lean:132:68: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.19
+in the application
+  advance b0
+error: VIR/Deep.lean:133:25: Application type mismatch: The argument
+  sender
+has type
+  UInt32
+but is expected to have type
+  V
+in the application
+  hasTok st sender
+error: VIR/Deep.lean:134:24: Application type mismatch: The argument
+  sender
+has type
+  UInt32
+but is expected to have type
+  V
+in the application
+  letLinDec st sender
+error: VIR/Deep.lean:134:48: Application type mismatch: The argument
+  canAcc sender topic
+has type
+  Cond UInt32
+but is expected to have type
+  Prop
+in the application
+  @guard (canAcc sender topic)
+error: VIR/Deep.lean:134:85: Application type mismatch: The argument
+  fun p => ret st' p
+has type
+  V → Tm V
+of sort `Type` but is expected to have type
+  12 ≤ ?m.30
+of sort `Prop` in the application
+  advance s1 12 fun p => ret st' p
+error: VIR/Deep.lean:140:8: Application type mismatch: The argument
+  lenGe b0 24
+has type
+  Cond V
+but is expected to have type
+  Prop
+in the application
+  @guard (lenGe b0 24)
+error: VIR/Deep.lean:141:13: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.5
+in the application
+  readU32 b0
+error: VIR/Deep.lean:141:39: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.9
+in the application
+  readU32 b0
+error: VIR/Deep.lean:141:66: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.13
+in the application
+  readU32 b0
+error: VIR/Deep.lean:142:13: Invalid dotted identifier notation: Not supported on type universe
+  Prop
+error: VIR/Deep.lean:143:22: Application type mismatch: The argument
+  sender
+has type
+  UInt32
+but is expected to have type
+  V
+in the application
+  letLinDec st sender
+error: VIR/Deep.lean:143:48: Application type mismatch: The argument
+  b0
+has type
+  V
+but is expected to have type
+  Slice ?m.20
+in the application
+  advance b0
+error: VIR/Deep.lean:148:58: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (U b0 st)
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+warning: VIR/Deep.lean:177:8: declaration uses `sorry`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Deep
+error: build failed
+saltbuild EXIT=1

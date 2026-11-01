@@ -1,0 +1,151 @@
+saltqueue: ticket P2 seat=root pid=23479
+✖ [6/8] Building VIR.Deep (305ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Deep.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Deep.setup.json --json
+error: VIR/Deep.lean:83:4: expected token
+error: VIR/Deep.lean:100:17: Invalid dotted identifier notation: The expected type of `.ret`
+  DOut
+is not of the form `C ...` or `... → C ...` where C is a constant
+error: VIR/Deep.lean:101:15: Invalid dotted identifier notation: The expected type of `.drop`
+  DOut
+is not of the form `C ...` or `... → C ...` where C is a constant
+error: VIR/Deep.lean:107:51: don't know how to synthesize implicit argument `α`
+  @Eq (?m.5 h) (den acl a) (den acl b)
+context:
+acl : Principal → TopicId → Bool
+a b : Tm Val
+h : Step a b
+⊢ Sort ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:107:63: don't know how to synthesize implicit argument `DOut`
+  @den acl (?m.5 h) b
+context:
+acl : Principal → TopicId → Bool
+a b : Tm Val
+h : Step a b
+⊢ Sort ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:107:51: don't know how to synthesize implicit argument `DOut`
+  @den acl (?m.5 h) a
+context:
+acl : Principal → TopicId → Bool
+a b : Tm Val
+h : Step a b
+⊢ Sort ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:111:34: Tactic `generalize` failed: result is not type correct
+  ∀ (x : Bool),
+    (if x = true then if Cond.eval acl c₂ = true then den acl ok else den acl err else den acl err) =
+      if (x && Cond.eval acl c₂) = true then den acl ok else den acl err
+
+case guard_merge
+acl : Principal → TopicId → Bool
+a b : Tm Val
+c₁ c₂ : Cond Val
+ok err : Tm Val
+⊢ (if Cond.eval acl c₁ = true then if Cond.eval acl c₂ = true then den acl ok else den acl err else den acl err) =
+    if (Cond.eval acl c₁ && Cond.eval acl c₂) = true then den acl ok else den acl err
+error: VIR/Deep.lean:118:21: unsolved goals
+case cg_guard_ok
+acl : Principal → TopicId → Bool
+a b : Tm Val
+c✝ : Cond Val
+ok✝ ok'✝ err✝ : Tm Val
+a✝ : Step ok✝ ok'✝
+ih : den acl ok✝ = den acl ok'✝
+⊢ (if Cond.eval acl c✝ = true then den acl ok✝ else den acl err✝) =
+    if Cond.eval acl c✝ = true then den acl ok'✝ else den acl err✝
+error: VIR/Deep.lean:119:17: unsolved goals
+case cg_read
+acl : Principal → TopicId → Bool
+a b : Tm Val
+b✝ : Val
+j✝ : Nat
+k✝ k'✝ : Val → Tm Val
+a✝ : ∀ (v : Val), Step (k✝ v) (k'✝ v)
+ih : ∀ (v : Val), den acl (k✝ v) = den acl (k'✝ v)
+⊢ den acl (k✝ (b✝.rd j✝)) = den acl (k'✝ (b✝.rd j✝))
+error: VIR/Deep.lean:120:20: unsolved goals
+case cg_advance
+acl : Principal → TopicId → Bool
+a b : Tm Val
+b✝ : Val
+i✝ : Nat
+k✝ k'✝ : Val → Tm Val
+a✝ : ∀ (v : Val), Step (k✝ v) (k'✝ v)
+ih : ∀ (v : Val), den acl (k✝ v) = den acl (k'✝ v)
+⊢ den acl (k✝ (b✝.adv i✝)) = den acl (k'✝ (b✝.adv i✝))
+error: VIR/Deep.lean:121:19: unsolved goals
+case cg_letlin
+acl : Principal → TopicId → Bool
+a b : Tm Val
+st✝ p✝ : Val
+k✝ k'✝ : Val → Tm Val
+a✝ : ∀ (v : Val), Step (k✝ v) (k'✝ v)
+ih : ∀ (v : Val), den acl (k✝ v) = den acl (k'✝ v)
+⊢ den acl (k✝ (Val.state (decTokens st✝.st p✝.toP))) = den acl (k'✝ (Val.state (decTokens st✝.st p✝.toP)))
+warning: VIR/Deep.lean:109:32: declaration uses `sorry`
+warning: VIR/Deep.lean:109:32: declaration uses `sorry`
+warning: VIR/Deep.lean:109:32: declaration uses `sorry`
+warning: VIR/Deep.lean:118:35: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [den,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIR/Deep.lean:119:31: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [den,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIR/Deep.lean:120:34: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [den,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIR/Deep.lean:121:33: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [den,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIR/Deep.lean:176:43: don't know how to synthesize implicit argument `α`
+  @Eq (?m.6 b0 st) (den acl (U b0 st)) (den acl (F b0 st))
+context:
+acl : Principal → TopicId → Bool
+b0 st : Val
+⊢ Sort ?u.9
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:176:63: don't know how to synthesize implicit argument `DOut`
+  @den acl (?m.6 b0 st) (F b0 st)
+context:
+acl : Principal → TopicId → Bool
+b0 st : Val
+⊢ Sort ?u.9
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:176:43: don't know how to synthesize implicit argument `DOut`
+  @den acl (?m.6 b0 st) (U b0 st)
+context:
+acl : Principal → TopicId → Bool
+b0 st : Val
+⊢ Sort ?u.9
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIR/Deep.lean:177:35: Invalid field `sound`: The environment does not contain `VIR.Deep.Step.sound`, so it is not possible to project the field `sound` from an expression
+  router_fusion_deep_steps b0 st
+of type `Step (U b0 st) (F b0 st)`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Deep
+error: build failed
+saltbuild EXIT=1
