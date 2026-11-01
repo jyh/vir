@@ -402,16 +402,53 @@ def compiler(repo, sha, compose, compose_sha=None):
     return rows
 
 
+# amend-10 (B′, the Lean mirror): read from lean/VIRB/ alone, so VIR/'s rows never move. Every row is per theorem.
+BP_THEOREMS = {'1': 'router_fusion_bp', '2': 'router2_fusion_bp', '3': 'route_acl_safe_bp'}
+
+
+def leanbp(d):
+    """d = lean/VIRB. Reads the NEWEST logs/audit-bp-*.log (terms + axioms) and every logs/*.log (C6)."""
+    logs = files(os.path.join(d, 'logs'), ('.log',))
+    audits = [p for p in logs if re.search(r'/audit-bp-\d+\.log$', p)]
+    if not audits:
+        return [('B.audit', 0, 'EMPTY')]
+    t = read(sorted(audits)[-1])
+    HEQ = re.compile(r'(?<![A-Za-z0-9_.])(HEq|heq_of_eq)(?![A-Za-z0-9_])|≍')
+    COE = re.compile(r'↑|(?<![A-Za-z0-9_])Subtype\.val(?![A-Za-z0-9_])|(?<!Subtype)\.val(?![A-Za-z0-9_])|\.property(?![A-Za-z0-9_])')
+    blocks = re.split(r'\n(?=(?:@\[[^\]]*\]\s*)?theorem\s)', t)
+    rows = [('B.audit', 1, 'READ:' + os.path.basename(sorted(audits)[-1]))]
+    for prog, name in BP_THEOREMS.items():
+        b = [x for x in blocks if re.match(r'theorem VIR\.BPrime\.' + name + r'\s', x)]
+        if not b:
+            rows.append(('BP%s.C1heq' % prog, 0, 'EMPTY')); continue
+        rows += [('BP%s.C1heq' % prog, sum(len(HEQ.findall(x)) for x in b), 'MEASURED'),
+                 ('BP%s.C1coe' % prog, sum(len(COE.findall(x)) for x in b), 'MEASURED')]
+        ax = re.search(r"'VIR\.BPrime\." + name + r"' depends on axioms: \[([^\]]*)\]", t)
+        extra = [a.strip() for a in ax.group(1).split(',')] if ax else []
+        rows.append(('BP%s.C4' % prog, len(set(extra) - STD_AXIOMS), 'MEASURED' if ax else 'EMPTY'))
+    for struct, prog in (('Carrier', '1'), ('Carrier2', '2')):
+        m = re.search(r'structure VIR\.BPrime\.' + struct + r' .*?fields:\n(.*?)\nconstructor:', t, re.S)
+        if m:
+            own = len([l for l in m.group(1).splitlines() if l.strip()])
+            rows.append(('BP%s.C4vir' % prog, own, 'MEASURED'))
+    rows.append(('B.control', 1 if re.search(r"'control_sorry_bp' depends on axioms: \[sorryAx\]", t) else 0, 'MEASURED'))
+    rows.append(('B.C6', sum(len(re.findall(r'^saltbuild EXIT=\d+', read(p), re.M)) for p in logs), 'MEASURED'))
+    rows.append(('B.C6.scope', 0, 'LOGGED-RUNS-ONLY'))   # runs whose log was overwritten are not counted (RESULTS-4)
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
     ap.add_argument('--program', default='1', choices=['1', '2', '3'])
     ap.add_argument('dir')
     a = ap.parse_args()
-    if a.arm == 'compiler':
+    if a.arm == 'leanbp':
+        rows = leanbp(a.dir)
+    elif a.arm == 'compiler':
         rows = compiler(a.dir, a.sha or 'HEAD', a.compose, a.compose_sha)
     else:
         rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)

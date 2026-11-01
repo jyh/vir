@@ -66,6 +66,14 @@ LIMITS, beside the verdict: equality is up to `rfl` (definitional unfolding), no
 codes table is written once in the translator, by hand. Spec bodies are checked only through their expansion into U and
 U2. F2 is an INPUT (J4), not the object.
 
+## Harness rows (added after the verdicts above, from the same artifacts)
+`python3 harness/count.py --arm leanbp lean/VIRB` reads the newest `audit-bp-*.log` and gives
+`lean/VIRB/out/counts-bp.tsv`, which `harness/reproduce.sh` checks (11 files, rc 0). The rows are per theorem:
+BP1/BP2/BP3 .C1heq 0/0/0 · .C1coe 0/0/74 · .C4 0/0/0 · BP1.C4vir 8 · BP2.C4vir 10 · B.control 1. `B.C6` = 18 is the
+saltbuild runs LOGGED under lean/VIRB/logs (mutants and audits included; overwritten runs are not counted, as its
+`.scope` row says). Selftest ARM18 plants an HEq, an extra axiom and a missing control and reads all three, and it goes
+red when `≍` is dropped from its class.
+
 ## Limits
 - Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
