@@ -56,7 +56,7 @@ The arms:
 ## The compiler application, program 1 (added 2026-11-01 by the 4th vir head; STATUS-vir rows 35–38)
 | claim | evidence (sha) | build | limit |
 |---|---|---|---|
-| A.4 AS WRITTEN does not lower F soundly | paris's step-2 witnesses (E2 `len = 2^63` takes `jl` to drop_truncated; E3 wraps the bucket), spike `Router/AsWritten.lean` | kernel-checked by `decide` (paris) | concrete states; it is a refutation, so one witness suffices |
+| A.4 AS WRITTEN does not lower F soundly | paris's step-2 witnesses (E2 `len = 2^63` takes `jl` to drop_truncated; E3 `tokens = 0` drops with the cell already written 0 → 0xFFFFFFFF, where I6 asks memory unchanged), spike `Router/AsWritten.lean` | kernel-checked by `decide` (paris) | concrete states; it is a refutation, so one witness suffices |
 | A.4 AS REPAIRED (E1–E5) refines F_exit for ALL states under I6 | paris `repaired_refines`, spike 2c0b059, F_exit pinned at vir 2ab9d98 | paris's audit EXIT=0; **rebuilt by vir from a fresh clone, axiom lines byte-identical** (RESULTS-3 add. 9) | one invocation; I6's code-disjoint clause is vacuous in x86lean; E3's order not driven as a mutant |
 | the same, from the UNFUSED spec U, as ONE term | vir `compose/` `lowered_refines_U`, vir 5b59d04 | build-002 + audit-001 EXIT=0, `[propext, Classical.choice, Quot.sound]` | it inherits every limit above |
 | the hypotheses are satisfiable | vir `witness_applies` (rdx 2^48) + `witness_ok_control` | same build | one witness, OK path only; **paris's control state (rdx 0x8000) violates `hdisj`**, mutant red (RESULTS-3 add. 10) |
