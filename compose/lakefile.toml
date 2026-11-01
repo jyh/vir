@@ -1,12 +1,12 @@
 name = "o95compose"
 defaultTargets = ["Compose"]
 
-# STATUS-vir row 37. paris's spike (private, local-only) PINNED at the step-3 sha; vir and x86lean come in
+# STATUS-vir row 37. paris's spike (private, local-only) PINNED at the step-3 sha (re-pinned 2026-11-01 from 2c0b059 to d7e992c: hdisj narrowed by paris on vir row 37); vir and x86lean come in
 # transitively at the spike's own pins (vir 2ab9d98, x86lean b1848ac). Nothing here is copied from the spike.
 [[require]]
 name = "o95spike"
 git = "~/fleet/wt/x86lean/o95-spike"
-rev = "2c0b059"
+rev = "d7e992c802fcb430fafb50e41b5b7d36d9cd860c"
 
 [[lean_lib]]
 name = "Compose"

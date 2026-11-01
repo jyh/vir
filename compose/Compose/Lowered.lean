@@ -2,8 +2,9 @@
   STATUS-vir row 37 (O95). Two vir-side readings of paris's `repaired_refines` (spike 2c0b059), BUILT:
   (a) `lowered_refines_U`: the machine refines the UNFUSED spec composition U, as one term (step 3 + vir's U_exit);
   (b) `witness_*`: a concrete start state satisfying EVERY hypothesis of the theorem, so it is not vacuous.
-  ⚠️ The witness cannot reuse paris's control state (`Router.start`): its rdx = 0x8000 puts the 2^32-sender bucket
-  span [0xB000, 0xB000 + 2^34) over the buffer at 0x10000, so `hdisj` is FALSE there. The witness moves rdx to 2^48.
+  ⚠️ At spike 2c0b059 `hdisj` excluded EVERY sender's cell, and paris's control state (`Router.start`, rdx 0x8000) failed it
+  (mutant red, RESULTS-3 add. 10). Paris narrowed it to the CURRENT sender's cell at d7e992c (this project re-pinned).
+  `w_disj` keeps the old, wide form (it implies the new one); `witness_paris_layout` (Drops.lean) is Router.start itself.
 -/
 import Router.Refines
 
@@ -23,7 +24,8 @@ theorem lowered_refines_U (acl : VIR.Principal → VIR.TopicId → Bool) (s : Cp
     (hacl : AclRel acl s.mem)
     (hst : StRel σ s.mem (s.regs.get .rdx))
     (htopic : 24 ≤ len → ((VIR.Deep.Val.slice buf off len).rd 8).toP.toNat < 64)
-    (hdisj : ∀ q : UInt32, ∀ i, i < len → ¬ Region (cell (s.regs.get .rdx) q) 4 (s.regs.get .rdi + BitVec.ofNat 64 i)) :
+    (hdisj : ∀ i, i < len → ¬ Region (cell (s.regs.get .rdx) ((VIR.Deep.Val.slice buf off len).rd 4).toP) 4
+      (s.regs.get .rdi + BitVec.ofNat 64 i)) :
     ∃ n, (runP repaired n s).stopped = true ∧
       Exit s (runP repaired n s) ((VIR.Deep.Val.slice buf off len).rd 4).toP
         (VIR.Deep.den acl (VIR.Deep.U (.slice buf off len) (.state σ))) := by
@@ -87,7 +89,8 @@ theorem witness_applies :
     ∃ n, (runP repaired n wState).stopped = true ∧
       Exit wState (runP repaired n wState) ((VIR.Deep.Val.slice wBuf 0 100).rd 4).toP
         (VIR.Deep.den wAcl (VIR.Deep.U (.slice wBuf 0 100) (.state wSigma))) :=
-  lowered_refines_U wAcl wState wBuf 0 100 wSigma w_live w_rip w_len w_buf w_acl w_st w_topic w_disj
+  lowered_refines_U wAcl wState wBuf 0 100 wSigma w_live w_rip w_len w_buf w_acl w_st w_topic
+    (fun i hi => w_disj _ i hi)
 
 set_option maxRecDepth 20000 in
 /-- Positive control on the SAME state: it really takes the OK path (17 steps to emit_slice, cell 5 → 4). -/

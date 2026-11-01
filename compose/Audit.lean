@@ -21,3 +21,4 @@ theorem control_sorry : (1 : Nat) = 2 := sorry
 #print axioms VIR.Compose.MultiCall.drop_no_state
 #print axioms VIR.Compose.runP_stopped_unique
 #print axioms VIR.Compose.emit_implies_guards
+#print axioms VIR.Compose.witness_paris_layout

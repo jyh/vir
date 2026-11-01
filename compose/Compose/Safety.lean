@@ -29,7 +29,8 @@ theorem emit_implies_guards (acl : VIR.Principal → VIR.TopicId → Bool) (s : 
     (hacl : AclRel acl s.mem)
     (hst : StRel σ s.mem (s.regs.get .rdx))
     (htopic : 24 ≤ len → ((VIR.Deep.Val.slice buf off len).rd 8).toP.toNat < 64)
-    (hdisj : ∀ q : UInt32, ∀ i, i < len → ¬ Region (cell (s.regs.get .rdx) q) 4 (s.regs.get .rdi + BitVec.ofNat 64 i))
+    (hdisj : ∀ i, i < len → ¬ Region (cell (s.regs.get .rdx) ((VIR.Deep.Val.slice buf off len).rd 4).toP) 4
+      (s.regs.get .rdi + BitVec.ofNat 64 i))
     (m : Nat) (hm : (runP repaired m s).stopped = true) (hemit : (runP repaired m s).rip = 0x1043) :
     let b := VIR.Deep.Val.slice buf off len
     24 ≤ len ∧ (b.rd 0).toP = VIR.MAGIC ∧ acl (b.rd 4).toP (b.rd 8).toP = true ∧ 0 < σ (b.rd 4).toP := by

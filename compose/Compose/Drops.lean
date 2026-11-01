@@ -47,7 +47,7 @@ theorem witness_truncated :
         (VIR.Deep.den (aclOf sT) (VIR.Deep.U (.slice wBuf 0 10) (.state (sigOf sT)))) :=
   lowered_refines_U _ sT wBuf 0 10 _ (by decide) (by decide) (by decide)
     (by unfold BufRel; decide) (aclOf_rel sT) (sigOf_rel sT) (by intro h; omega)
-    (disj_of sT (by decide) (by decide) 10 (by omega))
+    (fun i hi => disj_of sT (by decide) (by decide) 10 (by omega) _ i hi)
 set_option maxRecDepth 20000 in
 theorem truncated_control : let t := runP repaired 3 sT; t.stopped = true ∧ t.rip = 0x1040 ∧ t.mem.bytes = sT.mem.bytes := by
   decide
@@ -61,7 +61,7 @@ theorem witness_unauth_magic :
         (VIR.Deep.den (aclOf sM) (VIR.Deep.U (.slice badMagicBuf 0 100) (.state (sigOf sM)))) :=
   lowered_refines_U _ sM badMagicBuf 0 100 _ (by decide) (by decide) (by decide)
     (by unfold BufRel; decide) (aclOf_rel sM) (sigOf_rel sM) (by intro _; decide)
-    (disj_of sM (by decide) (by decide) 100 (by omega))
+    (fun i hi => disj_of sM (by decide) (by decide) 100 (by omega) _ i hi)
 set_option maxRecDepth 20000 in
 theorem unauth_magic_control : let t := runP repaired 6 sM; t.stopped = true ∧ t.rip = 0x1041 ∧ t.mem.bytes = sM.mem.bytes := by
   decide
@@ -75,7 +75,7 @@ theorem witness_unauth_acl :
         (VIR.Deep.den (aclOf sA) (VIR.Deep.U (.slice wBuf 0 100) (.state (sigOf sA)))) :=
   lowered_refines_U _ sA wBuf 0 100 _ (by decide) (by decide) (by decide)
     (by unfold BufRel; decide) (aclOf_rel sA) (sigOf_rel sA) (by intro _; decide)
-    (disj_of sA (by decide) (by decide) 100 (by omega))
+    (fun i hi => disj_of sA (by decide) (by decide) 100 (by omega) _ i hi)
 set_option maxRecDepth 20000 in
 theorem unauth_acl_control : let t := runP repaired 11 sA; t.stopped = true ∧ t.rip = 0x1041 ∧ t.mem.bytes = sA.mem.bytes := by
   decide
@@ -89,9 +89,26 @@ theorem witness_rate :
         (VIR.Deep.den (aclOf sR) (VIR.Deep.U (.slice wBuf 0 100) (.state (sigOf sR)))) :=
   lowered_refines_U _ sR wBuf 0 100 _ (by decide) (by decide) (by decide)
     (by unfold BufRel; decide) (aclOf_rel sR) (sigOf_rel sR) (by intro _; decide)
-    (disj_of sR (by decide) (by decide) 100 (by omega))
+    (fun i hi => disj_of sR (by decide) (by decide) 100 (by omega) _ i hi)
 set_option maxRecDepth 20000 in
 theorem rate_control : let t := runP repaired 13 sR; t.stopped = true ∧ t.rip = 0x1042 ∧ t.mem.bytes = sR.mem.bytes := by
   decide
+
+/-! ### paris's OWN control layout (`Router.start`, rdx 0x8000) is an instance at d7e992c. -/
+def sP := Router.start 100 Router.MAGIC 0 0 1 5
+set_option maxRecDepth 200000 in
+theorem witness_paris_layout :
+    ∃ n, (runP repaired n sP).stopped = true ∧
+      Exit sP (runP repaired n sP) ((VIR.Deep.Val.slice wBuf 0 100).rd 4).toP
+        (VIR.Deep.den (aclOf sP) (VIR.Deep.U (.slice wBuf 0 100) (.state (sigOf sP)))) := by
+  have hdi : sP.regs.get .rdi = 0x10000 := by decide
+  have hdx : sP.regs.get .rdx = 0x8000 := by decide
+  have hP : ((VIR.Deep.Val.slice wBuf 0 100).rd 4).toP = 0 := by decide
+  refine lowered_refines_U _ sP wBuf 0 100 _ (by decide) (by decide) (by decide)
+    (by unfold BufRel; decide) (aclOf_rel sP) (sigOf_rel sP) (by intro _; decide) ?_
+  have hc : Refines.cell 0x8000 0 = 0xB000 := by decide
+  rw [hP, hdx, hdi, hc]
+  intro i hi ⟨j, hj, he⟩
+  bv_omega
 
 end VIR.Compose
