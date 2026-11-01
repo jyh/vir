@@ -1,0 +1,43 @@
+saltqueue: ticket P2 seat=root pid=52296
+✖ [5/5] Building VIRB.Transcribe (181ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIRB/Transcribe.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/Transcribe.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/Transcribe.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIRB/Transcribe.c --setup ~/fleet/vir/lean/.lake/build/ir/VIRB/Transcribe.setup.json --json
+error: VIRB/Transcribe.lean:10:0: Not a definitional equality: the left-hand side
+  Deep.Tm.guard (Deep.Cond.lenGe b0 24)
+    (Deep.Tm.readU32 b0 0 fun magic =>
+      Deep.Tm.guard (Deep.Cond.isMagic magic)
+        (Deep.Tm.readU32 b0 4 fun sender =>
+          Deep.Tm.readU32 b0 12 fun topic =>
+            Deep.Tm.advance b0 12 fun s =>
+              Deep.Tm.guard (Deep.Cond.hasTok st sender)
+                (Deep.Tm.letLinDec st sender fun st' =>
+                  Deep.Tm.guard (Deep.Cond.canAcc sender topic)
+                    (Deep.Tm.advance s 12 fun payload => Deep.Tm.ret st' payload) (Deep.Tm.drop Code.unauthOrRate))
+                (Deep.Tm.drop Code.unauthOrRate))
+        (Deep.Tm.drop Code.unauthOrRate))
+    (Deep.Tm.drop Code.truncated)
+is not definitionally equal to the right-hand side
+  Deep.U b0 st
+error: VIRB/Transcribe.lean:11:439: Type mismatch
+  rfl
+has type
+  ?m.41 = ?m.41
+but is expected to have type
+  Deep.Tm.guard (Deep.Cond.lenGe b0 24)
+      (Deep.Tm.readU32 b0 0 fun magic =>
+        Deep.Tm.guard (Deep.Cond.isMagic magic)
+          (Deep.Tm.readU32 b0 4 fun sender =>
+            Deep.Tm.readU32 b0 12 fun topic =>
+              Deep.Tm.advance b0 12 fun s =>
+                Deep.Tm.guard (Deep.Cond.hasTok st sender)
+                  (Deep.Tm.letLinDec st sender fun st' =>
+                    Deep.Tm.guard (Deep.Cond.canAcc sender topic)
+                      (Deep.Tm.advance s 12 fun payload => Deep.Tm.ret st' payload) (Deep.Tm.drop Code.unauthOrRate))
+                  (Deep.Tm.drop Code.unauthOrRate))
+          (Deep.Tm.drop Code.unauthOrRate))
+      (Deep.Tm.drop Code.truncated) =
+    Deep.U b0 st
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRB.Transcribe
+error: build failed
+saltbuild EXIT=1

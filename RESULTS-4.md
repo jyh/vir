@@ -26,7 +26,7 @@ harness has not yet extracted.
 | B1 | C1heq = 0 on the unindexed B′ slice | **0** (H, `≍`/HEq/heq_of_eq over audit-bp-001) | — | **HOLDS** |
 | B2 | C4vir equal for program 1's module | **8** Carrier fields (H, the `#print` of `Carrier`) | **8** `prim`s in vir.ml at 9ed59847c (H, `grep -cE '^\s*prim(_rw)?\s'`) | **HOLDS** |
 | B3 | C4 = 0 on both arms | **0** beyond {propext, Quot.sound} (H) | 0 (Q: "C4 … is unchanged: 0") | **HOLDS** (Lean H, MetaPRL Q) |
-| B4 | the A.2 parser reproduces the hand-written deep terms | not built | MetaPRL's own check: 10/10 (Q) | **OWED** |
+| B4 | the A.2 parser reproduces the hand-written deep terms | **4/4** `rfl` (tc_U · tc_F · tc_U2 · tc_F2; build-037 EXIT=0); F's read-offset mutant RED (build-036); I2 spec-offset mutant RED at tc_U only (build-038) | MetaPRL's own check: 10/10 (Q) | **HOLDS** |
 | B1 (p2, p3) | the same reading on programs 2 and 3 (amend-10 predicts program 1 only, so this is EXPLORATORY) | router2_fusion_bp HEq **0** · route_acl_safe_bp HEq **0** (H, audit-bp-003) | — | no prediction |
 | B2 (p2) | C4vir with `take` and the bad-payload code | **10** (Carrier2 = Carrier's 8 + 2) | **10** (Q: mojave's prim list) | equal (EXPLORATORY) |
 
@@ -54,8 +54,20 @@ largely work MOVED into 37 shared wf rules, not work removed.
   L-IDX figure was C1coe 54). C6: program 2, 3 invocations to first green (⚠️ build-029 was overwritten twice, so the
   count is the author's) · program 3, 1.
 
+## B4, the A.2 transcription check (`harness/transcribe_lean.py` → `lean/VIRB/Transcribe.lean`, generated, never hand-edited)
+The translator reads I2 and I3 (router-inputs.md), A.3's F (object/appendix-A.tex, LaTeX escapes undone by a DECLARED
+table that refuses an unknown escape), and J2, J3 and J4 (program2-inputs.md), each AS WRITTEN. It parses A.2's surface
+syntax and expands every spec call into its continuation. It emits one `theorem tc_X : <parsed> = <hand-written deep
+term> := rfl` per term, against `VIR.Deep.U/F` and `VIR.Deep2.U2/F2`. A first build gave 4/4 green.
+Mutants: F's sender read 4 → 8 reds tc_F, while U, U2 and F2 stay green. I2's topic read 8 → 12 reds tc_U ALONE,
+because a spec reaches U only through the expansion, and J2's own parse_header2 is untouched. After each mutant, the true
+file is regenerated cmp-identical.
+LIMITS, beside the verdict: equality is up to `rfl` (definitional unfolding), not characters. The forms, conditions and
+codes table is written once in the translator, by hand. Spec bodies are checked only through their expansion into U and
+U2. F2 is an INPUT (J4), not the object.
+
 ## Limits
-- The A.2 parser (B4) is owed. Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
+- Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
 - This harness does not yet extract the MetaPRL B′ runs (`bp-vir*.mp`, `runs-bp-vir*.txt`), so MetaPRL B′ C1–C3 and C5
   are not read here.

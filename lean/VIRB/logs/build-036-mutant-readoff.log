@@ -1,0 +1,37 @@
+saltqueue: ticket P2 seat=root pid=50124
+✖ [5/5] Building VIRB.Transcribe (191ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIRB/Transcribe.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/Transcribe.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/Transcribe.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIRB/Transcribe.c --setup ~/fleet/vir/lean/.lake/build/ir/VIRB/Transcribe.setup.json --json
+error: VIRB/Transcribe.lean:13:0: Not a definitional equality: the left-hand side
+  Deep.Tm.guard (Deep.Cond.lenGe b0 24)
+    (Deep.Tm.readU32 b0 0 fun magic =>
+      Deep.Tm.readU32 b0 8 fun sender =>
+        Deep.Tm.readU32 b0 8 fun topic =>
+          Deep.Tm.guard
+            ((Deep.Cond.isMagic magic).and ((Deep.Cond.canAcc sender topic).and (Deep.Cond.hasTok st sender)))
+            (Deep.Tm.letLinDec st sender fun bucket_st' =>
+              Deep.Tm.advance b0 24 fun payload_slice => Deep.Tm.ret bucket_st' payload_slice)
+            (Deep.Tm.drop Code.unauthOrRate))
+    (Deep.Tm.drop Code.truncated)
+is not definitionally equal to the right-hand side
+  Deep.F b0 st
+error: VIRB/Transcribe.lean:14:391: Type mismatch
+  rfl
+has type
+  ?m.35 = ?m.35
+but is expected to have type
+  Deep.Tm.guard (Deep.Cond.lenGe b0 24)
+      (Deep.Tm.readU32 b0 0 fun magic =>
+        Deep.Tm.readU32 b0 8 fun sender =>
+          Deep.Tm.readU32 b0 8 fun topic =>
+            Deep.Tm.guard
+              ((Deep.Cond.isMagic magic).and ((Deep.Cond.canAcc sender topic).and (Deep.Cond.hasTok st sender)))
+              (Deep.Tm.letLinDec st sender fun bucket_st' =>
+                Deep.Tm.advance b0 24 fun payload_slice => Deep.Tm.ret bucket_st' payload_slice)
+              (Deep.Tm.drop Code.unauthOrRate))
+      (Deep.Tm.drop Code.truncated) =
+    Deep.F b0 st
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRB.Transcribe
+error: build failed
+saltbuild EXIT=1
