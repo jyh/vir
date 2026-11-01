@@ -114,11 +114,41 @@ def size(src):
     return [('C5', lines, 'MEASURED'), ('C5tok', toks, 'MEASURED')]
 
 
+FORM_UNFOLD_RE = re.compile(r'(?<![A-Za-z0-9_])unfold_(read_u32|vguard|guard|advance|let_lin|let_atom|vreturn|vdrop)(?![A-Za-z0-9_])')
+
+
 def metaprl(d):
-    src = files(d, ('.ml', '.mli')) if os.path.isdir(d) else []
-    rows = [(c, 0, 'UNMEASURED') for c in ('C1', 'C2', 'C3', 'C4')]
-    rows += size(src)
-    rows.append(('C6', 0, 'UNMEASURED'))
+    """d = the arm's root holding vir-metaprl/ (theory) and vir-arm-tools/ (scripts, driver runs).
+    The extractor names were agreed with mojave @[bus] (STATUS-vir row 6)."""
+    th = os.path.join(d, 'vir-metaprl', 'theories', 'vir', 'vir.ml')
+    tools = os.path.join(d, 'vir-arm-tools')
+    if not os.path.isfile(th):
+        return [(c, 0, 'EMPTY') for c in ('C1', 'C2', 'C3', 'C4', 'C5', 'C6')]
+    rows = []
+    steps = files(os.path.join(tools, 'steps'), ('.mp',))
+    rows.append(('C1', sum(len(CAST_RE.findall(read(p))) for p in steps), 'MEASURED'))
+    # C2: indented child-goal labels in the per-step C2 replays (amend-1: wf / equality / any premise of a conditional rule)
+    lab = {'wf': 0, 'equality': 0, 'assertion': 0}
+    for f in ('runs-c2-router.txt', 'runs-c2-lemmas.txt'):
+        fp = os.path.join(tools, f)
+        if os.path.isfile(fp):
+            for m in re.finditer(r'^[ \t]+\.\.\.\.(wf|equality|assertion)\.\.\.\.', read(fp), re.M):
+                lab[m.group(1)] += 1
+    rows += [('C2wf', lab['wf'], 'MEASURED'), ('C2eq', lab['equality'], 'MEASURED'),
+             ('C2cond', lab['assertion'], 'MEASURED'), ('C2', sum(lab.values()), 'MEASURED')]
+    # C3: aux rules USED by the scored chain script, plus A.2-form unfolds (amend-3)
+    ml = read(th)
+    declared = set(re.findall(r'^\s*interactive(?:_rw)?\s+(aux_[A-Za-z0-9_]*)', ml, re.M))
+    chain = os.path.join(tools, 'steps', 'c2-router.mp')
+    body = read(chain) if os.path.isfile(chain) else ''
+    used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
+    forms = set(m.group(1) for m in FORM_UNFOLD_RE.finditer(body))
+    rows += [('C3', len(used) + len(forms), 'MEASURED'), ('C3strict', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
+    rows.append(('C4', len(re.findall(r'^\s*prim(?:_rw)?\s', ml, re.M)), 'MEASURED'))
+    rows.append(('C5', 0, 'UNMEASURED'))   # mojave measures the stored tactic text in vir.prla; no extractor yet
+    runs = [p for p in files(tools, ('.txt',)) if re.search(r'/runs-\d+\.txt$', p)]
+    refines = sum(len(re.findall(r'^=== STEP .*:: refine', read(p), re.M)) for p in runs)
+    rows += [('C6sessions', len(runs), 'MEASURED'), ('C6refines', refines, 'MEASURED')]
     return rows
 
 

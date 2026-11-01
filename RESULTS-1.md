@@ -28,3 +28,16 @@ FINDINGS.md M-F1..M-F4 (MetaPRL). And Lean's own: **L-F1** most of the Lean C1 t
 - final proof (`simp only [FSlice.adv, Nat.add_assoc, Nat.sub_sub]`): **C1flat = 1**, and that 1 is `Nat.sub_sub`, used on the `len` VALUE.
 **P1b, scored both ways:** under the LETTER of the preregistered token class (Nat.sub_sub listed), C1flat = 1 and P1b is FALSIFIED. Under its stated INTENT ("used for index realignment"), there are 0 casts and 0 HEq, and P1b HOLDS.
 ⇒ **The finding is the pair, not either verdict:** the SAME arithmetic fact (n − i − j = n − (i + j)) is used in both. In L-FLAT it is a VALUE equation closed by `congrArg`. In L-IDX it is a TYPE equation and needs the HEq machinery (12 tokens). That is P1's claim measured, and it is a representation choice (§5.2's "dependent HEq transport casts across length-indexed slice types"). The token class could not separate a value use from an index use, which is L-F1 again, and the next amendment should name the HEq family and Nat.sub_sub separately.
+
+## ADDENDUM 2 (01:1x): the MetaPRL figures are now HARNESS figures (Q → H), with one difference named
+`harness/count.py --arm metaprl ~/projects/claude/seats/mojave` reads vir-metaprl (theory b26a2bd84) and vir-arm-tools (d93b367). Output: `harness/metaprl-counts-2026-11-01.tsv`. mojave's `verdict.sh`, re-run by vir with the output in vir's scratch: **VERDICT OK rc=0, 12 rules as expected.**
+| count | H (harness) | Q (mojave) | agree? |
+|---|---|---|---|
+| C1 | 0 | 0 | yes |
+| C2 | wf 5 · eq 0 · cond 10 = **15** | wf 3 · eq 0 · cond 10 = 13 | **NO, by 2**: the harness counts every indented `wf` child label in the two C2 replays. mojave excludes the 2 `wf` nodes the chain's discharge leaves (`wire_u32{…} ∈ int`, `vir_magic ∈ int`), as its COUNTS file declares. Both conventions are stated, and the difference is exactly those 2 |
+| C3 / strict / declared | 3 / 2 / 3 | 3 / 2 | yes |
+| C4 | 0 (no `prim`) | 0 | yes |
+| C6 | 20 sessions · 43 refines | 20 · 43 | yes |
+| C5 | UNMEASURED (no extractor for vir.prla's tactic text) | 11 tactics / 487 tokens | — |
+**P2 under either convention:** 15 or 13 against Lean's 9. It HOLDS, still PROVISIONALLY (the extractors post-date the proofs).
+Harness selftest now has 5 arms, rc 0. The MetaPRL extractor was driven red backwards: a mutant that drops the indentation rule miscounts the fixture and goes red.
