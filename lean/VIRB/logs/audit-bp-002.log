@@ -1,0 +1,1019 @@
+saltqueue: ticket P2 seat=root pid=22929
+AuditBP.lean:4:8: warning: declaration uses `sorry`
+'control_sorry_bp' depends on axioms: [sorryAx]
+theorem VIR.BPrime.router_fusion_bp : ∀ (C : Carrier) (b0 : VSlice) (st : C.State), U C b0 st = F C b0 st :=
+fun C b0 st =>
+  id
+    (id
+      (id
+        (id
+          (id
+            (id
+              ((fun {α} c c_1 e_c =>
+                  Eq.rec (motive := fun c_2 e_c =>
+                    ∀ (e1 e1_1 : α), e1 = e1_1 → ∀ (e2 e2_1 : α), e2 = e2_1 → vguard c e1 e2 = vguard c_2 e1_1 e2_1)
+                    (fun e1 e1_1 e_e1 =>
+                      Eq.rec (motive := fun e1_2 e_e1 =>
+                        ∀ (e2 e2_1 : α), e2 = e2_1 → vguard c e1 e2 = vguard c e1_2 e2_1)
+                        (fun e2 e2_1 e_e2 => e_e2 ▸ Eq.refl (vguard c e1 e2)) e_e1)
+                    e_c)
+                (decide (vlen b0 ≥ 24)) (decide (vlen b0 ≥ 24)) (Eq.refl (decide (vlen b0 ≥ 24)))
+                (read_u32 C b0 0 fun magic =>
+                  vguard (magic == MAGIC)
+                    (read_u32 C b0 4 fun sender =>
+                      read_u32 C b0 8 fun topic =>
+                        advance b0 12 fun s =>
+                          (fun s1 sender topic =>
+                              vguard (C.has_tokens st sender)
+                                (let_lin (C.dec_tokens st sender) fun st2 =>
+                                  vguard (C.can_access sender topic)
+                                    (advance s1 12 fun payload => vreturn C (st2, payload)) (vdrop C C.errUnauth))
+                                (vdrop C C.errUnauth))
+                            s sender topic)
+                    (vdrop C C.errUnauth))
+                (read_u32 C b0 0 fun magic =>
+                  read_u32 C b0 4 fun sender =>
+                    read_u32 C b0 8 fun topic =>
+                      vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                        (let_lin (C.dec_tokens st sender) fun st2 =>
+                          advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                        (vdrop C C.errUnauth))
+                ((fun C C_1 e_C =>
+                    @Eq.rec Carrier C
+                      (fun C_2 e_C =>
+                        ∀ {α : Type} (b b_1 : VSlice),
+                          b = b_1 →
+                            ∀ (j j_1 : Int),
+                              j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                      (fun {α} b b_1 e_b =>
+                        Eq.rec (motive := fun b_2 e_b =>
+                          ∀ (j j_1 : Int),
+                            j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                          (fun j j_1 e_j =>
+                            Eq.rec (motive := fun j_2 e_j =>
+                              ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                              (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                          e_b)
+                      C_1 e_C)
+                  C C (Eq.refl C) b0 b0 (Eq.refl b0) 0 0 (Eq.refl 0)
+                  (fun magic =>
+                    vguard (magic == MAGIC)
+                      (read_u32 C b0 4 fun sender =>
+                        read_u32 C b0 8 fun topic =>
+                          advance b0 12 fun s =>
+                            (fun s1 sender topic =>
+                                vguard (C.has_tokens st sender)
+                                  (let_lin (C.dec_tokens st sender) fun st2 =>
+                                    vguard (C.can_access sender topic)
+                                      (advance s1 12 fun payload => vreturn C (st2, payload)) (vdrop C C.errUnauth))
+                                  (vdrop C C.errUnauth))
+                              s sender topic)
+                      (vdrop C C.errUnauth))
+                  (fun magic =>
+                    read_u32 C b0 4 fun sender =>
+                      read_u32 C b0 8 fun topic =>
+                        vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                          (let_lin (C.dec_tokens st sender) fun st2 =>
+                            advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                          (vdrop C C.errUnauth))
+                  (funext fun magic =>
+                    Eq.mpr
+                      (id
+                        (congrArg
+                          (fun _a =>
+                            _a =
+                              read_u32 C b0 4 fun sender =>
+                                read_u32 C b0 8 fun topic =>
+                                  vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                    (let_lin (C.dec_tokens st sender) fun st2 =>
+                                      advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                                    (vdrop C C.errUnauth))
+                          (aux_read_past_guard C (magic == MAGIC) b0 4
+                            (fun sender =>
+                              read_u32 C b0 8 fun topic =>
+                                advance b0 12 fun s =>
+                                  (fun s1 sender topic =>
+                                      vguard (C.has_tokens st sender)
+                                        (let_lin (C.dec_tokens st sender) fun st2 =>
+                                          vguard (C.can_access sender topic)
+                                            (advance s1 12 fun payload => vreturn C (st2, payload))
+                                            (vdrop C C.errUnauth))
+                                        (vdrop C C.errUnauth))
+                                    s sender topic)
+                            (vdrop C C.errUnauth))))
+                      ((fun C C_1 e_C =>
+                          @Eq.rec Carrier C
+                            (fun C_2 e_C =>
+                              ∀ {α : Type} (b b_1 : VSlice),
+                                b = b_1 →
+                                  ∀ (j j_1 : Int),
+                                    j = j_1 →
+                                      ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                            (fun {α} b b_1 e_b =>
+                              Eq.rec (motive := fun b_2 e_b =>
+                                ∀ (j j_1 : Int),
+                                  j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                (fun j j_1 e_j =>
+                                  Eq.rec (motive := fun j_2 e_j =>
+                                    ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                    (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                e_b)
+                            C_1 e_C)
+                        C C (Eq.refl C) b0 b0 (Eq.refl b0) 4 4 (Eq.refl 4)
+                        (fun v =>
+                          vguard (magic == MAGIC)
+                            (read_u32 C b0 8 fun topic =>
+                              advance b0 12 fun s =>
+                                (fun s1 sender topic =>
+                                    vguard (C.has_tokens st sender)
+                                      (let_lin (C.dec_tokens st sender) fun st2 =>
+                                        vguard (C.can_access sender topic)
+                                          (advance s1 12 fun payload => vreturn C (st2, payload)) (vdrop C C.errUnauth))
+                                      (vdrop C C.errUnauth))
+                                  s v topic)
+                            (vdrop C C.errUnauth))
+                        (fun sender =>
+                          read_u32 C b0 8 fun topic =>
+                            vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                              (let_lin (C.dec_tokens st sender) fun st2 =>
+                                advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                              (vdrop C C.errUnauth))
+                        (funext fun sender =>
+                          Eq.mpr
+                            (id
+                              (congrArg
+                                (fun _a =>
+                                  _a =
+                                    read_u32 C b0 8 fun topic =>
+                                      vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                        (let_lin (C.dec_tokens st sender) fun st2 =>
+                                          advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                                        (vdrop C C.errUnauth))
+                                (aux_read_past_guard C (magic == MAGIC) b0 8
+                                  (fun topic =>
+                                    advance b0 12 fun s =>
+                                      (fun s1 sender topic =>
+                                          vguard (C.has_tokens st sender)
+                                            (let_lin (C.dec_tokens st sender) fun st2 =>
+                                              vguard (C.can_access sender topic)
+                                                (advance s1 12 fun payload => vreturn C (st2, payload))
+                                                (vdrop C C.errUnauth))
+                                            (vdrop C C.errUnauth))
+                                        s sender topic)
+                                  (vdrop C C.errUnauth))))
+                            ((fun C C_1 e_C =>
+                                @Eq.rec Carrier C
+                                  (fun C_2 e_C =>
+                                    ∀ {α : Type} (b b_1 : VSlice),
+                                      b = b_1 →
+                                        ∀ (j j_1 : Int),
+                                          j = j_1 →
+                                            ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                                  (fun {α} b b_1 e_b =>
+                                    Eq.rec (motive := fun b_2 e_b =>
+                                      ∀ (j j_1 : Int),
+                                        j = j_1 →
+                                          ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                      (fun j j_1 e_j =>
+                                        Eq.rec (motive := fun j_2 e_j =>
+                                          ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                          (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                      e_b)
+                                  C_1 e_C)
+                              C C (Eq.refl C) b0 b0 (Eq.refl b0) 8 8 (Eq.refl 8)
+                              (fun v =>
+                                vguard (magic == MAGIC)
+                                  (advance b0 12 fun s =>
+                                    (fun s1 sender topic =>
+                                        vguard (C.has_tokens st sender)
+                                          (let_lin (C.dec_tokens st sender) fun st2 =>
+                                            vguard (C.can_access sender topic)
+                                              (advance s1 12 fun payload => vreturn C (st2, payload))
+                                              (vdrop C C.errUnauth))
+                                          (vdrop C C.errUnauth))
+                                      s sender v)
+                                  (vdrop C C.errUnauth))
+                              (fun topic =>
+                                vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                  (let_lin (C.dec_tokens st sender) fun st2 =>
+                                    advance b0 24 fun payload_slice => vreturn C (st2, payload_slice))
+                                  (vdrop C C.errUnauth))
+                              (funext fun topic =>
+                                id
+                                  (id
+                                    (Eq.mpr
+                                      (id
+                                        (congrArg
+                                          (fun _a =>
+                                            vguard (magic == MAGIC) _a (vdrop C C.errUnauth) =
+                                              vguard
+                                                (magic == MAGIC &&
+                                                  (C.can_access sender topic && C.has_tokens st sender))
+                                                (advance b0 24 fun payload =>
+                                                  vreturn C (C.dec_tokens st sender, payload))
+                                                (vdrop C C.errUnauth))
+                                          (aux_guard_swap (C.has_tokens st sender) (C.can_access sender topic)
+                                            (advance b0 12 fun s =>
+                                              advance s 12 fun payload => vreturn C (C.dec_tokens st sender, payload))
+                                            (vdrop C C.errUnauth))))
+                                      (Eq.mpr
+                                        (id
+                                          (congrArg
+                                            (fun _a =>
+                                              vguard (magic == MAGIC)
+                                                  (vguard (C.can_access sender topic)
+                                                    (vguard (C.has_tokens st sender) _a (vdrop C C.errUnauth))
+                                                    (vdrop C C.errUnauth))
+                                                  (vdrop C C.errUnauth) =
+                                                vguard
+                                                  (magic == MAGIC &&
+                                                    (C.can_access sender topic && C.has_tokens st sender))
+                                                  (advance b0 24 fun payload =>
+                                                    vreturn C (C.dec_tokens st sender, payload))
+                                                  (vdrop C C.errUnauth))
+                                            (slice_fuse b0 12 12 fun payload =>
+                                              vreturn C (C.dec_tokens st sender, payload))))
+                                        (Eq.mpr
+                                          (id
+                                            (congrArg
+                                              (fun _a =>
+                                                vguard (magic == MAGIC) _a (vdrop C C.errUnauth) =
+                                                  vguard
+                                                    (magic == MAGIC &&
+                                                      (C.can_access sender topic && C.has_tokens st sender))
+                                                    (advance b0 24 fun payload =>
+                                                      vreturn C (C.dec_tokens st sender, payload))
+                                                    (vdrop C C.errUnauth))
+                                              (guard_merge (C.can_access sender topic) (C.has_tokens st sender)
+                                                (advance b0 (12 + 12) fun payload =>
+                                                  vreturn C (C.dec_tokens st sender, payload))
+                                                (vdrop C C.errUnauth))))
+                                          (Eq.mpr
+                                            (id
+                                              (congrArg
+                                                (fun _a =>
+                                                  _a =
+                                                    vguard
+                                                      (magic == MAGIC &&
+                                                        (C.can_access sender topic && C.has_tokens st sender))
+                                                      (advance b0 24 fun payload =>
+                                                        vreturn C (C.dec_tokens st sender, payload))
+                                                      (vdrop C C.errUnauth))
+                                                (guard_merge (magic == MAGIC)
+                                                  (C.can_access sender topic && C.has_tokens st sender)
+                                                  (advance b0 (12 + 12) fun payload =>
+                                                    vreturn C (C.dec_tokens st sender, payload))
+                                                  (vdrop C C.errUnauth))))
+                                            (Eq.refl
+                                              (vguard
+                                                (magic == MAGIC &&
+                                                  (C.can_access sender topic && C.has_tokens st sender))
+                                                (advance b0 (12 + 12) fun payload =>
+                                                  vreturn C (C.dec_tokens st sender, payload))
+                                                (vdrop C C.errUnauth))))))))))))))
+                (vdrop C C.errTruncated) (vdrop C C.errTruncated) (Eq.refl (vdrop C C.errTruncated))))))))
+theorem VIR.BPrime.slice_fuse : ∀ {α : Type} (b : VSlice) (i j : Int) (e : VSlice → α),
+  (advance b i fun s1 => advance s1 j e) = advance b (i + j) e :=
+fun {α} b i j e =>
+  of_eq_true
+    (Eq.trans
+      (congrFun' (congrArg Eq (congrArg e (congrArg (Prod.mk b.fst) (Int.add_assoc b.snd i j))))
+        (e (b.fst, b.snd + (i + j))))
+      (eq_self (e (b.fst, b.snd + (i + j)))))
+theorem VIR.BPrime.guard_merge : ∀ {α : Type} (c1 c2 : Bool) (eok eerr : α),
+  vguard c1 (vguard c2 eok eerr) eerr = vguard (c1 && c2) eok eerr :=
+fun {α} c1 c2 eok eerr =>
+  Bool.casesOn (motive := fun t => c1 = t → vguard c1 (vguard c2 eok eerr) eerr = vguard (c1 && c2) eok eerr) c1
+    (fun h =>
+      Eq.symm h ▸
+        Bool.casesOn (motive := fun t =>
+          c2 = t → vguard false (vguard c2 eok eerr) eerr = vguard (false && c2) eok eerr) c2
+          (fun h => Eq.symm h ▸ Eq.refl (vguard false (vguard false eok eerr) eerr))
+          (fun h => Eq.symm h ▸ Eq.refl (vguard false (vguard true eok eerr) eerr)) (Eq.refl c2))
+    (fun h =>
+      Eq.symm h ▸
+        Bool.casesOn (motive := fun t => c2 = t → vguard true (vguard c2 eok eerr) eerr = vguard (true && c2) eok eerr)
+          c2 (fun h => Eq.symm h ▸ Eq.refl (vguard true (vguard false eok eerr) eerr))
+          (fun h => Eq.symm h ▸ Eq.refl (vguard true (vguard true eok eerr) eerr)) (Eq.refl c2))
+    (Eq.refl c1)
+@[defeq] theorem VIR.BPrime.beta_lin : ∀ {α β : Type} (v : α) (e : α → β), let_lin v e = e v :=
+fun {α β} v e => rfl
+@[defeq] theorem VIR.BPrime.aux_read_past_guard : ∀ (C : Carrier) {α : Type} (c : Bool) (b : VSlice) (j : Int)
+  (k : Int → α) (d : α), vguard c (read_u32 C b j k) d = read_u32 C b j fun v => vguard c (k v) d :=
+fun C {α} c b j k d => rfl
+@[defeq] theorem VIR.BPrime.aux_advance_past_guard : ∀ {α : Type} (b : VSlice) (i : Int) (c : Bool) (k : VSlice → α)
+  (d : α), (advance b i fun s => vguard c (k s) d) = vguard c (advance b i k) d :=
+fun {α} b i c k d => rfl
+theorem VIR.BPrime.aux_guard_swap : ∀ {α : Type} (c1 c2 : Bool) (e d : α),
+  vguard c1 (vguard c2 e d) d = vguard c2 (vguard c1 e d) d :=
+fun {α} c1 c2 e d =>
+  Bool.casesOn (motive := fun t => c1 = t → vguard c1 (vguard c2 e d) d = vguard c2 (vguard c1 e d) d) c1
+    (fun h =>
+      Eq.symm h ▸
+        Bool.casesOn (motive := fun t => c2 = t → vguard false (vguard c2 e d) d = vguard c2 (vguard false e d) d) c2
+          (fun h => Eq.symm h ▸ Eq.refl (vguard false (vguard false e d) d))
+          (fun h => Eq.symm h ▸ Eq.refl (vguard false (vguard true e d) d)) (Eq.refl c2))
+    (fun h =>
+      Eq.symm h ▸
+        Bool.casesOn (motive := fun t => c2 = t → vguard true (vguard c2 e d) d = vguard c2 (vguard true e d) d) c2
+          (fun h => Eq.symm h ▸ Eq.refl (vguard true (vguard false e d) d))
+          (fun h => Eq.symm h ▸ Eq.refl (vguard true (vguard true e d) d)) (Eq.refl c2))
+    (Eq.refl c1)
+theorem VIR.BPrime.slice_law : ∀ (b : VSlice) (i : Int), advance b i vlen = vlen b - i :=
+fun b i => id (Decidable.byContradiction fun a => slice_law._proof_1_3 b i a)
+theorem VIR.BPrime.read_law : ∀ (C : Carrier) (b : VSlice) (i j : Int) (k : Int → Out C),
+  (advance b i fun s => read_u32 C s j k) = k (C.wire_u32 b.fst (b.snd + (i + j))) :=
+fun C b i j k =>
+  of_eq_true
+    (Eq.trans
+      (congrFun' (congrArg Eq (congrArg k (congrArg (C.wire_u32 b.fst) (Int.add_assoc b.snd i j))))
+        (k (C.wire_u32 b.fst (b.snd + (i + j)))))
+      (eq_self (k (C.wire_u32 b.fst (b.snd + (i + j))))))
+structure VIR.BPrime.Carrier : Type 1
+number of parameters: 0
+fields:
+  VIR.BPrime.Carrier.State : Type
+  VIR.BPrime.Carrier.VErr : Type
+  VIR.BPrime.Carrier.wire_u32 : WireBuf → Int → Int
+  VIR.BPrime.Carrier.can_access : Int → Int → Bool
+  VIR.BPrime.Carrier.has_tokens : self.State → Int → Bool
+  VIR.BPrime.Carrier.dec_tokens : self.State → Int → self.State
+  VIR.BPrime.Carrier.errTruncated : self.VErr
+  VIR.BPrime.Carrier.errUnauth : self.VErr
+constructor:
+  VIR.BPrime.Carrier.mk (State VErr : Type) (wire_u32 : WireBuf → Int → Int) (can_access : Int → Int → Bool)
+    (has_tokens : State → Int → Bool) (dec_tokens : State → Int → State) (errTruncated errUnauth : VErr) : Carrier
+'VIR.BPrime.router_fusion_bp' depends on axioms: [propext, Quot.sound]
+'VIR.BPrime.slice_law' depends on axioms: [propext, Quot.sound]
+'VIR.BPrime.read_law' depends on axioms: [propext]
+theorem VIR.BPrime.router2_fusion_bp : ∀ (C : Carrier2) (b0 : VSlice) (st : C.State), U2 C b0 st = F2 C b0 st :=
+fun C b0 st =>
+  id
+    (id
+      (id
+        (id
+          (id
+            (id
+              ((fun {α} c c_1 e_c =>
+                  Eq.rec (motive := fun c_2 e_c =>
+                    ∀ (e1 e1_1 : α), e1 = e1_1 → ∀ (e2 e2_1 : α), e2 = e2_1 → vguard c e1 e2 = vguard c_2 e1_1 e2_1)
+                    (fun e1 e1_1 e_e1 =>
+                      Eq.rec (motive := fun e1_2 e_e1 =>
+                        ∀ (e2 e2_1 : α), e2 = e2_1 → vguard c e1 e2 = vguard c e1_2 e2_1)
+                        (fun e2 e2_1 e_e2 => e_e2 ▸ Eq.refl (vguard c e1 e2)) e_e1)
+                    e_c)
+                (decide (vlen b0 ≥ 24)) (decide (vlen b0 ≥ 24)) (Eq.refl (decide (vlen b0 ≥ 24)))
+                (read_u32 C.toCarrier b0 0 fun magic =>
+                  vguard (magic == MAGIC)
+                    (read_u32 C.toCarrier b0 4 fun sender =>
+                      read_u32 C.toCarrier b0 8 fun topic =>
+                        read_u32 C.toCarrier b0 12 fun off =>
+                          read_u32 C.toCarrier b0 16 fun n =>
+                            advance b0 12 fun s =>
+                              (fun s1 sender topic off n =>
+                                  vguard (C.has_tokens st sender)
+                                    (let_lin (C.dec_tokens st sender) fun st2 =>
+                                      vguard (C.can_access sender topic)
+                                        (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                          (advance s1 (off - 12) fun p =>
+                                            C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                          (vdrop C.toCarrier C.errBadPayload))
+                                        (vdrop C.toCarrier C.errUnauth))
+                                    (vdrop C.toCarrier C.errUnauth))
+                                s sender topic off n)
+                    (vdrop C.toCarrier C.errUnauth))
+                (read_u32 C.toCarrier b0 0 fun magic =>
+                  read_u32 C.toCarrier b0 4 fun sender =>
+                    read_u32 C.toCarrier b0 8 fun topic =>
+                      read_u32 C.toCarrier b0 12 fun off =>
+                        read_u32 C.toCarrier b0 16 fun n =>
+                          vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                            (let_lin (C.dec_tokens st sender) fun st2 =>
+                              vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                (vdrop C.toCarrier C.errBadPayload))
+                            (vdrop C.toCarrier C.errUnauth))
+                ((fun C C_1 e_C =>
+                    @Eq.rec Carrier C
+                      (fun C_2 e_C =>
+                        ∀ {α : Type} (b b_1 : VSlice),
+                          b = b_1 →
+                            ∀ (j j_1 : Int),
+                              j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                      (fun {α} b b_1 e_b =>
+                        Eq.rec (motive := fun b_2 e_b =>
+                          ∀ (j j_1 : Int),
+                            j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                          (fun j j_1 e_j =>
+                            Eq.rec (motive := fun j_2 e_j =>
+                              ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                              (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                          e_b)
+                      C_1 e_C)
+                  C.toCarrier C.toCarrier (Eq.refl C.toCarrier) b0 b0 (Eq.refl b0) 0 0 (Eq.refl 0)
+                  (fun magic =>
+                    vguard (magic == MAGIC)
+                      (read_u32 C.toCarrier b0 4 fun sender =>
+                        read_u32 C.toCarrier b0 8 fun topic =>
+                          read_u32 C.toCarrier b0 12 fun off =>
+                            read_u32 C.toCarrier b0 16 fun n =>
+                              advance b0 12 fun s =>
+                                (fun s1 sender topic off n =>
+                                    vguard (C.has_tokens st sender)
+                                      (let_lin (C.dec_tokens st sender) fun st2 =>
+                                        vguard (C.can_access sender topic)
+                                          (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                            (advance s1 (off - 12) fun p =>
+                                              C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                            (vdrop C.toCarrier C.errBadPayload))
+                                          (vdrop C.toCarrier C.errUnauth))
+                                      (vdrop C.toCarrier C.errUnauth))
+                                  s sender topic off n)
+                      (vdrop C.toCarrier C.errUnauth))
+                  (fun magic =>
+                    read_u32 C.toCarrier b0 4 fun sender =>
+                      read_u32 C.toCarrier b0 8 fun topic =>
+                        read_u32 C.toCarrier b0 12 fun off =>
+                          read_u32 C.toCarrier b0 16 fun n =>
+                            vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                              (let_lin (C.dec_tokens st sender) fun st2 =>
+                                vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                  (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                  (vdrop C.toCarrier C.errBadPayload))
+                              (vdrop C.toCarrier C.errUnauth))
+                  (funext fun magic =>
+                    Eq.mpr
+                      (id
+                        (congrArg
+                          (fun _a =>
+                            _a =
+                              read_u32 C.toCarrier b0 4 fun sender =>
+                                read_u32 C.toCarrier b0 8 fun topic =>
+                                  read_u32 C.toCarrier b0 12 fun off =>
+                                    read_u32 C.toCarrier b0 16 fun n =>
+                                      vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                        (let_lin (C.dec_tokens st sender) fun st2 =>
+                                          vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                            (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                            (vdrop C.toCarrier C.errBadPayload))
+                                        (vdrop C.toCarrier C.errUnauth))
+                          (aux_read_past_guard C.toCarrier (magic == MAGIC) b0 4
+                            (fun sender =>
+                              read_u32 C.toCarrier b0 8 fun topic =>
+                                read_u32 C.toCarrier b0 12 fun off =>
+                                  read_u32 C.toCarrier b0 16 fun n =>
+                                    advance b0 12 fun s =>
+                                      (fun s1 sender topic off n =>
+                                          vguard (C.has_tokens st sender)
+                                            (let_lin (C.dec_tokens st sender) fun st2 =>
+                                              vguard (C.can_access sender topic)
+                                                (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                  (advance s1 (off - 12) fun p =>
+                                                    C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                  (vdrop C.toCarrier C.errBadPayload))
+                                                (vdrop C.toCarrier C.errUnauth))
+                                            (vdrop C.toCarrier C.errUnauth))
+                                        s sender topic off n)
+                            (vdrop C.toCarrier C.errUnauth))))
+                      ((fun C C_1 e_C =>
+                          @Eq.rec Carrier C
+                            (fun C_2 e_C =>
+                              ∀ {α : Type} (b b_1 : VSlice),
+                                b = b_1 →
+                                  ∀ (j j_1 : Int),
+                                    j = j_1 →
+                                      ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                            (fun {α} b b_1 e_b =>
+                              Eq.rec (motive := fun b_2 e_b =>
+                                ∀ (j j_1 : Int),
+                                  j = j_1 → ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                (fun j j_1 e_j =>
+                                  Eq.rec (motive := fun j_2 e_j =>
+                                    ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                    (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                e_b)
+                            C_1 e_C)
+                        C.toCarrier C.toCarrier (Eq.refl C.toCarrier) b0 b0 (Eq.refl b0) 4 4 (Eq.refl 4)
+                        (fun v =>
+                          vguard (magic == MAGIC)
+                            (read_u32 C.toCarrier b0 8 fun topic =>
+                              read_u32 C.toCarrier b0 12 fun off =>
+                                read_u32 C.toCarrier b0 16 fun n =>
+                                  advance b0 12 fun s =>
+                                    (fun s1 sender topic off n =>
+                                        vguard (C.has_tokens st sender)
+                                          (let_lin (C.dec_tokens st sender) fun st2 =>
+                                            vguard (C.can_access sender topic)
+                                              (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                (advance s1 (off - 12) fun p =>
+                                                  C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                (vdrop C.toCarrier C.errBadPayload))
+                                              (vdrop C.toCarrier C.errUnauth))
+                                          (vdrop C.toCarrier C.errUnauth))
+                                      s v topic off n)
+                            (vdrop C.toCarrier C.errUnauth))
+                        (fun sender =>
+                          read_u32 C.toCarrier b0 8 fun topic =>
+                            read_u32 C.toCarrier b0 12 fun off =>
+                              read_u32 C.toCarrier b0 16 fun n =>
+                                vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                  (let_lin (C.dec_tokens st sender) fun st2 =>
+                                    vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                      (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                      (vdrop C.toCarrier C.errBadPayload))
+                                  (vdrop C.toCarrier C.errUnauth))
+                        (funext fun sender =>
+                          Eq.mpr
+                            (id
+                              (congrArg
+                                (fun _a =>
+                                  _a =
+                                    read_u32 C.toCarrier b0 8 fun topic =>
+                                      read_u32 C.toCarrier b0 12 fun off =>
+                                        read_u32 C.toCarrier b0 16 fun n =>
+                                          vguard
+                                            (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                            (let_lin (C.dec_tokens st sender) fun st2 =>
+                                              vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                (advance b0 off fun p =>
+                                                  C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                (vdrop C.toCarrier C.errBadPayload))
+                                            (vdrop C.toCarrier C.errUnauth))
+                                (aux_read_past_guard C.toCarrier (magic == MAGIC) b0 8
+                                  (fun topic =>
+                                    read_u32 C.toCarrier b0 12 fun off =>
+                                      read_u32 C.toCarrier b0 16 fun n =>
+                                        advance b0 12 fun s =>
+                                          (fun s1 sender topic off n =>
+                                              vguard (C.has_tokens st sender)
+                                                (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                  vguard (C.can_access sender topic)
+                                                    (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                      (advance s1 (off - 12) fun p =>
+                                                        C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                      (vdrop C.toCarrier C.errBadPayload))
+                                                    (vdrop C.toCarrier C.errUnauth))
+                                                (vdrop C.toCarrier C.errUnauth))
+                                            s sender topic off n)
+                                  (vdrop C.toCarrier C.errUnauth))))
+                            ((fun C C_1 e_C =>
+                                @Eq.rec Carrier C
+                                  (fun C_2 e_C =>
+                                    ∀ {α : Type} (b b_1 : VSlice),
+                                      b = b_1 →
+                                        ∀ (j j_1 : Int),
+                                          j = j_1 →
+                                            ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                                  (fun {α} b b_1 e_b =>
+                                    Eq.rec (motive := fun b_2 e_b =>
+                                      ∀ (j j_1 : Int),
+                                        j = j_1 →
+                                          ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                      (fun j j_1 e_j =>
+                                        Eq.rec (motive := fun j_2 e_j =>
+                                          ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                          (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                      e_b)
+                                  C_1 e_C)
+                              C.toCarrier C.toCarrier (Eq.refl C.toCarrier) b0 b0 (Eq.refl b0) 8 8 (Eq.refl 8)
+                              (fun v =>
+                                vguard (magic == MAGIC)
+                                  (read_u32 C.toCarrier b0 12 fun off =>
+                                    read_u32 C.toCarrier b0 16 fun n =>
+                                      advance b0 12 fun s =>
+                                        (fun s1 sender topic off n =>
+                                            vguard (C.has_tokens st sender)
+                                              (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                vguard (C.can_access sender topic)
+                                                  (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                    (advance s1 (off - 12) fun p =>
+                                                      C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                    (vdrop C.toCarrier C.errBadPayload))
+                                                  (vdrop C.toCarrier C.errUnauth))
+                                              (vdrop C.toCarrier C.errUnauth))
+                                          s sender v off n)
+                                  (vdrop C.toCarrier C.errUnauth))
+                              (fun topic =>
+                                read_u32 C.toCarrier b0 12 fun off =>
+                                  read_u32 C.toCarrier b0 16 fun n =>
+                                    vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                      (let_lin (C.dec_tokens st sender) fun st2 =>
+                                        vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                          (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                          (vdrop C.toCarrier C.errBadPayload))
+                                      (vdrop C.toCarrier C.errUnauth))
+                              (funext fun topic =>
+                                Eq.mpr
+                                  (id
+                                    (congrArg
+                                      (fun _a =>
+                                        _a =
+                                          read_u32 C.toCarrier b0 12 fun off =>
+                                            read_u32 C.toCarrier b0 16 fun n =>
+                                              vguard
+                                                (magic == MAGIC &&
+                                                  (C.can_access sender topic && C.has_tokens st sender))
+                                                (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                  vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                    (advance b0 off fun p =>
+                                                      C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                    (vdrop C.toCarrier C.errBadPayload))
+                                                (vdrop C.toCarrier C.errUnauth))
+                                      (aux_read_past_guard C.toCarrier (magic == MAGIC) b0 12
+                                        (fun off =>
+                                          read_u32 C.toCarrier b0 16 fun n =>
+                                            advance b0 12 fun s =>
+                                              (fun s1 sender topic off n =>
+                                                  vguard (C.has_tokens st sender)
+                                                    (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                      vguard (C.can_access sender topic)
+                                                        (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                          (advance s1 (off - 12) fun p =>
+                                                            C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                          (vdrop C.toCarrier C.errBadPayload))
+                                                        (vdrop C.toCarrier C.errUnauth))
+                                                    (vdrop C.toCarrier C.errUnauth))
+                                                s sender topic off n)
+                                        (vdrop C.toCarrier C.errUnauth))))
+                                  ((fun C C_1 e_C =>
+                                      @Eq.rec Carrier C
+                                        (fun C_2 e_C =>
+                                          ∀ {α : Type} (b b_1 : VSlice),
+                                            b = b_1 →
+                                              ∀ (j j_1 : Int),
+                                                j = j_1 →
+                                                  ∀ (k k_1 : Int → α),
+                                                    k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                                        (fun {α} b b_1 e_b =>
+                                          Eq.rec (motive := fun b_2 e_b =>
+                                            ∀ (j j_1 : Int),
+                                              j = j_1 →
+                                                ∀ (k k_1 : Int → α),
+                                                  k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                            (fun j j_1 e_j =>
+                                              Eq.rec (motive := fun j_2 e_j =>
+                                                ∀ (k k_1 : Int → α), k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                                (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                            e_b)
+                                        C_1 e_C)
+                                    C.toCarrier C.toCarrier (Eq.refl C.toCarrier) b0 b0 (Eq.refl b0) 12 12 (Eq.refl 12)
+                                    (fun v =>
+                                      vguard (magic == MAGIC)
+                                        (read_u32 C.toCarrier b0 16 fun n =>
+                                          advance b0 12 fun s =>
+                                            (fun s1 sender topic off n =>
+                                                vguard (C.has_tokens st sender)
+                                                  (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                    vguard (C.can_access sender topic)
+                                                      (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                        (advance s1 (off - 12) fun p =>
+                                                          C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                        (vdrop C.toCarrier C.errBadPayload))
+                                                      (vdrop C.toCarrier C.errUnauth))
+                                                  (vdrop C.toCarrier C.errUnauth))
+                                              s sender topic v n)
+                                        (vdrop C.toCarrier C.errUnauth))
+                                    (fun off =>
+                                      read_u32 C.toCarrier b0 16 fun n =>
+                                        vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                          (let_lin (C.dec_tokens st sender) fun st2 =>
+                                            vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                              (advance b0 off fun p => C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                              (vdrop C.toCarrier C.errBadPayload))
+                                          (vdrop C.toCarrier C.errUnauth))
+                                    (funext fun off =>
+                                      Eq.mpr
+                                        (id
+                                          (congrArg
+                                            (fun _a =>
+                                              _a =
+                                                read_u32 C.toCarrier b0 16 fun n =>
+                                                  vguard
+                                                    (magic == MAGIC &&
+                                                      (C.can_access sender topic && C.has_tokens st sender))
+                                                    (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                      vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                        (advance b0 off fun p =>
+                                                          C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                        (vdrop C.toCarrier C.errBadPayload))
+                                                    (vdrop C.toCarrier C.errUnauth))
+                                            (aux_read_past_guard C.toCarrier (magic == MAGIC) b0 16
+                                              (fun n =>
+                                                advance b0 12 fun s =>
+                                                  (fun s1 sender topic off n =>
+                                                      vguard (C.has_tokens st sender)
+                                                        (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                          vguard (C.can_access sender topic)
+                                                            (vguard
+                                                              (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                              (advance s1 (off - 12) fun p =>
+                                                                C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                              (vdrop C.toCarrier C.errBadPayload))
+                                                            (vdrop C.toCarrier C.errUnauth))
+                                                        (vdrop C.toCarrier C.errUnauth))
+                                                    s sender topic off n)
+                                              (vdrop C.toCarrier C.errUnauth))))
+                                        ((fun C C_1 e_C =>
+                                            @Eq.rec Carrier C
+                                              (fun C_2 e_C =>
+                                                ∀ {α : Type} (b b_1 : VSlice),
+                                                  b = b_1 →
+                                                    ∀ (j j_1 : Int),
+                                                      j = j_1 →
+                                                        ∀ (k k_1 : Int → α),
+                                                          k = k_1 → read_u32 C b j k = read_u32 C_2 b_1 j_1 k_1)
+                                              (fun {α} b b_1 e_b =>
+                                                Eq.rec (motive := fun b_2 e_b =>
+                                                  ∀ (j j_1 : Int),
+                                                    j = j_1 →
+                                                      ∀ (k k_1 : Int → α),
+                                                        k = k_1 → read_u32 C b j k = read_u32 C b_2 j_1 k_1)
+                                                  (fun j j_1 e_j =>
+                                                    Eq.rec (motive := fun j_2 e_j =>
+                                                      ∀ (k k_1 : Int → α),
+                                                        k = k_1 → read_u32 C b j k = read_u32 C b j_2 k_1)
+                                                      (fun k k_1 e_k => e_k ▸ Eq.refl (read_u32 C b j k)) e_j)
+                                                  e_b)
+                                              C_1 e_C)
+                                          C.toCarrier C.toCarrier (Eq.refl C.toCarrier) b0 b0 (Eq.refl b0) 16 16
+                                          (Eq.refl 16)
+                                          (fun v =>
+                                            vguard (magic == MAGIC)
+                                              (advance b0 12 fun s =>
+                                                (fun s1 sender topic off n =>
+                                                    vguard (C.has_tokens st sender)
+                                                      (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                        vguard (C.can_access sender topic)
+                                                          (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s1 + 12))
+                                                            (advance s1 (off - 12) fun p =>
+                                                              C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                            (vdrop C.toCarrier C.errBadPayload))
+                                                          (vdrop C.toCarrier C.errUnauth))
+                                                      (vdrop C.toCarrier C.errUnauth))
+                                                  s sender topic off v)
+                                              (vdrop C.toCarrier C.errUnauth))
+                                          (fun n =>
+                                            vguard
+                                              (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+                                              (let_lin (C.dec_tokens st sender) fun st2 =>
+                                                vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                  (advance b0 off fun p =>
+                                                    C.take p n fun q => vreturn C.toCarrier (st2, q))
+                                                  (vdrop C.toCarrier C.errBadPayload))
+                                              (vdrop C.toCarrier C.errUnauth))
+                                          (funext fun n =>
+                                            id
+                                              (id
+                                                (Eq.mpr
+                                                  (id
+                                                    (congrArg
+                                                      (fun _a =>
+                                                        vguard (magic == MAGIC) _a (vdrop C.toCarrier C.errUnauth) =
+                                                          vguard
+                                                            (magic == MAGIC &&
+                                                              (C.can_access sender topic && C.has_tokens st sender))
+                                                            (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                              (advance b0 off fun p =>
+                                                                C.take p n fun q =>
+                                                                  vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                              (vdrop C.toCarrier C.errBadPayload))
+                                                            (vdrop C.toCarrier C.errUnauth))
+                                                      (aux_guard_swap (C.has_tokens st sender)
+                                                        (C.can_access sender topic)
+                                                        (advance b0 12 fun s =>
+                                                          vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s + 12))
+                                                            (advance s (off - 12) fun p =>
+                                                              C.take p n fun q =>
+                                                                vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                            (vdrop C.toCarrier C.errBadPayload))
+                                                        (vdrop C.toCarrier C.errUnauth))))
+                                                  (Eq.mpr
+                                                    (id
+                                                      (congrArg
+                                                        (fun _a =>
+                                                          vguard (magic == MAGIC) _a (vdrop C.toCarrier C.errUnauth) =
+                                                            vguard
+                                                              (magic == MAGIC &&
+                                                                (C.can_access sender topic && C.has_tokens st sender))
+                                                              (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                                (advance b0 off fun p =>
+                                                                  C.take p n fun q =>
+                                                                    vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                (vdrop C.toCarrier C.errBadPayload))
+                                                              (vdrop C.toCarrier C.errUnauth))
+                                                        (guard_merge (C.can_access sender topic)
+                                                          (C.has_tokens st sender)
+                                                          (advance b0 12 fun s =>
+                                                            vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s + 12))
+                                                              (advance s (off - 12) fun p =>
+                                                                C.take p n fun q =>
+                                                                  vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                              (vdrop C.toCarrier C.errBadPayload))
+                                                          (vdrop C.toCarrier C.errUnauth))))
+                                                    (Eq.mpr
+                                                      (id
+                                                        (congrArg
+                                                          (fun _a =>
+                                                            _a =
+                                                              vguard
+                                                                (magic == MAGIC &&
+                                                                  (C.can_access sender topic && C.has_tokens st sender))
+                                                                (vguard
+                                                                  (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                                  (advance b0 off fun p =>
+                                                                    C.take p n fun q =>
+                                                                      vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                  (vdrop C.toCarrier C.errBadPayload))
+                                                                (vdrop C.toCarrier C.errUnauth))
+                                                          (guard_merge (magic == MAGIC)
+                                                            (C.can_access sender topic && C.has_tokens st sender)
+                                                            (advance b0 12 fun s =>
+                                                              vguard
+                                                                (decide (24 ≤ off) && decide (off + n ≤ vlen s + 12))
+                                                                (advance s (off - 12) fun p =>
+                                                                  C.take p n fun q =>
+                                                                    vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                (vdrop C.toCarrier C.errBadPayload))
+                                                            (vdrop C.toCarrier C.errUnauth))))
+                                                      ((fun {α} c c_1 e_c =>
+                                                          Eq.rec (motive := fun c_2 e_c =>
+                                                            ∀ (e1 e1_1 : α),
+                                                              e1 = e1_1 →
+                                                                ∀ (e2 e2_1 : α),
+                                                                  e2 = e2_1 → vguard c e1 e2 = vguard c_2 e1_1 e2_1)
+                                                            (fun e1 e1_1 e_e1 =>
+                                                              Eq.rec (motive := fun e1_2 e_e1 =>
+                                                                ∀ (e2 e2_1 : α),
+                                                                  e2 = e2_1 → vguard c e1 e2 = vguard c e1_2 e2_1)
+                                                                (fun e2 e2_1 e_e2 => e_e2 ▸ Eq.refl (vguard c e1 e2))
+                                                                e_e1)
+                                                            e_c)
+                                                        (magic == MAGIC &&
+                                                          (C.can_access sender topic && C.has_tokens st sender))
+                                                        (magic == MAGIC &&
+                                                          (C.can_access sender topic && C.has_tokens st sender))
+                                                        (Eq.refl
+                                                          (magic == MAGIC &&
+                                                            (C.can_access sender topic && C.has_tokens st sender)))
+                                                        (advance b0 12 fun s =>
+                                                          vguard (decide (24 ≤ off) && decide (off + n ≤ vlen s + 12))
+                                                            (advance s (off - 12) fun p =>
+                                                              C.take p n fun q =>
+                                                                vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                            (vdrop C.toCarrier C.errBadPayload))
+                                                        (vguard (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                          (advance b0 off fun p =>
+                                                            C.take p n fun q =>
+                                                              vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                          (vdrop C.toCarrier C.errBadPayload))
+                                                        (Eq.mpr
+                                                          (id
+                                                            (congrArg
+                                                              (fun _a =>
+                                                                _a =
+                                                                  vguard
+                                                                    (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                                    (advance b0 off fun p =>
+                                                                      C.take p n fun q =>
+                                                                        vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                    (vdrop C.toCarrier C.errBadPayload))
+                                                              (aux_advance_guard_vlen b0 12 (off + n)
+                                                                (decide (24 ≤ off))
+                                                                (fun s =>
+                                                                  advance s (off - 12) fun p =>
+                                                                    C.take p n fun q =>
+                                                                      vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                (vdrop C.toCarrier C.errBadPayload))))
+                                                          (Eq.mpr
+                                                            (id
+                                                              (congrArg
+                                                                (fun _a =>
+                                                                  _a =
+                                                                    vguard
+                                                                      (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                                      (advance b0 off fun p =>
+                                                                        C.take p n fun q =>
+                                                                          vreturn C.toCarrier
+                                                                            (C.dec_tokens st sender, q))
+                                                                      (vdrop C.toCarrier C.errBadPayload))
+                                                                (aux_advance_past_guard b0 12
+                                                                  (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                                  (fun s =>
+                                                                    advance s (off - 12) fun p =>
+                                                                      C.take p n fun q =>
+                                                                        vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                  (vdrop C.toCarrier C.errBadPayload))))
+                                                            ((fun {α} c c_1 e_c =>
+                                                                Eq.rec (motive := fun c_2 e_c =>
+                                                                  ∀ (e1 e1_1 : α),
+                                                                    e1 = e1_1 →
+                                                                      ∀ (e2 e2_1 : α),
+                                                                        e2 = e2_1 →
+                                                                          vguard c e1 e2 = vguard c_2 e1_1 e2_1)
+                                                                  (fun e1 e1_1 e_e1 =>
+                                                                    Eq.rec (motive := fun e1_2 e_e1 =>
+                                                                      ∀ (e2 e2_1 : α),
+                                                                        e2 = e2_1 → vguard c e1 e2 = vguard c e1_2 e2_1)
+                                                                      (fun e2 e2_1 e_e2 =>
+                                                                        e_e2 ▸ Eq.refl (vguard c e1 e2))
+                                                                      e_e1)
+                                                                  e_c)
+                                                              (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                              (decide (24 ≤ off) && decide (off + n ≤ vlen b0))
+                                                              (Eq.refl
+                                                                (decide (24 ≤ off) && decide (off + n ≤ vlen b0)))
+                                                              (advance b0 12 fun s =>
+                                                                advance s (off - 12) fun p =>
+                                                                  C.take p n fun q =>
+                                                                    vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                              (advance b0 off fun p =>
+                                                                C.take p n fun q =>
+                                                                  vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                              (Eq.mpr
+                                                                (id
+                                                                  (congrArg
+                                                                    (fun _a =>
+                                                                      _a =
+                                                                        advance b0 off fun p =>
+                                                                          C.take p n fun q =>
+                                                                            vreturn C.toCarrier
+                                                                              (C.dec_tokens st sender, q))
+                                                                    (slice_fuse b0 12 (off - 12) fun p =>
+                                                                      C.take p n fun q =>
+                                                                        vreturn C.toCarrier
+                                                                          (C.dec_tokens st sender, q))))
+                                                                ((fun {α} b b_1 e_b =>
+                                                                    Eq.rec (motive := fun b_2 e_b =>
+                                                                      ∀ (i i_1 : Int),
+                                                                        i = i_1 →
+                                                                          ∀ (k k_1 : VSlice → α),
+                                                                            k = k_1 →
+                                                                              advance b i k = advance b_2 i_1 k_1)
+                                                                      (fun i i_1 e_i =>
+                                                                        Eq.rec (motive := fun i_2 e_i =>
+                                                                          ∀ (k k_1 : VSlice → α),
+                                                                            k = k_1 → advance b i k = advance b i_2 k_1)
+                                                                          (fun k k_1 e_k =>
+                                                                            e_k ▸ Eq.refl (advance b i k))
+                                                                          e_i)
+                                                                      e_b)
+                                                                  b0 b0 (Eq.refl b0) (12 + (off - 12)) off
+                                                                  (Decidable.byContradiction fun a =>
+                                                                    router2_fusion_bp._proof_1_1 off a)
+                                                                  (fun p =>
+                                                                    C.take p n fun q =>
+                                                                      vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                  (fun p =>
+                                                                    C.take p n fun q =>
+                                                                      vreturn C.toCarrier (C.dec_tokens st sender, q))
+                                                                  (Eq.refl fun p =>
+                                                                    C.take p n fun q =>
+                                                                      vreturn C.toCarrier (C.dec_tokens st sender, q))))
+                                                              (vdrop C.toCarrier C.errBadPayload)
+                                                              (vdrop C.toCarrier C.errBadPayload)
+                                                              (Eq.refl (vdrop C.toCarrier C.errBadPayload)))))
+                                                        (vdrop C.toCarrier C.errUnauth) (vdrop C.toCarrier C.errUnauth)
+                                                        (Eq.refl (vdrop C.toCarrier C.errUnauth)))))))))))))))))
+                (vdrop C.toCarrier C.errTruncated) (vdrop C.toCarrier C.errTruncated)
+                (Eq.refl (vdrop C.toCarrier C.errTruncated))))))))
+theorem VIR.BPrime.aux_advance_guard_vlen : ∀ {α : Type} (b : VSlice) (i x : Int) (c : Bool) (e : VSlice → α) (d : α),
+  (advance b i fun s => vguard (c && decide (x ≤ vlen s + i)) (e s) d) =
+    advance b i fun s => vguard (c && decide (x ≤ vlen b)) (e s) d :=
+fun {α} b i x c e d =>
+  have h := id (Decidable.byContradiction fun a => aux_advance_guard_vlen._proof_1_1 b i a);
+  of_eq_true
+    (Eq.trans
+      (congrFun'
+        (congrArg Eq
+          (congrFun'
+            (congrFun'
+              (congrArg vguard
+                (congrArg c.and
+                  (Decidable.decide.congr_simp (x ≤ vlen (b.fst, b.snd + i) + i) (x ≤ vlen b) (congrArg (LE.le x) h))))
+              (e (b.fst, b.snd + i)))
+            d))
+        (vguard (c && decide (x ≤ vlen b)) (e (b.fst, b.snd + i)) d))
+      (eq_self (vguard (c && decide (x ≤ vlen b)) (e (b.fst, b.snd + i)) d)))
+structure VIR.BPrime.Carrier2 : Type 1
+number of parameters: 0
+parents:
+  VIR.BPrime.Carrier2.toCarrier : Carrier
+fields:
+  VIR.BPrime.Carrier.State : Type
+  VIR.BPrime.Carrier.VErr : Type
+  VIR.BPrime.Carrier.wire_u32 : WireBuf → Int → Int
+  VIR.BPrime.Carrier.can_access : Int → Int → Bool
+  VIR.BPrime.Carrier.has_tokens : self.State → Int → Bool
+  VIR.BPrime.Carrier.dec_tokens : self.State → Int → self.State
+  VIR.BPrime.Carrier.errTruncated : self.VErr
+  VIR.BPrime.Carrier.errUnauth : self.VErr
+  VIR.BPrime.Carrier2.take : {α : Type} → VSlice → Int → (VSlice → α) → α
+  VIR.BPrime.Carrier2.errBadPayload : self.VErr
+constructor:
+  VIR.BPrime.Carrier2.mk (toCarrier : Carrier) (take : {α : Type} → VSlice → Int → (VSlice → α) → α)
+    (errBadPayload : toCarrier.VErr) : Carrier2
+field notation resolution order:
+  VIR.BPrime.Carrier2, VIR.BPrime.Carrier
+'VIR.BPrime.router2_fusion_bp' depends on axioms: [propext, Quot.sound]
+'VIR.BPrime.aux_advance_guard_vlen' depends on axioms: [propext, Quot.sound]
+saltbuild EXIT=0

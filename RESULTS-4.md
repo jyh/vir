@@ -1,4 +1,4 @@
-# RESULTS-4 — the B′ re-score (PREDICTIONS-amend-10), first act: program 1 (8th vir head, 2026-11-01)
+# RESULTS-4 — the B′ re-score (PREDICTIONS-amend-10): programs 1–3 on the Lean side (8th vir head, 2026-11-01)
 
 amend-10 was pinned at 14efadc (14:59:45 PST), before any Lean B′ file existed. Everything below was built after it.
 H marks a figure read from an artifact in this tree. Q marks a quote from the MetaPRL arm's record (mojave,
@@ -27,6 +27,8 @@ harness has not yet extracted.
 | B2 | C4vir equal for program 1's module | **8** Carrier fields (H, the `#print` of `Carrier`) | **8** `prim`s in vir.ml at 9ed59847c (H, `grep -cE '^\s*prim(_rw)?\s'`) | **HOLDS** |
 | B3 | C4 = 0 on both arms | **0** beyond {propext, Quot.sound} (H) | 0 (Q: "C4 … is unchanged: 0") | **HOLDS** (Lean H, MetaPRL Q) |
 | B4 | the A.2 parser reproduces the hand-written deep terms | not built | MetaPRL's own check: 10/10 (Q) | **OWED** |
+| B1 (p2, p3) | the same reading on programs 2 and 3 (amend-10 predicts program 1 only, so this is EXPLORATORY) | router2_fusion_bp HEq **0** · route_acl_safe_bp HEq **0** (H, audit-bp-003) | — | no prediction |
+| B2 (p2) | C4vir with `take` and the bad-payload code | **10** (Carrier2 = Carrier's 8 + 2) | **10** (Q: mojave's prim list) | equal (EXPLORATORY) |
 
 No-direction figures, reported beside B. Lean B′ C1-class tokens over the audit's terms: 33. These are the `Eq.mpr` that
 `rw` leaves, the same role amend-5 separates from transport, and none is HEq. Lean B′ C6 = 4 saltbuild invocations to the
@@ -36,8 +38,24 @@ author's, not an artifact's.
 MetaPRL B′ (Q): router_fuse 5 → 1 rule box, 516 → 290 primitive steps. mojave's own limit rides with it: the drop is
 largely work MOVED into 37 shared wf rules, not work removed.
 
+## Programs 2 and 3 (added the same shift; amend-10 predicts program 1 only, so these rows are exploratory)
+- `lean/VIRB/BPrime2.lean`: `Carrier2 extends Carrier` with `take` (a CPS field) and `errBadPayload`. `router2_fusion_bp`
+  runs program 1's rewrite steps, then ONE aux rule, `aux_advance_guard_vlen` (the I1 slice law read under the advance
+  binder), then `slice_fuse` and one Int arithmetic step (`12 + (off - 12) = off`). NO step needs an enclosing guard.
+  This is amend-7 R1's finding again, now on the B′ carrier: on Int the rewrite stays and its context dependence goes.
+  Build: build-031 EXIT=0. Mutant (F2's bound `≤` → `<`): build-030 EXIT=1.
+- `lean/VIRB/BPrime3.lean`: `ValidFrame` is the subtype of the wire, mirroring `validframe`, MetaPRL's set type over
+  `wirebuf`. `route_acl_safe_bp` takes the frame, the state and the routed premise, with no typing premise.
+  Build: build-032 EXIT=0, on its first invocation. Mutant (the conclusion's principal → the topic, mojave's mutant):
+  build-033 EXIT=1. The whole project rebuilds at build-034 EXIT=0.
+- Axioms (H, audit-bp-003): router2_fusion_bp and aux_advance_guard_vlen → [propext, Quot.sound] · route_acl_safe_bp →
+  [propext] · control sorryAx.
+- No direction: route_acl_safe_bp's term carries 74 tokens of program 3's coercion class (`.val`/`.property`/`↑`; T1's
+  L-IDX figure was C1coe 54). C6: program 2, 3 invocations to first green (⚠️ build-029 was overwritten twice, so the
+  count is the author's) · program 3, 1.
+
 ## Limits
-- Program 1 only on the Lean side. Programs 2 and 3, and the A.2 parser (B4), are owed.
+- The A.2 parser (B4) is owed. Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
 - This harness does not yet extract the MetaPRL B′ runs (`bp-vir*.mp`, `runs-bp-vir*.txt`), so MetaPRL B′ C1–C3 and C5
   are not read here.
