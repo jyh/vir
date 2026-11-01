@@ -87,6 +87,7 @@ def lean(d):
             return sum(len(HEQ.findall(b)) for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.(' + names + r')\s', b))
         rows += [('C1heq', heq(r'slice_fuse|Slice\.heq_of|Slice\.congr_heq|Slice\.adv_adv_heq'), 'MEASURED'),
                  ('P2.C1heq', heq(r'slice_fuse_dep|Slice\.congr_heq_dep|aux_advance_idx|Slice\.heq_of|Slice\.adv_adv_heq'), 'MEASURED'),
+                 ('C1heqFlat', heq(r'Flat\.[A-Za-z0-9_.]+'), 'MEASURED'),
                  ('P2Z.C1heq', heq(r'Z\.slice_fuse_dep|Z\.SliceZ\.congr_heq_dep|Z\.aux_advance_idx|Z\.SliceZ\.heq_of|Z\.SliceZ\.adv_adv_heq'), 'MEASURED')]
     else:
         rows.append(('C1', 0, 'EMPTY'))
@@ -100,6 +101,11 @@ def lean(d):
         body = scored_body(scored)
         cond = len(re.findall(r'\(by ', body))
         rows += [('C2wf', side - cond, 'MEASURED'), ('C2cond', cond, 'MEASURED'), ('C2', side, 'MEASURED')]
+        # P2's Lean figure (9) was read when VIR/ held only program 1's files; this row reproduces it as the tree grows
+        p1 = [p for p in src if os.path.basename(p) in ('Core.lean', 'Rules.lean', 'Router.lean')]
+        if len(p1) == 3:
+            s1 = strip_shortcuts(''.join(read(p) for p in p1))
+            rows.append(('C2.p1files', len(re.findall(r'\(by |\bby have[^\n]*omega', s1)), 'MEASURED'))
         declared = set(m.group(1) for m in AUX_NAME_RE.finditer(text))
         used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
         rows += [('C3', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]

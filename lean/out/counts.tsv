@@ -4,10 +4,12 @@ lean	C1flat	1	MEASURED
 lean	C1rest	52	MEASURED
 lean	C1heq	20	MEASURED
 lean	P2.C1heq	20	MEASURED
+lean	C1heqFlat	0	MEASURED
 lean	P2Z.C1heq	20	MEASURED
 lean	C2wf	48	MEASURED
 lean	C2cond	3	MEASURED
 lean	C2	51	MEASURED
+lean	C2.p1files	9	MEASURED
 lean	C3	3	MEASURED
 lean	C3declared	6	MEASURED
 lean	C5chain	84	MEASURED
