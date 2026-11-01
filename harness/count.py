@@ -116,6 +116,15 @@ def lean(d):
             g = {a for a in giv if re.search(r'\.' + a + r'\b', dblk)}
             rows += [('C3deep', len(u), 'MEASURED'), ('C3deepGivenUsed', len(g), 'MEASURED'), ('C5chainDeep', chain_tokens(dblk), 'MEASURED'),
                      ('C2deepCond', len(re.findall(r'\(by ', dblk)), 'MEASURED')]
+        # L-DEEP PROGRAM 2 (row 13): the same reading over router2_fusion_deep_steps (VIR.Deep2.Step)
+        d2 = next((b for b in blocks(scored) if re.match(r'theorem\s+router2_fusion_deep_steps\b', b)), '')
+        if d2:
+            dec = set(re.findall(r'^\s*\|\s*(aux_[A-Za-z0-9_]*)', text, re.M))
+            giv = set(re.findall(r'^\s*\|\s*(slice_fuse|guard_merge|read_comm|beta_lin|dce_atom|const_fold|guard_true)\b', text, re.M))
+            u = {a for a in dec if re.search(r'\.' + a + r'\b', d2)}
+            g = {a for a in giv if re.search(r'\.' + a + r'\b', d2)}
+            rows += [('P2.C3deep', len(u), 'MEASURED'), ('P2.C3deepGivenUsed', len(g), 'MEASURED'),
+                     ('P2.C5chainDeep', chain_tokens(d2), 'MEASURED'), ('P2.C2deepCond', len(re.findall(r'\(by ', d2)), 'MEASURED')]
     else:
         rows += [('C2', 0, 'EMPTY'), ('C3', 0, 'EMPTY')]
     a = os.path.join(d, 'out', 'axioms.txt')

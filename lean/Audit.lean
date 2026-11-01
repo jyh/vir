@@ -27,3 +27,5 @@ open VIR
 #print VIR.aux_advance_past_dguard
 #print VIR.aux_guard_cond_eq
 #print axioms VIR.router2_fusion
+#print axioms VIR.Deep2.router2_fusion_deep
+#print axioms VIR.Deep2.router2_fusion_deep_steps

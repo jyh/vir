@@ -1,0 +1,31 @@
+saltqueue: ticket P2 seat=root pid=98629
+✖ [9/11] Building VIR.Deep2 (322ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Deep2.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep2.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep2.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Deep2.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Deep2.setup.json --json
+error: VIR/Deep2.lean:145:39: unsolved goals
+case aux_le_len_adv
+acl : Principal → TopicId → Bool
+Γ : List (Cond Val)
+a b✝ : Tm Val
+Γ✝ : List (Cond Val)
+b : Val
+i m : Nat
+c : Cond Val
+x : Ix Val
+k : Val → Tm Val
+e : Tm Val
+hb : Holds Γ✝ (Cond.le (Ix.lit m) (Ix.len b))
+hi : i ≤ m
+hΓ : ∀ (d : Cond Val), d ∈ Γ✝ → Cond.eval acl d = true
+this : m ≤ b.len
+e' : (b.adv i).len + i = b.len
+⊢ (if (Cond.eval acl c && decide (x.eval ≤ b.len)) = true then den acl (k (b.adv i)) else den acl e) =
+    if (Cond.eval acl c && decide (x.eval ≤ b.len)) = true then den acl (k (b.adv i)) else den acl e
+error: VIR/Deep2.lean:235:24: unsolved goals
+V : Type
+b0 st magic se to off n x : V
+⊢ ?m.445 x = Cond.le ((Ix.var off).add (Ix.var n)) (Ix.len b0)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Deep2
+error: build failed
+saltbuild EXIT=1
