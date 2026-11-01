@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=18119
+saltqueue: QUEUED behind 4 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     1724s      math         6954
+  P2     1708s      math         11264
+  P2     360s       root         2936
+  P2     301s       root         18119
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     2026s      math         6954
+  P2     2009s      math         11264
+  P2     661s       root         2936
+  P2     603s       root         18119

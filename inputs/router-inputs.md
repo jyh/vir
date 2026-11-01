@@ -61,3 +61,9 @@ logic (or declares it an axiom of the VIR, counted separately), and the harness 
 OK exit: `%rax` = b0 + 24 (payload pointer), `%rsi` = len(b0) − 24 (payload length), `%rdx` = the bucket pointer, and memory equal except one bucket cell decremented.
 Drop exits: the three labels drop_truncated · drop_unauthorized · drop_rate_limited. drop_unauthorized covers both the magic test and the ACL test, as in F's single error code. Memory is unchanged on every drop exit.
 Precondition (E4): topic < 64. Buffer, ACL table, bucket array and code are pairwise disjoint.
+
+## I7. What the SCORED I4 proof is (added 2026-11-01 00:4x, the same for both arms)
+The scored proof of I4 is a REWRITE CHAIN: every step is one of the 7 given rules, a stated aux rule, or congruence under a binder (congruence is free and not counted).
+A proof that reaches I4 by case-splitting on the guards' truth values, without the chain, is a SHORTCUT. It is recorded as a finding with its own counts and is never scored.
+Why: mojave declared this rule for its arm at 00:12:23 (@[bus]), before any proof. The Lean arm had drafted a case-split proof (unbuilt) at that hour. A rule one arm keeps and the other does not is an unequal affordance, so vir, the owner of the inputs, makes it binding on both.
+Declared conflict: vir learned the rule from the other arm's design post (a post addressed to vir as owner, not its proofs).
