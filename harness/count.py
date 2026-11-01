@@ -69,7 +69,8 @@ def files(d, exts):
 # ROW 19: each program's DECLARED file set. Whole-tree rows move whenever a file is added; the `.scoped` rows do not.
 # Variants (Flat, Deep*, Router2Z, Exit*) are in no program's scope: they are scored only by their own rows.
 PROGRAM_FILES = {'1': ('Core.lean', 'Rules.lean', 'Router.lean'),
-                 '2': ('Core.lean', 'Rules.lean', 'Router.lean', 'Router2.lean')}
+                 '2': ('Core.lean', 'Rules.lean', 'Router.lean', 'Router2.lean'),
+                 '3': ('Core.lean', 'Rules.lean', 'Router.lean', 'Router2.lean', 'Router3.lean')}
 
 
 def lean(d, prog='1'):
@@ -88,6 +89,7 @@ def lean(d, prog='1'):
         sl = cnt(r'(?!\S*\.Flat\.)\S*(slice_fuse|\.Slice\.)')   # L-IDX slice_fuse path (P1)
         rows += [('C1slice', sl, 'MEASURED'), ('C1flat', fl, 'MEASURED'), ('C1rest', sum(len(CAST_RE.findall(b)) for b in tb) - sl - fl, 'MEASURED')]
         # amend-5 C1heq per program path: P1 = slice_fuse + Slice.heq_of/congr_heq/adv_adv_heq; P2 = slice_fuse_dep + congr_heq_dep + aux_advance_idx + heq_of/adv_adv_heq
+        COE_RE = re.compile(r'↑|(?<![A-Za-z0-9_])Subtype\.val(?![A-Za-z0-9_])|(?<!Subtype)\.val(?![A-Za-z0-9_])|\.property(?![A-Za-z0-9_])')   # program 3 (PREDICTIONS-program3)
         HEQ = re.compile(r'(?<![A-Za-z0-9_.])(HEq|heq_of_eq)(?![A-Za-z0-9_])|≍')
         def heq(names):
             return sum(len(HEQ.findall(b)) for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.(' + names + r')\s', b))
@@ -95,6 +97,11 @@ def lean(d, prog='1'):
                  ('P2.C1heq', heq(r'slice_fuse_dep|Slice\.congr_heq_dep|aux_advance_idx|Slice\.heq_of|Slice\.adv_adv_heq'), 'MEASURED'),
                  ('C1heqFlat', heq(r'Flat\.[A-Za-z0-9_.]+'), 'MEASURED'),
                  ('P2Z.C1heq', heq(r'Z\.slice_fuse_dep|Z\.SliceZ\.congr_heq_dep|Z\.aux_advance_idx|Z\.SliceZ\.heq_of|Z\.SliceZ\.adv_adv_heq'), 'MEASURED')]
+        b3t = [b for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.route_acl_safe\s', b)]
+        if b3t:   # program 3: EMPTY until the theorem is printed, never a 0 that reads as T1 falsified
+            rows += [('P3.C1heq', heq(r'route_acl_safe'), 'MEASURED'), ('P3.C1coe', sum(len(COE_RE.findall(b)) for b in b3t), 'MEASURED')]
+        else:
+            rows += [('P3.C1coe', 0, 'EMPTY')]
     else:
         rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))
@@ -122,6 +129,12 @@ def lean(d, prog='1'):
             u2 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b2)}
             rows += [('P2.C3', len(u2), 'MEASURED'), ('P2.C2cond', len(re.findall(r'\(by ', b2)), 'MEASURED'),
                      ('P2.C5chain', chain_tokens(b2), 'MEASURED')]
+        # PROGRAM 3 (PREDICTIONS-program3, fixed before any proof): the scored theorem is route_acl_safe
+        b3 = next((b for b in blocks(scored) if re.match(r'theorem\s+route_acl_safe\b', b)), '')
+        if b3:
+            u3 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b3)}
+            rows += [('P3.C3', len(u3), 'MEASURED'), ('P3.C2cond', len(re.findall(r'\(by ', b3)), 'MEASURED'),
+                     ('P3.C5chain', chain_tokens(b3), 'MEASURED')]
         # ROW 15 (amend-7): the Int-offset variant's scored chain, router2z_fusion
         bz = next((b for b in blocks(scored) if re.match(r'theorem\s+router2z_fusion\b', b)), '')
         if bz:
@@ -274,7 +287,7 @@ def metaprl(d, sfx=''):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--arm', required=True, choices=['lean', 'metaprl'])
-    ap.add_argument('--program', default='1', choices=['1', '2'])
+    ap.add_argument('--program', default='1', choices=['1', '2', '3'])
     ap.add_argument('dir')
     a = ap.parse_args()
     rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
