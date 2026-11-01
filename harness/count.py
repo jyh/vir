@@ -303,32 +303,56 @@ def metaprl(d, sfx=''):
 
 
 def metaprl_c5(d, tools, sfx):
-    """C5 (row 32): mojave's MANIFEST vir-arm-tools/STORED.tsv (@[bus]) names each program's stored-proof script and
-    archive. C5 = refine lines of that script, C5tok = their whitespace tokens (C5chain's unit), C5.inArchive = refine
-    arguments that occur, whitespace-normalised, as a `String "(...)"` node of the archive (the .prla stores tactic text so).
-    Post-dates every proof; C5 carries no direction (PREDICTIONS.md)."""
+    """C5 (rows 32, 34): mojave's MANIFEST vir-arm-tools/STORED.tsv (@[bus]; lemma rows @[bus]) names, per program,
+    each stored script, its archive and its theorem. A theorem's block in a shared script runs from the `cd` naming it
+    (`cd "/vir/vir/<t>"` or `cd "../<t>"`) to the next `cd`; a script with no such cd is taken whole.
+    C5 = refine lines over every row of the program · C5tok = their whitespace tokens (C5chain's unit) · C5lex = LEXICAL
+    tokens of each refine's argument (mojave's unit) · C5.inArchive = arguments found, whitespace-normalised, as a `String`
+    node of the row's .prla · C5.main = refine lines of the program's FIRST row. Post-dates every proof; no direction."""
     man = os.path.join(tools, 'STORED.tsv')
     prog = sfx or '1'
     if not os.path.isfile(man):
         return [('C5', 0, 'UNMEASURED')]
-    row = None
-    for ln in read(man).splitlines()[1:]:
-        f = ln.split('\t')
-        if len(f) >= 3 and f[0] == prog:
-            row = f
-    if row is None:
+    mrows = [f for f in (ln.split('\t') for ln in read(man).splitlines()[1:]) if len(f) >= 4 and f[0] == prog]
+    if not mrows:
         return [('C5', 0, 'UNMEASURED')]
-    sp, ap = os.path.join(tools, row[1]), os.path.join(d, row[2])
-    if not os.path.isfile(sp):
-        return [('C5', 0, 'MISSING')]
     norm = lambda t: ' '.join(t.split())
-    lines = [l.strip() for l in read(sp).splitlines() if l.strip().startswith('refine')]
-    args = [norm(re.sub(r';;\s*$', '', l)[len('refine'):]) for l in lines]
-    # the archive QUOTES a string only when it must: `String "(dT 0)"` but `String (autoT)` and `String logicAutoT` bare
-    stored = {norm(q if q else bare) for q, bare in re.findall(r'^P\t\S+\tString (?:"(.*)"|(\S+))$', read(ap), re.M)} if os.path.isfile(ap) else set()
-    return [('C5', len(lines), 'MEASURED'), ('C5tok', len(' '.join(lines).split()), 'MEASURED'),
-            ('C5.inArchive', sum(1 for a in args if a in stored), 'MEASURED' if stored else 'EMPTY')]
-
+    lex = re.compile(r"[A-Za-z_][A-Za-z_0-9']*|\d+|<<|>>|[^\sA-Za-z_0-9]")
+    lines_all, inarch, have_arch, main = [], 0, False, None
+    for _, script, arch, thm in mrows:
+        sp, ap = os.path.join(tools, script), os.path.join(d, arch)
+        if not os.path.isfile(sp):
+            return [('C5', 0, 'MISSING')]
+        src = [l.strip() for l in read(sp).splitlines()]
+        start = next((k for k, l in enumerate(src) if re.fullmatch(r'cd "(?:/vir/vir\d*/|\.\./)' + re.escape(thm) + r'";;', l)), None)
+        if start is not None:
+            # ends at the next cd naming ANOTHER theorem (`..`, `../<ident>`, `/vir/vir*/<other>`), never at a subgoal cd
+            # (`cd "1"`, `cd "../2"`, `cd "/vir/vir3/<thm>/2/1"`) — those are inside the proof
+            def other(l):
+                m = re.fullmatch(r'cd "(.*)";;', l)
+                if not m:
+                    return False
+                t = m.group(1)
+                if t == '..':
+                    return True
+                m2 = re.fullmatch(r'\.\./([A-Za-z_][A-Za-z_0-9]*)', t) or re.fullmatch(r'/vir/vir\d*/([A-Za-z_][A-Za-z_0-9]*)(?:/.*)?', t)
+                return bool(m2) and m2.group(1) != thm
+            end = next((k for k in range(start + 1, len(src)) if other(src[k])), len(src))
+            src = src[start:end]
+        lines = [l for l in src if l.startswith('refine')]
+        if main is None:
+            main = len(lines)
+        stored = set()
+        if os.path.isfile(ap):
+            have_arch = True
+            # the archive QUOTES a string only when it must: `String "(dT 0)"` but `String (autoT)` and `String logicAutoT` bare
+            stored = {norm(q if q else bare) for q, bare in re.findall(r'^P\t\S+\tString (?:"(.*)"|(\S+))$', read(ap), re.M)}
+        inarch += sum(1 for l in lines if norm(re.sub(r';;\s*$', '', l)[len('refine'):]) in stored)
+        lines_all += lines
+    args = [re.sub(r';;\s*$', '', l)[len('refine'):] for l in lines_all]
+    return [('C5', len(lines_all), 'MEASURED'), ('C5tok', len(' '.join(lines_all).split()), 'MEASURED'),
+            ('C5lex', sum(len(lex.findall(a)) for a in args), 'MEASURED'), ('C5.main', main, 'MEASURED'),
+            ('C5.inArchive', inarch, 'MEASURED' if have_arch else 'EMPTY')]
 
 def main():
     ap = argparse.ArgumentParser()

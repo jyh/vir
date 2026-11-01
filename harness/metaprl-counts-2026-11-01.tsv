@@ -13,9 +13,11 @@ metaprl	C3	3	MEASURED
 metaprl	C3strict	2	MEASURED
 metaprl	C3declared	3	MEASURED
 metaprl	C4	0	MEASURED
-metaprl	C5	5	MEASURED
-metaprl	C5tok	179	MEASURED
-metaprl	C5.inArchive	5	MEASURED
+metaprl	C5	10	MEASURED
+metaprl	C5tok	280	MEASURED
+metaprl	C5lex	487	MEASURED
+metaprl	C5.main	5	MEASURED
+metaprl	C5.inArchive	10	MEASURED
 metaprl	C5chain	77	MEASURED
 metaprl	C6sessions	20	MEASURED
 metaprl	C6refines	43	MEASURED

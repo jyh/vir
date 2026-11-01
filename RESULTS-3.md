@@ -74,6 +74,7 @@ Addendum 3 quoted mojave's split of C2genWf 7 as "3 statement + 4 proof" (Q). Th
 `harness/reproduce.sh` (row 30) re-derives all six committed count files. It is rc 0 after this change, and the only difference from the files before it was the two added rows per MetaPRL file.
 
 ## ADDENDUM 5 (2026-11-01, the 3rd vir head): row 32, MetaPRL C5 is now H (post-proof; C5 carries no direction)
+⚠️ **The table below is SUPERSEDED by addendum 6. Program 1's C5 is now 10 · lexical 487 over its five path lemmas, and both of mojave's token figures reproduce exactly. Read addendum 6's table.**
 mojave's manifest `vir-arm-tools/STORED.tsv` (tools 4131276, @[bus]) names each program's stored-proof script and archive. `count.py` reads it: **C5** = the refine lines of that script · **C5tok** = their whitespace tokens (the same unit as C5chain) · **C5.inArchive** = the number of refine arguments that occur, whitespace-normalised, as a `String` node of the named `.prla`. Selftest ARM13 failed before the code change and again before the bare-string fix. The archive QUOTES a string only when it must (`String "(dT 0)"` beside `String (autoT)` and `String logicAutoT`), and the first extractor, which read only quoted strings, matched 11/12 and 20/21.
 
 | program | C5 | C5tok | inArchive | mojave's figure (Q) | difference, named |
@@ -83,4 +84,15 @@ mojave's manifest `vir-arm-tools/STORED.tsv` (tools 4131276, @[bus]) names each 
 | 3 | 21 | 178 | 21/21 | 21/21 | agrees; C5tok = C5chain because the stored script IS the scored chain |
 
 ⇒ **Every MetaPRL row of programs 1–3 is now either H or a named Q.** The Q rows left are the verdict lines, C6's lost sessions (6 overwritten), and the step and box counts.
+
+## ADDENDUM 6 (2026-11-01, the 3rd vir head): row 34, C5 over every manifest row, in mojave's lexical unit
+mojave added one STORED.tsv row per program-1 path lemma and named the unit (@[bus]). It is LEXICAL tokens of each refine's argument, `[A-Za-z_][A-Za-z_0-9']*|\d+|<<|>>|[^\sA-Za-z_0-9]`. A lemma's block in a shared script runs from the `cd` naming it to the next `cd` naming ANOTHER theorem. Subgoal cds (`cd "1"`, `cd "../2"`, `cd "/vir/vir3/<thm>/2/1"`) stay inside the block. The first extractor ended a block at ANY cd and read program 1 as 6 and program 2 as 1. Selftest ARM14 failed on both shapes before each fix.
+
+| program | C5 (refines) | C5lex | C5tok (whitespace) | C5.main | inArchive | mojave (Q) |
+|---|---|---|---|---|---|---|
+| 1 | **10** | **487** | 280 | 5 (router_fuse) | 10/10 | 10 · 487 (his "11 tactics" corrected to 10 by him) — **agrees** |
+| 2 | **12** | **1,236** | 688 | 12 | 12/12 | 12 · 1,236 — **agrees** (his 11/11 was a needle defect in his own check, he says) |
+| 3 | **21** | 259 | 178 | 21 | 21/21 | 21 tactics, no token figure stated |
+
+⇒ **MetaPRL C5 is H on all three programs and agrees with mojave's figures in his unit.** C5chain (whitespace, scored chain) is unchanged. The Lean C5 rows count lines and tokens of VIR/*.lean, so they are a different unit and no ratio is drawn.
 
