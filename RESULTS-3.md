@@ -103,3 +103,31 @@ mojave added one STORED.tsv row per program-1 path lemma and named the unit (@[b
 - ⚠️ **A NEEDLE DEFECT IN THE REGENERATION RECIPE, found here:** the bank's recipe (`grep "depends on axioms"` → axioms.txt) misses Lean's other form, `'X' does not depend on any axioms` (`VIR.Deep.router_fusion_deep_steps`), and puts it into terms.txt instead. The committed files were right. The recipe as written would have produced a wrong pair. **The recipe that reproduces the committed files exactly (checked on audit-013):** axioms = lines matching `depends on axioms|does not depend on any axioms`; terms = every other line except `saltbuild EXIT=`.
 ⇒ **The Lean inputs to every C1 row reproduce from a clean build.** With row 30's `reproduce.sh` (rc 0), the chain from the sources to every committed count is now re-run end to end on the Lean side. The MetaPRL side re-derives from mojave's artifacts but is not rebuilt here (mojave's verdict.sh is mojave's).
 
+
+## ADDENDUM 8 (2026-11-01, the 4th vir head): row 35, paris's STEP 3 read against F_exit
+**What was read, at the object:** the spike tree `~/projects/claude/wt/x86lean/o95-spike` at **2c0b059** (paris's, private, no remote), `git status` clean. Its pins resolve: `.lake/packages/vir` HEAD = **vir 2ab9d98** (F_exit as committed here, imported, not copied) and `.lake/packages/x86lean` HEAD = **public b1848ac**. The receipt `audit/axioms-step3.log` is tracked at 2c0b059. Its last line is `saltbuild EXIT=0`, the sorryAx control fires (`control_sorry` → `[sorryAx]`), and `Router.Refines.repaired_refines` → `[propext, Classical.choice, Quot.sound]`. `VIR.Deep.F_exit` → `[propext, Quot.sound]`, the same as vir's own audit.
+**The statement (Router/Refines.lean, `repaired_refines`).** Fix `acl`, a machine state `s` with `Live s` and `rip = 0x1000`, and `buf off len σ`. Assume:
+- `len` = rsi read unsigned;
+- BufRel: the buffer's bytes are memory at rdi + i, for i < len;
+- AclRel: `acl p t` is bit t%8 of the byte at 0x301d + 8p + t/8, for t < 64;
+- StRel: σ p is the signed dword at rdx + 4p + 0x3000;
+- topic < 64 whenever len ≥ 24;
+- the buffer is disjoint from every bucket cell.
+
+Then there is an n at which `runP repaired n s` has stopped, and its exit satisfies `Exit s _ p (den acl (F (.slice buf off len) (.state σ)))`. The proof opens with `rw [VIR.Deep.F_exit]`, so **the specification it refines is exactly row 11's exit relation.**
+
+**What it establishes for the compiler application:**
+1. **Program 1's lowering is verified end to end, for every state, once A.4 is repaired.** Paris proves the machine refines F. vir's `U_exit = router_fusion_deep.trans F_exit` (vir 9a7e5bf) shows U has the same exit relation. So the chain from spec composition U, through fused F, to the x86 code closes by composition. The composed theorem is not stated as one Lean term, so that is a reading, not a build.
+2. **Each `Exit` clause is the strong form F_exit supports:**
+   - TRUNCATED → 0x1040 with memory unchanged;
+   - UNAUTH_OR_RATE → 0x1041 or 0x1042 with memory unchanged;
+   - OK → 0x1043 with the payload slice at rax = rdi + 24 and length rsi; rdx is kept, StRel holds for the decremented σ' that `den` returns, and memory is the input with exactly one dword written;
+   - `badPayload` and every other shape → False. Program 1's F cannot reach them, so these clauses add no escape hatch.
+3. **A.4 as written does NOT lower soundly** (step 2's kernel-checked witnesses, E2/E3). Paris drove the E2 mutant (jb → jl) red against the ∀-state proof itself, at the two places that read the length guard. The E3 order was not driven here and paris declares that.
+
+**Limits (they ride with the verdict):**
+- **One invocation.** The theorem relates one run to one `F` application. AclRel reads an ABSOLUTE region (0x301d, the address the program's `leaq` puts the table at). StRel is relative to rdx. Nothing keeps the two regions from overlapping. That is harmless for one call, because the ACL is read before the one write (paris's finding (2)). A multi-call refinement, where state flows from one call to the next, would need the disjointness the single-call theorem does without.
+- **Non-vacuity is argued, not built.** BufRel, AclRel and StRel each DEFINE their abstract value from memory (buf, acl and σ can always be read off `s.mem`). So the hypotheses are jointly satisfiable for any live s at 0x1000 with topic < 64 and the buffer placed away from the 16 GiB cell span. No Lean witness instantiates `repaired_refines` on a concrete state. Paris's three `decide` controls run the program and do not discharge the theorem's hypotheses.
+- **The audit was read, not re-run.** Its sha, its tracked status and its pins were checked. A clean rebuild of the spike outside paris's tree is STATUS-vir row 36.
+- **I6's "code disjoint" is vacuous in x86lean** (a Program is not in memory), as paris states. Any claim about self-modifying code is outside the theorem. That is a property of the x86lean model, not a gap in the proof.
+- **Program 2 is not lowered.** Paris's answer at @[bus]: A.4 lowers F only, and a program-2 lowering would test paris's lowering, not the object's. **F2_exit (vir 06ff140) is recorded as OFFERED AND UNUSED.**
