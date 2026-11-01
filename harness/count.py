@@ -98,6 +98,9 @@ def lean(d, prog='1'):
                  ('C1heqFlat', heq(r'Flat\.[A-Za-z0-9_.]+'), 'MEASURED'),
                  ('P2Z.C1heq', heq(r'Z\.slice_fuse_dep|Z\.SliceZ\.congr_heq_dep|Z\.aux_advance_idx|Z\.SliceZ\.heq_of|Z\.SliceZ\.adv_adv_heq'), 'MEASURED')]
         b3t = [b for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.route_acl_safe\s', b)]
+        b3f = [b for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.route_acl_safe_flat\s', b)]
+        if b3f:   # amend-9: the L-FLAT control for program 3
+            rows += [('P3F.C1coe', sum(len(COE_RE.findall(b)) for b in b3f), 'MEASURED')]
         if b3t:   # program 3: EMPTY until the theorem is printed, never a 0 that reads as T1 falsified
             rows += [('P3.C1heq', heq(r'route_acl_safe'), 'MEASURED'), ('P3.C1coe', sum(len(COE_RE.findall(b)) for b in b3t), 'MEASURED')]
         else:
@@ -135,6 +138,9 @@ def lean(d, prog='1'):
             u3 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b3)}
             rows += [('P3.C3', len(u3), 'MEASURED'), ('P3.C2cond', len(re.findall(r'\(by ', b3)), 'MEASURED'),
                      ('P3.C5chain', chain_tokens(b3), 'MEASURED')]
+        b3s = next((b for b in blocks(scored) if re.match(r'theorem\s+route_acl_safe_flat\b', b)), '')
+        if b3s:
+            rows += [('P3F.C5chain', chain_tokens(b3s), 'MEASURED'), ('P3F.ctxCleared', len(re.findall(r'\bclear\s', b3s)), 'MEASURED')]
         # ROW 15 (amend-7): the Int-offset variant's scored chain, router2z_fusion
         bz = next((b for b in blocks(scored) if re.match(r'theorem\s+router2z_fusion\b', b)), '')
         if bz:
