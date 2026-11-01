@@ -1,4 +1,4 @@
-saltqueue: ticket P2 seat=root pid=3250
+saltqueue: ticket P2 seat=root pid=68673
 theorem VIR.router_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Nat} (b0 : Slice n) (st : State),
   U acl b0 st = F acl b0 st :=
 fun acl {n} b0 st =>
@@ -1216,3 +1216,874 @@ fun c d [Decidable c] [Decidable d] hcd ok e =>
       of_eq_true
         (Eq.trans (congr (congrArg Eq (dite_cond_eq_false (eq_false this))) (dite_cond_eq_false (eq_false h)))
           (eq_self e)))
+theorem VIR.Z.router2z_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Int} (b0 : Z.SliceZ n) (st : State),
+  Z.U2 acl b0 st = Z.F2 acl b0 st :=
+fun acl {n} b0 st =>
+  id
+    (id
+      (id
+        (id
+          (id
+            (id
+              ((fun c {inst inst_1} =>
+                  Eq.ndrec (motive := fun {inst_2} =>
+                    ∀ (ok ok_1 : c → Z.OutZ),
+                      ok = ok_1 → ∀ (err err_1 : Z.OutZ), err = err_1 → Z.guard c ok err = Z.guard c ok_1 err_1)
+                    (fun ok ok_1 e_ok =>
+                      Eq.rec (motive := fun ok_2 e_ok =>
+                        ∀ (err err_1 : Z.OutZ), err = err_1 → Z.guard c ok err = Z.guard c ok_2 err_1)
+                        (fun err err_1 e_err => e_err ▸ Eq.refl (Z.guard c ok err)) e_ok)
+                    (Subsingleton.elim inst inst_1))
+                (24 ≤ n)
+                (fun h =>
+                  Z.readU32 b0 0 fun magic =>
+                    Z.guard (magic = MAGIC)
+                      (fun x =>
+                        Z.readU32 b0 4 fun sender =>
+                          Z.readU32 b0 8 fun topic =>
+                            Z.readU32 b0 12 fun off =>
+                              Z.readU32 b0 16 fun len =>
+                                Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                  (fun s1 sender topic off len x =>
+                                      Z.guard (hasTokens st sender)
+                                        (fun x =>
+                                          Z.letLin (decTokens st sender) fun st' =>
+                                            Z.guard (canAccess acl sender topic)
+                                              (fun x =>
+                                                Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                  (fun h =>
+                                                    Z.advance s1 (↑off.toNat - 12)
+                                                      (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h) fun p =>
+                                                      Z.take p (↑len.toNat)
+                                                        (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h) fun q =>
+                                                        Z.OutZ.ret st' (↑len.toNat) q)
+                                                  (Z.OutZ.drop Code.badPayload))
+                                              (Z.OutZ.drop Code.unauthOrRate))
+                                        (Z.OutZ.drop Code.unauthOrRate))
+                                    s sender topic off len h)
+                      (Z.OutZ.drop Code.unauthOrRate))
+                (fun x =>
+                  Z.readU32 b0 0 fun magic =>
+                    Z.readU32 b0 4 fun sender =>
+                      Z.readU32 b0 8 fun topic =>
+                        Z.readU32 b0 12 fun off =>
+                          Z.readU32 b0 16 fun len =>
+                            Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                              (fun x =>
+                                Z.letLin (decTokens st sender) fun st' =>
+                                  Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                    (fun h2 =>
+                                      Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                        Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                          Z.OutZ.ret st' (↑len.toNat) q)
+                                    (Z.OutZ.drop Code.badPayload))
+                              (Z.OutZ.drop Code.unauthOrRate))
+                (funext fun h =>
+                  (fun {n} s s_1 e_s =>
+                      Eq.rec (motive := fun s_2 e_s =>
+                        ∀ (j j_1 : Nat),
+                          j = j_1 → ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s_2 j_1 k_1)
+                        (fun j j_1 e_j =>
+                          Eq.rec (motive := fun j_2 e_j =>
+                            ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s j_2 k_1)
+                            (fun k k_1 e_k => e_k ▸ Eq.refl (Z.readU32 s j k)) e_j)
+                        e_s)
+                    b0 b0 (Eq.refl b0) 0 0 (Eq.refl 0)
+                    (fun magic =>
+                      Z.guard (magic = MAGIC)
+                        (fun x =>
+                          Z.readU32 b0 4 fun sender =>
+                            Z.readU32 b0 8 fun topic =>
+                              Z.readU32 b0 12 fun off =>
+                                Z.readU32 b0 16 fun len =>
+                                  Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                    (fun s1 sender topic off len x =>
+                                        Z.guard (hasTokens st sender)
+                                          (fun x =>
+                                            Z.letLin (decTokens st sender) fun st' =>
+                                              Z.guard (canAccess acl sender topic)
+                                                (fun x =>
+                                                  Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                    (fun h =>
+                                                      Z.advance s1 (↑off.toNat - 12)
+                                                        (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h) fun p =>
+                                                        Z.take p (↑len.toNat)
+                                                          (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h) fun q =>
+                                                          Z.OutZ.ret st' (↑len.toNat) q)
+                                                    (Z.OutZ.drop Code.badPayload))
+                                                (Z.OutZ.drop Code.unauthOrRate))
+                                          (Z.OutZ.drop Code.unauthOrRate))
+                                      s sender topic off len h)
+                        (Z.OutZ.drop Code.unauthOrRate))
+                    (fun magic =>
+                      Z.readU32 b0 4 fun sender =>
+                        Z.readU32 b0 8 fun topic =>
+                          Z.readU32 b0 12 fun off =>
+                            Z.readU32 b0 16 fun len =>
+                              Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                (fun x =>
+                                  Z.letLin (decTokens st sender) fun st' =>
+                                    Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                      (fun h2 =>
+                                        Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                          Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                            Z.OutZ.ret st' (↑len.toNat) q)
+                                      (Z.OutZ.drop Code.badPayload))
+                                (Z.OutZ.drop Code.unauthOrRate))
+                    (funext fun magic =>
+                      Eq.mpr
+                        (id
+                          (congrArg
+                            (fun _a =>
+                              _a =
+                                Z.readU32 b0 4 fun sender =>
+                                  Z.readU32 b0 8 fun topic =>
+                                    Z.readU32 b0 12 fun off =>
+                                      Z.readU32 b0 16 fun len =>
+                                        Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                          (fun x =>
+                                            Z.letLin (decTokens st sender) fun st' =>
+                                              Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                (fun h2 =>
+                                                  Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                    Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                      Z.OutZ.ret st' (↑len.toNat) q)
+                                                (Z.OutZ.drop Code.badPayload))
+                                          (Z.OutZ.drop Code.unauthOrRate))
+                            (Z.aux_read_past_guard (magic = MAGIC) b0 4
+                              (fun sender =>
+                                Z.readU32 b0 8 fun topic =>
+                                  Z.readU32 b0 12 fun off =>
+                                    Z.readU32 b0 16 fun len =>
+                                      Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                        (fun s1 sender topic off len x =>
+                                            Z.guard (hasTokens st sender)
+                                              (fun x =>
+                                                Z.letLin (decTokens st sender) fun st' =>
+                                                  Z.guard (canAccess acl sender topic)
+                                                    (fun x =>
+                                                      Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                        (fun h =>
+                                                          Z.advance s1 (↑off.toNat - 12)
+                                                            (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h) fun p =>
+                                                            Z.take p (↑len.toNat)
+                                                              (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                              fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                        (Z.OutZ.drop Code.badPayload))
+                                                    (Z.OutZ.drop Code.unauthOrRate))
+                                              (Z.OutZ.drop Code.unauthOrRate))
+                                          s sender topic off len h)
+                              (Z.OutZ.drop Code.unauthOrRate))))
+                        ((fun {n} s s_1 e_s =>
+                            Eq.rec (motive := fun s_2 e_s =>
+                              ∀ (j j_1 : Nat),
+                                j = j_1 →
+                                  ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s_2 j_1 k_1)
+                              (fun j j_1 e_j =>
+                                Eq.rec (motive := fun j_2 e_j =>
+                                  ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s j_2 k_1)
+                                  (fun k k_1 e_k => e_k ▸ Eq.refl (Z.readU32 s j k)) e_j)
+                              e_s)
+                          b0 b0 (Eq.refl b0) 4 4 (Eq.refl 4)
+                          (fun v =>
+                            Z.guard (magic = MAGIC)
+                              (fun x =>
+                                Z.readU32 b0 8 fun topic =>
+                                  Z.readU32 b0 12 fun off =>
+                                    Z.readU32 b0 16 fun len =>
+                                      Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                        (fun s1 sender topic off len x =>
+                                            Z.guard (hasTokens st sender)
+                                              (fun x =>
+                                                Z.letLin (decTokens st sender) fun st' =>
+                                                  Z.guard (canAccess acl sender topic)
+                                                    (fun x =>
+                                                      Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                        (fun h =>
+                                                          Z.advance s1 (↑off.toNat - 12)
+                                                            (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h) fun p =>
+                                                            Z.take p (↑len.toNat)
+                                                              (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                              fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                        (Z.OutZ.drop Code.badPayload))
+                                                    (Z.OutZ.drop Code.unauthOrRate))
+                                              (Z.OutZ.drop Code.unauthOrRate))
+                                          s v topic off len h)
+                              (Z.OutZ.drop Code.unauthOrRate))
+                          (fun sender =>
+                            Z.readU32 b0 8 fun topic =>
+                              Z.readU32 b0 12 fun off =>
+                                Z.readU32 b0 16 fun len =>
+                                  Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                    (fun x =>
+                                      Z.letLin (decTokens st sender) fun st' =>
+                                        Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                          (fun h2 =>
+                                            Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                              Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                Z.OutZ.ret st' (↑len.toNat) q)
+                                          (Z.OutZ.drop Code.badPayload))
+                                    (Z.OutZ.drop Code.unauthOrRate))
+                          (funext fun sender =>
+                            Eq.mpr
+                              (id
+                                (congrArg
+                                  (fun _a =>
+                                    _a =
+                                      Z.readU32 b0 8 fun topic =>
+                                        Z.readU32 b0 12 fun off =>
+                                          Z.readU32 b0 16 fun len =>
+                                            Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                              (fun x =>
+                                                Z.letLin (decTokens st sender) fun st' =>
+                                                  Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                    (fun h2 =>
+                                                      Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                        Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                          Z.OutZ.ret st' (↑len.toNat) q)
+                                                    (Z.OutZ.drop Code.badPayload))
+                                              (Z.OutZ.drop Code.unauthOrRate))
+                                  (Z.aux_read_past_guard (magic = MAGIC) b0 8
+                                    (fun topic =>
+                                      Z.readU32 b0 12 fun off =>
+                                        Z.readU32 b0 16 fun len =>
+                                          Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                            (fun s1 sender topic off len x =>
+                                                Z.guard (hasTokens st sender)
+                                                  (fun x =>
+                                                    Z.letLin (decTokens st sender) fun st' =>
+                                                      Z.guard (canAccess acl sender topic)
+                                                        (fun x =>
+                                                          Z.guard
+                                                            (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                            (fun h =>
+                                                              Z.advance s1 (↑off.toNat - 12)
+                                                                (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h)
+                                                                fun p =>
+                                                                Z.take p (↑len.toNat)
+                                                                  (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                                  fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                            (Z.OutZ.drop Code.badPayload))
+                                                        (Z.OutZ.drop Code.unauthOrRate))
+                                                  (Z.OutZ.drop Code.unauthOrRate))
+                                              s sender topic off len h)
+                                    (Z.OutZ.drop Code.unauthOrRate))))
+                              ((fun {n} s s_1 e_s =>
+                                  Eq.rec (motive := fun s_2 e_s =>
+                                    ∀ (j j_1 : Nat),
+                                      j = j_1 →
+                                        ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s_2 j_1 k_1)
+                                    (fun j j_1 e_j =>
+                                      Eq.rec (motive := fun j_2 e_j =>
+                                        ∀ (k k_1 : UInt32 → Z.OutZ), k = k_1 → Z.readU32 s j k = Z.readU32 s j_2 k_1)
+                                        (fun k k_1 e_k => e_k ▸ Eq.refl (Z.readU32 s j k)) e_j)
+                                    e_s)
+                                b0 b0 (Eq.refl b0) 8 8 (Eq.refl 8)
+                                (fun v =>
+                                  Z.guard (magic = MAGIC)
+                                    (fun x =>
+                                      Z.readU32 b0 12 fun off =>
+                                        Z.readU32 b0 16 fun len =>
+                                          Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                            (fun s1 sender topic off len x =>
+                                                Z.guard (hasTokens st sender)
+                                                  (fun x =>
+                                                    Z.letLin (decTokens st sender) fun st' =>
+                                                      Z.guard (canAccess acl sender topic)
+                                                        (fun x =>
+                                                          Z.guard
+                                                            (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                            (fun h =>
+                                                              Z.advance s1 (↑off.toNat - 12)
+                                                                (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h)
+                                                                fun p =>
+                                                                Z.take p (↑len.toNat)
+                                                                  (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                                  fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                            (Z.OutZ.drop Code.badPayload))
+                                                        (Z.OutZ.drop Code.unauthOrRate))
+                                                  (Z.OutZ.drop Code.unauthOrRate))
+                                              s sender v off len h)
+                                    (Z.OutZ.drop Code.unauthOrRate))
+                                (fun topic =>
+                                  Z.readU32 b0 12 fun off =>
+                                    Z.readU32 b0 16 fun len =>
+                                      Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                        (fun x =>
+                                          Z.letLin (decTokens st sender) fun st' =>
+                                            Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                              (fun h2 =>
+                                                Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                  Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                    Z.OutZ.ret st' (↑len.toNat) q)
+                                              (Z.OutZ.drop Code.badPayload))
+                                        (Z.OutZ.drop Code.unauthOrRate))
+                                (funext fun topic =>
+                                  Eq.mpr
+                                    (id
+                                      (congrArg
+                                        (fun _a =>
+                                          _a =
+                                            Z.readU32 b0 12 fun off =>
+                                              Z.readU32 b0 16 fun len =>
+                                                Z.guard
+                                                  (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                  (fun x =>
+                                                    Z.letLin (decTokens st sender) fun st' =>
+                                                      Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                        (fun h2 =>
+                                                          Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                            Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                              Z.OutZ.ret st' (↑len.toNat) q)
+                                                        (Z.OutZ.drop Code.badPayload))
+                                                  (Z.OutZ.drop Code.unauthOrRate))
+                                        (Z.aux_read_past_guard (magic = MAGIC) b0 12
+                                          (fun off =>
+                                            Z.readU32 b0 16 fun len =>
+                                              Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                (fun s1 sender topic off len x =>
+                                                    Z.guard (hasTokens st sender)
+                                                      (fun x =>
+                                                        Z.letLin (decTokens st sender) fun st' =>
+                                                          Z.guard (canAccess acl sender topic)
+                                                            (fun x =>
+                                                              Z.guard
+                                                                (24 ≤ ↑off.toNat ∧
+                                                                  ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                (fun h =>
+                                                                  Z.advance s1 (↑off.toNat - 12)
+                                                                    (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h)
+                                                                    fun p =>
+                                                                    Z.take p (↑len.toNat)
+                                                                      (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                                      fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                                (Z.OutZ.drop Code.badPayload))
+                                                            (Z.OutZ.drop Code.unauthOrRate))
+                                                      (Z.OutZ.drop Code.unauthOrRate))
+                                                  s sender topic off len h)
+                                          (Z.OutZ.drop Code.unauthOrRate))))
+                                    ((fun {n} s s_1 e_s =>
+                                        Eq.rec (motive := fun s_2 e_s =>
+                                          ∀ (j j_1 : Nat),
+                                            j = j_1 →
+                                              ∀ (k k_1 : UInt32 → Z.OutZ),
+                                                k = k_1 → Z.readU32 s j k = Z.readU32 s_2 j_1 k_1)
+                                          (fun j j_1 e_j =>
+                                            Eq.rec (motive := fun j_2 e_j =>
+                                              ∀ (k k_1 : UInt32 → Z.OutZ),
+                                                k = k_1 → Z.readU32 s j k = Z.readU32 s j_2 k_1)
+                                              (fun k k_1 e_k => e_k ▸ Eq.refl (Z.readU32 s j k)) e_j)
+                                          e_s)
+                                      b0 b0 (Eq.refl b0) 12 12 (Eq.refl 12)
+                                      (fun v =>
+                                        Z.guard (magic = MAGIC)
+                                          (fun x =>
+                                            Z.readU32 b0 16 fun len =>
+                                              Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                (fun s1 sender topic off len x =>
+                                                    Z.guard (hasTokens st sender)
+                                                      (fun x =>
+                                                        Z.letLin (decTokens st sender) fun st' =>
+                                                          Z.guard (canAccess acl sender topic)
+                                                            (fun x =>
+                                                              Z.guard
+                                                                (24 ≤ ↑off.toNat ∧
+                                                                  ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                (fun h =>
+                                                                  Z.advance s1 (↑off.toNat - 12)
+                                                                    (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h)
+                                                                    fun p =>
+                                                                    Z.take p (↑len.toNat)
+                                                                      (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat h)
+                                                                      fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                                (Z.OutZ.drop Code.badPayload))
+                                                            (Z.OutZ.drop Code.unauthOrRate))
+                                                      (Z.OutZ.drop Code.unauthOrRate))
+                                                  s sender topic v len h)
+                                          (Z.OutZ.drop Code.unauthOrRate))
+                                      (fun off =>
+                                        Z.readU32 b0 16 fun len =>
+                                          Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                            (fun x =>
+                                              Z.letLin (decTokens st sender) fun st' =>
+                                                Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                  (fun h2 =>
+                                                    Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                      Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                        Z.OutZ.ret st' (↑len.toNat) q)
+                                                  (Z.OutZ.drop Code.badPayload))
+                                            (Z.OutZ.drop Code.unauthOrRate))
+                                      (funext fun off =>
+                                        Eq.mpr
+                                          (id
+                                            (congrArg
+                                              (fun _a =>
+                                                _a =
+                                                  Z.readU32 b0 16 fun len =>
+                                                    Z.guard
+                                                      (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                      (fun x =>
+                                                        Z.letLin (decTokens st sender) fun st' =>
+                                                          Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                            (fun h2 =>
+                                                              Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2)
+                                                                fun p =>
+                                                                Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2)
+                                                                  fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                            (Z.OutZ.drop Code.badPayload))
+                                                      (Z.OutZ.drop Code.unauthOrRate))
+                                              (Z.aux_read_past_guard (magic = MAGIC) b0 16
+                                                (fun len =>
+                                                  Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                    (fun s1 sender topic off len x =>
+                                                        Z.guard (hasTokens st sender)
+                                                          (fun x =>
+                                                            Z.letLin (decTokens st sender) fun st' =>
+                                                              Z.guard (canAccess acl sender topic)
+                                                                (fun x =>
+                                                                  Z.guard
+                                                                    (24 ≤ ↑off.toNat ∧
+                                                                      ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                    (fun h =>
+                                                                      Z.advance s1 (↑off.toNat - 12)
+                                                                        (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                          h)
+                                                                        fun p =>
+                                                                        Z.take p (↑len.toNat)
+                                                                          (Z.emitPayload2._proof_4 (↑off.toNat)
+                                                                            len.toNat h)
+                                                                          fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                                    (Z.OutZ.drop Code.badPayload))
+                                                                (Z.OutZ.drop Code.unauthOrRate))
+                                                          (Z.OutZ.drop Code.unauthOrRate))
+                                                      s sender topic off len h)
+                                                (Z.OutZ.drop Code.unauthOrRate))))
+                                          ((fun {n} s s_1 e_s =>
+                                              Eq.rec (motive := fun s_2 e_s =>
+                                                ∀ (j j_1 : Nat),
+                                                  j = j_1 →
+                                                    ∀ (k k_1 : UInt32 → Z.OutZ),
+                                                      k = k_1 → Z.readU32 s j k = Z.readU32 s_2 j_1 k_1)
+                                                (fun j j_1 e_j =>
+                                                  Eq.rec (motive := fun j_2 e_j =>
+                                                    ∀ (k k_1 : UInt32 → Z.OutZ),
+                                                      k = k_1 → Z.readU32 s j k = Z.readU32 s j_2 k_1)
+                                                    (fun k k_1 e_k => e_k ▸ Eq.refl (Z.readU32 s j k)) e_j)
+                                                e_s)
+                                            b0 b0 (Eq.refl b0) 16 16 (Eq.refl 16)
+                                            (fun v =>
+                                              Z.guard (magic = MAGIC)
+                                                (fun x =>
+                                                  Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                    (fun s1 sender topic off len x =>
+                                                        Z.guard (hasTokens st sender)
+                                                          (fun x =>
+                                                            Z.letLin (decTokens st sender) fun st' =>
+                                                              Z.guard (canAccess acl sender topic)
+                                                                (fun x =>
+                                                                  Z.guard
+                                                                    (24 ≤ ↑off.toNat ∧
+                                                                      ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                    (fun h =>
+                                                                      Z.advance s1 (↑off.toNat - 12)
+                                                                        (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                          h)
+                                                                        fun p =>
+                                                                        Z.take p (↑len.toNat)
+                                                                          (Z.emitPayload2._proof_4 (↑off.toNat)
+                                                                            len.toNat h)
+                                                                          fun q => Z.OutZ.ret st' (↑len.toNat) q)
+                                                                    (Z.OutZ.drop Code.badPayload))
+                                                                (Z.OutZ.drop Code.unauthOrRate))
+                                                          (Z.OutZ.drop Code.unauthOrRate))
+                                                      s sender topic off v h)
+                                                (Z.OutZ.drop Code.unauthOrRate))
+                                            (fun len =>
+                                              Z.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                (fun x =>
+                                                  Z.letLin (decTokens st sender) fun st' =>
+                                                    Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                      (fun h2 =>
+                                                        Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2) fun p =>
+                                                          Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2) fun q =>
+                                                            Z.OutZ.ret st' (↑len.toNat) q)
+                                                      (Z.OutZ.drop Code.badPayload))
+                                                (Z.OutZ.drop Code.unauthOrRate))
+                                            (funext fun len =>
+                                              id
+                                                (id
+                                                  (id
+                                                    (Eq.mpr
+                                                      (id
+                                                        (congrArg
+                                                          (fun _a =>
+                                                            Z.guard (magic = MAGIC) (fun x => _a)
+                                                                (Z.OutZ.drop Code.unauthOrRate) =
+                                                              Z.guard
+                                                                (magic = MAGIC ∧
+                                                                  canAccess acl sender topic ∧ hasTokens st sender)
+                                                                (fun x =>
+                                                                  Z.guard
+                                                                    (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                                    (fun h2 =>
+                                                                      Z.advance b0 (↑off.toNat)
+                                                                        (Z.F2._proof_3 off len h2) fun p =>
+                                                                        Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2)
+                                                                          fun q =>
+                                                                          Z.OutZ.ret (decTokens st sender) (↑len.toNat)
+                                                                            q)
+                                                                    (Z.OutZ.drop Code.badPayload))
+                                                                (Z.OutZ.drop Code.unauthOrRate))
+                                                          (Z.aux_guard_swap (hasTokens st sender)
+                                                            (canAccess acl sender topic)
+                                                            (Z.guard
+                                                              (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                              (fun h_1 =>
+                                                                Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                                  Z.advance s (↑off.toNat - 12)
+                                                                    (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat h_1)
+                                                                    fun p =>
+                                                                    Z.take p (↑len.toNat)
+                                                                      (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat
+                                                                        h_1)
+                                                                      fun q =>
+                                                                      Z.OutZ.ret (decTokens st sender) (↑len.toNat) q)
+                                                              (Z.OutZ.drop Code.badPayload))
+                                                            (Z.OutZ.drop Code.unauthOrRate))))
+                                                      (Eq.mpr
+                                                        (id
+                                                          (congrArg
+                                                            (fun _a =>
+                                                              Z.guard (magic = MAGIC) (fun x => _a)
+                                                                  (Z.OutZ.drop Code.unauthOrRate) =
+                                                                Z.guard
+                                                                  (magic = MAGIC ∧
+                                                                    canAccess acl sender topic ∧ hasTokens st sender)
+                                                                  (fun x =>
+                                                                    Z.guard
+                                                                      (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                                      (fun h2 =>
+                                                                        Z.advance b0 (↑off.toNat)
+                                                                          (Z.F2._proof_3 off len h2) fun p =>
+                                                                          Z.take p (↑len.toNat)
+                                                                            (Z.F2._proof_4 off len h2) fun q =>
+                                                                            Z.OutZ.ret (decTokens st sender)
+                                                                              (↑len.toNat) q)
+                                                                      (Z.OutZ.drop Code.badPayload))
+                                                                  (Z.OutZ.drop Code.unauthOrRate))
+                                                            (Z.guard_merge (canAccess acl sender topic)
+                                                              (hasTokens st sender)
+                                                              (Z.guard
+                                                                (24 ≤ ↑off.toNat ∧
+                                                                  ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                (fun h_1 =>
+                                                                  Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                                    Z.advance s (↑off.toNat - 12)
+                                                                      (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                        h_1)
+                                                                      fun p =>
+                                                                      Z.take p (↑len.toNat)
+                                                                        (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat
+                                                                          h_1)
+                                                                        fun q =>
+                                                                        Z.OutZ.ret (decTokens st sender) (↑len.toNat) q)
+                                                                (Z.OutZ.drop Code.badPayload))
+                                                              (Z.OutZ.drop Code.unauthOrRate))))
+                                                        (Eq.mpr
+                                                          (id
+                                                            (congrArg
+                                                              (fun _a =>
+                                                                _a =
+                                                                  Z.guard
+                                                                    (magic = MAGIC ∧
+                                                                      canAccess acl sender topic ∧ hasTokens st sender)
+                                                                    (fun x =>
+                                                                      Z.guard
+                                                                        (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                                        (fun h2 =>
+                                                                          Z.advance b0 (↑off.toNat)
+                                                                            (Z.F2._proof_3 off len h2) fun p =>
+                                                                            Z.take p (↑len.toNat)
+                                                                              (Z.F2._proof_4 off len h2) fun q =>
+                                                                              Z.OutZ.ret (decTokens st sender)
+                                                                                (↑len.toNat) q)
+                                                                        (Z.OutZ.drop Code.badPayload))
+                                                                    (Z.OutZ.drop Code.unauthOrRate))
+                                                              (Z.guard_merge (magic = MAGIC)
+                                                                (canAccess acl sender topic ∧ hasTokens st sender)
+                                                                (Z.guard
+                                                                  (24 ≤ ↑off.toNat ∧
+                                                                    ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                  (fun h_1 =>
+                                                                    Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                                      Z.advance s (↑off.toNat - 12)
+                                                                        (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                          h_1)
+                                                                        fun p =>
+                                                                        Z.take p (↑len.toNat)
+                                                                          (Z.emitPayload2._proof_4 (↑off.toNat)
+                                                                            len.toNat h_1)
+                                                                          fun q =>
+                                                                          Z.OutZ.ret (decTokens st sender) (↑len.toNat)
+                                                                            q)
+                                                                  (Z.OutZ.drop Code.badPayload))
+                                                                (Z.OutZ.drop Code.unauthOrRate))))
+                                                          ((fun c {inst inst_1} =>
+                                                              Eq.ndrec (motive := fun {inst_2} =>
+                                                                ∀ (ok ok_1 : c → Z.OutZ),
+                                                                  ok = ok_1 →
+                                                                    ∀ (err err_1 : Z.OutZ),
+                                                                      err = err_1 →
+                                                                        Z.guard c ok err = Z.guard c ok_1 err_1)
+                                                                (fun ok ok_1 e_ok =>
+                                                                  Eq.rec (motive := fun ok_2 e_ok =>
+                                                                    ∀ (err err_1 : Z.OutZ),
+                                                                      err = err_1 →
+                                                                        Z.guard c ok err = Z.guard c ok_2 err_1)
+                                                                    (fun err err_1 e_err =>
+                                                                      e_err ▸ Eq.refl (Z.guard c ok err))
+                                                                    e_ok)
+                                                                (Subsingleton.elim inst inst_1))
+                                                            (magic = MAGIC ∧
+                                                              canAccess acl sender topic ∧ hasTokens st sender)
+                                                            (fun x =>
+                                                              Z.guard
+                                                                (24 ≤ ↑off.toNat ∧
+                                                                  ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                (fun h_1 =>
+                                                                  Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                                    Z.advance s (↑off.toNat - 12)
+                                                                      (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                        h_1)
+                                                                      fun p =>
+                                                                      Z.take p (↑len.toNat)
+                                                                        (Z.emitPayload2._proof_4 (↑off.toNat) len.toNat
+                                                                          h_1)
+                                                                        fun q =>
+                                                                        Z.OutZ.ret (decTokens st sender) (↑len.toNat) q)
+                                                                (Z.OutZ.drop Code.badPayload))
+                                                            (fun x =>
+                                                              Z.guard (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                                (fun h2 =>
+                                                                  Z.advance b0 (↑off.toNat) (Z.F2._proof_3 off len h2)
+                                                                    fun p =>
+                                                                    Z.take p (↑len.toNat) (Z.F2._proof_4 off len h2)
+                                                                      fun q =>
+                                                                      Z.OutZ.ret (decTokens st sender) (↑len.toNat) q)
+                                                                (Z.OutZ.drop Code.badPayload))
+                                                            (funext fun x =>
+                                                              have hcd :=
+                                                                {
+                                                                  mp := fun h =>
+                                                                    match h with
+                                                                    | ⟨a, b⟩ =>
+                                                                      ⟨a,
+                                                                        Decidable.byContradiction fun a =>
+                                                                          Z.router2z_fusion._proof_1_8 off len b a⟩,
+                                                                  mpr := fun h =>
+                                                                    match h with
+                                                                    | ⟨a, b⟩ =>
+                                                                      ⟨a,
+                                                                        Decidable.byContradiction fun a =>
+                                                                          Z.router2z_fusion._proof_1_9 off len b a⟩ };
+                                                              Eq.mpr
+                                                                (id
+                                                                  (congrArg
+                                                                    (fun _a =>
+                                                                      Z.guard
+                                                                          (24 ≤ ↑off.toNat ∧
+                                                                            ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                          (fun h_1 =>
+                                                                            Z.advance b0 12 (Z.parseHeader2._proof_2 h)
+                                                                              fun s =>
+                                                                              Z.advance s (↑off.toNat - 12)
+                                                                                (Z.emitPayload2._proof_3 (↑off.toNat)
+                                                                                  len.toNat h_1)
+                                                                                fun p => ⋯)
+                                                                          (Z.OutZ.drop Code.badPayload) =
+                                                                        _a)
+                                                                    (Eq.symm
+                                                                      (Z.aux_guard_cond_eq
+                                                                        (24 ≤ ↑off.toNat ∧
+                                                                          ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                        (24 ≤ ↑off.toNat ∧ ↑off.toNat + ↑len.toNat ≤ n)
+                                                                        hcd
+                                                                        (fun h2 =>
+                                                                          Z.advance b0 (↑off.toNat)
+                                                                            (Z.F2._proof_3 off len h2) fun p =>
+                                                                            Z.take p (↑len.toNat)
+                                                                              (Z.F2._proof_4 off len h2) fun q =>
+                                                                              Z.OutZ.ret (decTokens st sender)
+                                                                                (↑len.toNat) q)
+                                                                        (Z.OutZ.drop Code.badPayload)))))
+                                                                ((fun c {inst inst_1} =>
+                                                                    Eq.ndrec (motive := fun {inst_2} =>
+                                                                      ∀ (ok ok_1 : c → Z.OutZ),
+                                                                        ok = ok_1 →
+                                                                          ∀ (err err_1 : Z.OutZ),
+                                                                            err = err_1 →
+                                                                              Z.guard c ok err = Z.guard c ok_1 err_1)
+                                                                      (fun ok ok_1 e_ok =>
+                                                                        Eq.rec (motive := fun ok_2 e_ok =>
+                                                                          ∀ (err err_1 : Z.OutZ),
+                                                                            err = err_1 →
+                                                                              Z.guard c ok err = Z.guard c ok_2 err_1)
+                                                                          (fun err err_1 e_err =>
+                                                                            e_err ▸ Eq.refl (Z.guard c ok err))
+                                                                          e_ok)
+                                                                      (Subsingleton.elim inst inst_1))
+                                                                  (24 ≤ ↑off.toNat ∧
+                                                                    ↑off.toNat + ↑len.toNat ≤ n - 12 + 12)
+                                                                  (fun h_1 =>
+                                                                    Z.advance b0 12 (Z.parseHeader2._proof_2 h) fun s =>
+                                                                      Z.advance s (↑off.toNat - 12)
+                                                                        (Z.emitPayload2._proof_3 (↑off.toNat) len.toNat
+                                                                          h_1)
+                                                                        fun p =>
+                                                                        Z.take p (↑len.toNat)
+                                                                          (Z.emitPayload2._proof_4 (↑off.toNat)
+                                                                            len.toNat h_1)
+                                                                          fun q =>
+                                                                          Z.OutZ.ret (decTokens st sender) (↑len.toNat)
+                                                                            q)
+                                                                  (fun h =>
+                                                                    Z.advance b0 (↑off.toNat)
+                                                                      (Z.F2._proof_3 off len (hcd.mp h)) fun p =>
+                                                                      Z.take p (↑len.toNat)
+                                                                        (Z.F2._proof_4 off len (hcd.mp h)) fun q =>
+                                                                        Z.OutZ.ret (decTokens st sender) (↑len.toNat) q)
+                                                                  (funext fun h2 =>
+                                                                    Eq.mpr
+                                                                      (id
+                                                                        (congrArg
+                                                                          (fun _a =>
+                                                                            _a =
+                                                                              Z.advance b0 (↑off.toNat)
+                                                                                (Z.F2._proof_3 off len (hcd.mp h2))
+                                                                                fun p =>
+                                                                                Z.take p ↑len.toNat ⋯ fun q =>
+                                                                                  Z.OutZ.ret (decTokens st sender)
+                                                                                    (↑len.toNat) q)
+                                                                          (Z.slice_fuse_dep b0 12 (↑off.toNat - 12)
+                                                                            (Decidable.byContradiction fun a =>
+                                                                              Z.router2z_fusion._proof_1_10 h off len a)
+                                                                            (Decidable.byContradiction fun a =>
+                                                                              Z.router2z_fusion._proof_1_11 off len h2
+                                                                                a)
+                                                                            (Decidable.byContradiction fun a =>
+                                                                              Z.router2z_fusion._proof_1_12 off len h2
+                                                                                a)
+                                                                            fun m hm p =>
+                                                                            Z.take p (↑len.toNat)
+                                                                              (Decidable.byContradiction fun a =>
+                                                                                Z.router2z_fusion._proof_1_13 off len h2
+                                                                                  m hm a)
+                                                                              fun q =>
+                                                                              Z.OutZ.ret (decTokens st sender)
+                                                                                (↑len.toNat) q)))
+                                                                      (Z.aux_advance_idx b0 (12 + (↑off.toNat - 12))
+                                                                        (↑off.toNat)
+                                                                        (Decidable.byContradiction fun a =>
+                                                                          Z.router2z_fusion._proof_1_14 off a)
+                                                                        (Decidable.byContradiction fun a =>
+                                                                          Z.router2z_fusion._proof_1_12 off len h2 a)
+                                                                        (Decidable.byContradiction fun a =>
+                                                                          Z.router2z_fusion._proof_1_15 off len h2 a)
+                                                                        fun m hm p =>
+                                                                        Z.take p (↑len.toNat)
+                                                                          (Decidable.byContradiction fun a =>
+                                                                            Z.router2z_fusion._proof_1_16 off len h2 m
+                                                                              hm a)
+                                                                          fun q =>
+                                                                          Z.OutZ.ret (decTokens st sender) (↑len.toNat)
+                                                                            q))
+                                                                  (Z.OutZ.drop Code.badPayload)
+                                                                  (Z.OutZ.drop Code.badPayload)
+                                                                  (Eq.refl (Z.OutZ.drop Code.badPayload))))
+                                                            (Z.OutZ.drop Code.unauthOrRate)
+                                                            (Z.OutZ.drop Code.unauthOrRate)
+                                                            (Eq.refl (Z.OutZ.drop Code.unauthOrRate))))))))))))))))))
+                (Z.OutZ.drop Code.truncated) (Z.OutZ.drop Code.truncated) (Eq.refl (Z.OutZ.drop Code.truncated))))))))
+theorem VIR.Z.slice_fuse_dep : ∀ {n : Int} (b : Z.SliceZ n) (i j : Int) (h₁ : 0 ≤ i ∧ i ≤ n) (h₂ : 0 ≤ j ∧ j ≤ n - i)
+  (h₃ : 0 ≤ i + j ∧ i + j ≤ n) (e : (m : Int) → m = n - (i + j) → Z.SliceZ m → Z.OutZ),
+  (Z.advance b i h₁ fun s₁ => Z.advance s₁ j h₂ fun s₂ => e (n - i - j) ⋯ s₂) =
+    Z.advance b (i + j) h₃ fun s₂ => e (n - (i + j)) ⋯ s₂ :=
+fun {n} b i j h₁ h₂ h₃ e =>
+  id
+    (Z.SliceZ.congr_heq_dep e (Decidable.byContradiction fun a => Z.slice_fuse_dep._proof_1 i j a) rfl
+      (Z.SliceZ.adv_adv_heq b i j h₁ h₂ h₃))
+theorem VIR.Z.SliceZ.congr_heq_dep : ∀ {N : Int} (e : (m : Int) → m = N → Z.SliceZ m → Z.OutZ) {m₁ m₂ : Int}
+  (h₁ : m₁ = N) (h₂ : m₂ = N) {x : Z.SliceZ m₁} {y : Z.SliceZ m₂}, x ≍ y → e m₁ h₁ x = e m₂ h₂ y :=
+fun {N} e {m₁ m₂} h₁ h₂ {x} {y} hxy =>
+  Eq.rec (motive := fun {N} h₁ => ∀ (e : (m : Int) → m = N → Z.SliceZ m → Z.OutZ) (h₂ : m₂ = N), e m₁ h₁ x = e m₂ h₂ y)
+    (fun e h₂ =>
+      Eq.rec (motive := fun {m₁} h₂ =>
+        ∀ {x : Z.SliceZ m₁}, x ≍ y → ∀ (e : (m : Int) → m = m₁ → Z.SliceZ m → Z.OutZ), e m₁ (Eq.refl m₁) x = e m₂ h₂ y)
+        (fun {x} hxy e =>
+          HEq.casesOn (motive := fun {β} a t =>
+            Z.SliceZ m₂ = β → y ≍ a → hxy ≍ t → e m₂ (Eq.refl m₂) x = e m₂ (Eq.refl m₂) y) hxy
+            (fun h h_1 =>
+              Eq.ndrec (motive := fun {x} =>
+                ∀ (hxy : x ≍ y), hxy ≍ HEq.refl x → e m₂ (Eq.refl m₂) x = e m₂ (Eq.refl m₂) y)
+                (fun hxy h => Eq.refl (e m₂ (Eq.refl m₂) y)) (eq_of_heq h_1) hxy)
+            (Eq.refl (Z.SliceZ m₂)) (HEq.refl y) (HEq.refl hxy))
+        h₂ hxy e)
+    h₁ e h₂
+theorem VIR.Z.aux_advance_idx : ∀ {n : Int} (b : Z.SliceZ n) (i j : Int) (hij : i = j) (hi : 0 ≤ i ∧ i ≤ n)
+  (hj : 0 ≤ j ∧ j ≤ n) (e : (m : Int) → m = n - j → Z.SliceZ m → Z.OutZ),
+  (Z.advance b i hi fun s => e (n - i) ⋯ s) = Z.advance b j hj fun s => e (n - j) ⋯ s :=
+fun {n} b i j hij hi hj e =>
+  Eq.rec (motive := fun j hij =>
+    ∀ (hj : 0 ≤ j ∧ j ≤ n) (e : (m : Int) → m = n - j → Z.SliceZ m → Z.OutZ),
+      (Z.advance b i hi fun s =>
+          e (n - i) (Decidable.byContradiction fun a => Z.aux_advance_idx._proof_1 i j hij a) s) =
+        Z.advance b j hj fun s => e (n - j) rfl s)
+    (fun hj e =>
+      Eq.refl
+        (Z.advance b i hi fun s =>
+          e (n - i) (Decidable.byContradiction fun a => Z.aux_advance_idx._proof_1 i i (Eq.refl i) a) s))
+    hij hj e
+theorem VIR.Z.SliceZ.heq_of : ∀ {m₁ m₂ : Int} (s₁ : Z.SliceZ m₁) (s₂ : Z.SliceZ m₂),
+  m₁ = m₂ → s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂ :=
+fun {m₁ m₂} s₁ s₂ hm hb ho =>
+  Eq.ndrec (motive := fun {m₂} => ∀ (s₂ : Z.SliceZ m₂), s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂)
+    (fun s₂ hb ho =>
+      Z.SliceZ.casesOn (motive := fun t => s₁ = t → s₁ ≍ s₂) s₁
+        (fun buf off fits h =>
+          Eq.ndrec (motive := fun s₁ => s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂)
+            (fun hb ho =>
+              Z.SliceZ.casesOn (motive := fun t => s₂ = t → { buf := buf, off := off, fits := fits } ≍ s₂) s₂
+                (fun buf_1 off_1 fits_1 h =>
+                  Eq.ndrec (motive := fun s₂ =>
+                    { buf := buf, off := off, fits := fits }.buf = s₂.buf →
+                      { buf := buf, off := off, fits := fits }.off = s₂.off →
+                        { buf := buf, off := off, fits := fits } ≍ s₂)
+                    (fun hb ho =>
+                      Eq.ndrec (motive := fun buf_2 =>
+                        ∀ (fits_2 : 0 ≤ off_1 ∧ 0 ≤ m₁ ∧ off_1 + m₁ ≤ ↑buf_2.size),
+                          { buf := buf, off := off, fits := fits } ≍ { buf := buf_2, off := off_1, fits := fits_2 })
+                        (fun fits_2 =>
+                          Eq.ndrec (motive := fun off_2 =>
+                            ∀ (fits_3 : 0 ≤ off_2 ∧ 0 ≤ m₁ ∧ off_2 + m₁ ≤ ↑buf.size),
+                              { buf := buf, off := off, fits := fits } ≍ { buf := buf, off := off_2, fits := fits_3 })
+                            (fun fits_3 => HEq.rfl) ho fits_2)
+                        hb fits_1)
+                    (Eq.symm h) hb ho)
+                (Eq.refl s₂))
+            (Eq.symm h) hb ho)
+        (Eq.refl s₁))
+    hm s₂ hb ho
+theorem VIR.Z.SliceZ.adv_adv_heq : ∀ {n : Int} (s : Z.SliceZ n) (i j : Int) (h₁ : 0 ≤ i ∧ i ≤ n)
+  (h₂ : 0 ≤ j ∧ j ≤ n - i) (h₃ : 0 ≤ i + j ∧ i + j ≤ n), (s.adv i h₁).adv j h₂ ≍ s.adv (i + j) h₃ :=
+fun {n} s i j h₁ h₂ h₃ =>
+  Z.SliceZ.heq_of ((s.adv i h₁).adv j h₂) (s.adv (i + j) h₃)
+    (Decidable.byContradiction fun a => Z.SliceZ.adv_adv_heq._proof_1_1 i j a) rfl
+    (of_eq_true
+      (Eq.trans
+        (congrFun'
+          (congrArg Eq
+            (congrArg Z.SliceZ.off
+              (Z.SliceZ.mk.congr_simp (s.adv i h₁).buf s.buf (id (Eq.refl s.buf)) ((s.adv i h₁).off + j)
+                (s.off + (i + j)) (Int.add_assoc s.off i j) (Z.SliceZ.adv._proof_2 (s.adv i h₁) j h₂))))
+          (s.off + (i + j)))
+        (eq_self (s.off + (i + j)))))

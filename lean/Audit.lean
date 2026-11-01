@@ -29,3 +29,10 @@ open VIR
 #print axioms VIR.router2_fusion
 #print axioms VIR.Deep2.router2_fusion_deep
 #print axioms VIR.Deep2.router2_fusion_deep_steps
+#print VIR.Z.router2z_fusion
+#print VIR.Z.slice_fuse_dep
+#print VIR.Z.SliceZ.congr_heq_dep
+#print VIR.Z.aux_advance_idx
+#print axioms VIR.Z.router2z_fusion
+#print VIR.Z.SliceZ.heq_of
+#print VIR.Z.SliceZ.adv_adv_heq

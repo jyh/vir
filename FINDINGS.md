@@ -8,6 +8,6 @@
 | M-D1 | MetaPRL | a module whose summary id is ≥ 2^30 cannot load its text archive (`Filter_summary.dest_id: not an int`); vir2 is stored as .prlb; fix is metaprl #88 | mojave @[bus] / @[bus] |
 | M-D2 | MetaPRL | the mp shell fails past ~1,024 chars per phrase; mpdrive now refuses > 1,000 | mojave @[bus] |
 | M-D3 | MetaPRL | an `export ()` after a failed step overwrote program 1's committed .prla (restored from git; verdict green); mpdrive now refuses export after an error | mojave @[bus] |
-| L-F4 | Lean | Nat truncated subtraction manufactures a context-dependent rewrite that Int offsets do not | vir RESULTS-2 |
+| L-F4 | Lean | Nat truncated subtraction manufactures a context-dependent rewrite that Int offsets do not. **Refined (row 15, amend-7 R1 HOLDS): with Int offsets the rewrite is still needed, and only its CONTEXT dependence goes away** | vir RESULTS-2 |
 | L-F5 | Lean | the HEq cost is fixed per representation and does not grow with dynamic indices (program 2 = program 1 = 20) | vir RESULTS-2 |
 | V-F1 | harness | the C1 class missed `≍` (HEq's notation): program 1 C1heq read 5, true 20 — vir's own needle defect | vir RESULTS-2 §0 |

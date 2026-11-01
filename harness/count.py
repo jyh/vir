@@ -71,20 +71,23 @@ def lean(d):
     t = os.path.join(d, 'out', 'terms.txt')
     if os.path.isfile(t):
         tt = read(t)
-        rows.append(('C1', len(CAST_RE.findall(tt)), 'MEASURED'))
         # split (amend-4): the slice_fuse path (slice_fuse and the Slice.* lemmas it uses) vs the rest
-        tb = re.split(r'\n(?=(?:@\[[^\]]*\]\s*)?theorem\s)', tt)
+        tball = re.split(r'\n(?=(?:@\[[^\]]*\]\s*)?theorem\s)', tt)
+        # ROW 15: the Int-offset VARIANT's prints (VIR.Z.*) are scored only by their own P2Z rows, never in the arm's pool
+        tb = [b for b in tball if not re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.Z\.', b)]
+        rows.append(('C1', sum(len(CAST_RE.findall(b)) for b in tb), 'MEASURED'))
         def cnt(pat):
             return sum(len(CAST_RE.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+' + pat, b))
         fl = cnt(r'\S*\.Flat\.')                      # L-FLAT control (P1b)
         sl = cnt(r'(?!\S*\.Flat\.)\S*(slice_fuse|\.Slice\.)')   # L-IDX slice_fuse path (P1)
-        rows += [('C1slice', sl, 'MEASURED'), ('C1flat', fl, 'MEASURED'), ('C1rest', len(CAST_RE.findall(tt)) - sl - fl, 'MEASURED')]
+        rows += [('C1slice', sl, 'MEASURED'), ('C1flat', fl, 'MEASURED'), ('C1rest', sum(len(CAST_RE.findall(b)) for b in tb) - sl - fl, 'MEASURED')]
         # amend-5 C1heq per program path: P1 = slice_fuse + Slice.heq_of/congr_heq/adv_adv_heq; P2 = slice_fuse_dep + congr_heq_dep + aux_advance_idx + heq_of/adv_adv_heq
         HEQ = re.compile(r'(?<![A-Za-z0-9_.])(HEq|heq_of_eq)(?![A-Za-z0-9_])|≍')
         def heq(names):
-            return sum(len(HEQ.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.(' + names + r')\s', b))
+            return sum(len(HEQ.findall(b)) for b in tball if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.(' + names + r')\s', b))
         rows += [('C1heq', heq(r'slice_fuse|Slice\.heq_of|Slice\.congr_heq|Slice\.adv_adv_heq'), 'MEASURED'),
-                 ('P2.C1heq', heq(r'slice_fuse_dep|Slice\.congr_heq_dep|aux_advance_idx|Slice\.heq_of|Slice\.adv_adv_heq'), 'MEASURED')]
+                 ('P2.C1heq', heq(r'slice_fuse_dep|Slice\.congr_heq_dep|aux_advance_idx|Slice\.heq_of|Slice\.adv_adv_heq'), 'MEASURED'),
+                 ('P2Z.C1heq', heq(r'Z\.slice_fuse_dep|Z\.SliceZ\.congr_heq_dep|Z\.aux_advance_idx|Z\.SliceZ\.heq_of|Z\.SliceZ\.adv_adv_heq'), 'MEASURED')]
     else:
         rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))
@@ -107,6 +110,13 @@ def lean(d):
             u2 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b2)}
             rows += [('P2.C3', len(u2), 'MEASURED'), ('P2.C2cond', len(re.findall(r'\(by ', b2)), 'MEASURED'),
                      ('P2.C5chain', chain_tokens(b2), 'MEASURED')]
+        # ROW 15 (amend-7): the Int-offset variant's scored chain, router2z_fusion
+        bz = next((b for b in blocks(scored) if re.match(r'theorem\s+router2z_fusion\b', b)), '')
+        if bz:
+            uz = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', bz)}
+            rows += [('P2Z.C3', len(uz), 'MEASURED'), ('P2Z.C2cond', len(re.findall(r'\(by ', bz)), 'MEASURED'),
+                     ('P2Z.C5chain', chain_tokens(bz), 'MEASURED'),
+                     ('P2Z.ctxCleared', len(re.findall(r'\bclear\s', bz)), 'MEASURED')]
         # L-DEEP (row 9): aux rules are constructors of Step; used = referenced in router_fusion_deep_steps
         dblk = next((b for b in blocks(scored) if re.match(r'theorem\s+router_fusion_deep_steps\b', b)), '')
         if dblk:

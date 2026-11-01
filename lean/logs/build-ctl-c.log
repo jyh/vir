@@ -1,0 +1,23 @@
+saltqueue: ticket P2 seat=root pid=61427
+✔ [2/12] Built VIR.Core (206ms)
+✔ [3/12] Built VIR.Rules (220ms)
+✔ [4/12] Built VIR.Flat (210ms)
+✔ [5/12] Built VIR.Deep (369ms)
+✔ [6/12] Built VIR.Router2Z (378ms)
+✔ [7/12] Built VIR.Router (237ms)
+✔ [8/12] Built VIR.Exit (192ms)
+✖ [9/12] Building VIR.Router2 (299ms)
+trace: .> LEAN_PATH=<scratch>/ctl/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean <scratch>/ctl/VIR/Router2.lean -o <scratch>/ctl/.lake/build/lib/lean/VIR/Router2.olean -i <scratch>/ctl/.lake/build/lib/lean/VIR/Router2.ilean -c <scratch>/ctl/.lake/build/ir/VIR/Router2.c --setup <scratch>/ctl/.lake/build/ir/VIR/Router2.setup.json --json
+error: VIR/Router2.lean:107:75: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ b ≤ 11
+  a ≥ 24
+where
+ a := ↑n
+ b := ↑off.toNat
+error: Lean exited with code 1
+✔ [10/12] Built VIR.Deep2 (400ms)
+Some required targets logged failures:
+- VIR.Router2
+error: build failed
+saltbuild EXIT=1
