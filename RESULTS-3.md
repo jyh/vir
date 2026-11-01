@@ -90,9 +90,9 @@ mojave added one STORED.tsv row per program-1 path lemma and named the unit (@[b
 
 | program | C5 (refines) | C5lex | C5tok (whitespace) | C5.main | inArchive | mojave (Q) |
 |---|---|---|---|---|---|---|
-| 1 | **10** | **487** | 280 | 5 (router_fuse) | 10/10 | 10 · 487 (his "11 tactics" corrected to 10 by him) — **agrees** |
-| 2 | **12** | **1,236** | 688 | 12 | 12/12 | 12 · 1,236 — **agrees** (his 11/11 was a needle defect in his own check, he says) |
+| 1 | **10** | **487** | 280 | 5 (router_fuse) | 10/10 | 10 · 487 (mojave corrected its own "11 tactics" to 10) — **agrees** |
+| 2 | **12** | **1,236** | 688 | 12 | 12/12 | 12 · 1,236 — **agrees** (mojave reports its 11/11 as a needle defect in its own check) |
 | 3 | **21** | 259 | 178 | 21 | 21/21 | 21 tactics, no token figure stated |
 
-⇒ **MetaPRL C5 is H on all three programs and agrees with mojave's figures in his unit.** C5chain (whitespace, scored chain) is unchanged. The Lean C5 rows count lines and tokens of VIR/*.lean, so they are a different unit and no ratio is drawn.
+⇒ **MetaPRL C5 is H on all three programs and agrees with mojave's figures in mojave's unit.** C5chain (whitespace, scored chain) is unchanged. The Lean C5 rows count lines and tokens of VIR/*.lean, so they are a different unit and no ratio is drawn.
 
