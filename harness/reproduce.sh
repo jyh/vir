@@ -23,9 +23,9 @@ chk "$V/harness/metaprl-counts-2026-11-01.tsv"  --arm metaprl --program 1 "$M"
 chk "$V/harness/metaprl-counts-program2.tsv"    --arm metaprl --program 2 "$M"
 chk "$V/harness/metaprl-counts-program3.tsv"    --arm metaprl --program 3 "$M"
 SP=${SPIKE:-$HOME/projects/claude/wt/x86lean/o95-spike}
-if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha d7e992c802fcb430fafb50e41b5b7d36d9cd860c --compose "$V/compose" --compose-sha 24102d61aaf90ccf25915c422c49463cc2b44b2e "$SP"
-  # row 53: the two-call cost, at spike 7241997 (Router/MultiCall.lean) + vir 39aeab7 (compose/RateLimit.lean)
-  chk "$V/harness/compiler-counts-multicall.tsv" --arm compiler --sha 724199731b33deab888ca747e08aa59585a1c27d --compose "$V/compose" --compose-sha 39aeab70d42fd48c6762f01285c06e7fbb5e1fe6 "$SP"
+if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha d7e992c802fcb430fafb50e41b5b7d36d9cd860c --compose "$V/compose" --compose-sha 1740c5678264d216703c39748f496fe99aa27178 "$SP"
+  # row 53: the two-call cost, at spike 7241997 (Router/MultiCall.lean) + vir ed68a89 (compose/RateLimit.lean)
+  chk "$V/harness/compiler-counts-multicall.tsv" --arm compiler --sha 724199731b33deab888ca747e08aa59585a1c27d --compose "$V/compose" --compose-sha ed68a898723f2ef392ae05ccb97f696898e0695a "$SP"
 else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

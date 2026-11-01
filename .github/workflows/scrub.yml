@@ -1,0 +1,81 @@
+name: Scrub
+
+# Commit hygiene, enforced by CI. vir runs the strong form: the FULL history on
+# every push. The gates are ported unchanged from jyh/x86lean (scripts/); each
+# proves it can fail (--self-test) before it is allowed to pass.
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+
+jobs:
+  trailers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate self-test
+        run: python3 scripts/check_commit_trailers.py --self-test
+      - name: Full history
+        run: python3 scripts/check_commit_trailers.py --range HEAD
+
+  private-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate self-test
+        run: python3 scripts/check_private_paths.py --self-test
+      - name: Subject gate self-test
+        run: python3 scripts/check_pr_descriptions.py --self-test
+      - name: Tree
+        run: python3 scripts/check_private_paths.py --tree
+      - name: Messages
+        run: python3 scripts/check_private_paths.py --messages
+      - name: Every commit subject
+        run: python3 scripts/check_pr_descriptions.py --history
+      - name: History (what each commit introduced)
+        run: python3 scripts/check_private_paths.py --history
+
+  infra-names:
+    name: no infrastructure name in the public tree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python3 scripts/check_infra_names.py --self-test
+      - run: python3 scripts/check_infra_names.py --tree
+      - run: python3 scripts/check_infra_names.py --history
+
+  pr-descriptions:
+    name: no private-record path or session URL in PR titles/bodies (the forge-side prose)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/check_pr_descriptions.py --self-test
+      - name: scan every open PR's title and body via the forge API
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/check_pr_descriptions.py --open
+
+  verification-claims:
+    name: a public verification claim names its check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: the checker can still go red (self-test)
+        run: python3 scripts/check_verification_claims.py --self-test
+      - name: every verification claim in a README or abstract cites its check
+        if: success() || failure()
+        run: python3 scripts/check_verification_claims.py --verbose

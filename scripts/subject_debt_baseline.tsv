@@ -1,0 +1,3 @@
+# subject_debt_baseline.tsv -- ACCEPTED DEBT for public commit SUBJECTS.
+# vir accepts NONE: every subject in this history passed the gate at publication.
+# sha<TAB>sha256(subject)[:16]. Only the owner adds a row.
