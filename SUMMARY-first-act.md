@@ -32,12 +32,13 @@ The arms:
 | Q4 | MetaPRL's F1 recurs | — | measured (Q) | **HOLDS** (the binder variable is `topic`, not `off`) | — | pre-proof |
 | Q5 | exploratory: size | C5chain 202 · deep 649 | 12 tactics / 1,236 tok (Q) | no direction | — | — |
 | R1 (amend-7) | Int offsets: the rewrite stays but is context-free | P2Z.C3 **6** = 6; cleared-guard proof builds; Nat control RED | — | **HOLDS** | amend-7 | pre-build (vir 8c163d0) |
+| S1 (amend-8) | the deep chain's 2nd context-dependent rule is a statement choice | P2S.C3deep **7** = 7; ctxHolds 2 → **1**; `i ≤ m` control RED | — | **HOLDS** | amend-8 | pre-build (vir 5c27056) |
 
 ## What it says, in four lines (each line's limit is in the row it cites)
 1. **Lean's indexed slices cost a FIXED HEq transport** (20 tokens) that does not grow with dynamic offsets (P1, Q1). A flat representation removes it (P1b on intent).
 2. **MetaPRL pays in OBLIGATIONS rather than casts** (P2, provisional). On program 2 the cost moved from conditions to equality obligations (Q2 split), so what is predicted to be "well-formedness" needs naming more finely.
 3. **The object under-states its rules on both arms** (P3, Q3). How many rules it under-states depends on the embedding (L-F3: shallow 3, deep 5), on the reading (C3 vs C3strict), and on the statement of the rules (RESULTS-2 addendum 4's second control).
-4. **The context-dependent rewrite is about the NUMBER TYPE, not the logic** (R1). Nat makes the rewrite depend on an enclosing guard. Int keeps the rewrite and drops the dependence.
+4. **The context-dependent rewrite is about the NUMBER TYPE, not the logic** (R1). Nat makes the rewrite depend on an enclosing guard. Int keeps the rewrite and drops the dependence. On both embeddings, exactly ONE rewrite of program 2 genuinely needs an enclosing guard, `aux_advance_idx` (S1). The deep chain's second one was a choice of how the rule was stated.
 
 ## Limits that ride with every verdict
 - **Only two programs, both routers.** Every count is over one chain per arm per program.

@@ -11,3 +11,5 @@
 'VIR.Z.router2z_fusion' depends on axioms: [propext, Classical.choice, Quot.sound]
 'VIR.Deep2.F2_exit' depends on axioms: [propext, Quot.sound]
 'VIR.Deep2.U2_exit' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2S.router2s_fusion_deep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIR.Deep2S.router2s_fusion_deep_steps' depends on axioms: [propext]

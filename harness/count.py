@@ -140,7 +140,15 @@ def lean(d):
             u = {a for a in dec if re.search(r'\.' + a + r'\b', d2)}
             g = {a for a in giv if re.search(r'\.' + a + r'\b', d2)}
             rows += [('P2.C3deep', len(u), 'MEASURED'), ('P2.C3deepGivenUsed', len(g), 'MEASURED'),
-                     ('P2.C5chainDeep', chain_tokens(d2), 'MEASURED'), ('P2.C2deepCond', len(re.findall(r'\(by ', d2)), 'MEASURED')]
+                     ('P2.C5chainDeep', chain_tokens(d2), 'MEASURED'), ('P2.C2deepCond', len(re.findall(r'\(by ', d2)), 'MEASURED'),
+                     ('P2.ctxHolds', len(re.findall(r'\.mem\b', d2)), 'MEASURED')]
+        # ROW 18 (amend-8): the own-conjunct variant's chain, router2s_fusion_deep_steps (VIR.Deep2S.StepS)
+        ds = next((b for b in blocks(scored) if re.match(r'theorem\s+router2s_fusion_deep_steps\b', b)), '')
+        if ds:
+            dec = set(re.findall(r'^\s*\|\s*(aux_[A-Za-z0-9_]*)', text, re.M))
+            u = {a for a in dec if re.search(r'\.' + a + r'\b', ds)}
+            rows += [('P2S.C3deep', len(u), 'MEASURED'), ('P2S.ctxHolds', len(re.findall(r'\.mem\b', ds)), 'MEASURED'),
+                     ('P2S.C2deepCond', len(re.findall(r'\(by ', ds)), 'MEASURED'), ('P2S.C5chainDeep', chain_tokens(ds), 'MEASURED')]
     else:
         rows += [('C2', 0, 'EMPTY'), ('C3', 0, 'EMPTY')]
     a = os.path.join(d, 'out', 'axioms.txt')

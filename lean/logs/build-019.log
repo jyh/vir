@@ -1,0 +1,63 @@
+saltqueue: ticket P2 seat=root pid=59477
+✖ [12/14] Building VIR.Deep2S (216ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Deep2S.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep2S.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Deep2S.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Deep2S.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Deep2S.setup.json --json
+error: VIR/Deep2S.lean:29:85: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+  a - c ≤ 0
+where
+ a := ↑m
+ b := ↑i
+ c := ↑Y
+error: VIR/Deep2S.lean:29:85: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+  a - c ≤ 0
+where
+ a := ↑m
+ b := ↑i
+ c := ↑Y
+error: VIR/Deep2S.lean:38:10: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  decide (m ≤ y.eval) && decide (y.eval + z.eval ≤ (b.adv i).len + i)
+in the target expression
+  (if (decide (m ≤ y.eval) && decide (y.eval + z.eval ≤ (b.adv i).len + i)) = true then den acl (k (b.adv i))
+    else den acl e) =
+    if (decide (m ≤ y.eval) && decide (y.eval + z.eval ≤ b.len)) = true then den acl (k (b.adv i)) else den acl e
+
+case aux_le_len_adv_own
+acl : Principal → TopicId → Bool
+Γ : List (Cond Val)
+a b✝ : Tm Val
+Γ✝ : List (Cond Val)
+b : Val
+i m : Nat
+y z : Ix Val
+k : Val → Tm Val
+e : Tm Val
+hi : i < m
+a✝ : ∀ (d : Cond Val), d ∈ Γ✝ → Cond.eval acl d = true
+⊢ (if (decide (m ≤ y.eval) && decide (y.eval + z.eval ≤ (b.adv i).len + i)) = true then den acl (k (b.adv i))
+    else den acl e) =
+    if (decide (m ≤ y.eval) && decide (y.eval + z.eval ≤ b.len)) = true then den acl (k (b.adv i)) else den acl e
+
+Note: The target expression is not type-correct under the `instances` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  Application type mismatch: The argument
+    (Ix.lit m).eval.decLe y.eval
+  has type
+    Decidable ((Ix.lit m).eval ≤ y.eval)
+  but is expected to have type
+    Decidable (m ≤ y.eval)
+  in the application
+    @decide (m ≤ y.eval) ((Ix.lit m).eval.decLe y.eval)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Deep2S
+error: build failed
+saltbuild EXIT=1

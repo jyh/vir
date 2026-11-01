@@ -1,0 +1,28 @@
+saltqueue: ticket P2 seat=root pid=63845
+✔ [10/14] Built VIR.Exit2 (208ms)
+✖ [11/14] Building VIR.Deep2S (222ms)
+trace: .> LEAN_PATH=<scratch>/ctl/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean <scratch>/ctl/VIR/Deep2S.lean -o <scratch>/ctl/.lake/build/lib/lean/VIR/Deep2S.olean -i <scratch>/ctl/.lake/build/lib/lean/VIR/Deep2S.ilean -c <scratch>/ctl/.lake/build/ir/VIR/Deep2S.c --setup <scratch>/ctl/.lake/build/ir/VIR/Deep2S.setup.json --json
+error: VIR/Deep2S.lean:32:20: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  c + d - e ≥ 1
+  b ≥ 0
+  b - c - d ≥ 0
+  b - e ≥ 1
+  a ≥ 0
+  a - b ≥ 0
+  a - c ≤ 0
+where
+ a := ↑m
+ b := ↑i
+ c := ↑Y
+ d := ↑Z
+ e := ↑v.len
+error: Lean exited with code 1
+✔ [12/14] Built VIR.Router2 (329ms)
+Some required targets logged failures:
+- VIR.Deep2S
+error: build failed
+saltbuild EXIT=1
