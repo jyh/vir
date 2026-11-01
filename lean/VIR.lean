@@ -10,3 +10,4 @@ import VIR.Router2Z
 import VIR.Exit2
 import VIR.Deep2S
 import VIR.Router3
+import VIR.Deep3

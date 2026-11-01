@@ -1,4 +1,4 @@
-saltqueue: ticket P2 seat=root pid=46021
+saltqueue: ticket P2 seat=root pid=71108
 theorem VIR.router_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Nat} (b0 : Slice n) (st : State),
   U acl b0 st = F acl b0 st :=
 fun acl {n} b0 st =>

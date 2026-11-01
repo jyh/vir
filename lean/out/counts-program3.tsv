@@ -22,6 +22,8 @@ lean	P2.C5chain	196	MEASURED
 lean	P3.C3	0	MEASURED
 lean	P3.C2cond	0	MEASURED
 lean	P3.C5chain	32	MEASURED
+lean	P3D.C5chain	23	MEASURED
+lean	P3D.C2cond	0	MEASURED
 lean	P3F.C5chain	34	MEASURED
 lean	P3F.ctxCleared	1	MEASURED
 lean	P2Z.C3	6	MEASURED
@@ -42,10 +44,10 @@ lean	P2S.ctxHolds	1	MEASURED
 lean	P2S.C2deepCond	3	MEASURED
 lean	P2S.C5chainDeep	653	MEASURED
 lean	C4	0	MEASURED
-lean	C5	1011	MEASURED
-lean	C5tok	11723	MEASURED
+lean	C5	1034	MEASURED
+lean	C5tok	11862	MEASURED
 lean	C2.scoped	25	MEASURED
 lean	C5.scoped	308	MEASURED
 lean	C5tok.scoped	3452	MEASURED
-lean	C6	39	MEASURED
+lean	C6	41	MEASURED
 lean	C6.scope	0	UNSCOPED

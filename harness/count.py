@@ -140,6 +140,9 @@ def lean(d, prog='1'):
             u3 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b3)}
             rows += [('P3.C3', len(u3), 'MEASURED'), ('P3.C2cond', len(re.findall(r'\(by ', b3)), 'MEASURED'),
                      ('P3.C5chain', chain_tokens(b3), 'MEASURED')]
+        b3d = next((b for b in blocks(scored) if re.match(r'theorem\s+route_acl_safe_deep\b', b)), '')
+        if b3d:   # row 26, exploratory (no prediction pinned)
+            rows += [('P3D.C5chain', chain_tokens(b3d), 'MEASURED'), ('P3D.C2cond', len(re.findall(r'\(by ', b3d)), 'MEASURED')]
         b3s = next((b for b in blocks(scored) if re.match(r'theorem\s+route_acl_safe_flat\b', b)), '')
         if b3s:
             rows += [('P3F.C5chain', chain_tokens(b3s), 'MEASURED'), ('P3F.ctxCleared', len(re.findall(r'\bclear\s', b3s)), 'MEASURED')]
