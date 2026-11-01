@@ -291,7 +291,7 @@ def metaprl(d, sfx=''):
     forms = set(m.group(1) for m in FORM_UNFOLD_RE.finditer(body))
     rows += [('C3', len(used) + len(forms), 'MEASURED'), ('C3strict', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
     rows.append(('C4', len(re.findall(r'^\s*prim(?:_rw)?\s', ml, re.M)), 'MEASURED'))
-    rows.append(('C5', 0, 'UNMEASURED'))   # mojave measures the stored tactic text in vir.prla; no extractor yet
+    rows += metaprl_c5(d, tools, sfx)
     rows.append(('C5chain', len(' '.join(l for l in body.splitlines() if l.strip().startswith('refine')).split()), 'MEASURED'))
     # C6 is PROGRAM-SCOPED (mojave @[bus]; ARM11): program 1's sessions are runs-NN.txt, program N's runs-pN-NN.txt.
     # Until 2026-11-01 (3rd vir head) --program 2/3 read program 1's files. This post-dates the proofs; C6 is no T-prediction.
@@ -300,6 +300,34 @@ def metaprl(d, sfx=''):
     refines = sum(len(re.findall(r'^=== STEP .*:: refine', read(p), re.M)) for p in runs)
     rows += [('C6sessions', len(runs), 'MEASURED'), ('C6refines', refines, 'MEASURED')]
     return rows
+
+
+def metaprl_c5(d, tools, sfx):
+    """C5 (row 32): mojave's MANIFEST vir-arm-tools/STORED.tsv (@[bus]) names each program's stored-proof script and
+    archive. C5 = refine lines of that script, C5tok = their whitespace tokens (C5chain's unit), C5.inArchive = refine
+    arguments that occur, whitespace-normalised, as a `String "(...)"` node of the archive (the .prla stores tactic text so).
+    Post-dates every proof; C5 carries no direction (PREDICTIONS.md)."""
+    man = os.path.join(tools, 'STORED.tsv')
+    prog = sfx or '1'
+    if not os.path.isfile(man):
+        return [('C5', 0, 'UNMEASURED')]
+    row = None
+    for ln in read(man).splitlines()[1:]:
+        f = ln.split('\t')
+        if len(f) >= 3 and f[0] == prog:
+            row = f
+    if row is None:
+        return [('C5', 0, 'UNMEASURED')]
+    sp, ap = os.path.join(tools, row[1]), os.path.join(d, row[2])
+    if not os.path.isfile(sp):
+        return [('C5', 0, 'MISSING')]
+    norm = lambda t: ' '.join(t.split())
+    lines = [l.strip() for l in read(sp).splitlines() if l.strip().startswith('refine')]
+    args = [norm(re.sub(r';;\s*$', '', l)[len('refine'):]) for l in lines]
+    # the archive QUOTES a string only when it must: `String "(dT 0)"` but `String (autoT)` and `String logicAutoT` bare
+    stored = {norm(q if q else bare) for q, bare in re.findall(r'^P\t\S+\tString (?:"(.*)"|(\S+))$', read(ap), re.M)} if os.path.isfile(ap) else set()
+    return [('C5', len(lines), 'MEASURED'), ('C5tok', len(' '.join(lines).split()), 'MEASURED'),
+            ('C5.inArchive', sum(1 for a in args if a in stored), 'MEASURED' if stored else 'EMPTY')]
 
 
 def main():

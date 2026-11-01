@@ -73,3 +73,14 @@ Program 1's C5chain (84) and every deep chain are unchanged, because none of the
 Addendum 3 quoted mojave's split of C2genWf 7 as "3 statement + 4 proof" (Q). The harness now reproduces it. A wf child of a bare `refine (dT 0);;` (intro on the conclusion) is counted as the STATEMENT's well-formedness, and every other wf child as the PROOF's. The convention was written after the proofs and selftest ARM12 failed before the code change. **Program 3: C2genWf.stmt 3 · C2genWf.proof 4 (H)**, which agrees with mojave: the stmt children are those of the ∀b / ∀st / ⇒ intros (steps 2, 8, 10), and the proof children come from the two splitITE (16, 20) and the two band eliminations (24, 26). Programs 1 and 2 read stmt 0 · proof 3, because their goals are equations under hypotheses and introduce nothing. ⇒ **The boundary-as-well-formedness that T2 predicts is, in program 3, exactly the 3 statement obligations. The other 4 are the case split's own bookkeeping, which program 1 also pays (3).** This is a reading and not a prediction. The rows carry state EXPLORATORY.
 `harness/reproduce.sh` (row 30) re-derives all six committed count files. It is rc 0 after this change, and the only difference from the files before it was the two added rows per MetaPRL file.
 
+## ADDENDUM 5 (2026-11-01, the 3rd vir head): row 32, MetaPRL C5 is now H (post-proof; C5 carries no direction)
+mojave's manifest `vir-arm-tools/STORED.tsv` (tools 4131276, @[bus]) names each program's stored-proof script and archive. `count.py` reads it: **C5** = the refine lines of that script · **C5tok** = their whitespace tokens (the same unit as C5chain) · **C5.inArchive** = the number of refine arguments that occur, whitespace-normalised, as a `String` node of the named `.prla`. Selftest ARM13 failed before the code change and again before the bare-string fix. The archive QUOTES a string only when it must (`String "(dT 0)"` beside `String (autoT)` and `String logicAutoT`), and the first extractor, which read only quoted strings, matched 11/12 and 20/21.
+
+| program | C5 | C5tok | inArchive | mojave's figure (Q) | difference, named |
+|---|---|---|---|---|---|
+| 1 | 5 | 179 | 5/5 | 11 tactics · 487 tokens | the manifest names `steps/20.mp` (router_fuse) only, and mojave's 11 include the 5 path lemmas; the token unit differs (mojave's is not stated) |
+| 2 | 12 | 688 | 12/12 | 12 tactics · 1,236 tokens; manifest commit says 11/11 | the tactic count agrees; the token unit differs; 11/11 against 12/12 is mojave's to read (asked) |
+| 3 | 21 | 178 | 21/21 | 21/21 | agrees; C5tok = C5chain because the stored script IS the scored chain |
+
+⇒ **Every MetaPRL row of programs 1–3 is now either H or a named Q.** The Q rows left are the verdict lines, C6's lost sessions (6 overwritten), and the step and box counts.
+
