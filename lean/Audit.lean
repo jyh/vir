@@ -14,3 +14,5 @@ open VIR
 -- axiom receipt: C4 reads this output
 #print axioms router_fusion
 #print axioms router_fusion_casesplit
+#print VIR.Flat.slice_fuse_flat
+#print axioms VIR.Flat.slice_fuse_flat

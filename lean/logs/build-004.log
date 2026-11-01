@@ -1,0 +1,19 @@
+saltqueue: ticket P2 seat=root pid=31964
+⚠ [5/7] Built VIR.Flat (199ms)
+warning: VIR/Flat.lean:20:25: This simp argument is unused:
+  FSlice.mk.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [FSlice.adv, F̵S̵l̵i̵c̵e̵.̵m̵k̵.̵i̵n̵j̵E̵q̵,̵ ̵Nat.add_assoc, Nat.sub_sub, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIR/Flat.lean:20:70: This simp argument is unused:
+  true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [FSlice.adv, FSlice.mk.injEq, Nat.add_assoc, Nat.sub_sub,̵ ̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [6/7] Built VIR (171ms)
+Build completed successfully (7 jobs).
+saltbuild EXIT=0

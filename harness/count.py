@@ -65,8 +65,11 @@ def lean(d):
         rows.append(('C1', len(CAST_RE.findall(tt)), 'MEASURED'))
         # split (amend-4): the slice_fuse path (slice_fuse and the Slice.* lemmas it uses) vs the rest
         tb = re.split(r'\n(?=(?:@\[[^\]]*\]\s*)?theorem\s)', tt)
-        sl = sum(len(CAST_RE.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+\S*(slice_fuse|\.Slice\.)', b))
-        rows += [('C1slice', sl, 'MEASURED'), ('C1rest', len(CAST_RE.findall(tt)) - sl, 'MEASURED')]
+        def cnt(pat):
+            return sum(len(CAST_RE.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+' + pat, b))
+        fl = cnt(r'\S*\.Flat\.')                      # L-FLAT control (P1b)
+        sl = cnt(r'(?!\S*\.Flat\.)\S*(slice_fuse|\.Slice\.)')   # L-IDX slice_fuse path (P1)
+        rows += [('C1slice', sl, 'MEASURED'), ('C1flat', fl, 'MEASURED'), ('C1rest', len(CAST_RE.findall(tt)) - sl - fl, 'MEASURED')]
     else:
         rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))

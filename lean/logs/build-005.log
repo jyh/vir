@@ -1,0 +1,5 @@
+saltqueue: ticket P2 seat=root pid=33710
+✔ [5/7] Built VIR.Flat (204ms)
+✔ [6/7] Built VIR (167ms)
+Build completed successfully (7 jobs).
+saltbuild EXIT=0

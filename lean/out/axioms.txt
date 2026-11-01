@@ -1,2 +1,3 @@
 'VIR.router_fusion' depends on axioms: [propext, Quot.sound]
 'VIR.router_fusion_casesplit' depends on axioms: [propext, Quot.sound]
+'VIR.Flat.slice_fuse_flat' depends on axioms: [propext]

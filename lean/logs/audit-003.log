@@ -1,0 +1,419 @@
+saltqueue: ticket P2 seat=root pid=34399
+theorem VIR.router_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Nat} (b0 : Slice n) (st : State),
+  U acl b0 st = F acl b0 st :=
+fun acl {n} b0 st =>
+  id
+    (id
+      (id
+        (id
+          (id
+            (id
+              ((fun c {inst inst_1} =>
+                  Eq.ndrec (motive := fun {inst_2} =>
+                    ∀ (ok ok_1 : c → Out),
+                      ok = ok_1 → ∀ (err err_1 : Out), err = err_1 → VIR.guard c ok err = VIR.guard c ok_1 err_1)
+                    (fun ok ok_1 e_ok =>
+                      Eq.rec (motive := fun ok_2 e_ok =>
+                        ∀ (err err_1 : Out), err = err_1 → VIR.guard c ok err = VIR.guard c ok_2 err_1)
+                        (fun err err_1 e_err => e_err ▸ Eq.refl (VIR.guard c ok err)) e_ok)
+                    (Subsingleton.elim inst inst_1))
+                (24 ≤ n)
+                (fun h =>
+                  readU32 b0 0 fun magic =>
+                    VIR.guard (magic = MAGIC)
+                      (fun x =>
+                        readU32 b0 4 fun sender =>
+                          readU32 b0 8 fun topic =>
+                            advance b0 12 (parseHeader._proof_2 h) fun s =>
+                              (fun s1 sender topic h =>
+                                  VIR.guard (hasTokens st sender)
+                                    (fun x =>
+                                      letLin (decTokens st sender) fun st' =>
+                                        VIR.guard (canAccess acl sender topic)
+                                          (fun x => advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                          (Out.drop Code.unauthOrRate))
+                                    (Out.drop Code.unauthOrRate))
+                                s sender topic h)
+                      (Out.drop Code.unauthOrRate))
+                (fun h =>
+                  readU32 b0 0 fun magic =>
+                    readU32 b0 4 fun sender =>
+                      readU32 b0 8 fun topic =>
+                        VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                          (fun x =>
+                            letLin (decTokens st sender) fun st' => advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                          (Out.drop Code.unauthOrRate))
+                (funext fun h =>
+                  (fun {n} s s_1 e_s =>
+                      Eq.rec (motive := fun s_2 e_s =>
+                        ∀ (j j_1 : Nat),
+                          j = j_1 → ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s_2 j_1 k_1)
+                        (fun j j_1 e_j =>
+                          Eq.rec (motive := fun j_2 e_j =>
+                            ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s j_2 k_1)
+                            (fun k k_1 e_k => e_k ▸ Eq.refl (readU32 s j k)) e_j)
+                        e_s)
+                    b0 b0 (Eq.refl b0) 0 0 (Eq.refl 0)
+                    (fun magic =>
+                      VIR.guard (magic = MAGIC)
+                        (fun x =>
+                          readU32 b0 4 fun sender =>
+                            readU32 b0 8 fun topic =>
+                              advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                (fun s1 sender topic h =>
+                                    VIR.guard (hasTokens st sender)
+                                      (fun x =>
+                                        letLin (decTokens st sender) fun st' =>
+                                          VIR.guard (canAccess acl sender topic)
+                                            (fun x => advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                            (Out.drop Code.unauthOrRate))
+                                      (Out.drop Code.unauthOrRate))
+                                  s sender topic h)
+                        (Out.drop Code.unauthOrRate))
+                    (fun magic =>
+                      readU32 b0 4 fun sender =>
+                        readU32 b0 8 fun topic =>
+                          VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                            (fun x =>
+                              letLin (decTokens st sender) fun st' => advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                            (Out.drop Code.unauthOrRate))
+                    (funext fun magic =>
+                      Eq.mpr
+                        (id
+                          (congrArg
+                            (fun _a =>
+                              _a =
+                                readU32 b0 4 fun sender =>
+                                  readU32 b0 8 fun topic =>
+                                    VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                      (fun x =>
+                                        letLin (decTokens st sender) fun st' =>
+                                          advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                                      (Out.drop Code.unauthOrRate))
+                            (aux_read_past_guard (magic = MAGIC) b0 4
+                              (fun sender =>
+                                readU32 b0 8 fun topic =>
+                                  advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                    (fun s1 sender topic h =>
+                                        VIR.guard (hasTokens st sender)
+                                          (fun x =>
+                                            letLin (decTokens st sender) fun st' =>
+                                              VIR.guard (canAccess acl sender topic)
+                                                (fun x =>
+                                                  advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                                (Out.drop Code.unauthOrRate))
+                                          (Out.drop Code.unauthOrRate))
+                                      s sender topic h)
+                              (Out.drop Code.unauthOrRate))))
+                        ((fun {n} s s_1 e_s =>
+                            Eq.rec (motive := fun s_2 e_s =>
+                              ∀ (j j_1 : Nat),
+                                j = j_1 → ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s_2 j_1 k_1)
+                              (fun j j_1 e_j =>
+                                Eq.rec (motive := fun j_2 e_j =>
+                                  ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s j_2 k_1)
+                                  (fun k k_1 e_k => e_k ▸ Eq.refl (readU32 s j k)) e_j)
+                              e_s)
+                          b0 b0 (Eq.refl b0) 4 4 (Eq.refl 4)
+                          (fun v =>
+                            VIR.guard (magic = MAGIC)
+                              (fun x =>
+                                readU32 b0 8 fun topic =>
+                                  advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                    (fun s1 sender topic h =>
+                                        VIR.guard (hasTokens st sender)
+                                          (fun x =>
+                                            letLin (decTokens st sender) fun st' =>
+                                              VIR.guard (canAccess acl sender topic)
+                                                (fun x =>
+                                                  advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                                (Out.drop Code.unauthOrRate))
+                                          (Out.drop Code.unauthOrRate))
+                                      s v topic h)
+                              (Out.drop Code.unauthOrRate))
+                          (fun sender =>
+                            readU32 b0 8 fun topic =>
+                              VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                (fun x =>
+                                  letLin (decTokens st sender) fun st' =>
+                                    advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                                (Out.drop Code.unauthOrRate))
+                          (funext fun sender =>
+                            Eq.mpr
+                              (id
+                                (congrArg
+                                  (fun _a =>
+                                    _a =
+                                      readU32 b0 8 fun topic =>
+                                        VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                          (fun x =>
+                                            letLin (decTokens st sender) fun st' =>
+                                              advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                                          (Out.drop Code.unauthOrRate))
+                                  (aux_read_past_guard (magic = MAGIC) b0 8
+                                    (fun topic =>
+                                      advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                        (fun s1 sender topic h =>
+                                            VIR.guard (hasTokens st sender)
+                                              (fun x =>
+                                                letLin (decTokens st sender) fun st' =>
+                                                  VIR.guard (canAccess acl sender topic)
+                                                    (fun x =>
+                                                      advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                                    (Out.drop Code.unauthOrRate))
+                                              (Out.drop Code.unauthOrRate))
+                                          s sender topic h)
+                                    (Out.drop Code.unauthOrRate))))
+                              ((fun {n} s s_1 e_s =>
+                                  Eq.rec (motive := fun s_2 e_s =>
+                                    ∀ (j j_1 : Nat),
+                                      j = j_1 → ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s_2 j_1 k_1)
+                                    (fun j j_1 e_j =>
+                                      Eq.rec (motive := fun j_2 e_j =>
+                                        ∀ (k k_1 : UInt32 → Out), k = k_1 → readU32 s j k = readU32 s j_2 k_1)
+                                        (fun k k_1 e_k => e_k ▸ Eq.refl (readU32 s j k)) e_j)
+                                    e_s)
+                                b0 b0 (Eq.refl b0) 8 8 (Eq.refl 8)
+                                (fun v =>
+                                  VIR.guard (magic = MAGIC)
+                                    (fun x =>
+                                      advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                        (fun s1 sender topic h =>
+                                            VIR.guard (hasTokens st sender)
+                                              (fun x =>
+                                                letLin (decTokens st sender) fun st' =>
+                                                  VIR.guard (canAccess acl sender topic)
+                                                    (fun x =>
+                                                      advance s1 12 (U._proof_2 h) fun p => Out.ret st' (n - 12 - 12) p)
+                                                    (Out.drop Code.unauthOrRate))
+                                              (Out.drop Code.unauthOrRate))
+                                          s sender v h)
+                                    (Out.drop Code.unauthOrRate))
+                                (fun topic =>
+                                  VIR.guard (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                    (fun x =>
+                                      letLin (decTokens st sender) fun st' =>
+                                        advance b0 24 h fun p => Out.ret st' (n - 24) p)
+                                    (Out.drop Code.unauthOrRate))
+                                (funext fun topic =>
+                                  id
+                                    (id
+                                      (Eq.mpr
+                                        (id
+                                          (congrArg
+                                            (fun _a =>
+                                              VIR.guard (magic = MAGIC) (fun x => _a) (Out.drop Code.unauthOrRate) =
+                                                VIR.guard
+                                                  (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                  (fun x =>
+                                                    advance b0 24 h fun p => Out.ret (decTokens st sender) (n - 24) p)
+                                                  (Out.drop Code.unauthOrRate))
+                                            (aux_guard_swap (hasTokens st sender) (canAccess acl sender topic)
+                                              (advance b0 12 (parseHeader._proof_2 h) fun s =>
+                                                advance s 12 (U._proof_2 h) fun p =>
+                                                  Out.ret (decTokens st sender) (n - 12 - 12) p)
+                                              (Out.drop Code.unauthOrRate))))
+                                        (Eq.mpr
+                                          (id
+                                            (congrArg
+                                              (fun _a =>
+                                                VIR.guard (magic = MAGIC)
+                                                    (fun x =>
+                                                      VIR.guard (canAccess acl sender topic)
+                                                        (fun x =>
+                                                          VIR.guard (hasTokens st sender) (fun x => _a)
+                                                            (Out.drop Code.unauthOrRate))
+                                                        (Out.drop Code.unauthOrRate))
+                                                    (Out.drop Code.unauthOrRate) =
+                                                  VIR.guard
+                                                    (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                    (fun x =>
+                                                      advance b0 24 h fun p => Out.ret (decTokens st sender) (n - 24) p)
+                                                    (Out.drop Code.unauthOrRate))
+                                              (slice_fuse b0 12 12
+                                                (Decidable.byContradiction fun a => parseHeader._proof_1 h a)
+                                                (Decidable.byContradiction fun a => U._proof_1 h a) h fun m p =>
+                                                Out.ret (decTokens st sender) m p)))
+                                          (Eq.mpr
+                                            (id
+                                              (congrArg
+                                                (fun _a =>
+                                                  VIR.guard (magic = MAGIC) (fun x => _a) (Out.drop Code.unauthOrRate) =
+                                                    VIR.guard
+                                                      (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                      (fun x =>
+                                                        advance b0 24 h fun p =>
+                                                          Out.ret (decTokens st sender) (n - 24) p)
+                                                      (Out.drop Code.unauthOrRate))
+                                                (guard_merge (canAccess acl sender topic) (hasTokens st sender)
+                                                  (advance b0 (12 + 12) h fun s₂ =>
+                                                    Out.ret (decTokens st sender) (n - (12 + 12)) s₂)
+                                                  (Out.drop Code.unauthOrRate))))
+                                            (Eq.mpr
+                                              (id
+                                                (congrArg
+                                                  (fun _a =>
+                                                    _a =
+                                                      VIR.guard
+                                                        (magic = MAGIC ∧
+                                                          canAccess acl sender topic ∧ hasTokens st sender)
+                                                        (fun x =>
+                                                          advance b0 24 h fun p =>
+                                                            Out.ret (decTokens st sender) (n - 24) p)
+                                                        (Out.drop Code.unauthOrRate))
+                                                  (guard_merge (magic = MAGIC)
+                                                    (canAccess acl sender topic ∧ hasTokens st sender)
+                                                    (advance b0 (12 + 12) h fun s₂ =>
+                                                      Out.ret (decTokens st sender) (n - (12 + 12)) s₂)
+                                                    (Out.drop Code.unauthOrRate))))
+                                              (Eq.refl
+                                                (VIR.guard
+                                                  (magic = MAGIC ∧ canAccess acl sender topic ∧ hasTokens st sender)
+                                                  (fun x =>
+                                                    advance b0 (12 + 12) h fun s₂ =>
+                                                      Out.ret (decTokens st sender) (n - (12 + 12)) s₂)
+                                                  (Out.drop Code.unauthOrRate))))))))))))))
+                (Out.drop Code.truncated) (Out.drop Code.truncated) (Eq.refl (Out.drop Code.truncated))))))))
+theorem VIR.slice_fuse : ∀ {n : Nat} (b : Slice n) (i j : Nat) (h₁ : i ≤ n) (h₂ : j ≤ n - i) (h₃ : i + j ≤ n)
+  (e : (m : Nat) → Slice m → Out),
+  (advance b i h₁ fun s₁ => advance s₁ j h₂ fun s₂ => e (n - i - j) s₂) =
+    advance b (i + j) h₃ fun s₂ => e (n - (i + j)) s₂ :=
+fun {n} b i j h₁ h₂ h₃ e =>
+  Slice.congr_heq e (Decidable.byContradiction fun a => slice_fuse._proof_1_1 i j a) (Slice.adv_adv_heq b i j h₁ h₂ h₃)
+theorem VIR.Slice.congr_heq : ∀ (e : (m : Nat) → Slice m → Out) {m₁ m₂ : Nat} {x : Slice m₁} {y : Slice m₂},
+  m₁ = m₂ → x ≍ y → e m₁ x = e m₂ y :=
+fun e {m₁ m₂} {x} {y} hm h =>
+  Eq.ndrec (motive := fun {m₂} => ∀ {y : Slice m₂}, x ≍ y → e m₁ x = e m₂ y)
+    (fun {y} h =>
+      HEq.casesOn (motive := fun {β} a t => Slice m₁ = β → y ≍ a → h ≍ t → e m₁ x = e m₁ y) h
+        (fun h_1 h_2 =>
+          Eq.ndrec (motive := fun {y} => ∀ (h : x ≍ y), h ≍ HEq.refl x → e m₁ x = e m₁ y)
+            (fun h h_3 => Eq.refl (e m₁ x)) (Eq.symm (eq_of_heq h_2)) h)
+        (Eq.refl (Slice m₁)) (HEq.refl y) (HEq.refl h))
+    hm h
+theorem VIR.Slice.adv_adv_heq : ∀ {n : Nat} (s : Slice n) (i j : Nat) (h₁ : i ≤ n) (h₂ : j ≤ n - i) (h₃ : i + j ≤ n),
+  (s.adv i h₁).adv j h₂ ≍ s.adv (i + j) h₃ :=
+fun {n} s i j h₁ h₂ h₃ =>
+  Slice.heq_of ((s.adv i h₁).adv j h₂) (s.adv (i + j) h₃)
+    (Decidable.byContradiction fun a => Slice.adv_adv_heq._proof_1_1 i j a) rfl
+    (of_eq_true
+      (Eq.trans
+        (Eq.trans
+          (congrFun'
+            (congrArg Eq
+              (congrArg Slice.off
+                (Slice.mk.congr_simp (s.adv i h₁).buf s.buf (id (Eq.refl s.buf)) ((s.adv i h₁).off + j)
+                  (s.off + (i + j)) (Nat.add_assoc s.off i j) (Slice.adv._proof_2 (s.adv i h₁) j h₂))))
+            (s.off + (i + j)))
+          Nat.add_left_cancel_iff._simp_1)
+        (Eq.trans Nat.add_left_cancel_iff._simp_1 (eq_self j))))
+theorem VIR.Slice.heq_of : ∀ {m₁ m₂ : Nat} (s₁ : Slice m₁) (s₂ : Slice m₂),
+  m₁ = m₂ → s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂ :=
+fun {m₁ m₂} s₁ s₂ hm hb ho =>
+  Eq.ndrec (motive := fun {m₂} => ∀ (s₂ : Slice m₂), s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂)
+    (fun s₂ hb ho =>
+      Slice.casesOn (motive := fun t => s₁ = t → s₁ ≍ s₂) s₁
+        (fun buf off fits h =>
+          Eq.ndrec (motive := fun s₁ => s₁.buf = s₂.buf → s₁.off = s₂.off → s₁ ≍ s₂)
+            (fun hb ho =>
+              Slice.casesOn (motive := fun t => s₂ = t → { buf := buf, off := off, fits := fits } ≍ s₂) s₂
+                (fun buf_1 off_1 fits_1 h =>
+                  Eq.ndrec (motive := fun s₂ =>
+                    { buf := buf, off := off, fits := fits }.buf = s₂.buf →
+                      { buf := buf, off := off, fits := fits }.off = s₂.off →
+                        { buf := buf, off := off, fits := fits } ≍ s₂)
+                    (fun hb ho =>
+                      Eq.ndrec (motive := fun buf_2 =>
+                        ∀ (fits_2 : off_1 + m₁ ≤ buf_2.size),
+                          { buf := buf, off := off, fits := fits } ≍ { buf := buf_2, off := off_1, fits := fits_2 })
+                        (fun fits_2 =>
+                          Eq.ndrec (motive := fun off_2 =>
+                            ∀ (fits_3 : off_2 + m₁ ≤ buf.size),
+                              { buf := buf, off := off, fits := fits } ≍ { buf := buf, off := off_2, fits := fits_3 })
+                            (fun fits_3 => HEq.rfl) ho fits_2)
+                        hb fits_1)
+                    (Eq.symm h) hb ho)
+                (Eq.refl s₂))
+            (Eq.symm h) hb ho)
+        (Eq.refl s₁))
+    hm s₂ hb ho
+theorem VIR.guard_merge : ∀ (c₁ c₂ : Prop) [inst : Decidable c₁] [inst_1 : Decidable c₂] (ok err : Out),
+  VIR.guard c₁ (fun x => VIR.guard c₂ (fun x => ok) err) err = VIR.guard (c₁ ∧ c₂) (fun x => ok) err :=
+fun c₁ c₂ [Decidable c₁] [Decidable c₂] ok err =>
+  id
+    (if h₁ : c₁ then
+      if h₂ : c₂ then
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (Eq.trans (dite_cond_eq_true (eq_true h₁)) (dite_cond_eq_true (eq_true h₂))))
+              (dite_cond_eq_true (Eq.trans (congr (congrArg And (eq_true h₁)) (eq_true h₂)) (and_self True))))
+            (eq_self ok))
+      else
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (Eq.trans (dite_cond_eq_true (eq_true h₁)) (dite_cond_eq_false (eq_false h₂))))
+              (dite_cond_eq_false (Eq.trans (congr (congrArg And (eq_true h₁)) (eq_false h₂)) (and_false True))))
+            (eq_self err))
+    else
+      if h₂ : c₂ then
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (dite_cond_eq_false (eq_false h₁)))
+              (dite_cond_eq_false (Eq.trans (congr (congrArg And (eq_false h₁)) (eq_true h₂)) (and_true False))))
+            (eq_self err))
+      else
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (dite_cond_eq_false (eq_false h₁)))
+              (dite_cond_eq_false (Eq.trans (congr (congrArg And (eq_false h₁)) (eq_false h₂)) (and_self False))))
+            (eq_self err)))
+@[defeq] theorem VIR.beta_lin : ∀ {α : Type} (x : α) (e : α → Out), letLin x e = e x :=
+fun {α} x e => rfl
+@[defeq] theorem VIR.aux_read_past_guard : ∀ {n : Nat} (c : Prop) [inst : Decidable c] (b : Slice n) (j : Nat)
+  (k : UInt32 → Out) (e : Out),
+  VIR.guard c (fun x => readU32 b j k) e = readU32 b j fun v => VIR.guard c (fun x => k v) e :=
+fun {n} c [Decidable c] b j k e => rfl
+@[defeq] theorem VIR.aux_advance_past_guard : ∀ {n : Nat} (b : Slice n) (i : Nat) (hi : i ≤ n) (c : Prop)
+  [inst : Decidable c] (k : Slice (n - i) → Out) (e : Out),
+  (advance b i hi fun s => VIR.guard c (fun x => k s) e) = VIR.guard c (fun x => advance b i hi k) e :=
+fun {n} b i hi c [Decidable c] k e => rfl
+theorem VIR.aux_guard_swap : ∀ (a b : Prop) [inst : Decidable a] [inst_1 : Decidable b] (k e : Out),
+  VIR.guard a (fun x => VIR.guard b (fun x => k) e) e = VIR.guard b (fun x => VIR.guard a (fun x => k) e) e :=
+fun a b [Decidable a] [Decidable b] k e =>
+  id
+    (if ha : a then
+      if hb : b then
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (Eq.trans (dite_cond_eq_true (eq_true ha)) (dite_cond_eq_true (eq_true hb))))
+              (Eq.trans (dite_cond_eq_true (eq_true hb)) (dite_cond_eq_true (eq_true ha))))
+            (eq_self k))
+      else
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (Eq.trans (dite_cond_eq_true (eq_true ha)) (dite_cond_eq_false (eq_false hb))))
+              (dite_cond_eq_false (eq_false hb)))
+            (eq_self e))
+    else
+      if hb : b then
+        of_eq_true
+          (Eq.trans
+            (congr (congrArg Eq (dite_cond_eq_false (eq_false ha)))
+              (Eq.trans (dite_cond_eq_true (eq_true hb)) (dite_cond_eq_false (eq_false ha))))
+            (eq_self e))
+      else
+        of_eq_true
+          (Eq.trans (congr (congrArg Eq (dite_cond_eq_false (eq_false ha))) (dite_cond_eq_false (eq_false hb)))
+            (eq_self e)))
+'VIR.router_fusion' depends on axioms: [propext, Quot.sound]
+'VIR.router_fusion_casesplit' depends on axioms: [propext, Quot.sound]
+theorem VIR.Flat.slice_fuse_flat : ∀ (s : Flat.FSlice) (i j : Nat), (s.adv i).adv j = s.adv (i + j) :=
+fun s i j =>
+  of_eq_true
+    (Eq.trans
+      (congrFun'
+        (congrArg Eq (congr (congrArg (Flat.FSlice.mk s.buf) (Nat.add_assoc s.off i j)) (Nat.sub_sub s.len i j)))
+        { buf := s.buf, off := s.off + (i + j), len := s.len - (i + j) })
+      (eq_self { buf := s.buf, off := s.off + (i + j), len := s.len - (i + j) }))
+'VIR.Flat.slice_fuse_flat' depends on axioms: [propext]
+saltbuild EXIT=0

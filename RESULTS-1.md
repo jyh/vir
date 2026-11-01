@@ -21,3 +21,10 @@ Object vir cd64c9fd · inputs I1–I7 · predictions 8a73bc8c + amend-1..4. **Pr
 
 ## Findings beside the counts
 FINDINGS.md M-F1..M-F4 (MetaPRL). And Lean's own: **L-F1** most of the Lean C1 total is `rw`-induced `Eq.mpr`, not index transport. The preregistered token class did not separate the two, and amend-4 splits them. **L-F2** the shortcut (`router_fusion_casesplit`) proves I4 with the same axioms. **L-F3** in the shallow embedding two of the three aux rules hold by `rfl`, as amend-2 said they might, so C3 measures the CHAIN's discipline (I7), not the logic's need.
+
+## ADDENDUM 1 (00:5x), the L-FLAT control is built, and P1b is scored. This replaces the "P1b UNSCORED" line above
+`VIR.Flat.slice_fuse_flat` passes (saltbuild EXIT=0, axioms `[propext]`). Two proofs were tried, and both are reported:
+- first proof (`cases s; simp …`): 1 `▸`, the transport `cases` introduces on the structure's motive.
+- final proof (`simp only [FSlice.adv, Nat.add_assoc, Nat.sub_sub]`): **C1flat = 1**, and that 1 is `Nat.sub_sub`, used on the `len` VALUE.
+**P1b, scored both ways:** under the LETTER of the preregistered token class (Nat.sub_sub listed), C1flat = 1 and P1b is FALSIFIED. Under its stated INTENT ("used for index realignment"), there are 0 casts and 0 HEq, and P1b HOLDS.
+⇒ **The finding is the pair, not either verdict:** the SAME arithmetic fact (n − i − j = n − (i + j)) is used in both. In L-FLAT it is a VALUE equation closed by `congrArg`. In L-IDX it is a TYPE equation and needs the HEq machinery (12 tokens). That is P1's claim measured, and it is a representation choice (§5.2's "dependent HEq transport casts across length-indexed slice types"). The token class could not separate a value use from an index use, which is L-F1 again, and the next amendment should name the HEq family and Nat.sub_sub separately.
