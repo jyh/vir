@@ -289,7 +289,10 @@ def metaprl(d, sfx=''):
     rows.append(('C4', len(re.findall(r'^\s*prim(?:_rw)?\s', ml, re.M)), 'MEASURED'))
     rows.append(('C5', 0, 'UNMEASURED'))   # mojave measures the stored tactic text in vir.prla; no extractor yet
     rows.append(('C5chain', len(' '.join(l for l in body.splitlines() if l.strip().startswith('refine')).split()), 'MEASURED'))
-    runs = [p for p in files(tools, ('.txt',)) if re.search(r'/runs-\d+\.txt$', p)]
+    # C6 is PROGRAM-SCOPED (mojave @[bus]; ARM11): program 1's sessions are runs-NN.txt, program N's runs-pN-NN.txt.
+    # Until 2026-11-01 (3rd vir head) --program 2/3 read program 1's files. This post-dates the proofs; C6 is no T-prediction.
+    run_re = r'/runs-\d+\.txt$' if not sfx else r'/runs-p' + re.escape(sfx) + r'-\d+\.txt$'
+    runs = [p for p in files(tools, ('.txt',)) if re.search(run_re, p)]
     refines = sum(len(re.findall(r'^=== STEP .*:: refine', read(p), re.M)) for p in runs)
     rows += [('C6sessions', len(runs), 'MEASURED'), ('C6refines', refines, 'MEASURED')]
     return rows
