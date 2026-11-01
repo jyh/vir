@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=6499
+✖ [5/7] Building VIR.Router2 (303ms)
+trace: .> LEAN_PATH=<scratch>/ctl/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean <scratch>/ctl/VIR/Router2.lean -o <scratch>/ctl/.lake/build/lib/lean/VIR/Router2.olean -i <scratch>/ctl/.lake/build/lib/lean/VIR/Router2.ilean -c <scratch>/ctl/.lake/build/ir/VIR/Router2.c --setup <scratch>/ctl/.lake/build/ir/VIR/Router2.setup.json --json
+error: VIR/Router2.lean:110:70: Type mismatch
+  rfl
+has type
+  ?m.7 = ?m.7
+but is expected to have type
+  hasTokens st p = (0 < st p)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Router2
+error: build failed
+saltbuild EXIT=1

@@ -1,0 +1,8 @@
+saltqueue: ticket P2 seat=root pid=5311
+✔ [2/7] Built VIR.Core (218ms)
+✔ [3/7] Built VIR.Rules (181ms)
+✔ [4/7] Built VIR.Router (225ms)
+✔ [5/7] Built VIR.Router2 (308ms)
+✔ [6/7] Built VIR (150ms)
+Build completed successfully (7 jobs).
+saltbuild EXIT=0
