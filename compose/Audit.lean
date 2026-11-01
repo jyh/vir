@@ -22,3 +22,7 @@ theorem control_sorry : (1 : Nat) = 2 := sorry
 #print axioms VIR.Compose.runP_stopped_unique
 #print axioms VIR.Compose.emit_implies_guards
 #print axioms VIR.Compose.witness_paris_layout
+#print axioms VIR.Compose.RateLimit.guards_of_emit
+#print axioms VIR.Compose.RateLimit.den_of_guards
+#print axioms VIR.Compose.RateLimit.two_emits_same_sender
+#print axioms VIR.Compose.RateLimit.two_emits_witness
