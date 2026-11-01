@@ -167,12 +167,17 @@ def metaprl(d, sfx=''):
                 lab[m.group(1)] += 1
     # GENERATED convention (row 12): mpdrive's `=== CHILDREN k: <labels>` line (direct children of each refine; mojave c7df66d)
     gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False
-    for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt',)):
+    for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt', 'runs-c2-lemmas.txt')):
         fp = os.path.join(tools, f)
         if os.path.isfile(fp):
-            for m in re.finditer(r'^=== CHILDREN \d+:(.*)$', read(fp), re.M):
+            txt = read(fp)
+            cmds = dict(re.findall(r'^=== STEP (\d+) \[[^\]]*\][^:]*:: (.*)$', txt, re.M))
+            for m in re.finditer(r'^=== CHILDREN (\d+):(.*)$', txt, re.M):
                 have_children = True
-                for w in m.group(1).split():
+                # CLOSER residuals are not generated obligations (mojave @[bus]): a step that runs omegaT
+                if 'omegaT' in cmds.get(m.group(1), ''):
+                    continue
+                for w in m.group(2).split():
                     if w in gen:
                         gen[w] += 1
     if have_children:

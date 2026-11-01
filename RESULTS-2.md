@@ -34,3 +34,8 @@ H for every figure. The chain compiled at its FIRST full elaboration (build 13).
 - **L-F4** Nat truncated subtraction manufactures a context-dependent rewrite (`12 + (off − 12) = off` needs `12 ≤ off`), and Int offsets (model B) do not. Some of Lean's cost is the CHOICE OF NUMBER TYPE, not the logic.
 - **L-F5** the HEq cost is FIXED per representation and does not scale with dynamic indices here (Q1's premise).
 - mojave's D1–D3 (MetaPRL defects: archive id ≥ 2^30 fails to load, a ~1,024-char line limit, an export after a failed step overwrote program 1's .prla and was restored from git) are mojave's, recorded in FINDINGS.md.
+
+## ADDENDUM 1 (03:1x): row 14, the MetaPRL program-2 C2gen difference narrowed from 7 to 3, named, not closed
+mojave @[bus]: its 18 EXCLUDES the two `omegaT` closer steps (CHILDREN 36, 42: wf 2 + assertion 3 each = 10 closer residuals) and ADDS the 3 lemma wf from runs-c2-lemmas.txt.
+The harness now skips the CHILDREN of any step whose command runs `omegaT`, for both programs (program 1 still reads 13 = Q), and reads the lemma replay for program 2. **H = 21 (wf 3 · eq 6 · cond 12) against Q = 18 (3 · 6 · 9).** The remaining 3 are the lemma replay's `slice_fuse_c` assertions. mojave says neither slice_fuse form is on program 2's path, so by the path rule they should NOT count. The harness does not yet scope the lemma replay to the program's path, which is a harness defect.
+⚠️ **This difference DECIDES Q2 for MetaPRL:** cond 9 (path-scoped, Q) gives FALSIFIED, and cond 12 (unscoped, H) would give HOLDS. **Scored on the path rule: Q2 FALSIFIED for MetaPRL stands.** The harness figure is the defective one until it scopes lemmas by path (STATUS row 14 stays open for that one change).
