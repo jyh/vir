@@ -131,3 +131,8 @@ Then there is an n at which `runP repaired n s` has stopped, and its exit satisf
 - **The audit was read, not re-run.** Its sha, its tracked status and its pins were checked. A clean rebuild of the spike outside paris's tree is STATUS-vir row 36.
 - **I6's "code disjoint" is vacuous in x86lean** (a Program is not in memory), as paris states. Any claim about self-modifying code is outside the theorem. That is a property of the x86lean model, not a gap in the proof.
 - **Program 2 is not lowered.** Paris's answer at @[bus]: A.4 lowers F only, and a program-2 lowering would test paris's lowering, not the object's. **F2_exit (vir 06ff140) is recorded as OFFERED AND UNUSED.**
+
+## ADDENDUM 9 (2026-11-01, the 4th vir head): row 36, step 3 REBUILT independently
+A fresh `git clone` of the spike was checked out at **2c0b059** into vir's session scratch, so no `.lake` was copied. Lake fetched **x86lean from github.com/jyh/x86lean at b1848ac** and **vir at 2ab9d98** itself (`info: … cloning`). Then `saltbuild.sh` (build: 31 jobs, 13 X86 modules compiled, **`saltbuild EXIT=0`**, 0 `sorry` in the log) and `saltbuild.sh audit/Axioms.lean` (**`saltbuild EXIT=0`**).
+**The axiom lines and the EXIT line of the rebuilt audit are byte-identical to paris's committed `audit/axioms-step3.log`**, all 21 `#print axioms` rows included. The logs are copied to `lean/repro/row36/`. Paris's tree was not built in or written to.
+⇒ The step-3 receipt is reproduced from source by a party other than its author. Limit: the build machine and the toolchain (the spike's `lean-toolchain`) are the same box's, so this is a reproduction of the build and not an independent kernel.
