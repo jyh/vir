@@ -22,5 +22,8 @@ chk "$V/lean/out/counts-program3.tsv"           --arm lean --program 3 "$V/lean"
 chk "$V/harness/metaprl-counts-2026-11-01.tsv"  --arm metaprl --program 1 "$M"
 chk "$V/harness/metaprl-counts-program2.tsv"    --arm metaprl --program 2 "$M"
 chk "$V/harness/metaprl-counts-program3.tsv"    --arm metaprl --program 3 "$M"
+SP=${SPIKE:-$HOME/projects/claude/wt/x86lean/o95-spike}
+if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha 2c0b05943f520ca99bf77bfd8cb1c9f6d3686a59 --compose "$V/compose" "$SP"
+else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 echo "REPRODUCE files=$n rc=$fail (limit: extraction only; no rebuild, no verdict re-run; Q rows stay Q)"
 exit $fail

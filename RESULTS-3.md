@@ -143,3 +143,25 @@ A new vir Lake project, `compose/`. It requires paris's spike **pinned at 2c0b05
 - **(b) `witness_applies`** discharges every hypothesis on one concrete state. The state is live, rip 0x1000, rdi 0x10000, rsi 100, **rdx 2^48**; the buffer holds MAGIC, sender 0, topic 0 and zeros; the ACL byte is 1 and the bucket is 5. `acl` and `σ` are read off the state's memory, so AclRel and StRel hold by `rfl`. BufRel and topic < 64 hold by `decide`, and buffer/bucket disjointness by `bv_omega`. **The theorem is not vacuous.** Positive control on the same state: `witness_ok_control` (`decide`) shows the run takes the OK path, 17 steps to 0x1043 with the cell going 5 → 4.
 - ⚠️ **FINDING: paris's own control state does NOT satisfy the theorem's `hdisj`.** `Router.start` puts rdx = 0x8000, and the bucket array for all 2^32 senders then spans [0xB000, 0xB000 + 2^34), which covers the buffer at 0x10000. **Red backwards:** with `wRdx := 0x8000` (build-003-mutant-rdx8000, `saltbuild EXIT=1`) the ONLY error is `w_disj`'s `bv_omega`, at Lowered.lean:83. Then source restored. That is not a defect of the theorem: its controls are concrete runs, not instances of it. But a reader taking "the controls are instances of the refinement" would be wrong. I6's disjointness is over the WHOLE sender range, because `p` is a `UInt32` read from the buffer. A tighter statement could bound it by the senders the ACL admits; that is not commissioned.
 - **Limit:** one witness, on the OK path. The three drop paths are covered by the ∀-state theorem, but no witness instantiates them.
+
+## ADDENDUM 11 (2026-11-01, the 4th vir head): rows 39–41 — drop-path witnesses, the compiler's cost, the two-call spec
+All rows are in `compose/`: **build-006 `saltbuild EXIT=0`** and **audit-002 `saltbuild EXIT=0`**. All 20 audited declarations are at most `[propext, Classical.choice, Quot.sound]` and the sorryAx control fires. build-005 failed (EXIT=1) only on the four controls (`Mem` derives `BEq`, not `DecidableEq`); the fix compares `.mem.bytes`, as paris's controls do.
+- **Row 39, every exit witnessed.** `Compose/Drops.lean` gives one concrete state per drop outcome: TRUNCATED (len 10), UNAUTH by magic (`0x4D534700`), UNAUTH by the ACL bit (clear), and RATE (bucket 0, the E3 shape). Each discharges every hypothesis of `lowered_refines_U`. One `decide` control per state names the exit and shows the memory bytes unchanged: 0x1040 in 3 steps · 0x1041 in 6 · 0x1041 in 11 · 0x1042 in 13. With addendum 10's OK witness, **all five machine paths are instances of the theorem.** The generic lemmas `aclOf_rel` / `sigOf_rel` (AclRel and StRel for ANY state, by `rfl`) and `disj_of` (any state with rdi 0x10000, rdx 2^48, len ≤ 100) are what make that cheap.
+- **Row 40, the compiler's proof size** (`harness/compiler-counts.tsv`, exploratory, POST-PROOF, no prediction). It is read from paris's spike AT the pinned sha `2c0b0594…` by `git show`, because the working tree moves (ARM15: a later commit must not move the pinned count; the mutant that reads HEAD reds it). C5 units, non-blank lines · whitespace tokens:
+
+| layer | what | C5 | C5tok |
+|---|---|---|---|
+| layer0 | AsWritten + Repaired (programs, concrete controls, step-2 witnesses) | 109 | 1,256 |
+| layer1 | Steps + Paths (per-address steps, five ∀-state paths) | 313 | 3,579 |
+| layer2 | Bridge + Refines (the abstraction and the refinement) | 438 | 3,872 |
+| spike total | | 860 | 8,707 |
+| vir compose/ | rows 37–41 | 222 | 2,135 |
+
+  `CC.theorems` = 81. ⇒ **The abstraction bridge (layer 2) costs more than the machine paths (layer 1).** No ratio to the two arms is drawn, because the C5chain units count the scored fusion chain only. `reproduce.sh` now re-derives 7 files, rc 0. Limit: the compose rows read vir's working tree, not a sha.
+- **Row 41, the spec side of a multi-call refinement** (`Compose/MultiCall.lean`, imports vir's F_exit only):
+  - `F_ok_iff`: OK exactly when the four guards hold, returning exactly decTokens and b0 + 24;
+  - `ok_state`: the returned state is the input with only the sender's cell decremented;
+  - **`two_ok_same_sender`: two successive OK calls from one sender need ≥ 2 tokens at the start, and leave σ − 2. Rate limiting composes.**
+  - `drop_no_state`.
+
+  Red backwards: claiming 3 tokens (build-007-mutant-3tokens, EXIT=1) reds exactly that lemma's `omega`. Then restored, build-008 EXIT=0. It sits in compose/ so lean/out does not move. It is OFFERED to paris as the spec for a machine-level multi-call theorem, which would ALSO need the ACL/bucket disjointness that the single-call theorem does without (addendum 8).

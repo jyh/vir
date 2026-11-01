@@ -354,13 +354,54 @@ def metaprl_c5(d, tools, sfx):
             ('C5lex', sum(len(lex.findall(a)) for a in args), 'MEASURED'), ('C5.main', main, 'MEASURED'),
             ('C5.inArchive', inarch, 'MEASURED' if have_arch else 'EMPTY')]
 
+CC_LAYERS = {'layer0': ('AsWritten', 'Repaired'), 'layer1': ('Steps', 'Paths'), 'layer2': ('Bridge', 'Refines')}
+
+
+def compiler(repo, sha, compose):
+    """STATUS-vir row 40 (exploratory, POST-PROOF, no prediction): the compiler application's proof size.
+    repo = paris's spike, read AT `sha` by `git show` (the working tree moves); compose = vir's compose/ dir.
+    Layers: layer0 the programs + concrete controls, layer1 per-address steps + exit paths, layer2 the
+    abstraction bridge + the refinement. Units are C5's: non-blank lines (C5) and whitespace tokens (C5tok)."""
+    import subprocess
+    def show(path):
+        r = subprocess.run(['git', '-C', repo, 'show', f'{sha}:{path}'], capture_output=True, text=True)
+        return r.stdout if r.returncode == 0 else None
+    ls = subprocess.run(['git', '-C', repo, 'ls-tree', '--name-only', sha, 'Router/'], capture_output=True, text=True)
+    if ls.returncode != 0:
+        return [('CC.spike.C5', 0, 'EMPTY')]
+    names = sorted(n for n in ls.stdout.split() if n.endswith('.lean'))
+    texts = {os.path.basename(n)[:-5]: show(n) or '' for n in names}
+    def sz(ts):
+        lines = [ln for t in ts for ln in t.splitlines() if ln.strip()]
+        return len(lines), sum(len(ln.split()) for ln in lines)
+    rows = []
+    for k, mods in CC_LAYERS.items():
+        a, b = sz([texts.get(m, '') for m in mods])
+        rows += [(f'CC.{k}.C5', a, 'MEASURED'), (f'CC.{k}.C5tok', b, 'MEASURED')]
+    a, b = sz(texts.values())
+    rows += [('CC.spike.C5', a, 'MEASURED'), ('CC.spike.C5tok', b, 'MEASURED')]
+    th = sum(len(re.findall(r'^theorem\s', t, re.M)) for t in texts.values())
+    csrc = files(os.path.join(compose, 'Compose'), ('.lean',)) if compose else []
+    ctexts = [read(p) for p in csrc]
+    a, b = sz(ctexts)
+    rows += [('CC.compose.C5', a, 'MEASURED' if csrc else 'EMPTY'), ('CC.compose.C5tok', b, 'MEASURED' if csrc else 'EMPTY')]
+    th += sum(len(re.findall(r'^theorem\s', t, re.M)) for t in ctexts)
+    rows += [('CC.theorems', th, 'MEASURED'), ('CC.sha', sha, 'PINNED')]
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler'])
+    ap.add_argument('--sha')
+    ap.add_argument('--compose')
     ap.add_argument('--program', default='1', choices=['1', '2', '3'])
     ap.add_argument('dir')
     a = ap.parse_args()
-    rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
+    if a.arm == 'compiler':
+        rows = compiler(a.dir, a.sha or 'HEAD', a.compose)
+    else:
+        rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
     for c, v, s in rows:
         print(f'{a.arm}\t{c}\t{v}\t{s}')
     return 0
