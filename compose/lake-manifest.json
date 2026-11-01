@@ -3,26 +3,26 @@
  "packagesDir": ".lake/packages",
  "packages": [
   {
-   "url": "~/fleet/wt/x86lean/o95-spike",
+   "url": "https://github.com/jyh/x86lean",
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "724199731b33deab888ca747e08aa59585a1c27d",
+   "rev": "adbf22f995d226e700b5d45735cab2b04d509112",
    "name": "o95spike",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "724199731b33deab888ca747e08aa59585a1c27d",
+   "inputRev": "adbf22f995d226e700b5d45735cab2b04d509112",
    "inherited": false,
    "configFile": "lakefile.toml"
   },
   {
-   "url": "~/fleet/vir",
+   "url": "https://github.com/jyh/vir",
    "type": "git",
    "subDir": "lean",
    "scope": "",
-   "rev": "2ab9d98393d209f4371df004a3c52f7662dd8d0d",
+   "rev": "ba6f3fcefeac28f02202ed63f62cdb4056f82d48",
    "name": "vir",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "2ab9d98393d209f4371df004a3c52f7662dd8d0d",
+   "inputRev": "ba6f3fcefeac28f02202ed63f62cdb4056f82d48",
    "inherited": true,
    "configFile": "lakefile.toml"
   },

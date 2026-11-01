@@ -36,7 +36,8 @@ a7cf800, T1–T5 at f088663. The first Lean proof is dd642ca.
 - **MetaPRL** (the `mojave/vir-arm` branch of `github.com/jyh/metaprl`, pushed after this repository): the same three programs in CTT.
 - **The compiler spike** (a branch of `github.com/jyh/x86lean`, pushed after this repository): A.4 against x86lean's semantics.
   `compose/` joins its refinement theorem to the Lean arm's specification: one theorem from the router's
-  meaning to the machine.
+  meaning to the machine. It pins the spike at adbf22f (branch `spike/o95-router`) and builds through the same
+  wrapper (compose/logs/build-024, audit-008: `EXIT=0`).
 
 The two proof arms were built by different agents. Neither read the other's proofs before its own were
 committed. For the Lean arm this is recorded in `SUMMARY-first-act.md`, which also says what was not measured.

@@ -11,15 +11,20 @@ C="$V/harness/count.py"
 [ -d "$V/lean" ] && [ -d "$M0/vir-metaprl" ] || { echo "REPRODUCE MISSING-INPUT lean=$V/lean metaprl=$M0"; exit 2; }
 # FINDINGS V-F2: the MetaPRL arm is read at PINNED commits, never from its working tree (which carries
 # uncommitted edits). Both repos are cloned at the pins into a scratch dir; override with the env vars.
-METAPRL_SHA=${METAPRL_SHA:-26b4e01d6d8ddb2ba1641323ae4b5610a2ab53ef}
-TOOLS_SHA=${TOOLS_SHA:-b754500}
+METAPRL_SHA=${METAPRL_SHA:-81e0317b0c2b356491cffcb06f771d89a524761f}
+# Since 2026-11-01 the arm's tools are a snapshot INSIDE the metaprl branch (theories/vir/vir-arm-tools), so one pin covers
+# both. TOOLS_SHA, if set, reads a separate vir-arm-tools clone instead (the layout before the snapshot).
 M=$(mktemp -d "${TMPDIR:-/tmp}/vir-repro-mj.XXXXXX")
-for pair in "vir-metaprl:$METAPRL_SHA" "vir-arm-tools:$TOOLS_SHA"; do
-  r=${pair%%:*}; s=${pair#*:}
-  git clone -q --no-checkout "$M0/$r" "$M/$r" 2>/dev/null && git -C "$M/$r" checkout -q "$s" 2>/dev/null \
-    || { echo "REPRODUCE MISSING-INPUT $r at $s (from $M0/$r)"; exit 2; }
-done
-echo "  PINNED   metaprl vir-metaprl@${METAPRL_SHA:0:12} vir-arm-tools@${TOOLS_SHA:0:12} (from $M0)"
+git clone -q --no-checkout "$M0/vir-metaprl" "$M/vir-metaprl" 2>/dev/null && git -C "$M/vir-metaprl" checkout -q "$METAPRL_SHA" 2>/dev/null \
+  || { echo "REPRODUCE MISSING-INPUT vir-metaprl at $METAPRL_SHA (from $M0/vir-metaprl)"; exit 2; }
+if [ -n "${TOOLS_SHA:-}" ]; then
+  git clone -q --no-checkout "$M0/vir-arm-tools" "$M/vir-arm-tools" 2>/dev/null && git -C "$M/vir-arm-tools" checkout -q "$TOOLS_SHA" 2>/dev/null \
+    || { echo "REPRODUCE MISSING-INPUT vir-arm-tools at $TOOLS_SHA"; exit 2; }
+else
+  [ -d "$M/vir-metaprl/theories/vir/vir-arm-tools" ] || { echo "REPRODUCE MISSING-INPUT no theories/vir/vir-arm-tools at $METAPRL_SHA"; exit 2; }
+  ln -s "$M/vir-metaprl/theories/vir/vir-arm-tools" "$M/vir-arm-tools"
+fi
+echo "  PINNED   metaprl vir-metaprl@${METAPRL_SHA:0:12} vir-arm-tools@${TOOLS_SHA:-in-tree} (from $M0)"
 fail=0; n=0
 chk() {  # chk <committed-file> <count.py args...>
   local f=$1; shift; n=$((n+1))
@@ -33,10 +38,11 @@ chk "$V/lean/out/counts-program3.tsv"           --arm lean --program 3 "$V/lean"
 chk "$V/harness/metaprl-counts-2026-11-01.tsv"  --arm metaprl --program 1 "$M"
 chk "$V/harness/metaprl-counts-program2.tsv"    --arm metaprl --program 2 "$M"
 chk "$V/harness/metaprl-counts-program3.tsv"    --arm metaprl --program 3 "$M"
-SP=${SPIKE:-$HOME/projects/claude/wt/x86lean/o95-spike}
-if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha d7e992c802fcb430fafb50e41b5b7d36d9cd860c --compose "$V/compose" --compose-sha 1740c5678264d216703c39748f496fe99aa27178 "$SP"
-  # row 53: the two-call cost, at spike 7241997 (Router/MultiCall.lean) + vir ed68a89 (compose/RateLimit.lean)
-  chk "$V/harness/compiler-counts-multicall.tsv" --arm compiler --sha 724199731b33deab888ca747e08aa59585a1c27d --compose "$V/compose" --compose-sha ed68a898723f2ef392ae05ccb97f696898e0695a "$SP"
+# the spike: branch spike/o95-router of github.com/jyh/x86lean (pins are the rewritten spike shas; old d7e992c = 87a17ab, 7241997 = adbf22f)
+SP=${SPIKE:-$HOME/projects/claude/x86lean}
+if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha 87a17abad077cc33eefab5895c786f4f70586a0b --compose "$V/compose" --compose-sha 1740c5678264d216703c39748f496fe99aa27178 "$SP"
+  # row 53: the two-call cost, at spike adbf22f (old 7241997) (Router/MultiCall.lean) + vir ed68a89 (compose/RateLimit.lean)
+  chk "$V/harness/compiler-counts-multicall.tsv" --arm compiler --sha adbf22f995d226e700b5d45735cab2b04d509112 --compose "$V/compose" --compose-sha ed68a898723f2ef392ae05ccb97f696898e0695a "$SP"
 else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

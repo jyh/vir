@@ -1,12 +1,13 @@
 name = "o95compose"
 defaultTargets = ["Compose"]
 
-# STATUS-vir row 37. paris's spike (private, local-only) PINNED at the step-3 sha (re-pinned 2026-11-01 from 2c0b059 to d7e992c: hdisj narrowed by paris on vir row 37; then to 7241997: Router/MultiCall.lean two_calls, vir row 50); vir and x86lean come in
-# transitively at the spike's own pins (vir 2ab9d98, x86lean b1848ac). Nothing here is copied from the spike.
+# STATUS-vir row 37. paris's spike, PINNED by sha: since 2026-11-01 it is public as branch spike/o95-router of x86lean, where this
+# commit (the old 7241997, two_calls_witness) is the root tree of the merge's second parent. Earlier pins: d7e992c = 87a17aba, 2c0b059 before it.
+# vir and x86lean come in transitively at the spike's own pins (vir ba6f3fc, x86lean b1848ac). Nothing here is copied from the spike.
 [[require]]
 name = "o95spike"
-git = "~/fleet/wt/x86lean/o95-spike"
-rev = "724199731b33deab888ca747e08aa59585a1c27d"
+git = "https://github.com/jyh/x86lean"
+rev = "adbf22f995d226e700b5d45735cab2b04d509112"
 
 [[lean_lib]]
 name = "Compose"
