@@ -33,12 +33,18 @@ The arms:
 | Q5 | exploratory: size | C5chain 196 (was 202, RESULTS-3 addendum 1) · deep 649 | 12 tactics / 1,236 tok (Q) | no direction | — | — |
 | R1 (amend-7) | Int offsets: the rewrite stays but is context-free | P2Z.C3 **6** = 6; cleared-guard proof builds; Nat control RED | — | **HOLDS** | amend-7 | pre-build (vir 8c163d0) |
 | S1 (amend-8) | the deep chain's 2nd context-dependent rule is a statement choice | P2S.C3deep **7** = 7; ctxHolds 2 → **1**; `i ≤ m` control RED | — | **HOLDS** | amend-8 | pre-build (vir 5c27056) |
+| T1 (program 3) | Lean pays the ValidFrame boundary as coercions | C1coe **54** | OWED (mojave) | **Lean side HOLDS**; MetaPRL C1 = 0 owed | pinned extractor | pre-proof (vir 98d9329) |
+| T2 (program 3) | CTT pays it as well-formedness | C2cond **0** | OWED | decided by MetaPRL C2genWf ≥ 1 | pinned extractor | pre-proof |
+| T3 / T4 (program 3) | no aux rule · no extra axiom | C3 0 · C4 0 | OWED | **Lean side HOLDS** | — | pre-proof |
+| F1/F2 (amend-9) | the 54 is the subtype; ValidFrame carries no load | C1coe 54 → **0**; builds with `hv` cleared | — | **HOLD** | amend-9 | pre-build (vir bbeac50) |
 
 ## What it says, in four lines (each line's limit is in the row it cites)
 1. **Lean's indexed slices cost a FIXED HEq transport** (20 tokens) that does not grow with dynamic offsets (P1, Q1). A flat representation removes it (P1b on intent).
 2. **MetaPRL pays in OBLIGATIONS rather than casts** (P2, provisional). On program 2 the cost moved from conditions to equality obligations (Q2 split), so what is predicted to be "well-formedness" needs naming more finely.
 3. **The object under-states its rules on both arms** (P3, Q3). How many rules it under-states depends on the embedding (L-F3: shallow 3, deep 5), on the reading (C3 vs C3strict), and on the statement of the rules (RESULTS-2 addendum 4's second control).
 4. **The context-dependent rewrite is about the NUMBER TYPE, not the logic** (R1). Nat makes the rewrite depend on an enclosing guard. Int keeps the rewrite and drops the dependence. On both embeddings, exactly ONE rewrite of program 2 genuinely needs an enclosing guard, `aux_advance_idx` (S1). The deep chain's second one was a choice of how the rule was stated.
+
+5. **(program 3, Lean side) The boundary cost of A.1's safety theorem is the subtype, and the subtype carries no load** (T1, F1, F2). The router's own guards discharge it, so in K3 the ValidFrame refinement is decoration. **Erratum E10:** A.1/A.2 as written quantify a free principal, and with that principal free the theorem is false.
 
 ## Limits that ride with every verdict
 - **Only two programs, both routers.** Every count is over one chain per arm per program.
