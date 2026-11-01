@@ -64,7 +64,8 @@ The arms:
 | K3 at the machine: emit_slice ⇒ ACL bit set, token held, magic, len ≥ 24, at ANY fuel | vir `emit_implies_guards` (compose/Safety.lean) | build-011 + audit-003 EXIT=0; 0x1042 mutant red | program 1's F, not program 3's F2 (F2 not lowered) |
 | the ∀ proof reads the length guard AND the bucket test | paris's E2 mutant (jb→jl) + vir's E3-class mutant (jle→jl, reds `prefix_rate`) | both EXIT=1 as predicted | E3's literal order not driven (step 2 refutes it) |
 | rate limiting composes over two calls (spec side) | vir `two_ok_same_sender` (compose/MultiCall.lean) | build-008 EXIT=0; 3-token mutant red | spec only; no machine-level multi-call theorem |
-| the compiler's proof size | harness/compiler-counts.tsv at the pinned sha | reproduce.sh 7/7 rc 0 | exploratory, post-proof; no ratio to the arms |
+| the compiler's proof size | harness/compiler-counts.tsv at the pinned spike AND vir shas | reproduce.sh rc 0 (9 checks, incl. the axiom gate) | exploratory, post-proof; no ratio to the arms |
+| every axiom receipt has a positive control | compose audits; vir `lean/AuditControl.lean` (added row 48: `lean/Audit.lean` never had one) | audit-control-002 EXIT=0, rows identical to audit-014 | the Lean control is one run later than audit-014, on the same sources |
 | program 2 is not lowered | paris @[bus] | — | F2_exit (vir 06ff140) offered and unused |
 
 **In one line:** for program 1, the method runs end to end. The spec composition U is fused to F in both logics, and F's exit relation is refined by repaired x86-64 code for every state, checked in Lean against x86lean. The repairs are part of the finding: the object's own lowering was wrong in two places, and step 2 says where.
