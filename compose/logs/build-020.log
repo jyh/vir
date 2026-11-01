@@ -1,0 +1,1400 @@
+saltqueue: ticket P2 seat=root pid=3466
+⚠ [6/39] Replayed X86.Value
+warning: X86/Value.lean:266:10: This simp argument is unused:
+  writeView_getLsbD_b
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵b̵,̵ ̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵[̲w̲r̲i̲t̲e̲V̲i̲e̲w̲_̲g̲e̲t̲L̲s̲b̲D̲_̲w̲,̲ writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:31: This simp argument is unused:
+  writeView_getLsbD_w
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵ ̵writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:52: This simp argument is unused:
+  writeView_q
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, writeView_getLsbD_w, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵q̵,̵ ̵hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [12/39] Replayed X86.Syntax
+warning: X86/Syntax.lean:2793:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2797:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2801:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2805:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2809:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2813:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2817:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2821:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2825:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2829:43: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2833:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2837:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2842:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [15/39] Replayed X86.Theorems
+warning: X86/Theorems.lean:585:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:585:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:628:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:628:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:954:75: This simp argument is unused:
+  Cpu.getReg
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, hlk, Cpu.setReg, Cpu.setRip, Cpu.readOperand, C̵p̵u̵.̵g̵e̵t̵R̵e̵g̵,̵
+  ̵ ̵ ̵ ̵ ̵Operand.locked]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1078:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1083:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1088:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1101:20: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1134:5: Variable name `h'` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1136:17: This simp argument is unused:
+  h'
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, h̵'̵,̵ ̵Cpu.setFlags, Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1168:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1234:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1289:18: This simp argument is unused:
+  Flags.bitScan
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵F̵l̵a̵g̵s̵.̵b̵i̵t̵S̵c̵a̵n̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1299:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1299:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1303:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1310:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1310:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1314:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1326:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1326:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1334:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1334:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1341:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1341:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1351:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1351:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1362:64: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1362:67: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1552:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1552:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1566:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1566:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1669:54: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1677:41: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [16/39] Replayed X86.Program
+warning: X86/Program.lean:971:10: This simp argument is unused:
+  BitVec.toNat_sub
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵B̵i̵t̵V̵e̵c̵.̵t̵o̵N̵a̵t̵_̵s̵u̵b̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [24/39] Replayed Router.Paths
+warning: Router/Paths.lean:100:13: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc',̵ ̵C̵p̵u̵.̵h̵a̵l̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [30/39] Replayed Router.Refines
+warning: Router/Refines.lean:114:10: This simp argument is unused:
+  e0
+
+Hint: Omit it from the simp argument list.
+  simp [e0,̵ ̵e̵0̵', Flags.subResult, trunc_widen]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:134:63: This simp argument is unused:
+  BitVec.getLsbD_setWidth
+
+Hint: Omit it from the simp argument list.
+  simp [Value.msb, Size.signBit, BitVec.msb_eq_getLsbD_last,̵ ̵B̵i̵t̵V̵e̵c̵.̵g̵e̵t̵L̵s̵b̵D̵_̵s̵e̵t̵W̵i̵d̵t̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:173:34: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d1
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d̵1̵,̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d2, Mem.read_write_ne _ _ _ _ d3,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d21, Mem.read_write_ne _ _ _ _ d31, Mem.read_write_ne _ _ _ _ d32,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:173:64: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d2
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d1, Mem.read_write_ne _ _ _ _ d̵2̵,̵
+  ̵ ̵ ̵ ̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d3,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d21, Mem.read_write_ne _ _ _ _ d31, Mem.read_write_ne _ _ _ _ d32,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:174:4: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d3
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d1, Mem.read_write_ne _ _ _ _ d2,
+      Mem.read_write_ne _ _ _ _ d̵3̵,̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d21, Mem.read_write_ne _ _ _ _ d31, Mem.read_write_ne _ _ _ _ d32,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:174:34: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d21
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d1, Mem.read_write_ne _ _ _ _ d2,
+      Mem.read_write_ne _ _ _ _ d3, Mem.read_write_ne _ _ _ _ d̵2̵1̵,̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d31, Mem.read_write_ne _ _ _ _ d32,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:174:65: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d31
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d1, Mem.read_write_ne _ _ _ _ d2,
+      Mem.read_write_ne _ _ _ _ d3, Mem.read_write_ne _ _ _ _ d21, Mem.read_write_ne _ _ _ _ d̵3̵1̵,̵
+  ̵ ̵ ̵ ̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d32,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:175:4: This simp argument is unused:
+  Mem.read_write_ne _ _ _ _ d32
+
+Hint: Omit it from the simp argument list.
+  simp only [Mem.read_write_same, Mem.read_write_ne _ _ _ _ d1, Mem.read_write_ne _ _ _ _ d2,
+      Mem.read_write_ne _ _ _ _ d3, Mem.read_write_ne _ _ _ _ d21, Mem.read_write_ne _ _ _ _ d31,
+      Mem.read_write_ne _ _ _ _ d̵3̵2̵,̵ ̵M̵e̵m̵.̵r̵e̵a̵d̵_̵w̵r̵i̵t̵e̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵d1.symm, Mem.read_write_ne _ _ _ _ d2.symm,
+      Mem.read_write_ne _ _ _ _ d3.symm, Mem.read_write_ne _ _ _ _ d21.symm,
+  ̲  ̲ ̲ ̲Mem.read_write_ne _ _ _ _ d31.symm, Mem.read_write_ne _ _ _ _ d32.symm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:298:51: This simp argument is unused:
+  BitVec.getLsbD_setWidth
+
+Hint: Omit it from the simp argument list.
+  simp [Value.sext, Value.msb, Size.signBit, B̵i̵t̵V̵e̵c̵.̵g̵e̵t̵L̵s̵b̵D̵_̵s̵e̵t̵W̵i̵d̵t̵h̵,̵ ̵Value.trunc_q]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:299:87: This simp argument is unused:
+  widen_toNat
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵w̵i̵d̵e̵n̵_̵t̵o̵N̵a̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:361:45: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [hm, ha, f̵a̵l̵s̵e̵_̵a̵n̵d̵,̵ ̵and_false, if_false, Exit]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:361:56: This simp argument is unused:
+  and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [hm, ha, false_and, a̵n̵d̵_̵f̵a̵l̵s̵e̵,̵ ̵if_false, Exit]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Router/Refines.lean:361:67: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [hm, ha, false_and, and_false, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Exit]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [37/39] Building Compose.CallerWrite (460ms)
+trace: .> LEAN_PATH=~/fleet/vir/compose/.lake/packages/x86lean/.lake/build/lib/lean:~/fleet/vir/compose/.lake/packages/vir/lean/.lake/build/lib/lean:~/fleet/vir/compose/.lake/packages/o95spike/.lake/build/lib/lean:~/fleet/vir/compose/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/compose/Compose/CallerWrite.lean -o ~/fleet/vir/compose/.lake/build/lib/lean/Compose/CallerWrite.olean -i ~/fleet/vir/compose/.lake/build/lib/lean/Compose/CallerWrite.ilean -c ~/fleet/vir/compose/.lake/build/ir/Compose/CallerWrite.c --setup ~/fleet/vir/compose/.lake/build/ir/Compose/CallerWrite.setup.json --json
+error: Compose/CallerWrite.lean:37:8: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ g ≤ 18446744073709551615
+  18446744073709551616*f + g - 18446744073709551616*h - 18446744073709551616*i - 18446744073709551616*k ≤ 0
+  -18446744073709551615 ≤ 18446744073709551616*f + g - 18446744073709551616*h - 18446744073709551616*k ≤ 0
+  0 ≤ e ≤ 18446744073709551615
+  0 ≤ e - 18446744073709551616*f ≤ 18446744073709551615
+  0 ≤ e - 18446744073709551616*f ≤ 18446744073709551615
+  0 ≤ e + g - 18446744073709551616*h ≤ 18446744073709551615
+  d ≥ 1
+  0 ≤ c ≤ 18446744073709551614
+  c + 18446744073709551616*f + g - 18446744073709551616*h - 18446744073709551616*i - 18446744073709551616*k ≥ 1
+where
+ c := ↑bs.length
+ d := ↑(b :: bs).length
+ e := ↑a.toNat
+ f := ↑(a.toNat + 0 % 2 ^ 64) / 18446744073709551616
+ g := ↑(BitVec.toNat 1)
+ h := ↑(a.toNat + BitVec.toNat 1) / 18446744073709551616
+ i := ↑j / 18446744073709551616
+ k := ↑((a.toNat + BitVec.toNat 1) % 2 ^ 64 + j % 2 ^ 64) / 18446744073709551616
+error: Compose/CallerWrite.lean:95:28: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rdx
+in the target expression
+  (enterW (runP repaired n1 w1)).regs.get GPR.rdx = w1.regs.get GPR.rdx
+
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+⊢ (enterW (runP repaired n1 w1)).regs.get GPR.rdx = w1.regs.get GPR.rdx
+error: Compose/CallerWrite.lean:95:48: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rsi
+in the target expression
+  24 = ((enterW (runP repaired n1 w1)).regs.get GPR.rsi).toNat
+
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+⊢ 24 = ((enterW (runP repaired n1 w1)).regs.get GPR.rsi).toNat
+error: Compose/CallerWrite.lean:96:10: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rdi
+in the target expression
+  BufRel (bytesOf pkt2) 0 24 (enterW (runP repaired n1 w1)).mem ((enterW (runP repaired n1 w1)).regs.get GPR.rdi)
+
+case refine_1
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+⊢ BufRel (bytesOf pkt2) 0 24 (enterW (runP repaired n1 w1)).mem ((enterW (runP repaired n1 w1)).regs.get GPR.rdi)
+error: Compose/CallerWrite.lean:101:10: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+      (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms })).mem
+in the target expression
+  AgreeOutside (Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24) (runP repaired n1 w1).mem
+    (enterW (runP repaired n1 w1)).mem
+
+case refine_2
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+⊢ AgreeOutside (Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24) (runP repaired n1 w1).mem
+    (enterW (runP repaired n1 w1)).mem
+error: Compose/CallerWrite.lean:104:12: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rdi
+in the target expression
+  ∀ (p : UInt32) (k : Nat),
+    k < 4 →
+      ¬Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24
+          (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)
+
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+hc : Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) (enterW (runP repaired n1 w1)) (bytesOf pkt2) 0 24
+⊢ ∀ (p : UInt32) (k : Nat),
+    k < 4 →
+      ¬Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24
+          (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)
+error: Compose/CallerWrite.lean:105:12: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rdi
+in the target expression
+  ∀ (p t : UInt32), t.toNat < 64 → ¬Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24 (aclAddr p t)
+
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+hc : Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) (enterW (runP repaired n1 w1)) (bytesOf pkt2) 0 24
+⊢ ∀ (p t : UInt32), t.toNat < 64 → ¬Region ((enterW (runP repaired n1 w1)).regs.get GPR.rdi) 24 (aclAddr p t)
+error: Compose/CallerWrite.lean:107:31: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (enter
+          (let __src := runP repaired n1 w1;
+          { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+            mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+            xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+    GPR.rdi
+in the target expression
+  ∀ (i : Nat),
+    i < 24 → ¬Region (Refines.cell RDX 1) 4 ((enterW (runP repaired n1 w1)).regs.get GPR.rdi + BitVec.ofNat 64 i)
+
+hr : w1.regs.get GPR.rdi = B1 ∧ w1.regs.get GPR.rsi = 24 ∧ w1.regs.get GPR.rdx = RDX
+n1 : Nat
+hs1 : (runP repaired n1 w1).stopped = true
+hx1 :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+hk :
+  ∀ (s2 : Cpu),
+    Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) s2 (bytesOf pkt2) 0 24 →
+      (∀ (p : UInt32) (k : Nat),
+          k < 4 → ¬Region (s2.regs.get GPR.rdi) 24 (Refines.cell (w1.regs.get GPR.rdx) p + BitVec.ofNat 64 k)) →
+        (∀ (p t : UInt32), t.toNat < 64 → ¬Region (s2.regs.get GPR.rdi) 24 (aclAddr p t)) →
+          (24 ≤ 24 → ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 8).toP.toNat < 64) →
+            (∀ (i : Nat),
+                i < 24 →
+                  ¬Region (Refines.cell (w1.regs.get GPR.rdx) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP) 4
+                      (s2.regs.get GPR.rdi + BitVec.ofNat 64 i)) →
+              ∃ n2,
+                (runP repaired n2 s2).stopped = true ∧
+                  Exit s2 (runP repaired n2 s2) ((Deep.Val.slice (bytesOf pkt2) 0 24).rd 4).toP
+                    (Deep.den wAcl
+                      (Deep.F (Deep.Val.slice (bytesOf pkt2) 0 24)
+                        (Deep.Val.state
+                          (nextState (Deep.den wAcl (Deep.F (Deep.Val.slice (bytesOf pkt) 0 24) (Deep.Val.state wσ)))
+                            wσ))))
+hx1' :
+  Exit w1 (runP repaired n1 w1) ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP
+    (Deep.DOut.ret (Deep.Val.state (decTokens wσ ((Deep.Val.slice (bytesOf pkt) 0 24).rd 4).toP))
+      ((Deep.Val.slice (bytesOf pkt) 0 24).adv 24))
+he :
+  ∀ (t : Cpu),
+    (enter t).mem = t.mem ∧
+      (enter t).regs.get GPR.rdi = B2 ∧
+        (enter t).regs.get GPR.rsi = 24 ∧ (enter t).regs.get GPR.rdx = RDX ∧ (enter t).rip = 4096 ∧ (enter t).ms = none
+m2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).mem =
+    (let __src := runP repaired n1 w1;
+      { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+        fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle,
+        ms := __src.ms }).mem
+d2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdi =
+    B2
+l2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rsi =
+    24
+x2 :
+  (enter
+            (let __src := runP repaired n1 w1;
+            { regs := __src.regs, rip := __src.rip, flags := __src.flags,
+              mem := putBytes (runP repaired n1 w1).mem B2 pkt2, fsBase := __src.fsBase, gsBase := __src.gsBase,
+              xmm := __src.xmm, mxcsr := __src.mxcsr, oracle := __src.oracle, ms := __src.ms })).regs.get
+      GPR.rdx =
+    RDX
+r2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).rip =
+    4096
+ms2 :
+  (enter
+        (let __src := runP repaired n1 w1;
+        { regs := __src.regs, rip := __src.rip, flags := __src.flags, mem := putBytes (runP repaired n1 w1).mem B2 pkt2,
+          fsBase := __src.fsBase, gsBase := __src.gsBase, xmm := __src.xmm, mxcsr := __src.mxcsr,
+          oracle := __src.oracle, ms := __src.ms })).ms =
+    none
+hc : Caller (w1.regs.get GPR.rdx) (runP repaired n1 w1) (enterW (runP repaired n1 w1)) (bytesOf pkt2) 0 24
+⊢ ∀ (i : Nat),
+    i < 24 → ¬Region (Refines.cell RDX 1) 4 ((enterW (runP repaired n1 w1)).regs.get GPR.rdi + BitVec.ofNat 64 i)
+error: Lean exited with code 1
+Some required targets logged failures:
+- Compose.CallerWrite
+error: build failed
+saltbuild EXIT=1
