@@ -6,6 +6,8 @@ lean	C1heq	20	MEASURED
 lean	P2.C1heq	20	MEASURED
 lean	C1heqFlat	0	MEASURED
 lean	P2Z.C1heq	20	MEASURED
+lean	P3.C1heq	0	MEASURED
+lean	P3.C1coe	54	MEASURED
 lean	C2wf	53	MEASURED
 lean	C2cond	3	MEASURED
 lean	C2	56	MEASURED
@@ -16,6 +18,9 @@ lean	C5chain	84	MEASURED
 lean	P2.C3	6	MEASURED
 lean	P2.C2cond	8	MEASURED
 lean	P2.C5chain	202	MEASURED
+lean	P3.C3	0	MEASURED
+lean	P3.C2cond	0	MEASURED
+lean	P3.C5chain	38	MEASURED
 lean	P2Z.C3	6	MEASURED
 lean	P2Z.C2cond	8	MEASURED
 lean	P2Z.C5chain	220	MEASURED
@@ -34,10 +39,10 @@ lean	P2S.ctxHolds	1	MEASURED
 lean	P2S.C2deepCond	3	MEASURED
 lean	P2S.C5chainDeep	653	MEASURED
 lean	C4	0	MEASURED
-lean	C5	968	MEASURED
-lean	C5tok	11387	MEASURED
+lean	C5	999	MEASURED
+lean	C5tok	11631	MEASURED
 lean	C2.scoped	25	MEASURED
 lean	C5.scoped	265	MEASURED
 lean	C5tok.scoped	3116	MEASURED
-lean	C6	33	MEASURED
+lean	C6	37	MEASURED
 lean	C6.scope	0	UNSCOPED
