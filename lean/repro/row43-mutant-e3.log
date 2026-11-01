@@ -1,0 +1,914 @@
+saltqueue: ticket P2 seat=root pid=8553
+⚠ [5/31] Replayed X86.Value
+warning: X86/Value.lean:266:10: This simp argument is unused:
+  writeView_getLsbD_b
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵b̵,̵ ̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵[̲w̲r̲i̲t̲e̲V̲i̲e̲w̲_̲g̲e̲t̲L̲s̲b̲D̲_̲w̲,̲ writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:31: This simp argument is unused:
+  writeView_getLsbD_w
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵ ̵writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:52: This simp argument is unused:
+  writeView_q
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, writeView_getLsbD_w, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵q̵,̵ ̵hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [11/31] Replayed X86.Syntax
+warning: X86/Syntax.lean:2793:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2797:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2801:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2805:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2809:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2813:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2817:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2821:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2825:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2829:43: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2833:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2837:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:2842:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [14/31] Replayed X86.Theorems
+warning: X86/Theorems.lean:585:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:585:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:628:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:628:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:954:75: This simp argument is unused:
+  Cpu.getReg
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, hlk, Cpu.setReg, Cpu.setRip, Cpu.readOperand, C̵p̵u̵.̵g̵e̵t̵R̵e̵g̵,̵
+  ̵ ̵ ̵ ̵ ̵Operand.locked]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1078:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1083:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1088:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1101:20: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1134:5: Variable name `h'` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1136:17: This simp argument is unused:
+  h'
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, h̵'̵,̵ ̵Cpu.setFlags, Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1168:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1234:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1289:18: This simp argument is unused:
+  Flags.bitScan
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵F̵l̵a̵g̵s̵.̵b̵i̵t̵S̵c̵a̵n̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1299:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1299:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1300:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1301:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1303:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1310:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1310:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1311:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1312:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1314:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1326:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1326:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1334:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1334:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1341:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1341:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1351:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1351:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1362:64: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1362:67: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1552:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1552:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1566:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1566:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1669:54: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1677:41: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [15/31] Replayed X86.Program
+warning: X86/Program.lean:971:10: This simp argument is unused:
+  BitVec.toNat_sub
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵B̵i̵t̵V̵e̵c̵.̵t̵o̵N̵a̵t̵_̵s̵u̵b̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [26/31] Built Router.Repaired (406ms)
+✔ [27/31] Built Router.Steps (229ms)
+✖ [28/31] Building Router.Paths (348ms)
+trace: .> LEAN_PATH=<scratch>/spike36/.lake/packages/x86lean/.lake/build/lib/lean:<scratch>/spike36/.lake/packages/vir/lean/.lake/build/lib/lean:<scratch>/spike36/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean <scratch>/spike36/Router/Paths.lean -o <scratch>/spike36/.lake/build/lib/lean/Router/Paths.olean -i <scratch>/spike36/.lake/build/lib/lean/Router/Paths.ilean -c <scratch>/spike36/.lake/build/ir/Router/Paths.c --setup <scratch>/spike36/.lake/build/ir/Router/Paths.setup.json --json
+warning: Router/Paths.lean:100:13: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc',̵ ̵C̵p̵u̵.̵h̵a̵l̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Router/Paths.lean:247:30: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Cc.le.eval (Flags.sub ?sz ?a ?b ?f)
+in the target expression
+  (if
+        Cc.l.eval
+            (Flags.sub Size.d
+              ((stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired
+                              (stepP repaired
+                                (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).mem.readSize
+                Size.d
+                ((stepP repaired
+                            (stepP repaired
+                              (stepP repaired
+                                (stepP repaired
+                                  (stepP repaired
+                                    (stepP repaired
+                                      (stepP repaired
+                                        (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+                      GPR.rdx +
+                    (stepP repaired
+                              (stepP repaired
+                                (stepP repaired
+                                  (stepP repaired
+                                    (stepP repaired
+                                      (stepP repaired
+                                        (stepP repaired
+                                          (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+                        GPR.rcx *
+                      4 +
+                  12288))
+              (Value.trunc Size.d 0)
+              (stepP repaired
+                  (stepP repaired
+                    (stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).flags) =
+          true then
+      4162
+    else 4142) =
+    if
+        (Value.isZero Size.d (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0)) ||
+            Value.msb Size.d (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0)) !=
+              Flags.subOF Size.d (tok s) (Value.trunc Size.d 0)
+                (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0))) =
+          true then
+      4162
+    else 4142
+
+s : Cpu
+h : Live s
+hrip : s.rip = 4096
+hge : ¬(s.regs.get GPR.rsi).toNat < 24
+hm :
+  Cc.ne.eval
+      (Flags.sub Size.d (Value.trunc Size.d (s.mem.readSize Size.d (s.regs.get GPR.rdi)))
+        (Value.trunc Size.d 1297303345) s.flags) =
+    false
+hcan : canonical (aclByteA s) = true
+hacl : aclBit s = true
+l10 :
+  Live
+    (stepP repaired
+      (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))
+m10 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).mem =
+    s.mem
+g10 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs =
+    (((s.regs.set GPR.rax (Value.trunc Size.d (s.mem.readSize Size.d (s.regs.get GPR.rdi)))).set GPR.rcx (sender s)).set
+          GPR.r8 (topic s)).set
+      GPR.r9 12317
+r10 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).rip =
+    4132
+l11 :
+  Live
+    (stepP repaired
+      (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))))
+r11 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).rip =
+    4140
+m11 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).mem =
+    (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).mem
+g11 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).regs =
+    (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs
+f11 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).flags =
+    Flags.sub Size.d
+      ((stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired
+                      (stepP repaired
+                        (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).mem.readSize
+        Size.d
+        ((stepP repaired
+                    (stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired
+                              (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+              GPR.rdx +
+            (stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired
+                              (stepP repaired
+                                (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+                GPR.rcx *
+              4 +
+          12288))
+      (Value.trunc Size.d 0)
+      (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).flags
+l12 :
+  Live
+    (stepP repaired
+      (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))))
+r12 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))))).rip =
+    if
+        Cc.l.eval
+            (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).flags =
+          true then
+      4162
+    else 4142
+m12 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))))).mem =
+    (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).mem
+g12 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))))).regs =
+    (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).regs
+f12 :
+  (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired
+                    (stepP repaired
+                      (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))))).flags =
+    (stepP repaired
+        (stepP repaired
+          (stepP repaired
+            (stepP repaired
+              (stepP repaired
+                (stepP repaired
+                  (stepP repaired (stepP repaired (stepP repaired (stepP repaired (stepP repaired s))))))))))).flags
+⊢ (if
+        Cc.l.eval
+            (Flags.sub Size.d
+              ((stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired
+                              (stepP repaired
+                                (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).mem.readSize
+                Size.d
+                ((stepP repaired
+                            (stepP repaired
+                              (stepP repaired
+                                (stepP repaired
+                                  (stepP repaired
+                                    (stepP repaired
+                                      (stepP repaired
+                                        (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+                      GPR.rdx +
+                    (stepP repaired
+                              (stepP repaired
+                                (stepP repaired
+                                  (stepP repaired
+                                    (stepP repaired
+                                      (stepP repaired
+                                        (stepP repaired
+                                          (stepP repaired (stepP repaired (stepP repaired s)))))))))).regs.get
+                        GPR.rcx *
+                      4 +
+                  12288))
+              (Value.trunc Size.d 0)
+              (stepP repaired
+                  (stepP repaired
+                    (stepP repaired
+                      (stepP repaired
+                        (stepP repaired
+                          (stepP repaired
+                            (stepP repaired (stepP repaired (stepP repaired (stepP repaired s)))))))))).flags) =
+          true then
+      4162
+    else 4142) =
+    if
+        (Value.isZero Size.d (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0)) ||
+            Value.msb Size.d (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0)) !=
+              Flags.subOF Size.d (tok s) (Value.trunc Size.d 0)
+                (Flags.subResult Size.d (tok s) (Value.trunc Size.d 0))) =
+          true then
+      4162
+    else 4142
+error: Lean exited with code 1
+Some required targets logged failures:
+- Router.Paths
+error: build failed
+saltbuild EXIT=1

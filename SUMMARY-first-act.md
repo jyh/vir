@@ -60,6 +60,11 @@ The arms:
 | A.4 AS REPAIRED (E1–E5) refines F_exit for ALL states under I6 | paris `repaired_refines`, spike 2c0b059, F_exit pinned at vir 2ab9d98 | paris's audit EXIT=0; **rebuilt by vir from a fresh clone, axiom lines byte-identical** (RESULTS-3 add. 9) | one invocation; I6's code-disjoint clause is vacuous in x86lean; E3's order not driven as a mutant |
 | the same, from the UNFUSED spec U, as ONE term | vir `compose/` `lowered_refines_U`, vir 5b59d04 | build-002 + audit-001 EXIT=0, `[propext, Classical.choice, Quot.sound]` | it inherits every limit above |
 | the hypotheses are satisfiable | vir `witness_applies` (rdx 2^48) + `witness_ok_control` | same build | one witness, OK path only; **paris's control state (rdx 0x8000) violates `hdisj`**, mutant red (RESULTS-3 add. 10) |
+| every exit is an instance (five witnesses) | vir `compose/Compose/Drops.lean` + `witness_applies` | build-006 + audit-002 EXIT=0 | concrete states, sender 0, topic 0 |
+| K3 at the machine: emit_slice ⇒ ACL bit set, token held, magic, len ≥ 24, at ANY fuel | vir `emit_implies_guards` (compose/Safety.lean) | build-011 + audit-003 EXIT=0; 0x1042 mutant red | program 1's F, not program 3's F2 (F2 not lowered) |
+| the ∀ proof reads the length guard AND the bucket test | paris's E2 mutant (jb→jl) + vir's E3-class mutant (jle→jl, reds `prefix_rate`) | both EXIT=1 as predicted | E3's literal order not driven (step 2 refutes it) |
+| rate limiting composes over two calls (spec side) | vir `two_ok_same_sender` (compose/MultiCall.lean) | build-008 EXIT=0; 3-token mutant red | spec only; no machine-level multi-call theorem |
+| the compiler's proof size | harness/compiler-counts.tsv at the pinned sha | reproduce.sh 7/7 rc 0 | exploratory, post-proof; no ratio to the arms |
 | program 2 is not lowered | paris @[bus] | — | F2_exit (vir 06ff140) offered and unused |
 
 **In one line:** for program 1, the method runs end to end. The spec composition U is fused to F in both logics, and F's exit relation is refined by repaired x86-64 code for every state, checked in Lean against x86lean. The repairs are part of the finding: the object's own lowering was wrong in two places, and step 2 says where.

@@ -155,7 +155,7 @@ All rows are in `compose/`: **build-006 `saltbuild EXIT=0`** and **audit-002 `sa
 | layer1 | Steps + Paths (per-address steps, five ∀-state paths) | 313 | 3,579 |
 | layer2 | Bridge + Refines (the abstraction and the refinement) | 438 | 3,872 |
 | spike total | | 860 | 8,707 |
-| vir compose/ | rows 37–41 | 222 | 2,135 |
+| vir compose/ | rows 37–41 (270 · 2,641 after row 42, addendum 12) | 222 | 2,135 |
 
   `CC.theorems` = 81. ⇒ **The abstraction bridge (layer 2) costs more than the machine paths (layer 1).** No ratio to the two arms is drawn, because the C5chain units count the scored fusion chain only. `reproduce.sh` now re-derives 7 files, rc 0. Limit: the compose rows read vir's working tree, not a sha.
 - **Row 41, the spec side of a multi-call refinement** (`Compose/MultiCall.lean`, imports vir's F_exit only):
@@ -165,3 +165,12 @@ All rows are in `compose/`: **build-006 `saltbuild EXIT=0`** and **audit-002 `sa
   - `drop_no_state`.
 
   Red backwards: claiming 3 tokens (build-007-mutant-3tokens, EXIT=1) reds exactly that lemma's `omega`. Then restored, build-008 EXIT=0. It sits in compose/ so lean/out does not move. It is OFFERED to paris as the spec for a machine-level multi-call theorem, which would ALSO need the ACL/bucket disjointness that the single-call theorem does without (addendum 8).
+
+## ADDENDUM 12 (2026-11-01, the 4th vir head): rows 42–43 — K3 at the machine, and E3 driven against the ∀ proof
+- **Row 42, RESTATED AT DELIVERY.** Program 3's `route_acl_safe` is over F2. **F2 is not lowered** (paris @[bus]), so it cannot be read on x86. What can be read is K3's shape on program 1's F. `compose/Compose/Safety.lean` (build-009 and build-011 `saltbuild EXIT=0`, audit-003 EXIT=0) has:
+  - **`runP_stopped_unique`**: two stopped runs from one state are equal (x86lean's `runP_stopped` + `runP_add`), `[propext, Quot.sound]`;
+  - **`emit_implies_guards`**: under I6, if the repaired code stops at emit_slice at ANY fuel `m`, then len ≥ 24, the magic matched, **the sender's ACL bit for the topic was set**, and the sender held a token. `[propext, Classical.choice, Quot.sound]`.
+
+  The theorem is stated about the stop a reader OBSERVES, not about the n the refinement picks. **Red backwards:** the mutant "stopping at 0x1042 implies the guards" (build-010-mutant-exit1042, EXIT=1) fails at Safety.lean:48, in the unauthorized-or-rate branch, because there the exit IS reachable. The proof distinguishes the exits. It does not just discharge a goal.
+- **Row 43, E3 as a mutant of the ∀ proof** (paris declared it not driven). This was done in vir's scratch clone of the spike at 2c0b059. **Paris's tree was not touched, and the clone was restored with `git checkout`, status clean.** The mutant is the same-length `jle` → `jl` at 0x102c, after `cmpl $0`: a zero bucket passes the test, is decremented to −1, and emits. With `rep_e3_control` removed, so the ∀-state proof is the thing tested, **`saltbuild EXIT=1` and the build fails in `Router.Paths` at :247, inside `prefix_rate`**, the path lemma that reads the bucket test. The log is `lean/repro/row43-mutant-e3.log`. ⚠️ **Scope:** this is an E3-CLASS mutant (the test is weakened before the write). It is not the literal as-written order (subtract, then `jl`), which changes instruction lengths and addresses. Step 2's kernel-checked witness already refutes that order.
+- **The compose rows moved, as addendum 11's limit predicted.** Adding Safety.lean took `CC.compose.C5` 222 → **270**, `C5tok` 2,135 → **2,641** and `CC.theorems` 81 → **83**. `reproduce.sh` caught it (rc 1, DIFF on `compiler-counts.tsv`). The file was regenerated and is rc 0 again. Addendum 11's table keeps its figures as of rows 37–41. The spike rows did not move, because they are read at the pinned sha.

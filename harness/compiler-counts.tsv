@@ -6,7 +6,7 @@ compiler	CC.layer2.C5	438	MEASURED
 compiler	CC.layer2.C5tok	3872	MEASURED
 compiler	CC.spike.C5	860	MEASURED
 compiler	CC.spike.C5tok	8707	MEASURED
-compiler	CC.compose.C5	222	MEASURED
-compiler	CC.compose.C5tok	2135	MEASURED
-compiler	CC.theorems	81	MEASURED
+compiler	CC.compose.C5	270	MEASURED
+compiler	CC.compose.C5tok	2641	MEASURED
+compiler	CC.theorems	83	MEASURED
 compiler	CC.sha	2c0b05943f520ca99bf77bfd8cb1c9f6d3686a59	PINNED
