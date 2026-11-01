@@ -66,7 +66,13 @@ def files(d, exts):
     return sorted(out)
 
 
-def lean(d):
+# ROW 19: each program's DECLARED file set. Whole-tree rows move whenever a file is added; the `.scoped` rows do not.
+# Variants (Flat, Deep*, Router2Z, Exit*) are in no program's scope: they are scored only by their own rows.
+PROGRAM_FILES = {'1': ('Core.lean', 'Rules.lean', 'Router.lean'),
+                 '2': ('Core.lean', 'Rules.lean', 'Router.lean', 'Router2.lean')}
+
+
+def lean(d, prog='1'):
     rows = []
     t = os.path.join(d, 'out', 'terms.txt')
     if os.path.isfile(t):
@@ -160,9 +166,18 @@ def lean(d):
     else:
         rows.append(('C4', 0, 'EMPTY'))
     rows += size(src)
+    sc = [p for p in src if os.path.basename(p) in PROGRAM_FILES[prog]]
+    if len(sc) == len(PROGRAM_FILES[prog]):
+        st = strip_shortcuts(''.join(read(p) for p in sc))
+        sside = len(re.findall(r'\(by |\bby have[^\n]*omega', st))
+        rows.append(('C2.scoped', sside, 'MEASURED'))
+        rows += [(c + '.scoped', v, m) for c, v, m in size(sc)]
+    else:
+        rows.append(('C2.scoped', 0, 'EMPTY'))
     logs = files(os.path.join(d, 'logs'), ('.log',))
     n = sum(len(re.findall(r'^saltbuild EXIT=\d+', read(p), re.M)) for p in logs)
     rows.append(('C6', n, 'MEASURED') if logs else ('C6', 0, 'EMPTY'))
+    rows.append(('C6.scope', 0, 'UNSCOPED'))   # build logs are not per-program; C6 stays whole-tree
     return rows
 
 
@@ -262,7 +277,7 @@ def main():
     ap.add_argument('--program', default='1', choices=['1', '2'])
     ap.add_argument('dir')
     a = ap.parse_args()
-    rows = lean(a.dir) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
+    rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
     for c, v, s in rows:
         print(f'{a.arm}\t{c}\t{v}\t{s}')
     return 0

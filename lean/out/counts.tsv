@@ -36,4 +36,8 @@ lean	P2S.C5chainDeep	653	MEASURED
 lean	C4	0	MEASURED
 lean	C5	968	MEASURED
 lean	C5tok	11387	MEASURED
+lean	C2.scoped	9	MEASURED
+lean	C5.scoped	170	MEASURED
+lean	C5tok.scoped	1963	MEASURED
 lean	C6	33	MEASURED
+lean	C6.scope	0	UNSCOPED
