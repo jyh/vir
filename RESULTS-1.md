@@ -41,3 +41,13 @@ FINDINGS.md M-F1..M-F4 (MetaPRL). And Lean's own: **L-F1** most of the Lean C1 t
 | C5 | UNMEASURED (no extractor for vir.prla's tactic text) | 11 tactics / 487 tokens | — |
 **P2 under either convention:** 15 or 13 against Lean's 9. It HOLDS, still PROVISIONALLY (the extractors post-date the proofs).
 Harness selftest now has 5 arms, rc 0. The MetaPRL extractor was driven red backwards: a mutant that drops the indentation rule miscounts the fixture and goes red.
+
+## ADDENDUM 3 (01:2x): the C1 tokens, theorem by theorem (amend-5), and P5 corroborated at the build log
+| theorem (elaborated) | HEq | Nat.sub_sub | Eq.mpr | ▸ | Eq.rec | Eq.ndrec |
+|---|---|---|---|---|---|---|
+| VIR.router_fusion (the chain) | 0 | 0 | 6 | 4 | 7 | 1 |
+| VIR.Slice.congr_heq | 4 | 0 | 0 | 0 | 0 | 2 |
+| VIR.Slice.heq_of | 1 | 0 | 0 | 0 | 0 | 5 |
+| VIR.Flat.slice_fuse_flat | 0 | 1 | 0 | 0 | 0 | 0 |
+⇒ **P1 (C1heq, L-IDX slice path) = 5 ≥ 1, HOLDS. P1b (C1heq, L-FLAT) = 0, HOLDS.** Under amend-5 the letter and the intent agree. Under the preregistered class (addendum 1), P1b stays FALSIFIED by its letter, and both readings are kept.
+**P5, corroborated:** the fleet audit log (`.saltbuild-audit.log`) records paris's spike `build Router EXIT=0` at 00:33:20 and `audit AxAudit.lean EXIT=0` at 00:33:37 (HEAD 22fccea, tree dirty), then the mutant audit `EXIT=1` at 00:33:44. The commit b7c747d followed. vir did NOT rebuild in paris's tree, which paris is still working in, so the committed bytes are paris's word plus this log.
