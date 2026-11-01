@@ -20,3 +20,10 @@ open VIR
 #print axioms VIR.Deep.router_fusion_deep_steps
 #print axioms VIR.Deep.F_exit
 #print axioms VIR.Deep.U_exit
+#print VIR.router2_fusion
+#print VIR.slice_fuse_dep
+#print VIR.Slice.congr_heq_dep
+#print VIR.aux_advance_idx
+#print VIR.aux_advance_past_dguard
+#print VIR.aux_guard_cond_eq
+#print axioms VIR.router2_fusion

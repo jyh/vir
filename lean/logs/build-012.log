@@ -1,0 +1,53 @@
+saltqueue: ticket P2 seat=root pid=22768
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     473s       math         66379
+  P2     301s       root         22768
+  P2     75s        h2c          89702
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     774s       math         66379
+  P2     602s       root         22768
+  P2     376s       h2c          89702
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     1076s      math         66379
+  P2     904s       root         22768
+  P2     678s       h2c          89702
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     1377s      math         66379
+  P2     1205s      root         22768
+  P2     979s       h2c          89702
+saltqueue: HEAD OF QUEUE after 1370s — attempting acquisition
+✔ [2/10] Built VIR.Core (213ms)
+✔ [3/10] Built VIR.Rules (192ms)
+✔ [4/10] Built VIR.Flat (181ms)
+✔ [5/10] Built VIR.Router (215ms)
+✔ [6/10] Built VIR.Deep (335ms)
+✔ [7/10] Built VIR.Exit (178ms)
+✖ [8/10] Building VIR.Router2 (284ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Router2.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Router2.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Router2.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Router2.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Router2.setup.json --json
+error: VIR/Router2.lean:64:2: Tactic `generalize` failed: result is not type correct
+  ∀ (m : Nat),
+    m = n - (i + j) →
+      ∀ (x : Slice m),
+        x ≍ y → (fun s₁ => (fun s₂ => e m ⋯ s₂) (s₁.adv j h₂)) (b.adv i h₁) = (fun s₂ => e (n - (i + j)) ⋯ s₂) y
+
+n : Nat
+b : Slice n
+i j : Nat
+h₁ : i ≤ n
+h₂ : j ≤ n - i
+h₃ : i + j ≤ n
+e : (m : Nat) → m = n - (i + j) → Slice m → Out
+y : Slice (n - (i + j))
+⊢ n - i - j = n - (i + j) →
+    ∀ (x : Slice (n - i - j)),
+      x ≍ y → (fun s₁ => (fun s₂ => e (n - i - j) ⋯ s₂) (s₁.adv j h₂)) (b.adv i h₁) = (fun s₂ => e (n - (i + j)) ⋯ s₂) y
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Router2
+error: build failed
+saltbuild EXIT=1

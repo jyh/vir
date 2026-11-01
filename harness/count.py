@@ -15,7 +15,7 @@ C2 has no extractor on either side until mojave's census label is known: it prin
 import argparse, os, re, sys
 
 # C1: the token class fixed in PREDICTIONS.md (elaborated-term spellings).
-CAST_RE = re.compile(r'(?<![A-Za-z0-9_.])(HEq|cast|Eq\.mpr|Eq\.rec|heq_of_eq|eq_rec|Eq\.ndrec|Nat\.sub_sub)(?![A-Za-z0-9_])|▸')
+CAST_RE = re.compile(r'(?<![A-Za-z0-9_.])(HEq|cast|Eq\.mpr|Eq\.rec|heq_of_eq|eq_rec|Eq\.ndrec|Nat\.sub_sub)(?![A-Za-z0-9_])|▸|≍')  # ≍ = HEq's notation
 STD_AXIOMS = {'propext', 'Classical.choice', 'Quot.sound'}
 AUX_RE = re.compile(r'^\s*(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+(?:[A-Za-z0-9_.]*\.)?aux_[A-Za-z0-9_]*', re.M)
 
@@ -79,6 +79,12 @@ def lean(d):
         fl = cnt(r'\S*\.Flat\.')                      # L-FLAT control (P1b)
         sl = cnt(r'(?!\S*\.Flat\.)\S*(slice_fuse|\.Slice\.)')   # L-IDX slice_fuse path (P1)
         rows += [('C1slice', sl, 'MEASURED'), ('C1flat', fl, 'MEASURED'), ('C1rest', len(CAST_RE.findall(tt)) - sl - fl, 'MEASURED')]
+        # amend-5 C1heq per program path: P1 = slice_fuse + Slice.heq_of/congr_heq/adv_adv_heq; P2 = slice_fuse_dep + congr_heq_dep + aux_advance_idx + heq_of/adv_adv_heq
+        HEQ = re.compile(r'(?<![A-Za-z0-9_.])(HEq|heq_of_eq)(?![A-Za-z0-9_])|≍')
+        def heq(names):
+            return sum(len(HEQ.findall(b)) for b in tb if re.match(r'(?:@\[[^\]]*\]\s*)?theorem\s+VIR\.(' + names + r')\s', b))
+        rows += [('C1heq', heq(r'slice_fuse|Slice\.heq_of|Slice\.congr_heq|Slice\.adv_adv_heq'), 'MEASURED'),
+                 ('P2.C1heq', heq(r'slice_fuse_dep|Slice\.congr_heq_dep|aux_advance_idx|Slice\.heq_of|Slice\.adv_adv_heq'), 'MEASURED')]
     else:
         rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))
@@ -95,6 +101,12 @@ def lean(d):
         used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
         rows += [('C3', len(used), 'MEASURED'), ('C3declared', len(declared), 'MEASURED')]
         rows.append(('C5chain', chain_tokens(body), 'MEASURED'))
+        # PROGRAM 2 (predictions-program2): the scored chain is router2_fusion
+        b2 = next((b for b in blocks(scored) if re.match(r'theorem\s+router2_fusion\b', b)), '')
+        if b2:
+            u2 = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', b2)}
+            rows += [('P2.C3', len(u2), 'MEASURED'), ('P2.C2cond', len(re.findall(r'\(by ', b2)), 'MEASURED'),
+                     ('P2.C5chain', chain_tokens(b2), 'MEASURED')]
         # L-DEEP (row 9): aux rules are constructors of Step; used = referenced in router_fusion_deep_steps
         dblk = next((b for b in blocks(scored) if re.match(r'theorem\s+router_fusion_deep_steps\b', b)), '')
         if dblk:
@@ -136,10 +148,10 @@ def size(src):
 FORM_UNFOLD_RE = re.compile(r'(?<![A-Za-z0-9_])unfold_(read_u32|vguard|guard|advance|let_lin|let_atom|vreturn|vdrop)(?![A-Za-z0-9_])')
 
 
-def metaprl(d):
+def metaprl(d, sfx=''):
     """d = the arm's root holding vir-metaprl/ (theory) and vir-arm-tools/ (scripts, driver runs).
     The extractor names were agreed with mojave @[bus] (STATUS-vir row 6)."""
-    th = os.path.join(d, 'vir-metaprl', 'theories', 'vir', 'vir.ml')
+    th = os.path.join(d, 'vir-metaprl', 'theories', 'vir', 'vir' + sfx + '.ml')
     tools = os.path.join(d, 'vir-arm-tools')
     if not os.path.isfile(th):
         return [(c, 0, 'EMPTY') for c in ('C1', 'C2', 'C3', 'C4', 'C5', 'C6')]
@@ -148,14 +160,14 @@ def metaprl(d):
     rows.append(('C1', sum(len(CAST_RE.findall(read(p))) for p in steps), 'MEASURED'))
     # C2: indented child-goal labels in the per-step C2 replays (amend-1: wf / equality / any premise of a conditional rule)
     lab = {'wf': 0, 'equality': 0, 'assertion': 0}
-    for f in ('runs-c2-router.txt', 'runs-c2-lemmas.txt'):
+    for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt',)):
         fp = os.path.join(tools, f)
         if os.path.isfile(fp):
             for m in re.finditer(r'^[ \t]+\.\.\.\.(wf|equality|assertion)\.\.\.\.', read(fp), re.M):
                 lab[m.group(1)] += 1
     # GENERATED convention (row 12): mpdrive's `=== CHILDREN k: <labels>` line (direct children of each refine; mojave c7df66d)
     gen = {'wf': 0, 'equality': 0, 'assertion': 0}; have_children = False
-    for f in ('runs-c2-router.txt', 'runs-c2-lemmas.txt'):
+    for f in (('runs-c2-router.txt', 'runs-c2-lemmas.txt') if not sfx else ('runs-c2-router' + sfx + '.txt',)):
         fp = os.path.join(tools, f)
         if os.path.isfile(fp):
             for m in re.finditer(r'^=== CHILDREN \d+:(.*)$', read(fp), re.M):
@@ -170,8 +182,12 @@ def metaprl(d):
              ('C2cond', lab['assertion'], 'MEASURED'), ('C2', sum(lab.values()), 'MEASURED')]
     # C3: aux rules USED by the scored chain script, plus A.2-form unfolds (amend-3)
     ml = read(th)
+    if sfx:   # program 2's module imports program 1's, where the aux rules are declared
+        base = os.path.join(d, 'vir-metaprl', 'theories', 'vir', 'vir.ml')
+        if os.path.isfile(base):
+            ml = read(base) + '\n' + ml
     declared = set(re.findall(r'^\s*interactive(?:_rw)?\s+(aux_[A-Za-z0-9_]*)', ml, re.M))
-    chain = os.path.join(tools, 'steps', 'c2-router.mp')
+    chain = os.path.join(tools, 'steps', 'c2-router' + sfx + '.mp')
     body = read(chain) if os.path.isfile(chain) else ''
     used = {a for a in declared if re.search(r'(?<![A-Za-z0-9_])' + re.escape(a) + r'(?![A-Za-z0-9_])', body)}
     forms = set(m.group(1) for m in FORM_UNFOLD_RE.finditer(body))
@@ -188,9 +204,10 @@ def metaprl(d):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--arm', required=True, choices=['lean', 'metaprl'])
+    ap.add_argument('--program', default='1', choices=['1', '2'])
     ap.add_argument('dir')
     a = ap.parse_args()
-    rows = lean(a.dir) if a.arm == 'lean' else metaprl(a.dir)
+    rows = lean(a.dir) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
     for c, v, s in rows:
         print(f'{a.arm}\t{c}\t{v}\t{s}')
     return 0

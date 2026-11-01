@@ -49,7 +49,7 @@ Harness selftest now has 5 arms, rc 0. The MetaPRL extractor was driven red back
 | VIR.Slice.congr_heq | 4 | 0 | 0 | 0 | 0 | 2 |
 | VIR.Slice.heq_of | 1 | 0 | 0 | 0 | 0 | 5 |
 | VIR.Flat.slice_fuse_flat | 0 | 1 | 0 | 0 | 0 | 0 |
-⇒ **P1 (C1heq, L-IDX slice path) = 5 ≥ 1, HOLDS. P1b (C1heq, L-FLAT) = 0, HOLDS.** Under amend-5 the letter and the intent agree. Under the preregistered class (addendum 1), P1b stays FALSIFIED by its letter, and both readings are kept.
+⇒ ⚠️ **CORRECTED 02:4x (RESULTS-2 §0): the class missed `≍`, which is HEq's NOTATION in Lean's printer, so the true C1heq on the slice path is 20, not 5, and the HEq column above under-reads every row.** **P1 (C1heq, L-IDX slice path) = 5 ≥ 1, HOLDS. P1b (C1heq, L-FLAT) = 0, HOLDS.** Under amend-5 the letter and the intent agree. Under the preregistered class (addendum 1), P1b stays FALSIFIED by its letter, and both readings are kept.
 **P5, corroborated:** the fleet audit log (`.saltbuild-audit.log`) records paris's spike `build Router EXIT=0` at 00:33:20 and `audit AxAudit.lean EXIT=0` at 00:33:37 (HEAD 22fccea, tree dirty), then the mutant audit `EXIT=1` at 00:33:44. The commit b7c747d followed. vir did NOT rebuild in paris's tree, which paris is still working in, so the committed bytes are paris's word plus this log.
 
 ## ADDENDUM 4 (01:4x): L-DEEP, a deep parametric-HOAS embedding (STATUS row 9, finding L-F3 tested)

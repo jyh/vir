@@ -5,3 +5,4 @@
 'VIR.Deep.router_fusion_deep_steps' does not depend on any axioms
 'VIR.Deep.F_exit' depends on axioms: [propext, Quot.sound]
 'VIR.Deep.U_exit' depends on axioms: [propext, Quot.sound]
+'VIR.router2_fusion' depends on axioms: [propext, Quot.sound]

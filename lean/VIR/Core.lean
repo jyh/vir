@@ -26,7 +26,7 @@ abbrev State := Principal → Int
 
 def MAGIC : UInt32 := 0x4D534731
 
-inductive Code | truncated | unauthOrRate
+inductive Code | truncated | unauthOrRate | badPayload   -- badPayload: program 2 (J1)
   deriving DecidableEq
 
 /-- Terminal outcomes: `return{(st, slice)}` or `drop{code}`. -/
