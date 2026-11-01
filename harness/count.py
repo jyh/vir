@@ -357,7 +357,7 @@ def metaprl_c5(d, tools, sfx):
 CC_LAYERS = {'layer0': ('AsWritten', 'Repaired'), 'layer1': ('Steps', 'Paths'), 'layer2': ('Bridge', 'Refines')}
 
 
-def compiler(repo, sha, compose):
+def compiler(repo, sha, compose, compose_sha=None):
     """STATUS-vir row 40 (exploratory, POST-PROOF, no prediction): the compiler application's proof size.
     repo = paris's spike, read AT `sha` by `git show` (the working tree moves); compose = vir's compose/ dir.
     Layers: layer0 the programs + concrete controls, layer1 per-address steps + exit paths, layer2 the
@@ -381,12 +381,24 @@ def compiler(repo, sha, compose):
     a, b = sz(texts.values())
     rows += [('CC.spike.C5', a, 'MEASURED'), ('CC.spike.C5tok', b, 'MEASURED')]
     th = sum(len(re.findall(r'^theorem\s', t, re.M)) for t in texts.values())
-    csrc = files(os.path.join(compose, 'Compose'), ('.lean',)) if compose else []
-    ctexts = [read(p) for p in csrc]
+    if compose and compose_sha:
+        # row 45: read compose/Compose/*.lean AT a vir sha (paths relative to `compose`, so `./`)
+        r = subprocess.run(['git', '-C', compose, 'ls-tree', '-r', '--name-only', compose_sha, 'Compose/'],
+                           capture_output=True, text=True)
+        csrc = sorted(n for n in r.stdout.split() if n.endswith('.lean')) if r.returncode == 0 else []
+        ctexts = [subprocess.run(['git', '-C', compose, 'show', f'{compose_sha}:./{n}'], capture_output=True,
+                                 text=True).stdout for n in csrc]
+    else:
+        csrc = files(os.path.join(compose, 'Compose'), ('.lean',)) if compose else []
+        ctexts = [read(p) for p in csrc]
     a, b = sz(ctexts)
     rows += [('CC.compose.C5', a, 'MEASURED' if csrc else 'EMPTY'), ('CC.compose.C5tok', b, 'MEASURED' if csrc else 'EMPTY')]
     th += sum(len(re.findall(r'^theorem\s', t, re.M)) for t in ctexts)
     rows += [('CC.theorems', th, 'MEASURED'), ('CC.sha', sha, 'PINNED')]
+    if compose_sha:
+        rows.append(('CC.compose.sha', compose_sha, 'PINNED'))
+    elif compose:
+        rows.append(('CC.compose.sha', 'WORKTREE', 'UNPINNED'))
     return rows
 
 
@@ -395,11 +407,12 @@ def main():
     ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
+    ap.add_argument('--compose-sha')
     ap.add_argument('--program', default='1', choices=['1', '2', '3'])
     ap.add_argument('dir')
     a = ap.parse_args()
     if a.arm == 'compiler':
-        rows = compiler(a.dir, a.sha or 'HEAD', a.compose)
+        rows = compiler(a.dir, a.sha or 'HEAD', a.compose, a.compose_sha)
     else:
         rows = lean(a.dir, a.program) if a.arm == 'lean' else metaprl(a.dir, '' if a.program == '1' else a.program)
     for c, v, s in rows:

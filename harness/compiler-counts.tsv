@@ -10,3 +10,4 @@ compiler	CC.compose.C5	290	MEASURED
 compiler	CC.compose.C5tok	2838	MEASURED
 compiler	CC.theorems	84	MEASURED
 compiler	CC.sha	d7e992c802fcb430fafb50e41b5b7d36d9cd860c	PINNED
+compiler	CC.compose.sha	24102d61aaf90ccf25915c422c49463cc2b44b2e	PINNED

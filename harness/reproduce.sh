@@ -23,7 +23,13 @@ chk "$V/harness/metaprl-counts-2026-11-01.tsv"  --arm metaprl --program 1 "$M"
 chk "$V/harness/metaprl-counts-program2.tsv"    --arm metaprl --program 2 "$M"
 chk "$V/harness/metaprl-counts-program3.tsv"    --arm metaprl --program 3 "$M"
 SP=${SPIKE:-$HOME/projects/claude/wt/x86lean/o95-spike}
-if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha d7e992c802fcb430fafb50e41b5b7d36d9cd860c --compose "$V/compose" "$SP"
+if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler --sha d7e992c802fcb430fafb50e41b5b7d36d9cd860c --compose "$V/compose" --compose-sha 24102d61aaf90ccf25915c422c49463cc2b44b2e "$SP"
 else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
+# row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
+for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
+  NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
+  n=$((n+1)); python3 "$V/harness/axiom_gate.py" $NC "$L" > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
+  sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
+done
 echo "REPRODUCE files=$n rc=$fail (limit: extraction only; no rebuild, no verdict re-run; Q rows stay Q)"
 exit $fail

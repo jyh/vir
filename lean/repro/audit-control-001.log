@@ -1,0 +1,22 @@
+saltqueue: ticket P2 seat=root pid=97131
+AuditControl.lean:3:8: warning: declaration uses `sorry`
+'control_sorry' depends on axioms: [sorryAx]
+AuditControl.lean:5:14: error(lean.unknownIdentifier): Unknown constant `router_fusion`
+AuditControl.lean:6:14: error(lean.unknownIdentifier): Unknown constant `router_fusion_casesplit`
+'VIR.Flat.slice_fuse_flat' depends on axioms: [propext]
+'VIR.Deep.router_fusion_deep' depends on axioms: [propext, Quot.sound]
+'VIR.Deep.router_fusion_deep_steps' does not depend on any axioms
+'VIR.Deep.F_exit' depends on axioms: [propext, Quot.sound]
+'VIR.Deep.U_exit' depends on axioms: [propext, Quot.sound]
+'VIR.router2_fusion' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2.router2_fusion_deep' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2.router2_fusion_deep_steps' depends on axioms: [propext]
+'VIR.Z.router2z_fusion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIR.Deep2.F2_exit' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2.U2_exit' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2S.router2s_fusion_deep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIR.Deep2S.router2s_fusion_deep_steps' depends on axioms: [propext]
+'VIR.route_acl_safe' depends on axioms: [propext, Quot.sound]
+'VIR.route_acl_safe_flat' depends on axioms: [propext, Quot.sound]
+'VIR.Deep2.route_acl_safe_deep' depends on axioms: [propext, Quot.sound]
+saltbuild EXIT=1
