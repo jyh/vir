@@ -18,3 +18,5 @@ open VIR
 #print axioms VIR.Flat.slice_fuse_flat
 #print axioms VIR.Deep.router_fusion_deep
 #print axioms VIR.Deep.router_fusion_deep_steps
+#print axioms VIR.Deep.F_exit
+#print axioms VIR.Deep.U_exit

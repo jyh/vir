@@ -1,0 +1,11 @@
+saltqueue: ticket P2 seat=root pid=50210
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 15s — attempting acquisition
+✖ [7/9] Building VIR.Exit (179ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIR/Exit.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Exit.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIR/Exit.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIR/Exit.c --setup ~/fleet/vir/lean/.lake/build/ir/VIR/Exit.setup.json --json
+error: VIR/Exit.lean:23:2: No goals to be solved
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIR.Exit
+error: build failed
+saltbuild EXIT=1

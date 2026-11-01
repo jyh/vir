@@ -1,4 +1,4 @@
-saltqueue: ticket P2 seat=root pid=26542
+saltqueue: ticket P2 seat=root pid=56790
 theorem VIR.router_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Nat} (b0 : Slice n) (st : State),
   U acl b0 st = F acl b0 st :=
 fun acl {n} b0 st =>
@@ -413,4 +413,3 @@ fun s i j =>
         (congrArg Eq (congr (congrArg (Flat.FSlice.mk s.buf) (Nat.add_assoc s.off i j)) (Nat.sub_sub s.len i j)))
         { buf := s.buf, off := s.off + (i + j), len := s.len - (i + j) })
       (eq_self { buf := s.buf, off := s.off + (i + j), len := s.len - (i + j) }))
-'VIR.Deep.router_fusion_deep_steps' does not depend on any axioms
