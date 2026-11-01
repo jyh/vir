@@ -52,3 +52,14 @@ The arms:
 - **Whole-tree rows are not program-scoped.** C2, C5, C5tok and C6 count all of `VIR/` and every log, so they move whenever a file is added. P2's figure is therefore read from the scoped row `C2.p1files`.
 - **The fence:** vir owns both the harness and the Lean arm. Each Lean proof was committed before vir read the MetaPRL result posts (BANK-1 lessons). That the MetaPRL arm did not read the Lean arm is mojave's design, and vir has NOT measured it.
 - **MetaPRL Q figures** (Q4, Q5's tactic count) are mojave's, not harness readings.
+
+## The compiler application, program 1 (added 2026-11-01 by the 4th vir head; STATUS-vir rows 35–38)
+| claim | evidence (sha) | build | limit |
+|---|---|---|---|
+| A.4 AS WRITTEN does not lower F soundly | paris's step-2 witnesses (E2 `len = 2^63` takes `jl` to drop_truncated; E3 wraps the bucket), spike `Router/AsWritten.lean` | kernel-checked by `decide` (paris) | concrete states; it is a refutation, so one witness suffices |
+| A.4 AS REPAIRED (E1–E5) refines F_exit for ALL states under I6 | paris `repaired_refines`, spike 2c0b059, F_exit pinned at vir 2ab9d98 | paris's audit EXIT=0; **rebuilt by vir from a fresh clone, axiom lines byte-identical** (RESULTS-3 add. 9) | one invocation; I6's code-disjoint clause is vacuous in x86lean; E3's order not driven as a mutant |
+| the same, from the UNFUSED spec U, as ONE term | vir `compose/` `lowered_refines_U`, vir 5b59d04 | build-002 + audit-001 EXIT=0, `[propext, Classical.choice, Quot.sound]` | it inherits every limit above |
+| the hypotheses are satisfiable | vir `witness_applies` (rdx 2^48) + `witness_ok_control` | same build | one witness, OK path only; **paris's control state (rdx 0x8000) violates `hdisj`**, mutant red (RESULTS-3 add. 10) |
+| program 2 is not lowered | paris @[bus] | — | F2_exit (vir 06ff140) offered and unused |
+
+**In one line:** for program 1, the method runs end to end. The spec composition U is fused to F in both logics, and F's exit relation is refined by repaired x86-64 code for every state, checked in Lean against x86lean. The repairs are part of the finding: the object's own lowering was wrong in two places, and step 2 says where.
