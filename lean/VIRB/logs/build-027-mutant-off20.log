@@ -1,0 +1,24 @@
+saltqueue: ticket P2 seat=root pid=16554
+✖ [2/2] Building VIRB.BPrime (238ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIRB/BPrime.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime.c --setup ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime.setup.json --json
+error: VIRB/BPrime.lean:106:2: Tactic `rfl` failed: The left-hand side
+  vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+    (advance b0 (12 + 12) fun payload => vreturn C (C.dec_tokens st sender, payload)) (vdrop C C.errUnauth)
+is not definitionally equal to the right-hand side
+  vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+    (advance b0 20 fun payload => vreturn C (C.dec_tokens st sender, payload)) (vdrop C C.errUnauth)
+
+case e_e1.e_k.e_k.e_k
+C : Carrier
+b0 : VSlice
+st : C.State
+magic sender topic : Int
+⊢ vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+      (advance b0 (12 + 12) fun payload => vreturn C (C.dec_tokens st sender, payload)) (vdrop C C.errUnauth) =
+    vguard (magic == MAGIC && (C.can_access sender topic && C.has_tokens st sender))
+      (advance b0 20 fun payload => vreturn C (C.dec_tokens st sender, payload)) (vdrop C C.errUnauth)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRB.BPrime
+error: build failed
+saltbuild EXIT=1
