@@ -48,6 +48,7 @@ def chain_tokens(block):
     # comments dropped; Lean: the text after the first `:= by`; MetaPRL: the c2-router.mp lines that `refine`
     if ':= by' in block:
         block = block.split(':= by', 1)[1]
+    block = re.split(r'^end\b', block, flags=re.M)[0]   # a file-final proof ends at its namespace's `end`
     block = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', block)
     return len(block.split())
 
@@ -108,7 +109,8 @@ def lean(d, prog='1'):
     else:
         rows.append(('C1', 0, 'EMPTY'))
     src = files(os.path.join(d, 'VIR'), ('.lean',))
-    text = ''.join(read(p) for p in src)
+    # a sentinel decl between files, so a file-final block never absorbs the next file's header (2nd vir head, row 25)
+    text = '\ndef vir_file_boundary : Nat := 0\n'.join(read(p) for p in src)
     scored = strip_shortcuts(text)
     if src:
         # C2 (provisional extractor, written after the Lean arm's first green; amend-4): term-mode side proofs.

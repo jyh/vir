@@ -11,7 +11,7 @@ The C1 token class did not contain `≍`. Lean's printer writes `HEq a b` as `a 
 | C1heq (path) | **20** (`Slice.congr_heq_dep` 10 · `heq_of` 9 · `adv_adv_heq` 1; `aux_advance_idx` 0, closed by `subst`) | 20 |
 | C2cond (side proofs in the chain) | **8** | 3 |
 | C3 aux used | **6** (program 1's 3, plus advance_idx · advance_past_dguard · guard_cond_eq) | 3 |
-| C5chain | 202 | 84 |
+| C5chain | 202 → **196** (RESULTS-3 addendum 1) | 84 |
 H for every figure. The chain compiled at its FIRST full elaboration (build 13). Build 12 was red on `slice_fuse_dep`'s proof (a generalize motive), fixed by a dependent twin of `congr_heq`.
 
 ## MetaPRL (mojave @[bus]; model B)
@@ -28,7 +28,7 @@ H for every figure. The chain compiled at its FIRST full elaboration (build 13).
 - **Q2: Lean HOLDS (8 > 3). MetaPRL FALSIFIED on generated-cond (9 ≤ 10)**, by mojave's own scoring and convention. It holds on the displayed reading and on vir's harness reading (15). ⇒ **SPLIT.** MetaPRL's cost moved from CONDITIONS to EQUALITY obligations (C2eq 0 → 6, the two arithmetic bridges), which Q2 did not name.
 - **Q3: Lean HOLDS (6 > 3, three new aux rules, one of them context-dependent: advance_idx). MetaPRL holds only under amend-3 (4 > 3); on C3strict it is FALSIFIED (2 = 2).** mojave measured that NO context-dependent rewrite was needed in model (B), because offsets are unbounded ints and `24 ≤ off` never enters the equation (M-F3 again). ⇒ **The context-dependent rewrite is an artefact of Nat subtraction in the Lean model, not of the VIR.** L-DEEP for program 2 was not built, so C3deep ≥ 6 is UNSCORED.
 - **Q4 HOLDS** (mojave, measured: `Rewrite condition has free variable … 'topic`). The variable is topic, not off as Q4 guessed.
-- **Q5:** Lean C5chain 202; MetaPRL 12 tactics / 1,236 tokens (Q).
+- **Q5:** Lean C5chain 202 *(⚠️ corrected to 196 by RESULTS-3 addendum 1: the harness let a file-final proof absorb the next file's header tokens)*; MetaPRL 12 tactics / 1,236 tokens (Q).
 
 ## Findings
 - **L-F4** Nat truncated subtraction manufactures a context-dependent rewrite (`12 + (off − 12) = off` needs `12 ≤ off`), and Int offsets (model B) do not. Some of Lean's cost is the CHOICE OF NUMBER TYPE, not the logic. *(Refined by addendum 4, measured: with Int offsets the rewrite is still NEEDED (aux count 6 = 6), but it is CONTEXT-FREE. The number type decides whether the rewrite needs an enclosing guard. It does not decide whether the rewrite exists.)*
@@ -62,7 +62,7 @@ Red-backwards: a scratch copy of the arm whose program-2 chain names `slice_fuse
 - **R1(a) HOLDS:** P2Z.C3 **6** = P2.C3 **6**. `aux_advance_idx` is still used, because slice_fuse still yields `12 + (off − 12)` and the slice types still differ. The rewrite does NOT vanish. *(Mutant: deleting its use reads 5.)*
 - **R1(b) HOLDS:** its side proof is written `by clear h2; omega` (the payload guard's hypothesis is removed) and it builds. With Int offsets the rewrite is context-free.
 - **R1(c) HOLDS, the control:** the same `clear h2` in a scratch copy of the NAT chain is RED (`lean/logs/build-ctl-c.log`, `saltbuild EXIT=1`; omega's counterexample is `0 ≤ off ≤ 11`, `n ≥ 24`). The Nat rewrite really does need the enclosing guard.
-- **(d) exploratory:** P2Z.C1heq 20 = P2.C1heq 20 (the HEq cost is unchanged by the number type, which is L-F5 again) · P2Z.C2cond 8 = P2.C2cond 8 · P2Z.C5chain 220 against 202.
+- **(d) exploratory:** P2Z.C1heq 20 = P2.C1heq 20 (the HEq cost is unchanged by the number type, which is L-F5 again) · P2Z.C2cond 8 = P2.C2cond 8 · P2Z.C5chain 220 against 202. *(⚠️ corrected to 214 against 196 by RESULTS-3 addendum 1: the harness let a file-final proof absorb the next file's header tokens)*
 - **A second control, not preregistered, reported because it narrows L-F4:** the other cleared proof (`hcd`, the payload bound `off + n ≤ (n − 12) + 12 ↔ off + n ≤ n`) ALSO builds in the NAT chain with the outer length guard cleared (`build-ctl-hcd.log`, EXIT=0). The guard's own conjunct `24 ≤ off` already rules out the truncation case. ⇒ **In the shallow Nat chain exactly ONE rewrite depends on its context, and it is `aux_advance_idx`.** The deep chain's `aux_le_len_adv` takes its side condition from the outer guard because that is how its rule was stated. The guard's own conjunct would also have sufficed. So the deep count of context-dependent rules (2) is partly a choice in how the rules were stated.
 ⇒ **L-F4, refined:** Nat truncated subtraction makes the index rewrite DEPEND ON AN ENCLOSING GUARD, and Int offsets remove that dependence. They do NOT remove the rewrite itself, so the C3 cost is the same, and what the number type changes is C3's context-dependence. *(Copies corrected in place: this file's L-F4 bullet, addendum 2's Q3 bullet, and FINDINGS row L-F4. The 2nd-head bus post that called aux_advance_idx "a Nat-subtraction artefact" is superseded by the post announcing this addendum.)*
 - ⚠️ Harness: the whole-terms C1 pool now EXCLUDES the variant's `VIR.Z.*` prints, which are scored only by their own P2Z rows. So program 1's preregistered C1 still reads 93. Before this change, adding the prints moved it to 155. The whole-tree C2/C5/C6 rows moved again (C2 32→51, C5 701→836, C6 23→27) and are not program-scoped (addendum 2).

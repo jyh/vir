@@ -30,7 +30,7 @@ The arms:
 | Q2 | both arms pay more side conditions | P2.C2cond **8** > 3 | C2genCond **9** ≤ 10 | **SPLIT:** Lean HOLDS, MetaPRL FALSIFIED (its cost moved to equality obligations, C2genEq 0 → 6) | path rule, now in the harness (addendum 3) | pre-proof |
 | Q3 | a context-dependent rewrite is needed | P2.C3 **6** > 3 · P2.C3deep **7** ≥ 6 | C3 4 > 3, strict 2 = 2 | **Lean HOLDS (shallow and deep); MetaPRL holds only under amend-3** | amend-3 | pre-proof |
 | Q4 | MetaPRL's F1 recurs | — | measured (Q) | **HOLDS** (the binder variable is `topic`, not `off`) | — | pre-proof |
-| Q5 | exploratory: size | C5chain 202 · deep 649 | 12 tactics / 1,236 tok (Q) | no direction | — | — |
+| Q5 | exploratory: size | C5chain 196 (was 202, RESULTS-3 addendum 1) · deep 649 | 12 tactics / 1,236 tok (Q) | no direction | — | — |
 | R1 (amend-7) | Int offsets: the rewrite stays but is context-free | P2Z.C3 **6** = 6; cleared-guard proof builds; Nat control RED | — | **HOLDS** | amend-7 | pre-build (vir 8c163d0) |
 | S1 (amend-8) | the deep chain's 2nd context-dependent rule is a statement choice | P2S.C3deep **7** = 7; ctxHolds 2 → **1**; `i ≤ m` control RED | — | **HOLDS** | amend-8 | pre-build (vir 5c27056) |
 

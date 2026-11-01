@@ -35,4 +35,17 @@ theorem route_acl_safe (b : ValidFrame) (st : State) :
     · exact h.elim
   · exact h.elim
 
+/-- amend-9 (row 25), the L-FLAT control: ValidFrame as a HYPOTHESIS on a bare buffer, cleared before the proof (F2). -/
+theorem route_acl_safe_flat (b : WireBuf) (hv : 24 ≤ b.size ∧ wireRd b 0 = MAGIC) (st : State) :
+    IsRouted (F2 acl (wholeSlice b) st) → canAccess acl (wireRd b 4) (wireRd b 8) := by
+  clear hv
+  intro h
+  unfold F2 at h
+  simp only [guard, readU32, letLin] at h
+  split at h
+  · split at h
+    · next hc => exact hc.2.1
+    · exact h.elim
+  · exact h.elim
+
 end VIR

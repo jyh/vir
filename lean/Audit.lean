@@ -42,3 +42,5 @@ open VIR
 #print axioms VIR.Deep2S.router2s_fusion_deep_steps
 #print VIR.route_acl_safe
 #print axioms VIR.route_acl_safe
+#print VIR.route_acl_safe_flat
+#print axioms VIR.route_acl_safe_flat

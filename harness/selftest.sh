@@ -95,6 +95,13 @@ if [ "$(g6 "$o" P3.C1coe)" = 4 ] && [ "$(g6 "$o" P3.C2cond)" = 1 ] && [ "$(g6 "$
 else say "ARM9 program-3 fixture FAIL"; printf '%s\n' "$o"; fail=1; fi
 o=$(python3 "$H/count.py" --arm metaprl --program 3 "$F/none"); if printf '%s\n' "$o" | awk -F'\t' '$4!="EMPTY"' | grep -q .; then say "ARM9b empty metaprl p3 FAIL"; fail=1; else say "ARM9b empty metaprl p3 OK"; fi
 
+# (10) a FILE-FINAL proof never absorbs the next file's header (C5chain leak, fixed at row 25)
+mkdir -p "$F/fb/VIR"
+printf 'namespace VIR\ntheorem router2_fusion : True := by\n  trivial\nend VIR\n' > "$F/fb/VIR/A.lean"
+printf '/- header -/\nimport VIR.A\nnamespace VIR.Z\ntheorem zz : True := trivial\nend VIR.Z\n' > "$F/fb/VIR/B.lean"
+o=$(python3 "$H/count.py" --arm lean --program 2 "$F/fb")
+if [ "$(g6 "$o" P2.C5chain)" = 1 ]; then say "ARM10 file-boundary OK"; else say "ARM10 file-boundary FAIL"; printf '%s\n' "$o" | grep C5chain; fail=1; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

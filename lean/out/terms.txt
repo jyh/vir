@@ -1,4 +1,4 @@
-saltqueue: ticket P2 seat=root pid=32830
+saltqueue: ticket P2 seat=root pid=46021
 theorem VIR.router_fusion : ∀ (acl : Principal → TopicId → Bool) {n : Nat} (b0 : Slice n) (st : State),
   U acl b0 st = F acl b0 st :=
 fun acl {n} b0 st =>
@@ -2176,6 +2176,95 @@ fun acl b st h =>
                                     fun q =>
                                     Out.ret (decTokens st ((wholeSlice b.val).rd 4)) ((wholeSlice b.val).rd 16).toNat
                                       q))
+                            fun h => Eq.refl (Out.drop Code.badPayload))
+                        fun h => Eq.refl (Out.drop Code.unauthOrRate))
+                    fun h => Eq.refl (Out.drop Code.truncated)))
+                h))))
+      fun h => h.right.left
+theorem VIR.route_acl_safe_flat : ∀ (acl : Principal → TopicId → Bool) (b : WireBuf),
+  24 ≤ ByteArray.size b ∧ wireRd b 0 = MAGIC →
+    ∀ (st : State), IsRouted (F2 acl (wholeSlice b) st) → canAccess acl (wireRd b 4) (wireRd b 8) :=
+fun acl b hv st h =>
+  Decidable.casesOn (Nat.decLe 24 (ByteArray.size b))
+    (fun h_1 =>
+      False.elim
+        (Eq.mp (congrArg IsRouted (dif_neg h_1))
+          (Eq.mp
+            (congrArg IsRouted
+              (dite_congr (Eq.refl (24 ≤ ByteArray.size b))
+                (fun h =>
+                  dite_congr
+                    (Eq.refl
+                      ((wholeSlice b).rd 0 = MAGIC ∧
+                        canAccess acl ((wholeSlice b).rd 4) ((wholeSlice b).rd 8) ∧ hasTokens st ((wholeSlice b).rd 4)))
+                    (fun h =>
+                      dite_congr
+                        (Eq.refl
+                          (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                            ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤ ByteArray.size b))
+                        (fun h =>
+                          Eq.refl
+                            (advance (wholeSlice b) ((wholeSlice b).rd 12).toNat
+                              (F2._proof_3 ((wholeSlice b).rd 12) ((wholeSlice b).rd 16)
+                                (Eq.mpr_prop
+                                  (Eq.refl
+                                    (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                                      ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤ ByteArray.size b))
+                                  h))
+                              fun p =>
+                              take p ((wholeSlice b).rd 16).toNat
+                                (F2._proof_4 ((wholeSlice b).rd 12) ((wholeSlice b).rd 16)
+                                  (Eq.mpr_prop
+                                    (Eq.refl
+                                      (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                                        ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤ ByteArray.size b))
+                                    h))
+                                fun q => Out.ret (decTokens st ((wholeSlice b).rd 4)) ((wholeSlice b).rd 16).toNat q))
+                        fun h => Eq.refl (Out.drop Code.badPayload))
+                    fun h => Eq.refl (Out.drop Code.unauthOrRate))
+                fun h => Eq.refl (Out.drop Code.truncated)))
+            h)))
+    fun h_1 =>
+    Decidable.casesOn instDecidableAnd
+      (fun h_2 =>
+        False.elim
+          (Eq.mp (congrArg IsRouted (dif_neg h_2))
+            (Eq.mp (congrArg IsRouted (dif_pos h_1))
+              (Eq.mp
+                (congrArg IsRouted
+                  (dite_congr (Eq.refl (24 ≤ ByteArray.size b))
+                    (fun h =>
+                      dite_congr
+                        (Eq.refl
+                          ((wholeSlice b).rd 0 = MAGIC ∧
+                            canAccess acl ((wholeSlice b).rd 4) ((wholeSlice b).rd 8) ∧
+                              hasTokens st ((wholeSlice b).rd 4)))
+                        (fun h =>
+                          dite_congr
+                            (Eq.refl
+                              (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                                ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤ ByteArray.size b))
+                            (fun h =>
+                              Eq.refl
+                                (advance (wholeSlice b) ((wholeSlice b).rd 12).toNat
+                                  (F2._proof_3 ((wholeSlice b).rd 12) ((wholeSlice b).rd 16)
+                                    (Eq.mpr_prop
+                                      (Eq.refl
+                                        (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                                          ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤
+                                            ByteArray.size b))
+                                      h))
+                                  fun p =>
+                                  take p ((wholeSlice b).rd 16).toNat
+                                    (F2._proof_4 ((wholeSlice b).rd 12) ((wholeSlice b).rd 16)
+                                      (Eq.mpr_prop
+                                        (Eq.refl
+                                          (24 ≤ ((wholeSlice b).rd 12).toNat ∧
+                                            ((wholeSlice b).rd 12).toNat + ((wholeSlice b).rd 16).toNat ≤
+                                              ByteArray.size b))
+                                        h))
+                                    fun q =>
+                                    Out.ret (decTokens st ((wholeSlice b).rd 4)) ((wholeSlice b).rd 16).toNat q))
                             fun h => Eq.refl (Out.drop Code.badPayload))
                         fun h => Eq.refl (Out.drop Code.unauthOrRate))
                     fun h => Eq.refl (Out.drop Code.truncated)))
