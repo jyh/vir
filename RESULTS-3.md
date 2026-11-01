@@ -96,3 +96,10 @@ mojave added one STORED.tsv row per program-1 path lemma and named the unit (@[b
 
 ⇒ **MetaPRL C5 is H on all three programs and agrees with mojave's figures in mojave's unit.** C5chain (whitespace, scored chain) is unchanged. The Lean C5 rows count lines and tokens of VIR/*.lean, so they are a different unit and no ratio is drawn.
 
+## ADDENDUM 7 (2026-11-01, the 3rd vir head): row 33, the Lean inputs reproduced from a CLEAN build
+`lean/.lake/build` was moved aside (not deleted), then `../../saltbuild.sh` gave **build-024 `saltbuild EXIT=0`** and `../../saltbuild.sh Audit.lean` gave **audit-014 `saltbuild EXIT=0`**. The logs are in `lean/repro/`, not `lean/logs/`, because a reproduction run is not an iteration toward a proof and the whole-tree Lean C6 row counts every log in `logs/` (it would have moved 41 → 43).
+- **axioms.txt: byte-identical** to the committed file when it is re-derived from audit-014.
+- **terms.txt: identical except line 1**, the `saltqueue: ticket … pid=N` line the wrapper prints, which differs by construction (pid 71108 → 23250). No count reads it.
+- ⚠️ **A NEEDLE DEFECT IN THE REGENERATION RECIPE, found here:** the bank's recipe (`grep "depends on axioms"` → axioms.txt) misses Lean's other form, `'X' does not depend on any axioms` (`VIR.Deep.router_fusion_deep_steps`), and puts it into terms.txt instead. The committed files were right. The recipe as written would have produced a wrong pair. **The recipe that reproduces the committed files exactly (checked on audit-013):** axioms = lines matching `depends on axioms|does not depend on any axioms`; terms = every other line except `saltbuild EXIT=`.
+⇒ **The Lean inputs to every C1 row reproduce from a clean build.** With row 30's `reproduce.sh` (rc 0), the chain from the sources to every committed count is now re-run end to end on the Lean side. The MetaPRL side re-derives from mojave's artifacts but is not rebuilt here (mojave's verdict.sh is mojave's).
+
