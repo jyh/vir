@@ -36,3 +36,5 @@ open VIR
 #print axioms VIR.Z.router2z_fusion
 #print VIR.Z.SliceZ.heq_of
 #print VIR.Z.SliceZ.adv_adv_heq
+#print axioms VIR.Deep2.F2_exit
+#print axioms VIR.Deep2.U2_exit
