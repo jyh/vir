@@ -1,6 +1,10 @@
 name = "vir"
 version = "0.1.0"
-defaultTargets = ["VIR"]
+defaultTargets = ["VIR", "VIRB"]
 
 [[lean_lib]]
 name = "VIR"
+
+# B′ (PREDICTIONS-amend-10): a SEPARATE library, so the whole-tree rows of VIR/ (count.py) stay the same.
+[[lean_lib]]
+name = "VIRB"
