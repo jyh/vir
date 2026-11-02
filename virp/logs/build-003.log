@@ -1,0 +1,6 @@
+saltqueue: ticket P2 seat=root pid=52034
+✔ [364/367] Built VIRP.Syntax (372ms)
+✔ [365/367] Built VIRP.Semantics (2.1s)
+✔ [366/367] Built VIRP (592ms)
+Build completed successfully (367 jobs).
+saltbuild EXIT=0

@@ -1,0 +1,9 @@
+saltqueue: ticket P2 seat=root pid=48102
+mutants/MutTokDropped.lean:11:40: error: unsolved goals
+case a.a.a.a.a.a.a.a
+⊢ ATy [] (Atom.sl 0) Ty.tok
+
+case a.a.a.a.a.a.a.a
+⊢ ¬some Ty.tok ∈
+      some Ty.slice :: (some Ty.tok :: (some Ty.int :: some Ty.int :: some Ty.int :: Γ0).set 4 none).set 4 none
+saltbuild EXIT=1

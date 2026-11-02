@@ -1,0 +1,204 @@
+saltqueue: ticket P2 seat=root pid=85887
+✔ [366/369] Built VIRP.Typing (667ms)
+✖ [367/369] Building VIRP.Binders (915ms)
+trace: .> LEAN_PATH=~/fleet/vir/virp/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/virp/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/virp/VIRP/Binders.lean -o ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Binders.olean -i ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Binders.ilean -c ~/fleet/vir/virp/.lake/build/ir/VIRP/Binders.c --setup ~/fleet/vir/virp/.lake/build/ir/VIRP/Binders.setup.json --json
+warning: VIRP/Binders.lean:23:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by omega, s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵ins]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:90: This simp argument is unused:
+  ins
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬ ̵(k + 1 < n + 1) by omega, show ¬ ̵(n + 1 = k + 1) by omega,̵ ̵i̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRP/Binders.lean:70:29: unsolved goals
+case len
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝¹ : Atom
+a_ih✝ : ATy Γ (a✝¹.subst k v) Ty.slice
+a✝ : ATy (ins k o Γ) a✝¹ Ty.slice
+⊢ ATy Γ (a✝¹.subst k v) Ty.slice
+
+case ge.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.int
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) a✝² Ty.int
+a✝ : ATy (ins k o Γ) b✝ Ty.int
+⊢ ATy Γ (a✝².subst k v) Ty.int
+
+case ge.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.int
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) a✝² Ty.int
+a✝ : ATy (ins k o Γ) b✝ Ty.int
+⊢ ATy Γ (b✝.subst k v) Ty.int
+
+case eq.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.int
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) a✝² Ty.int
+a✝ : ATy (ins k o Γ) b✝ Ty.int
+⊢ ATy Γ (a✝².subst k v) Ty.int
+
+case eq.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.int
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) a✝² Ty.int
+a✝ : ATy (ins k o Γ) b✝ Ty.int
+⊢ ATy Γ (b✝.subst k v) Ty.int
+
+case and.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.bool
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.bool
+a✝¹ : ATy (ins k o Γ) a✝² Ty.bool
+a✝ : ATy (ins k o Γ) b✝ Ty.bool
+⊢ ATy Γ (a✝².subst k v) Ty.bool
+
+case and.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+a✝² b✝ : Atom
+a_ih✝¹ : ATy Γ (a✝².subst k v) Ty.bool
+a_ih✝ : ATy Γ (b✝.subst k v) Ty.bool
+a✝¹ : ATy (ins k o Γ) a✝² Ty.bool
+a✝ : ATy (ins k o Γ) b✝ Ty.bool
+⊢ ATy Γ (b✝.subst k v) Ty.bool
+
+case canAccess.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+p✝ t✝ : Atom
+a_ih✝¹ : ATy Γ (p✝.subst k v) Ty.int
+a_ih✝ : ATy Γ (t✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) p✝ Ty.int
+a✝ : ATy (ins k o Γ) t✝ Ty.int
+⊢ ATy Γ (p✝.subst k v) Ty.int
+
+case canAccess.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+p✝ t✝ : Atom
+a_ih✝¹ : ATy Γ (p✝.subst k v) Ty.int
+a_ih✝ : ATy Γ (t✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) p✝ Ty.int
+a✝ : ATy (ins k o Γ) t✝ Ty.int
+⊢ ATy Γ (t✝.subst k v) Ty.int
+
+case hasTokens.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+s✝ p✝ : Atom
+a_ih✝¹ : ATy Γ (s✝.subst k v) Ty.tok
+a_ih✝ : ATy Γ (p✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) s✝ Ty.tok
+a✝ : ATy (ins k o Γ) p✝ Ty.int
+⊢ ATy Γ (s✝.subst k v) Ty.tok
+
+case hasTokens.a
+Γ : Ctx
+k : ℕ
+o : Option Ty
+a : Atom
+τ : Ty
+v : Atom
+hk : k ≤ List.length Γ
+hv : ∀ (τ' : Ty), o = some τ' → ATy [] v τ'
+s✝ p✝ : Atom
+a_ih✝¹ : ATy Γ (s✝.subst k v) Ty.tok
+a_ih✝ : ATy Γ (p✝.subst k v) Ty.int
+a✝¹ : ATy (ins k o Γ) s✝ Ty.tok
+a✝ : ATy (ins k o Γ) p✝ Ty.int
+⊢ ATy Γ (p✝.subst k v) Ty.int
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRP.Binders
+error: build failed
+saltbuild EXIT=1
