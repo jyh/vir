@@ -46,3 +46,21 @@ MetaPRL arm's posts that this harness has not yet extracted. A prediction is SCO
   F_closed's right-hand side and cites vir 120c906. V4 is SCORED only when vir composes it with `F_closed` and reads the
   premise list at the object (STATUS-vir row 82). The post-state half (`sim_one`) is paris's next act.
 - FINDINGS **X-F2**: the ACL aliasing and the (R) ruling.
+
+## ADDENDUM 2 (2026-11-02, the 10th vir head): **V4 SCORED — HOLDS**, and V5's machine reading
+- **The composed theorem** `x86compose/X86Compose/V4.lean` `backend_F` (vir's `F_closed` ∘ paris's `sim_one`, x86lean
+  paris/o95-layout **2af56c7**, pinned by sha): for every store σ and every machine state s with **R σ s**, ⟦F⟧ σ is defined
+  (`= Part.some r`), and the repaired x86 router run from s STOPS at the exit whose label is r's, in a final memory related to
+  r's store. **Its premises, read at the object: σ, s and `hR : Rel σ.wire σ.bucket σ.acl s`. That is ONE hypothesis, the
+  layout relation, and 0 per-program.** hdisj, hacw and htopic are facts about R (paris 8154c72, f10e0bc).
+- `Fc_faithful`: the kernel checks that the spike's restated `Fc` IS ⟦F⟧'s closed form, so the theorem speaks of the
+  meaning and not of a copy.
+- Checked: x86compose build-002 + audit-001 `saltbuild EXIT=0`: `backend_F` → [propext, Classical.choice, Quot.sound],
+  `Fc_faithful` → [propext]; control_sorry → [sorryAx]. **Mutant `mutant-001-labswap`** (the label map swaps the two drop
+  codes) is RED at `Fc_faithful`.
+- **V4: HOLDS** (prediction: 0 per-program hypotheses, no hdisj-shaped premise outside the relation).
+- **V5, the machine reading: HOLDS for EVERY R-related state.** The five witnesses are instances once they are R-related.
+  The exit map is paris's `exitLabel` (0x1040 ↦ truncated · 0x1041, 0x1042 ↦ unauthOrRate · 0x1043 ↦ emit 24), the same
+  code map as the abstract side (VIRP/Exits.lean).
+- Limits: one call (the n-call trace theorem is paris's P4); x86compose depends on mathlib THROUGH virp, so reproducing it
+  costs a mathlib fetch, while the spike itself stays mathlib-free.

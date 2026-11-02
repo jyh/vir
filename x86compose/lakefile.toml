@@ -1,0 +1,17 @@
+name = "x86compose"
+defaultTargets = ["X86Compose"]
+
+# O95 V4 (STATUS-vir row 82): paris's one-call backend theorem `sim_one` composed with vir's `F_closed`, so the kernel checks
+# that the spike's restated `Fc` IS ⟦F⟧. The spike pinned by sha (x86lean branch paris/o95-layout); virp by path (this repo).
+[[require]]
+name = "o95spike"
+git = "https://github.com/jyh/x86lean"
+rev = "2af56c7c184326b0157bf228fc50994ec2c8f468"
+subDir = "spike/o95"
+
+[[require]]
+name = "virp"
+path = "../virp"
+
+[[lean_lib]]
+name = "X86Compose"
