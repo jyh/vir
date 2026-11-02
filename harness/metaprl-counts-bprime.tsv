@@ -26,3 +26,5 @@ metaprlbp	BM3.C2genEq	0	MEASURED
 metaprlbp	BM3.C2genCond	1	MEASURED
 metaprlbp	BM3.C2gen.thm	6	MEASURED
 metaprlbp	BM.prims	10	MEASURED
+metaprlbp	BMtc.rules	10	MEASURED
+metaprlbp	BMtc.closed	10	MEASURED

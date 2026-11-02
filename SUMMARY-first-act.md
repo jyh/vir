@@ -72,3 +72,25 @@ The arms:
 | program 2 is not lowered | paris @[bus] | — | F2_exit (vir 06ff140) offered and unused |
 
 **In one line:** for program 1, the method runs end to end. The spec composition U is fused to F in both logics, and F's exit relation is refined by repaired x86-64 code for every state, checked in Lean against x86lean. The repairs are part of the finding: the object's own lowering was wrong in two places, and step 2 says where.
+
+## Amendment B′ (added 2026-11-02 by the 9th vir head; RESULTS-4)
+The Captain's style rulings (council 2026-11-01 §A): uninterpreted operators become typed carriers on both arms (Lean:
+the fields of one `Carrier` structure, library `lean/VIRB`; MetaPRL: `prim`s over declared carriers). amend-10 was pinned
+at 14efadc, after the MetaPRL arm's B′ proofs and before any Lean B′ file, and it says so. Its predictions are Lean-side;
+the MetaPRL side is EXPLORATORY.
+
+| pred | claim | Lean B′ | MetaPRL B′ | verdict |
+|---|---|---|---|---|
+| B1 | no HEq on the unindexed B′ slice | 0 (H) | — | **HOLDS** |
+| B2 | the trusted operator set is equal for program 1 | 8 Carrier fields (H) | 8 `prim`s (H) | **HOLDS** (program 2: 10 = 10, H, exploratory) |
+| B3 | no extra axiom on either arm | 0 beyond the standard set (H) | 0 (Q) | **HOLDS** |
+| B4 | the A.2 text reproduces the hand-written deep terms | 4/4 `rfl`, two mutants red (H) | 10/10 rules closed in the replay (H) | **HOLDS** |
+
+Exploratory, no direction: MetaPRL B′ rule boxes 1 · 12 · 19 (B: 5 · 12 · 21; H by agreement with `status_all`) and
+primitive steps 290 · 3,321 · 430 (B: 516 · 6,036 · 1,908; Q). mojave's limit rides with the steps: the drop is largely
+work MOVED into 37 shared wf rules, not work removed.
+
+**To reproduce every H figure in this file and in RESULTS-1 to RESULTS-4:** `harness/reproduce.sh` (12 count files at
+pinned shas, plus the axiom gate) must read rc 0, and `harness/selftest.sh` (21 arms) must read rc 0. The two commands
+in the header above are the first act's, and they read MetaPRL's working tree; `reproduce.sh` reads it at pinned shas
+(FINDINGS V-F2).
