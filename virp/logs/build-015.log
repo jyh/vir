@@ -1,0 +1,40 @@
+saltqueue: ticket P2 seat=root pid=50994
+⚠ [367/374] Replayed VIRP.Binders
+warning: VIRP/Binders.lean:23:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by omega, s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵ins]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:90: This simp argument is unused:
+  ins
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬ ̵(k + 1 < n + 1) by omega, show ¬ ̵(n + 1 = k + 1) by omega,̵ ̵i̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [369/374] Replayed VIRP.Router
+warning: VIRP/Router.lean:51:61: 'rfl' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRP/Router.lean:51:61: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRP/Router.lean:53:61: 'rfl' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRP/Router.lean:53:61: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✔ [372/374] Built VIRP.Trace (1.6s)
+✔ [373/374] Built VIRP (603ms)
+Build completed successfully (374 jobs).
+saltbuild EXIT=0

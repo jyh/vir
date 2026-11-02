@@ -1,0 +1,9 @@
+saltqueue: ticket P2 seat=root pid=51727
+mutants/MutTwoTokens.lean:9:12: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 24
+where
+ a := ↑w.length
+ b := ↑(σ.bucket p - 1)
+saltbuild EXIT=1
