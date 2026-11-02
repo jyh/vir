@@ -73,8 +73,9 @@ uninterpreted operators become `prim`s over typed carriers on the MetaPRL side, 
 structure on the Lean side (`lean/VIRB/`, a separate library). It was written after the MetaPRL arm's B′ proofs and
 before any Lean B′ file existed, and it says so. Its Lean-side predictions B1–B4 are scored in `RESULTS-4.md`.
 B4 is the A.2 transcription check: `harness/transcribe_lean.py` parses the appendix's and the inputs' text into the
-deep embedding and checks it against the hand-written terms by `rfl`. The MetaPRL arm's B′ branch is not yet public,
-so its B′ figures are quoted, not harness rows.
+deep embedding and checks it against the hand-written terms by `rfl`. The MetaPRL arm's B′ commits are public
+(jyh/metaprl `mojave/vir-arm` = 93ff6b7c0), and since 2026-11-02 its counts are harness rows (RESULTS-4 addendum 2).
+Primitive steps stay quoted.
 
 ## History
 This repository's history was rewritten once, on 2026-11-01, before its first push. The rewrite removed
