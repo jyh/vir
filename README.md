@@ -1,5 +1,7 @@
 # vir — a Verification IR, measured in two logics
 
+Archived: [10.5281/zenodo.23870938](https://doi.org/10.5281/zenodo.23870938) (v0.1.0, the first public snapshot).
+
 vir is a campaign, not a library. It takes ONE frozen object, the appendix of the O94 paper
 (*verification agents* and the spec-first method), and mechanises it in two logics, Lean 4 and
 MetaPRL's Computational Type Theory. The aim is to MEASURE where each logic pays, rather than argue it.
@@ -65,11 +67,14 @@ It extracts counts only and does not rebuild. `harness/selftest.sh` shows that t
 - A.4 *as written* is refuted (P5, errata E2 and E3). The refinement theorem is about A.4 as repaired by
   errata E1–E5.
 
-## In progress
-A declared amendment to the typing style of both arms (B → B′) is in progress. In the MetaPRL arm it
-adds `prim` well-formedness rules over typed carriers, never `top`. The Lean arm mirrors it with an
-abstract carrier, and a parser from A.2's text into the deep embedding adds a transcription check.
-The predictions are untouched, and both arms will be re-scored on it.
+## The typing amendment B → B′
+`predictions/PREDICTIONS-amend-10.md` (14efadc) declares a second scoring in a new typing style: the VIR's
+uninterpreted operators become `prim`s over typed carriers on the MetaPRL side, and the fields of one `Carrier`
+structure on the Lean side (`lean/VIRB/`, a separate library). It was written after the MetaPRL arm's B′ proofs and
+before any Lean B′ file existed, and it says so. Its Lean-side predictions B1–B4 are scored in `RESULTS-4.md`.
+B4 is the A.2 transcription check: `harness/transcribe_lean.py` parses the appendix's and the inputs' text into the
+deep embedding and checks it against the hand-written terms by `rfl`. The MetaPRL arm's B′ branch is not yet public,
+so its B′ figures are quoted, not harness rows.
 
 ## History
 This repository's history was rewritten once, on 2026-11-01, before its first push. The rewrite removed
