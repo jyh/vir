@@ -28,3 +28,7 @@ open VIRP
 #print axioms VIRP.own_split
 #print axioms VIRP.F_effect
 #print axioms VIRP.frame_F
+#print axioms VIRP.denote_F_eq
+#print axioms VIRP.call_tokens
+#print axioms VIRP.run_tokens
+#print axioms VIRP.emits_le_tokens
