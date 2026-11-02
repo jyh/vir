@@ -25,6 +25,12 @@ else
   ln -s "$M/vir-metaprl/theories/vir/vir-arm-tools" "$M/vir-arm-tools"
 fi
 echo "  PINNED   metaprl vir-metaprl@${METAPRL_SHA:0:12} vir-arm-tools@${TOOLS_SHA:-in-tree} (from $M0)"
+# row 64 (amend-10, B′): the MetaPRL B′ arm at its own pin, public jyh/metaprl mojave/vir-arm since 2026-11-02 (a fast-forward
+# of METAPRL_SHA). B is still read at METAPRL_SHA above, so no B row moves.
+BPRIME_SHA=${BPRIME_SHA:-93ff6b7c08b7dc3a88c5de797b82b00cbc507e72}
+git clone -q --no-checkout "$M0/vir-metaprl" "$M/bp/vir-metaprl" 2>/dev/null && git -C "$M/bp/vir-metaprl" checkout -q "$BPRIME_SHA" 2>/dev/null \
+  || { echo "REPRODUCE MISSING-INPUT vir-metaprl at $BPRIME_SHA (B′)"; exit 2; }
+echo "  PINNED   metaprl B′ vir-metaprl@${BPRIME_SHA:0:12}"
 fail=0; n=0
 chk() {  # chk <committed-file> <count.py args...>
   local f=$1; shift; n=$((n+1))
@@ -46,6 +52,7 @@ if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler -
 else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 # amend-10: the Lean B′ mirror (lean/VIRB), read from its own logs
 chk "$V/lean/VIRB/out/counts-bp.tsv" --arm leanbp "$V/lean/VIRB"
+chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
