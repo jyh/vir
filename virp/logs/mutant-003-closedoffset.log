@@ -1,0 +1,9 @@
+saltqueue: ticket P2 seat=root pid=76807
+mutants/MutClosedOffset.lean:8:42: error: unsolved goals
+case h_1.isTrue.isTrue
+σ : Store
+x✝¹ x✝ : Option Val
+h✝¹ : 24 ≤ ↑σ.wire.length
+h✝ : rd32 σ.wire 0 = MAGIC ∧ σ.acl (rd32 σ.wire 4) (rd32 σ.wire 8) = true ∧ 1 ≤ σ.bucket (rd32 σ.wire 4)
+⊢ False
+saltbuild EXIT=1
