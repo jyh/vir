@@ -226,6 +226,36 @@ if [ $q1 -eq 0 ] && [ $q2 -eq 3 ] && [ $q3 -eq 1 ] && [ "$(cksum < "$LB/logs/aud
    && [ "$(g6 "$o" B.C6)" = "$(ls "$LB/logs" | wc -l | tr -d ' ')" ]; then say "ARM19 per-run log rule OK"
 else say "ARM19 per-run log rule FAIL (new=$q1 reuse=$q2 fail-rc=$q3 B.C6=$(g6 "$o" B.C6))"; fail=1; fi
 
+# (20) row 64: the MetaPRL B′ extractor keeps a theorem's scope across RELATIVE cds and absolute sub-goal paths, and
+# leaves it at the module cd. Expected values are derived from the fixture as it is written (idiom law 1).
+BM="$F/bm/vir-metaprl/theories/vir"; mkdir -p "$BM/vir-arm-tools/steps"; : > "$BM/vir-arm-tools/COUNTS-metaprl-bprime.md"
+printf 'prim p1 : x\ninteractive route_acl_safe : y\n' > "$BM/vir3.ml"
+cat > "$BM/vir-arm-tools/steps/bp-vir3.mp" <<'MP'
+cd "/vir/vir3/lemma_a";;
+refine (autoT);;
+cd "/vir/vir3/route_acl_safe";;
+refine (dT 0);;
+cd "3";;
+refine (dT 5);;
+cd "../2";;
+refine (nthHypT 8);;
+cd "/vir/vir3/route_acl_safe/2/1";;
+refine (autoT);;
+cd "/vir/vir3";;
+refine (autoT);;
+export ();;
+MP
+inthm=$(awk '/^cd "\/vir\/vir3\/route_acl_safe";;/{on=1} /^cd "\/vir\/vir3";;/{on=0} on && /^refine/{n++} END{print n+0}' "$BM/vir-arm-tools/steps/bp-vir3.mp")
+n=0; : > "$BM/vir-arm-tools/runs-bp-vir3.txt"
+while IFS= read -r ln; do n=$((n+1)); printf '=== STEP %d [ok] 0.00s :: %s\n' $n "$ln" >> "$BM/vir-arm-tools/runs-bp-vir3.txt"
+  case $ln in refine*) printf '=== CHILDREN %d: wf main\n' $n >> "$BM/vir-arm-tools/runs-bp-vir3.txt";; esac
+done < "$BM/vir-arm-tools/steps/bp-vir3.mp"
+printf '=== END steps=%d ok=%d err=0 rc=0 cmoz-written=0\n' $n $n >> "$BM/vir-arm-tools/runs-bp-vir3.txt"
+o=$(python3 "$H/count.py" --arm metaprlbp "$F/bm")
+if [ "$(g6 "$o" BM3.refines.thm)" = "$inthm" ] && [ "$(g6 "$o" BM3.C2gen.thm)" = "$inthm" ] && [ "$(g6 "$o" BM3.replay)" = 1 ] \
+   && [ "$(g6 "$o" BM3.prims)" = 1 ] && [ "$(g6 "$o" BM3.C2genWf)" = "$(grep -c '^refine' "$BM/vir-arm-tools/steps/bp-vir3.mp")" ]; then say "ARM20 MetaPRL B′ scope OK"
+else say "ARM20 MetaPRL B′ scope FAIL (want $inthm)"; printf '%s\n' "$o" | grep BM3; fail=1; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
