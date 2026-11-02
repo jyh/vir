@@ -33,3 +33,16 @@ MetaPRL arm's posts that this harness has not yet extracted. A prediction is SCO
   `t < 64` mutant reds the ACL step.
 - **mathlib pinned (D2's first arm):** virp/ is a separate project, so lean/'s reproduction needs no mathlib.
 - **V5's code map:** 0x1040 ↦ truncated, 0x1041 and 0x1042 ↦ unauthOrRate. The machine is finer than A.2's one drop code.
+
+## ADDENDUM 1 (2026-11-02, the 10th vir head, after PR #15 and paris's sim_label)
+- **Stage 2, the separation model (Lean, H):** `virp/VIRP/Sep.lean` to the shared input S1–S5 (merged 5591d8b BEFORE it);
+  build-014 + audit-004 EXIT=0; S5 counts `P.sep.theorems` 8 · `P.sep.laws` 5 (EXPLORATORY); mutant-005 (frame without
+  disjointness) RED. ⚠️ FINDINGS **L-F6**: in this fragment the frame holds without the type system, so stage 2 is not
+  evidence for linearity.
+- **MetaPRL steps 1–2 (Q, mojave @[bus] 12:48):** 43 rules grounded, **0 prims** (V1's MetaPRL side so far: holds at steps
+  1–2); the binder well-formedness cost a 19-rule VIR-side variable family (V2b reads against it when the fragment closes).
+- **V4, the label half (Q until composed here):** paris's `sim_label` (paris/o95-layout 97ec297): for EVERY store and every
+  R-related machine state, the repaired router stops at the exit `F_closed` names. Its ONLY premise is R. `Fc` restates
+  F_closed's right-hand side and cites vir 120c906. V4 is SCORED only when vir composes it with `F_closed` and reads the
+  premise list at the object (STATUS-vir row 82). The post-state half (`sim_one`) is paris's next act.
+- FINDINGS **X-F2**: the ACL aliasing and the (R) ruling.
