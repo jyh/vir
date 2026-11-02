@@ -437,9 +437,79 @@ def leanbp(d):
     return rows
 
 
+# amend-10 (B′, the MetaPRL arm; STATUS-vir row 64). Read from a vir-metaprl checkout at mojave's PUBLIC B′ sha, whose
+# tools snapshot is theories/vir/vir-arm-tools. EXPLORATORY by amend-10 on the MetaPRL side; rows per program.
+# Rule boxes and primitive steps come from MetaPRL's status_all, which no file in the snapshot records: they stay Q.
+BPM = {'1': ('vir', 'router_fuse'), '2': ('vir2', 'router2_fuse'), '3': ('vir3', 'route_acl_safe')}
+
+
+def metaprlbp(d):
+    """d = a dir holding vir-metaprl/ at the B′ sha."""
+    root = os.path.join(d, 'vir-metaprl', 'theories', 'vir')
+    tools = os.path.join(root, 'vir-arm-tools')
+    if not os.path.isfile(os.path.join(tools, 'COUNTS-metaprl-bprime.md')):
+        return [('BM.snapshot', 0, 'EMPTY')]
+    rows = []
+    prims = 0
+    for prog, (mod, thm) in sorted(BPM.items()):
+        ml = os.path.join(root, mod + '.ml')
+        np_ = len(re.findall(r'^\s*prim(?:_rw)?\s', read(ml), re.M)) if os.path.isfile(ml) else 0
+        prims += np_
+        step = os.path.join(tools, 'steps', 'bp-' + mod + '.mp')
+        run = os.path.join(tools, 'runs-bp-' + mod + '.txt')
+        if not (os.path.isfile(step) and os.path.isfile(run)):
+            rows.append(('BM%s.run' % prog, 0, 'EMPTY')); continue
+        st, txt = read(step), read(run)
+        end = re.search(r'^=== END steps=(\d+) ok=(\d+) err=(\d+) rc=(\d+)', txt, re.M)
+        rows.append(('BM%s.replay' % prog, 1 if end and end.group(3) == '0' and end.group(4) == '0' else 0,
+                     'MEASURED' if end else 'NO-END-LINE'))
+        rows.append(('BM%s.C1' % prog, len(CAST_RE.findall(st)), 'MEASURED'))
+        rows.append(('BM%s.prims' % prog, np_, 'MEASURED'))
+        # SCOPE (one rule for the script and the run): a `cd` to an absolute path /vir/<mod>/<rule>[/<subgoal>...] sets the
+        # current rule; a RELATIVE cd ("3", "../2") moves inside the current rule's proof tree and keeps it; any other
+        # absolute cd leaves every rule. Program 3 navigates its proof by both forms (a first needle stopping at the
+        # next cd read its chain as 13 tokens).
+        def scope(cmd, cur):
+            c = re.match(r'cd "([^"]*)"', cmd.strip())
+            if not c:
+                return cur
+            path = c.group(1)
+            if not path.startswith('/'):
+                return cur
+            a = re.match(r'/vir/' + re.escape(mod) + r'/([A-Za-z0-9_]+)(?:/|$)', path)
+            return a.group(1) if a else None
+        cur, chain_lines = None, []
+        for ln in st.splitlines():
+            cur = scope(ln, cur)
+            if cur == thm and ln.strip().startswith('refine'):
+                chain_lines.append(ln)
+        rows.append(('BM%s.C5chain' % prog, len(' '.join(chain_lines).split()), 'MEASURED' if chain_lines else 'EMPTY'))
+        rows.append(('BM%s.refines.thm' % prog, len(chain_lines), 'MEASURED'))
+        # generated children over the WHOLE session (lemmas included) and over the theorem's own steps
+        cmds = dict(re.findall(r'^=== STEP (\d+) \[[^\]]*\][^:]*:: (.*)$', txt, re.M))
+        at, cur = {}, None
+        for k in sorted(cmds, key=int):
+            cur = scope(cmds[k], cur)
+            at[k] = cur
+        whole = {'wf': 0, 'equality': 0, 'assertion': 0}; own = dict(whole)
+        for c in re.finditer(r'^=== CHILDREN (\d+):(.*)$', txt, re.M):
+            if 'omegaT' in cmds.get(c.group(1), ''):
+                continue
+            for w in c.group(2).split():
+                if w in whole:
+                    whole[w] += 1
+                    if at.get(c.group(1)) == thm:
+                        own[w] += 1
+        rows += [('BM%s.C2genWf' % prog, whole['wf'], 'MEASURED'), ('BM%s.C2genEq' % prog, whole['equality'], 'MEASURED'),
+                 ('BM%s.C2genCond' % prog, whole['assertion'], 'MEASURED'),
+                 ('BM%s.C2gen.thm' % prog, sum(own.values()), 'MEASURED')]
+    rows.append(('BM.prims', prims, 'MEASURED'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -448,6 +518,8 @@ def main():
     a = ap.parse_args()
     if a.arm == 'leanbp':
         rows = leanbp(a.dir)
+    elif a.arm == 'metaprlbp':
+        rows = metaprlbp(a.dir)
     elif a.arm == 'compiler':
         rows = compiler(a.dir, a.sha or 'HEAD', a.compose, a.compose_sha)
     else:

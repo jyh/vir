@@ -2,8 +2,8 @@
 
 amend-10 was pinned at 14efadc (14:59:45 PST), before any Lean B′ file existed. Everything below was built after it.
 H marks a figure read from an artifact in this tree. Q marks a quote from the MetaPRL arm's record (mojave,
-`theories/vir/vir-arm-tools/COUNTS-metaprl-bprime.md` on branch `mojave/vir-arm-bprime`, tools bae7fbe), which this
-harness has not yet extracted.
+`theories/vir/vir-arm-tools/COUNTS-metaprl-bprime.md` on branch `mojave/vir-arm-bprime`, tools bae7fbe). This
+harness had not extracted it when this file was written; addendum 2 (2026-11-02) turns the quotes it can read into H.
 
 ## The Lean B′ mirror, program 1 (`lean/VIRB/BPrime.lean`)
 - `Carrier`: one structure with 8 fields (`State`, `VErr`, `wire_u32`, `can_access`, `has_tokens`, `dec_tokens`, two
@@ -79,8 +79,24 @@ Addendum 1 (2026-11-02, after every B′ proof; no figure above moves): later B�
 can be written over and lost to `B.C6`. Selftest ARM19 drives it with a stub saltbuild and goes red when the refusal
 is removed. The 18 logs already in lean/VIRB/logs are unchanged.
 
+Addendum 2 (2026-11-02, after every B′ proof on both arms; row 64): the MetaPRL B′ arm is public at jyh/metaprl
+`mojave/vir-arm` = 93ff6b7c0 (a fast-forward of 81e0317b0, so every B row stays where it was). `count.py --arm metaprlbp`
+reads it, giving `harness/metaprl-counts-bprime.tsv`, derived from a fresh GitHub clone. `reproduce.sh` pins it (12 files,
+rc 0). Quotes that are now harness rows:
+- B2: `BM1.prims` **8** (H, at the public sha; the cell above read the pre-rewrite sha). B2 (p2): `BM1.prims` +
+  `BM2.prims` = 8 + 2 = **10** (H; was Q). `BM.prims` = 10 is mojave's "Prims: 10".
+- Rule boxes: the scored theorem's refines are **1 · 12 · 19** for programs 1–3 (`BMn.refines.thm`). mojave's B′
+  rule-box column, which comes from `status_all`, is the same 1 · 12 · 19. Two sources agree, so the column is H.
+- All three replays end `err=0 rc=0` (`BMn.replay` 1).
+- New B′ rows, no direction, all EXPLORATORY: C1 casts 0 · 0 · 0. Generated children over the session (wf / equality /
+  conditional) are 0/0/0 · 0/2/6 · 5/0/1, and inside the theorem 0 · 8 · 6. C5chain tokens are 85 · 206 · 98.
+Still Q: primitive steps (516 → 290 and the rest; `status_all` output, which no file records), B3's MetaPRL C4 = 0
+(mojave's reading that the 10 prims are I5 operator typings, not extra axioms), and B4's MetaPRL 10/10. The extractor
+keeps a theorem's scope across relative `cd`s, which program 3 uses. Selftest ARM20 plants that shape and goes red when
+a relative cd ends the scope (4 → 2).
+
 ## Limits
 - Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
-- This harness does not yet extract the MetaPRL B′ runs (`bp-vir*.mp`, `runs-bp-vir*.txt`), so MetaPRL B′ C1–C3 and C5
-  are not read here.
+- ~~This harness does not yet extract the MetaPRL B′ runs~~ (true until addendum 2, 2026-11-02; it now does, at
+  93ff6b7c0). Primitive steps and B3/B4's MetaPRL cells remain Q.
