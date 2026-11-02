@@ -12,7 +12,7 @@ Artifacts the LEAN arm leaves (lean/ in this tree, built only by ../saltbuild.sh
 The METAPRL arm's artifact names are fixed with mojave (STATUS-vir row 6); until then only C5 is read (*.ml / *.mli).
 C2 has no extractor on either side until mojave's census label is known: it prints UNMEASURED, never 0.
 """
-import argparse, os, re, sys
+import argparse, os, re, subprocess, sys
 
 # C1: the token class fixed in PREDICTIONS.md (elaborated-term spellings).
 CAST_RE = re.compile(r'(?<![A-Za-z0-9_.])(HEq|cast|Eq\.mpr|Eq\.rec|heq_of_eq|eq_rec|Eq\.ndrec|Nat\.sub_sub)(?![A-Za-z0-9_])|▸|≍')  # ≍ = HEq's notation
@@ -585,16 +585,64 @@ def leanp(d):
     return rows
 
 
+# amend-11 V3 (STATUS-vir row 87): how many of the CENTRAL DEFINITIONS one commit EDITS, as opposed to adds beside them.
+# Lean names fixed by amend-11 (term syntax, step relation, typing relation, denotation). A definition is EDITED iff its
+# declaration block exists at BOTH shas and its text differs. A block that only exists at `ext` is an ADDITION, and it is
+# reported beside the count, never in it. The MetaPRL extractor is owed when the arm's file and declaration names are posted.
+V3_LEAN = ('Tm', 'Step', 'HasType', 'den')
+
+
+def git_show(repo, sha, path):
+    r = subprocess.run(['git', '-C', repo, 'show', '%s:%s' % (sha, path)], capture_output=True)
+    return r.stdout.decode('utf-8', 'replace') if r.returncode == 0 else None
+
+
+def lean_decls(text):
+    out = {}
+    for b in blocks(re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', text)):
+        m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma|def|structure|inductive|instance|abbrev)\s+(\S+)', b)
+        if m:
+            out[m.group(1)] = re.sub(r'\s+', ' ', b).strip()
+    return out
+
+
+def v3(repo, base, ext, prefix):
+    r = subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', ext, prefix], capture_output=True, text=True)
+    paths = [x for x in r.stdout.split() if x.endswith('.lean')]
+    if not paths:
+        return [('V3.edited', 0, 'EMPTY')]
+    before, after = {}, {}
+    for p in paths:
+        b, a = git_show(repo, base, p), git_show(repo, ext, p)
+        if b is not None:
+            before.update(lean_decls(b))
+        if a is not None:
+            after.update(lean_decls(a))
+    rows = []
+    edited = [n for n in V3_LEAN if n in before and n in after and before[n] != after[n]]
+    missing = [n for n in V3_LEAN if n not in before]
+    rows.append(('V3.edited', len(edited), 'MEASURED:' + (','.join(edited) or '-')))
+    rows.append(('V3.central.missingAtBase', len(missing), 'MEASURED:' + (','.join(missing) or '-')))
+    added = [n for n in after if n not in before]
+    rows.append(('V3.added', len(added), 'BESIDE'))
+    other = [n for n in after if n in before and before[n] != after[n] and n not in V3_LEAN]
+    rows.append(('V3.otherEdited', len(other), 'BESIDE'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
     ap.add_argument('--program', default='1', choices=['1', '2', '3'])
+    ap.add_argument('--base'); ap.add_argument('--ext'); ap.add_argument('--prefix', default='virp/VIRP')
     ap.add_argument('dir')
     a = ap.parse_args()
-    if a.arm == 'leanp':
+    if a.arm == 'v3':
+        rows = v3(a.dir, a.base, a.ext, a.prefix)
+    elif a.arm == 'leanp':
         rows = leanp(a.dir)
     elif a.arm == 'leanbp':
         rows = leanbp(a.dir)

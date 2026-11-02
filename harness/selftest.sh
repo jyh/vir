@@ -301,6 +301,24 @@ if cmp -s "$H/count.py" "$F/mutant22.py"; then say "ARM22 mutant NOT PLANTED"; f
 elif check22 "$F/mutant22.py"; then say "ARM22 mutant SURVIVED (a theorem NAME is counted as its statement)"; fail=1
 else say "ARM22 mutant KILLED"; fi
 
+# (23) V3 (amend-11): central definitions EDITED by one commit, from git history. A fixture repo whose base has the four
+# central definitions plus a helper; the ext commit edits E of them and ADDS A new definitions beside. Want edited=E.
+R3="$F/v3"; mkdir -p "$R3/virp/VIRP"; git -C "$R3" init -q; git -C "$R3" config user.email t@t; git -C "$R3" config user.name t
+{ for n in Tm Step HasType den; do printf 'inductive %s where\n  | a\n' $n; done; printf 'def helper := 1\n'; } > "$R3/virp/VIRP/S.lean"
+git -C "$R3" add -A; git -C "$R3" commit -qm base; B3=$(git -C "$R3" rev-parse HEAD)
+E=2; A=1
+sed -i.bak -e 's/^inductive Tm where/inductive Tm where\n  | ext/' -e 's/^inductive den where/inductive den where\n  | ext/' "$R3/virp/VIRP/S.lean"; rm -f -- "${R3:?}/virp/VIRP/S.lean.bak"
+printf 'def letAtomNew := 2\n' >> "$R3/virp/VIRP/S.lean"
+git -C "$R3" add -A; git -C "$R3" commit -qm ext; X3=$(git -C "$R3" rev-parse HEAD)
+check23() { local o; o=$(python3 "$1" --arm v3 --base "$B3" --ext "$X3" "$R3")
+  [ "$(g6 "$o" V3.edited)" = "$E" ] && [ "$(g6 "$o" V3.added)" = "$A" ] && [ "$(g6 "$o" V3.central.missingAtBase)" = 0 ]; }
+if check23 "$H/count.py"; then say "ARM23 v3 fixture OK (edited=$E added=$A)"
+else say "ARM23 v3 fixture FAIL"; python3 "$H/count.py" --arm v3 --base "$B3" --ext "$X3" "$R3"; fail=1; fi
+sed 's/edited = \[n for n in V3_LEAN if n in before and n in after and before\[n\] != after\[n\]\]/edited = [n for n in after if n not in before or before[n] != after[n]]/' "$H/count.py" > "$F/mutant23.py"
+if cmp -s "$H/count.py" "$F/mutant23.py"; then say "ARM23 mutant NOT PLANTED"; fail=1
+elif check23 "$F/mutant23.py"; then say "ARM23 mutant SURVIVED (an addition counted as an edit)"; fail=1
+else say "ARM23 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
