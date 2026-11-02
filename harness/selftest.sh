@@ -272,6 +272,30 @@ o=$(python3 "$H/count.py" --arm metaprlbp "$F/tc")
 if [ "$(g6 "$o" BMtc.rules)" = "$want_rules" ] && [ "$(g6 "$o" BMtc.closed)" = "$want_closed" ] && [ "$want_closed" -lt "$want_rules" ]; then say "ARM21 MetaPRL tc closed OK"
 else say "ARM21 MetaPRL tc closed FAIL (want $want_closed/$want_rules)"; printf '%s\n' "$o" | grep BMtc; fail=1; fi
 
+# (22) amend-11's Lean extractor (--arm leanp): counts DERIVED from the fixture's construction.
+# N subst-statements + one theorem mentioning a DEFINED `weaken` (D1: joins the list) + K ins-only (BESIDE) + a DECOY whose
+# NAME contains subst but whose statement does not + one axiom + Part.fix once in code and once in a comment.
+P="$F/p"; mkdir -p "$P/VIRP" "$P/logs"; N=3; K=2
+{ printf 'def weaken (x : Nat) : Nat := x\n'
+  i=0; while [ $i -lt $N ]; do printf 'theorem s%d : Tm.subst e 0 v = e := rfl\n' $i; i=$((i+1)); done
+  printf 'theorem w0 : weaken 0 = 0 := rfl\n'
+  i=0; while [ $i -lt $K ]; do printf 'theorem i%d : (ins 0 x l).length = l.length + 1 := rfl\n' $i; i=$((i+1)); done
+  printf 'theorem Decoy.subst : True := by exact (Tm.subst e 0 v).show.length = 0 |>.elim\n'
+  printf 'axiom bad : False\n-- Part.fix in a comment\ndef g := Part.fix f\n'; } > "$P/VIRP/A.lean"
+printf "'x' depends on axioms: [propext, sorryAx]\n" > "$P/logs/audit-001.log"
+printf "'control_sorry' depends on axioms: [propext, sorryAx]\nsaltbuild EXIT=0\n" > "$P/logs/audit-control-001.log"
+printf 'saltbuild EXIT=1\n' > "$P/logs/build-001.log"
+want_binder=$((N+1)); want_ins=$K; want_c6=$(cat "$P"/logs/*.log | grep -c '^saltbuild EXIT=')
+check22() { local o; o=$(python3 "$1" --arm leanp "$P")
+  [ "$(g6 "$o" P.binder)" = "$want_binder" ] && [ "$(g6 "$o" P.binder.insOnly)" = "$want_ins" ] && [ "$(g6 "$o" P.C4vir)" = 1 ] \
+  && [ "$(g6 "$o" P.fix)" = 1 ] && [ "$(g6 "$o" P.C4)" = 1 ] && [ "$(g6 "$o" P.control)" = 1 ] && [ "$(g6 "$o" P.C6)" = "$want_c6" ]; }
+if check22 "$H/count.py"; then say "ARM22 leanp fixture OK (binder=$want_binder ins=$want_ins)"
+else say "ARM22 leanp fixture FAIL"; python3 "$H/count.py" --arm leanp "$P"; fail=1; fi
+sed 's/rest = block\[m.end():\] if m else block/rest = block/' "$H/count.py" > "$F/mutant22.py"
+if cmp -s "$H/count.py" "$F/mutant22.py"; then say "ARM22 mutant NOT PLANTED"; fail=1
+elif check22 "$F/mutant22.py"; then say "ARM22 mutant SURVIVED (a theorem NAME is counted as its statement)"; fail=1
+else say "ARM22 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
