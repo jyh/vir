@@ -16,3 +16,12 @@ theorem control_sorry_bp : (1 : Nat) = 2 := sorry
 #print axioms VIR.BPrime.router_fusion_bp
 #print axioms VIR.BPrime.slice_law
 #print axioms VIR.BPrime.read_law
+-- program 2
+#print VIR.BPrime.router2_fusion_bp
+#print VIR.BPrime.aux_advance_guard_vlen
+#print VIR.BPrime.Carrier2
+#print axioms VIR.BPrime.router2_fusion_bp
+#print axioms VIR.BPrime.aux_advance_guard_vlen
+-- program 3
+#print VIR.BPrime.route_acl_safe_bp
+#print axioms VIR.BPrime.route_acl_safe_bp

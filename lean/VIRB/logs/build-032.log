@@ -1,0 +1,4 @@
+saltqueue: ticket P2 seat=root pid=35902
+✔ [4/4] Built VIRB.BPrime3 (233ms)
+Build completed successfully (4 jobs).
+saltbuild EXIT=0

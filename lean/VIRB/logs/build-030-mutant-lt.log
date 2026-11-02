@@ -1,0 +1,19 @@
+saltqueue: ticket P2 seat=root pid=21174
+✖ [3/3] Building VIRB.BPrime2 (234ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIRB/BPrime2.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime2.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime2.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime2.c --setup ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime2.setup.json --json
+error: VIRB/BPrime2.lean:76:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  advance ?b ?i fun s1 => advance s1 ?j ?e
+in the target expression
+  (decide (24 ≤ off) && decide (off + n ≤ vlen b0)) = (decide (24 ≤ off) && decide (off + n < vlen b0))
+
+case e_e1.e_k.e_k.e_k.e_k.e_k.e_e1.e_c
+C : Carrier2
+b0 : VSlice
+st : C.State
+magic sender topic off n : Int
+⊢ (decide (24 ≤ off) && decide (off + n ≤ vlen b0)) = (decide (24 ≤ off) && decide (off + n < vlen b0))
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRB.BPrime2
+error: build failed
+saltbuild EXIT=1

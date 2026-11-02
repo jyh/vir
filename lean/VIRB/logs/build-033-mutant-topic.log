@@ -1,0 +1,16 @@
+saltqueue: ticket P2 seat=root pid=39368
+✖ [4/4] Building VIRB.BPrime3 (214ms)
+trace: .> LEAN_PATH=~/fleet/vir/lean/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/lean/VIRB/BPrime3.lean -o ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime3.olean -i ~/fleet/vir/lean/.lake/build/lib/lean/VIRB/BPrime3.ilean -c ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime3.c --setup ~/fleet/vir/lean/.lake/build/ir/VIRB/BPrime3.setup.json --json
+error: VIRB/BPrime3.lean:29:53: Type mismatch
+  hc.right.left
+has type
+  C.can_access (C.wire_u32 (whole_slice b.val).fst ((whole_slice b.val).snd + 4))
+      (C.wire_u32 (whole_slice b.val).fst ((whole_slice b.val).snd + 8)) =
+    true
+but is expected to have type
+  C.can_access (frame_topic C b.val) (frame_topic C b.val) = true
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRB.BPrime3
+error: build failed
+saltbuild EXIT=1
