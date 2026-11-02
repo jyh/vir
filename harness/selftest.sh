@@ -282,13 +282,18 @@ P="$F/p"; mkdir -p "$P/VIRP" "$P/logs"; N=3; K=2
   i=0; while [ $i -lt $K ]; do printf 'theorem i%d : (ins 0 x l).length = l.length + 1 := rfl\n' $i; i=$((i+1)); done
   printf 'theorem Decoy.subst : True := by exact (Tm.subst e 0 v).show.length = 0 |>.elim\n'
   printf 'axiom bad : False\n-- Part.fix in a comment\ndef g := Part.fix f\n'; } > "$P/VIRP/A.lean"
+SL=2   # S5: SL law theorems (union/Disj/emp) + one frame theorem that mentions `own` (not a law) + one whose NAME says union
+{ i=0; while [ $i -lt $SL ]; do printf 'theorem l%d (h : Frag) : union h emp = h := rfl\n' $i; i=$((i+1)); done
+  printf 'theorem fr (hd : Disj hf (own s)) : True := trivial\n'
+  printf 'theorem Decoy.union : True := trivial\n'; } > "$P/VIRP/Sep.lean"
+want_sep_th=$((SL+2)); want_sep_laws=$SL
 printf "'x' depends on axioms: [propext, sorryAx]\n" > "$P/logs/audit-001.log"
 printf "'control_sorry' depends on axioms: [propext, sorryAx]\nsaltbuild EXIT=0\n" > "$P/logs/audit-control-001.log"
 printf 'saltbuild EXIT=1\n' > "$P/logs/build-001.log"
 want_binder=$((N+1)); want_ins=$K; want_c6=$(cat "$P"/logs/*.log | grep -c '^saltbuild EXIT=')
 check22() { local o; o=$(python3 "$1" --arm leanp "$P")
   [ "$(g6 "$o" P.binder)" = "$want_binder" ] && [ "$(g6 "$o" P.binder.insOnly)" = "$want_ins" ] && [ "$(g6 "$o" P.C4vir)" = 1 ] \
-  && [ "$(g6 "$o" P.fix)" = 1 ] && [ "$(g6 "$o" P.C4)" = 1 ] && [ "$(g6 "$o" P.control)" = 1 ] && [ "$(g6 "$o" P.C6)" = "$want_c6" ]; }
+  && [ "$(g6 "$o" P.sep.theorems)" = "$want_sep_th" ] && [ "$(g6 "$o" P.sep.laws)" = "$want_sep_laws" ] && [ "$(g6 "$o" P.fix)" = 1 ] && [ "$(g6 "$o" P.C4)" = 1 ] && [ "$(g6 "$o" P.control)" = 1 ] && [ "$(g6 "$o" P.C6)" = "$want_c6" ]; }
 if check22 "$H/count.py"; then say "ARM22 leanp fixture OK (binder=$want_binder ins=$want_ins)"
 else say "ARM22 leanp fixture FAIL"; python3 "$H/count.py" --arm leanp "$P"; fail=1; fi
 sed 's/rest = block\[m.end():\] if m else block/rest = block/' "$H/count.py" > "$F/mutant22.py"
