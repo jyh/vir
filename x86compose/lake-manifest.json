@@ -7,10 +7,10 @@
    "type": "git",
    "subDir": "spike/o95",
    "scope": "",
-   "rev": "2af56c7c184326b0157bf228fc50994ec2c8f468",
+   "rev": "52772fa490b63ff71908351c678338632c5b7406",
    "name": "o95spike",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "2af56c7c184326b0157bf228fc50994ec2c8f468",
+   "inputRev": "52772fa490b63ff71908351c678338632c5b7406",
    "inherited": false,
    "configFile": "lakefile.toml"
   },

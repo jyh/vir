@@ -6,7 +6,7 @@ defaultTargets = ["X86Compose"]
 [[require]]
 name = "o95spike"
 git = "https://github.com/jyh/x86lean"
-rev = "2af56c7c184326b0157bf228fc50994ec2c8f468"
+rev = "52772fa490b63ff71908351c678338632c5b7406"
 subDir = "spike/o95"
 
 [[require]]

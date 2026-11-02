@@ -1,0 +1,33 @@
+saltqueue: ticket P2 seat=root pid=3906
+mutants/MutCall2Orig.lean:40:2: error: Type mismatch
+  this
+has type
+  ∃ n2,
+    (runP Router.repaired n2 s2).stopped = true ∧
+      Router.Sim.exitLabel (runP Router.repaired n2 s2) =
+          some
+            (toV
+                  (R1
+                      (let __src := (R1 σ).fst;
+                      { wire := w2, bucket := __src.bucket, acl := __src.acl })).fst,
+                lab
+                  (R1
+                      (let __src := (R1 σ).fst;
+                      { wire := w2, bucket := __src.bucket, acl := __src.acl })).snd).snd ∧
+        Router.Sim.Post
+          (toV
+                (R1
+                    (let __src := (R1 σ).fst;
+                    { wire := w2, bucket := __src.bucket, acl := __src.acl })).fst,
+              lab
+                (R1
+                    (let __src := (R1 σ).fst;
+                    { wire := w2, bucket := __src.bucket, acl := __src.acl })).snd).fst
+          s2 (runP Router.repaired n2 s2)
+but is expected to have type
+  ∃ n2,
+    (runP Router.repaired n2 s2).stopped = true ∧
+      Router.Sim.exitLabel (runP Router.repaired n2 s2) =
+          some (lab (R1 { wire := w2, bucket := σ.bucket, acl := σ.acl }).snd) ∧
+        Router.Sim.Post (toV (R1 { wire := w2, bucket := σ.bucket, acl := σ.acl }).fst) s2 (runP Router.repaired n2 s2)
+saltbuild EXIT=1

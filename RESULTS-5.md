@@ -64,3 +64,17 @@ MetaPRL arm's posts that this harness has not yet extracted. A prediction is SCO
   code map as the abstract side (VIRP/Exits.lean).
 - Limits: one call (the n-call trace theorem is paris's P4); x86compose depends on mathlib THROUGH virp, so reproducing it
   costs a mathlib fetch, while the spike itself stays mathlib-free.
+
+## ADDENDUM 3 (2026-11-02, the 10th vir head): TWO CALLS at the meaning, at paris's PUBLIC spike
+- x86compose re-pinned to x86lean **spike/o95-router 52772fa** (public: paper's CONCUR at e8c252f plus one comment-only
+  commit). Between 2af56c7 and 52772fa, `Sim.lean` only GAINED lines (+41), so `Fc` is unchanged and `backend_F` re-builds
+  green at the new pin (build-003).
+- **`backend_two`** (paris's `sim_two` ∘ ⟦F⟧ twice): call 1 stops at ⟦F⟧ σ's label. For a caller that writes ONLY the next
+  buffer and re-enters (sim_two's premises: liveness, entry address, the same bucket base, the PLACEMENT of the new buffer, its
+  length, its bytes, and memory agreeing outside the new buffer), call 2 stops at the label of ⟦F⟧ applied to the store
+  call 1 RETURNED with the new wire, in a final memory related to it. **None of those premises names the program.** They are
+  the caller's contract with the placement, which is where X-F1's bespoke two_calls premises went.
+- Checked: build-003 + audit-002 EXIT=0, `backend_two` → [propext, Classical.choice, Quot.sound], control fires. **Mutant
+  `mutant-002-call2orig`** (call 2 on the ORIGINAL store) is RED.
+- With stage 3 (`run_tokens` at the meaning), rate limiting composes: two calls at the machine (here), and n calls at the
+  meaning. The machine n-call theorem is not built.
