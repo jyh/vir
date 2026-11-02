@@ -15,3 +15,8 @@ open VIRP
 #print axioms VIRP.U_total
 #print axioms VIRP.U_eq_F
 #print axioms VIRP.F_closed
+#print axioms VIRP.exit_truncated
+#print axioms VIRP.exit_unauth_magic
+#print axioms VIRP.exit_unauth_acl
+#print axioms VIRP.exit_rate
+#print axioms VIRP.exit_emit
