@@ -1,0 +1,84 @@
+saltqueue: ticket P2 seat=root pid=38447
+⚠ [367/371] Replayed VIRP.Binders
+warning: VIRP/Binders.lean:23:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by omega, s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵ins]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:90: This simp argument is unused:
+  ins
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬ ̵(k + 1 < n + 1) by omega, show ¬ ̵(n + 1 = k + 1) by omega,̵ ̵i̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [369/371] Building VIRP.Router (741ms)
+trace: .> LEAN_PATH=~/fleet/vir/virp/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/virp/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/virp/VIRP/Router.lean -o ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Router.olean -i ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Router.ilean -c ~/fleet/vir/virp/.lake/build/ir/VIRP/Router.c --setup ~/fleet/vir/virp/.lake/build/ir/VIRP/Router.setup.json --json
+error: VIRP/Router.lean:46:28: failed to synthesize
+  Decidable (Tm.wf 2 U)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRP/Router.lean:47:28: failed to synthesize
+  Decidable (Tm.wf 2 F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+warning: VIRP/Router.lean:51:61: 'rfl' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRP/Router.lean:51:61: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRP/Router.lean:53:61: 'rfl' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRP/Router.lean:53:61: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+error: VIRP/Router.lean:66:2: Tactic `split_ifs` failed: no if-then-else conditions to split
+
+σ : Store
+⊢ Part.map (abort σ)
+      (match some (Val.bool (decide (↑σ.wire.length - ↑0 ≥ 24))) with
+      | some (Val.bool true) =>
+        match some (Val.bool (decide (rd32 σ.wire (0 + 0) = MAGIC))) with
+        | some (Val.bool true) =>
+          match some (Val.bool (decide (1 ≤ σ.bucket (rd32 σ.wire (0 + 4))))) with
+          | some (Val.bool true) =>
+            match some (Val.bool ((σ.dec (rd32 σ.wire (0 + 4))).acl (rd32 σ.wire (0 + 4)) (rd32 σ.wire (0 + 8)))) with
+            | some (Val.bool true) => Part.some (σ.dec (rd32 σ.wire (0 + 4)), Label.emit (0 + 12 + 12))
+            | some (Val.bool false) => Part.some (σ.dec (rd32 σ.wire (0 + 4)), Label.drop Code.unauthOrRate)
+            | x => Part.none
+          | some (Val.bool false) => Part.some (σ, Label.drop Code.unauthOrRate)
+          | x => Part.none
+        | some (Val.bool false) => Part.some (σ, Label.drop Code.unauthOrRate)
+        | x => Part.none
+      | some (Val.bool false) => Part.some (σ, Label.drop Code.truncated)
+      | x => Part.none) =
+    Part.map (abort σ)
+      (match some (Val.bool (decide (↑σ.wire.length - ↑0 ≥ 24))) with
+      | some (Val.bool true) =>
+        match
+          some
+            (Val.bool
+              (decide (rd32 σ.wire (0 + 0) = MAGIC) &&
+                (σ.acl (rd32 σ.wire (0 + 4)) (rd32 σ.wire (0 + 8)) &&
+                  decide (1 ≤ σ.bucket (rd32 σ.wire (0 + 4)))))) with
+        | some (Val.bool true) => Part.some (σ.dec (rd32 σ.wire (0 + 4)), Label.emit (0 + 24))
+        | some (Val.bool false) => Part.some (σ, Label.drop Code.unauthOrRate)
+        | x => Part.none
+      | some (Val.bool false) => Part.some (σ, Label.drop Code.truncated)
+      | x => Part.none)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRP.Router
+error: build failed
+saltbuild EXIT=1

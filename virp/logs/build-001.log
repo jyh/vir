@@ -1,0 +1,38 @@
+saltqueue: ticket P2 seat=root pid=50323
+✖ [364/367] Building VIRP.Syntax (433ms)
+trace: .> LEAN_PATH=~/fleet/vir/virp/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/virp/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/virp/VIRP/Syntax.lean -o ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Syntax.olean -i ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Syntax.ilean -c ~/fleet/vir/virp/.lake/build/ir/VIRP/Syntax.c --setup ~/fleet/vir/virp/.lake/build/ir/VIRP/Syntax.setup.json --json
+error: VIRP/Syntax.lean:76:4: fail to show termination for
+  VIRP.Atom.subst
+with errors
+failed to infer structural recursion:
+Not considering parameter k of VIRP.Atom.subst:
+  it is unchanged in the recursive calls
+Cannot use parameter v:
+  failed to eliminate recursive application
+    subst k a v
+Cannot use parameter #3:
+  failed to eliminate recursive application
+    subst k a v
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             v x2
+1) 78:20-31  ?  ?
+2) 79:20-31  _  _
+3) 79:34-45  _  _
+4) 80:20-31  _  _
+5) 80:34-45  _  _
+6) 81:22-33  _  _
+7) 81:36-47  _  _
+8) 82:34-45  _  _
+9) 82:48-59  _  _
+10) 83:34-45 _  _
+11) 83:48-59 _  _
+Please use `termination_by` to specify a decreasing measure.
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRP.Syntax
+error: build failed
+saltbuild EXIT=1

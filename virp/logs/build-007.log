@@ -1,0 +1,78 @@
+saltqueue: ticket P2 seat=root pid=13284
+⚠ [367/370] Replayed VIRP.Binders
+warning: VIRP/Binders.lean:23:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by omega, s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵ins]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:90: This simp argument is unused:
+  ins
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬ ̵(k + 1 < n + 1) by omega, show ¬ ̵(n + 1 = k + 1) by omega,̵ ̵i̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [368/370] Building VIRP.Safety (682ms)
+trace: .> LEAN_PATH=~/fleet/vir/virp/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/virp/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/virp/VIRP/Safety.lean -o ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Safety.olean -i ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Safety.ilean -c ~/fleet/vir/virp/.lake/build/ir/VIRP/Safety.c --setup ~/fleet/vir/virp/.lake/build/ir/VIRP/Safety.setup.json --json
+error: VIRP/Safety.lean:30:26: Function expected at
+  ih
+but this term has type
+  ∃ v, Atom.eval env σ a✝¹ = some v ∧ VTy v Ty.slice
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:30:11: Tactic `rcases` failed: `x✝ : ?m.95` is not an inductive datatype
+error: VIRP/Safety.lean:32:26: Function expected at
+  iha
+but this term has type
+  ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.int
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:32:11: Tactic `rcases` failed: `x✝ : ?m.103` is not an inductive datatype
+error: VIRP/Safety.lean:35:26: Function expected at
+  iha
+but this term has type
+  ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.int
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:35:11: Tactic `rcases` failed: `x✝ : ?m.111` is not an inductive datatype
+error: VIRP/Safety.lean:38:26: Function expected at
+  iha
+but this term has type
+  ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.bool
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:38:11: Tactic `rcases` failed: `x✝ : ?m.119` is not an inductive datatype
+error: VIRP/Safety.lean:41:26: Function expected at
+  iha
+but this term has type
+  ∃ v, Atom.eval env σ p✝ = some v ∧ VTy v Ty.int
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:41:11: Tactic `rcases` failed: `x✝ : ?m.127` is not an inductive datatype
+error: VIRP/Safety.lean:44:26: Function expected at
+  iha
+but this term has type
+  ∃ v, Atom.eval env σ s✝ = some v ∧ VTy v Ty.tok
+
+Note: Expected a function because this term is being applied to the argument
+  he
+error: VIRP/Safety.lean:44:11: Tactic `rcases` failed: `x✝ : ?m.135` is not an inductive datatype
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRP.Safety
+error: build failed
+saltbuild EXIT=1

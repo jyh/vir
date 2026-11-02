@@ -52,6 +52,7 @@ if [ -d "$SP/.git" ]; then chk "$V/harness/compiler-counts.tsv" --arm compiler -
 else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 # amend-10: the Lean B′ mirror (lean/VIRB), read from its own logs
 chk "$V/lean/VIRB/out/counts-bp.tsv" --arm leanbp "$V/lean/VIRB"
+chk "$V/virp/out/counts-p.tsv" --arm leanp "$V/virp"
 chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

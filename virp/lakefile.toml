@@ -1,0 +1,12 @@
+name = "virp"
+defaultTargets = ["VIRP"]
+
+# O95, PREDICTIONS-amend-11 (D1-D4): the VIR program's Lean arm. A SEPARATE project, like compose/, so lean/'s VIR and VIRB
+# need no mathlib. mathlib at salt's pin (the manifest's packages are salt's, copied by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[lean_lib]]
+name = "VIRP"

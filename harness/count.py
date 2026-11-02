@@ -530,16 +530,63 @@ def metaprlbp(d):
     return rows
 
 
+# amend-11 (the VIR PROGRAM, STATUS-vir row 76). d = virp. Rows P.*: V1 (C4vir), V2a (binder lemmas by D1's frozen
+# operator list), the `ins` lemmas reported BESIDE V2a (not on the list), V6 (fixpoints), the audit and C6.
+P_OPS = ('subst', 'shift', 'rename')     # D1; `lift`/`weaken` join only if VIRP DEFINES one (def/abbrev), never a theorem name
+
+
+def p_statement(block):
+    """A theorem's STATEMENT: its text after the declared name, up to the proof (`:=`) or its first match arm."""
+    m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+\S+', block)
+    rest = block[m.end():] if m else block
+    cut = [i for i in (rest.find(':='), rest.find('\n  |')) if i >= 0]
+    return rest[:min(cut)] if cut else rest
+
+
+def leanp(d):
+    src = files(os.path.join(d, 'VIRP'), ('.lean',))
+    if not src:
+        return [('P.src', 0, 'EMPTY')]
+    text = '\n'.join(re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p)) for p in src)
+    ops = list(P_OPS) + re.findall(r'^(?:def|abbrev)\s+(?:\S*\.)?(lift|weaken)\b', text, re.M)
+    op_re = re.compile(r'(?<![A-Za-z0-9_])(?:[A-Za-z0-9_]+\.)*(' + '|'.join(ops) + r')(?![A-Za-z0-9_])')
+    ins_re = re.compile(r'(?<![A-Za-z0-9_.])ins(?![A-Za-z0-9_])')
+    thms = [b for b in blocks(text) if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\b', b)]
+    stm = [p_statement(b) for b in thms]
+    binder = sum(1 for x in stm if op_re.search(x))
+    ins_only = sum(1 for x in stm if ins_re.search(x) and not op_re.search(x))
+    rows = [('P.src', len(src), 'MEASURED'), ('P.theorems', len(thms), 'MEASURED'),
+            ('P.C4vir', len(re.findall(r'^\s*(?:axiom|opaque|constant)\s', text, re.M)), 'MEASURED'),
+            ('P.binder', binder, 'MEASURED'), ('P.binder.insOnly', ins_only, 'BESIDE'),
+            ('P.fix', len(re.findall(r'(?<![A-Za-z0-9_])(?:Part|PFun)\.fix(?![A-Za-z0-9_])', text)), 'MEASURED')]
+    logs = files(os.path.join(d, 'logs'), ('.log',))
+    audits = [p for p in logs if re.search(r'/audit-\d+\.log$', p)]
+    if audits:
+        t = read(sorted(audits)[-1])
+        ax = re.findall(r"depends on axioms: \[([^\]]*)\]", t)
+        extra = set(a.strip() for g in ax for a in g.split(',')) - STD_AXIOMS
+        rows += [('P.audit', len(ax) + len(re.findall(r'does not depend on any axioms', t)), 'READ:' + os.path.basename(sorted(audits)[-1])),
+                 ('P.C4', len(extra), 'MEASURED')]
+    else:
+        rows.append(('P.audit', 0, 'EMPTY'))
+    ctl = [p for p in logs if re.search(r'/audit-control-\d+\.log$', p)]
+    rows.append(('P.control', 1 if ctl and re.search(r"'control_sorry' depends on axioms: \[[^\]]*sorryAx", read(sorted(ctl)[-1])) else 0, 'MEASURED'))
+    rows.append(('P.C6', sum(len(re.findall(r'^saltbuild EXIT=\d+', read(p), re.M)) for p in logs), 'MEASURED'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
     ap.add_argument('--program', default='1', choices=['1', '2', '3'])
     ap.add_argument('dir')
     a = ap.parse_args()
-    if a.arm == 'leanbp':
+    if a.arm == 'leanp':
+        rows = leanp(a.dir)
+    elif a.arm == 'leanbp':
         rows = leanbp(a.dir)
     elif a.arm == 'metaprlbp':
         rows = metaprlbp(a.dir)

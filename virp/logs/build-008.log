@@ -1,0 +1,127 @@
+saltqueue: ticket P2 seat=root pid=22684
+⚠ [367/370] Replayed VIRP.Binders
+warning: VIRP/Binders.lean:23:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:57: This simp argument is unused:
+  show ¬(n + 1 = k + 1) by omega
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬̵ ̵(̵k̵¬̲(̲k̲ + 1 < n + 1) by omega, s̵h̵o̵w̵ ̵¬̵ ̵(̵n̵ ̵+̵ ̵1̵ ̵=̵ ̵k̵ ̵+̵ ̵1̵)̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵ins]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRP/Binders.lean:54:90: This simp argument is unused:
+  ins
+
+Hint: Omit it from the simp argument list.
+  simp [h1, h2, show ¬ ̵(k + 1 < n + 1) by omega, show ¬ ̵(n + 1 = k + 1) by omega,̵ ̵i̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [368/370] Building VIRP.Safety (678ms)
+trace: .> LEAN_PATH=~/fleet/vir/virp/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/virp/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/virp/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/virp/VIRP/Safety.lean -o ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Safety.olean -i ~/fleet/vir/virp/.lake/build/lib/lean/VIRP/Safety.ilean -c ~/fleet/vir/virp/.lake/build/ir/VIRP/Safety.c --setup ~/fleet/vir/virp/.lake/build/ir/VIRP/Safety.setup.json --json
+error: VIRP/Safety.lean:30:67: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+a✝¹ : Atom
+a✝ : ATy Γ a✝¹ Ty.slice
+ih : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ a✝¹ = some v ∧ VTy v Ty.slice
+env : List Val
+he : EnvOK Γ env
+o✝ : ℕ
+hv : Atom.eval env σ a✝¹ = some (Val.sl o✝)
+⊢ ↑σ.wire.length - ↑o✝ = ?m.227
+error: VIRP/Safety.lean:33:14: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+a✝² b✝ : Atom
+a✝¹ : ATy Γ a✝² Ty.int
+a✝ : ATy Γ b✝ Ty.int
+iha : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.int
+ihb : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ b✝ = some v ∧ VTy v Ty.int
+env : List Val
+he : EnvOK Γ env
+i✝¹ : ℤ
+hv : Atom.eval env σ a✝² = some (Val.int i✝¹)
+i✝ : ℤ
+hw : Atom.eval env σ b✝ = some (Val.int i✝)
+⊢ decide (i✝ ≤ i✝¹) = ?m.440
+error: VIRP/Safety.lean:36:14: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+a✝² b✝ : Atom
+a✝¹ : ATy Γ a✝² Ty.int
+a✝ : ATy Γ b✝ Ty.int
+iha : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.int
+ihb : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ b✝ = some v ∧ VTy v Ty.int
+env : List Val
+he : EnvOK Γ env
+i✝¹ : ℤ
+hv : Atom.eval env σ a✝² = some (Val.int i✝¹)
+i✝ : ℤ
+hw : Atom.eval env σ b✝ = some (Val.int i✝)
+⊢ decide (i✝¹ = i✝) = ?m.653
+error: VIRP/Safety.lean:39:14: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+a✝² b✝² : Atom
+a✝¹ : ATy Γ a✝² Ty.bool
+a✝ : ATy Γ b✝² Ty.bool
+iha : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ a✝² = some v ∧ VTy v Ty.bool
+ihb : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ b✝² = some v ∧ VTy v Ty.bool
+env : List Val
+he : EnvOK Γ env
+b✝¹ : Bool
+hv : Atom.eval env σ a✝² = some (Val.bool b✝¹)
+b✝ : Bool
+hw : Atom.eval env σ b✝² = some (Val.bool b✝)
+⊢ (b✝¹ && b✝) = ?m.866
+error: VIRP/Safety.lean:42:14: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+p✝ t✝ : Atom
+a✝¹ : ATy Γ p✝ Ty.int
+a✝ : ATy Γ t✝ Ty.int
+iha : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ p✝ = some v ∧ VTy v Ty.int
+ihb : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ t✝ = some v ∧ VTy v Ty.int
+env : List Val
+he : EnvOK Γ env
+i✝¹ : ℤ
+hv : Atom.eval env σ p✝ = some (Val.int i✝¹)
+i✝ : ℤ
+hw : Atom.eval env σ t✝ = some (Val.int i✝)
+⊢ σ.acl i✝¹ i✝ = ?m.1079
+error: VIRP/Safety.lean:45:14: unsolved goals
+Γ : Ctx
+a : Atom
+τ : Ty
+σ : Store
+s✝ p✝ : Atom
+a✝¹ : ATy Γ s✝ Ty.tok
+a✝ : ATy Γ p✝ Ty.int
+iha : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ s✝ = some v ∧ VTy v Ty.tok
+ihb : ∀ {env : List Val}, EnvOK Γ env → ∃ v, Atom.eval env σ p✝ = some v ∧ VTy v Ty.int
+env : List Val
+he : EnvOK Γ env
+hv : Atom.eval env σ s✝ = some Val.tok
+i✝ : ℤ
+hw : Atom.eval env σ p✝ = some (Val.int i✝)
+⊢ decide (1 ≤ σ.bucket i✝) = ?m.1292
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRP.Safety
+error: build failed
+saltbuild EXIT=1
