@@ -1,0 +1,47 @@
+saltqueue: ticket P2 seat=root pid=7714
+mutants/MutLabSwap.lean:36:16: error: Tactic `rfl` failed: The left-hand side
+  ({ wire := σ.wire, bucket := σ.bucket, acl := σ.acl }, Router.Sim.Label.drop Router.Sim.Code.unauthOrRate)
+is not definitionally equal to the right-hand side
+  ({ wire := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.wire,
+      bucket := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.bucket,
+      acl := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.acl },
+    lab (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).snd)
+
+case neg
+σ : VIRP.Store
+h✝¹ : ↑σ.wire.length ≥ 24
+h✝ :
+  ¬(σ.wire.getD 0 0 + 256 * σ.wire.getD (0 + 1) 0 + 65536 * σ.wire.getD (0 + 2) 0 + 16777216 * σ.wire.getD (0 + 3) 0 =
+        1297303345 ∧
+      σ.acl
+            (σ.wire.getD 4 0 + 256 * σ.wire.getD (4 + 1) 0 + 65536 * σ.wire.getD (4 + 2) 0 +
+              16777216 * σ.wire.getD (4 + 3) 0)
+            (σ.wire.getD 8 0 + 256 * σ.wire.getD (8 + 1) 0 + 65536 * σ.wire.getD (8 + 2) 0 +
+              16777216 * σ.wire.getD (8 + 3) 0) =
+          true ∧
+        1 ≤
+          σ.bucket
+            (σ.wire.getD 4 0 + 256 * σ.wire.getD (4 + 1) 0 + 65536 * σ.wire.getD (4 + 2) 0 +
+              16777216 * σ.wire.getD (4 + 3) 0))
+⊢ ({ wire := σ.wire, bucket := σ.bucket, acl := σ.acl }, Router.Sim.Label.drop Router.Sim.Code.unauthOrRate) =
+    ({ wire := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.wire,
+        bucket := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.bucket,
+        acl := (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).fst.acl },
+      lab (σ, VIRP.Label.drop VIRP.Code.unauthOrRate).snd)
+mutants/MutLabSwap.lean:36:16: error: Tactic `rfl` failed: The left-hand side
+  ({ wire := σ.wire, bucket := σ.bucket, acl := σ.acl }, Router.Sim.Label.drop Router.Sim.Code.truncated)
+is not definitionally equal to the right-hand side
+  ({ wire := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.wire,
+      bucket := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.bucket,
+      acl := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.acl },
+    lab (σ, VIRP.Label.drop VIRP.Code.truncated).snd)
+
+case neg
+σ : VIRP.Store
+h✝ : ¬↑σ.wire.length ≥ 24
+⊢ ({ wire := σ.wire, bucket := σ.bucket, acl := σ.acl }, Router.Sim.Label.drop Router.Sim.Code.truncated) =
+    ({ wire := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.wire,
+        bucket := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.bucket,
+        acl := (σ, VIRP.Label.drop VIRP.Code.truncated).fst.acl },
+      lab (σ, VIRP.Label.drop VIRP.Code.truncated).snd)
+saltbuild EXIT=1

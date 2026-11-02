@@ -33,3 +33,34 @@ MetaPRL arm's posts that this harness has not yet extracted. A prediction is SCO
   `t < 64` mutant reds the ACL step.
 - **mathlib pinned (D2's first arm):** virp/ is a separate project, so lean/'s reproduction needs no mathlib.
 - **V5's code map:** 0x1040 ↦ truncated, 0x1041 and 0x1042 ↦ unauthOrRate. The machine is finer than A.2's one drop code.
+
+## ADDENDUM 1 (2026-11-02, the 10th vir head, after PR #15 and paris's sim_label)
+- **Stage 2, the separation model (Lean, H):** `virp/VIRP/Sep.lean` to the shared input S1–S5 (merged 5591d8b BEFORE it);
+  build-014 + audit-004 EXIT=0; S5 counts `P.sep.theorems` 8 · `P.sep.laws` 5 (EXPLORATORY); mutant-005 (frame without
+  disjointness) RED. ⚠️ FINDINGS **L-F6**: in this fragment the frame holds without the type system, so stage 2 is not
+  evidence for linearity.
+- **MetaPRL steps 1–2 (Q, mojave @[bus] 12:48):** 43 rules grounded, **0 prims** (V1's MetaPRL side so far: holds at steps
+  1–2); the binder well-formedness cost a 19-rule VIR-side variable family (V2b reads against it when the fragment closes).
+- **V4, the label half (Q until composed here):** paris's `sim_label` (paris/o95-layout 97ec297): for EVERY store and every
+  R-related machine state, the repaired router stops at the exit `F_closed` names. Its ONLY premise is R. `Fc` restates
+  F_closed's right-hand side and cites vir 120c906. V4 is SCORED only when vir composes it with `F_closed` and reads the
+  premise list at the object (STATUS-vir row 82). The post-state half (`sim_one`) is paris's next act.
+- FINDINGS **X-F2**: the ACL aliasing and the (R) ruling.
+
+## ADDENDUM 2 (2026-11-02, the 10th vir head): **V4 SCORED — HOLDS**, and V5's machine reading
+- **The composed theorem** `x86compose/X86Compose/V4.lean` `backend_F` (vir's `F_closed` ∘ paris's `sim_one`, x86lean
+  paris/o95-layout **2af56c7**, pinned by sha): for every store σ and every machine state s with **R σ s**, ⟦F⟧ σ is defined
+  (`= Part.some r`), and the repaired x86 router run from s STOPS at the exit whose label is r's, in a final memory related to
+  r's store. **Its premises, read at the object: σ, s and `hR : Rel σ.wire σ.bucket σ.acl s`. That is ONE hypothesis, the
+  layout relation, and 0 per-program.** hdisj, hacw and htopic are facts about R (paris 8154c72, f10e0bc).
+- `Fc_faithful`: the kernel checks that the spike's restated `Fc` IS ⟦F⟧'s closed form, so the theorem speaks of the
+  meaning and not of a copy.
+- Checked: x86compose build-002 + audit-001 `saltbuild EXIT=0`: `backend_F` → [propext, Classical.choice, Quot.sound],
+  `Fc_faithful` → [propext]; control_sorry → [sorryAx]. **Mutant `mutant-001-labswap`** (the label map swaps the two drop
+  codes) is RED at `Fc_faithful`.
+- **V4: HOLDS** (prediction: 0 per-program hypotheses, no hdisj-shaped premise outside the relation).
+- **V5, the machine reading: HOLDS for EVERY R-related state.** The five witnesses are instances once they are R-related.
+  The exit map is paris's `exitLabel` (0x1040 ↦ truncated · 0x1041, 0x1042 ↦ unauthOrRate · 0x1043 ↦ emit 24), the same
+  code map as the abstract side (VIRP/Exits.lean).
+- Limits: one call (the n-call trace theorem is paris's P4); x86compose depends on mathlib THROUGH virp, so reproducing it
+  costs a mathlib fetch, while the spike itself stays mathlib-free.
