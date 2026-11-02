@@ -1,0 +1,17 @@
+saltqueue: ticket P2 seat=root pid=77016
+'VIRP.HasType.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRP.den_subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRP.progress' depends on axioms: [propext]
+'VIRP.preservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRP.safety' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRP.soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRP.HasType.den_dom' depends on axioms: [propext]
+'VIRP.U_typed' depends on axioms: [propext]
+'VIRP.F_typed' depends on axioms: [propext]
+'VIRP.U_wf' depends on axioms: [propext]
+'VIRP.F_wf' depends on axioms: [propext]
+'VIRP.F_total' depends on axioms: [propext]
+'VIRP.U_total' depends on axioms: [propext]
+'VIRP.U_eq_F' depends on axioms: [propext, Quot.sound]
+'VIRP.F_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0

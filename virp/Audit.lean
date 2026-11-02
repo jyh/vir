@@ -14,3 +14,4 @@ open VIRP
 #print axioms VIRP.F_total
 #print axioms VIRP.U_total
 #print axioms VIRP.U_eq_F
+#print axioms VIRP.F_closed

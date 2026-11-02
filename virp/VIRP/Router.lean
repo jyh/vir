@@ -68,4 +68,14 @@ theorem U_eq_F (σ : Store) : denote U env0 σ = denote F env0 σ := by
   repeat' split
   all_goals simp_all [abort]
 
+/-! ## The closed form of ⟦F⟧ (for the backend simulation, paris's P5; ruled (R) 2026-11-02: no topic guard) -/
+theorem F_closed (σ : Store) : denote F env0 σ =
+    Part.some (if (σ.wire.length : Int) ≥ 24 then
+        (if rd32 σ.wire 0 = MAGIC ∧ σ.acl (rd32 σ.wire 4) (rd32 σ.wire 8) = true ∧ 1 ≤ σ.bucket (rd32 σ.wire 4)
+         then (σ.dec (rd32 σ.wire 4), Label.emit 24) else (σ, Label.drop .unauthOrRate))
+      else (σ, Label.drop .truncated)) := by
+  simp only [denote, den, F, env0, Atom.eval, List.getElem?_cons_zero, List.getElem?_cons_succ]
+  repeat' split
+  all_goals simp_all [abort]
+
 end VIRP

@@ -24,6 +24,14 @@ by its `saltbuild EXIT=N` line in `virp/logs/`.
 | 6 | the denotation | `VIRP/Semantics.lean`, `VIRP/Safety.lean` | `den`, `denote`; `HasType.den_dom`: a typed program's meaning is DEFINED |
 | — | the router | `VIRP/Router.lean` | U (I3: the I2 specs composed) and F (A.3's fused term) as deep terms; `U_typed`, `F_typed`, `U_total`, `F_total`, **`U_eq_F`: ⟦U⟧ = ⟦F⟧ for every store** |
 
+## Added after the first page: the closed form, and the ACL ruling
+- `F_closed` (build-012, audit-002 EXIT=0): ⟦F⟧ σ written out as nested ifs over `rd32`, `acl` and `bucket`. It is the form
+  paris's backend simulation starts from. Mutant `mutant-003-closedoffset` (emit offset 12 for 24) is RED.
+- **Ruled (R), 2026-11-02, at paris's finding:** `canAccess` is defined for any topic, while the machine's ACL bit for a topic
+  ≥ 64 lies in another principal's row. F is NOT given a topic guard, because the object is frozen. The layout relation
+  carries the aliasing instead, so the backend theorem speaks of RELATED stores only, and the ACL span it separates is
+  2^35 + 2^29.
+
 ## What was checked
 - `virp/logs/build-011.log`: `saltbuild EXIT=0`, the whole library (696 lines in six files, 32 theorems).
 - `virp/logs/audit-001.log`: `#print axioms` on 14 theorems. Each is a subset of {propext, Classical.choice, Quot.sound}.
