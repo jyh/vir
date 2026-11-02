@@ -20,3 +20,11 @@ open VIRP
 #print axioms VIRP.exit_unauth_acl
 #print axioms VIRP.exit_rate
 #print axioms VIRP.exit_emit
+#print axioms VIRP.union_emp
+#print axioms VIRP.emp_union
+#print axioms VIRP.union_comm
+#print axioms VIRP.union_assoc
+#print axioms VIRP.disj_union
+#print axioms VIRP.own_split
+#print axioms VIRP.F_effect
+#print axioms VIRP.frame_F

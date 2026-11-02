@@ -559,6 +559,16 @@ def leanp(d):
             ('P.C4vir', len(re.findall(r'^\s*(?:axiom|opaque|constant)\s', text, re.M)), 'MEASURED'),
             ('P.binder', binder, 'MEASURED'), ('P.binder.insOnly', ins_only, 'BESIDE'),
             ('P.fix', len(re.findall(r'(?<![A-Za-z0-9_])(?:Part|PFun)\.fix(?![A-Za-z0-9_])', text)), 'MEASURED')]
+    # S5 (inputs/vir-program-inputs.md, EXPLORATORY): the separation model's theorems, from VIRP/Sep.lean alone
+    sep = [p for p in src if os.path.basename(p) == 'Sep.lean']
+    if sep:
+        st = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(sep[0]))
+        sth = [b for b in blocks(st) if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\b', b)]
+        rows += [('P.sep.theorems', len(sth), 'EXPLORATORY'),
+                 ('P.sep.laws', sum(1 for b in sth if re.search(r'(?<![A-Za-z0-9_])(union|Disj|emp)(?![A-Za-z0-9_])', p_statement(b))
+                                    and not re.search(r'(?<![A-Za-z0-9_])(denote|own)(?![A-Za-z0-9_])', p_statement(b))), 'EXPLORATORY')]
+    else:
+        rows.append(('P.sep.theorems', 0, 'EMPTY'))
     logs = files(os.path.join(d, 'logs'), ('.log',))
     audits = [p for p in logs if re.search(r'/audit-\d+\.log$', p)]
     if audits:
