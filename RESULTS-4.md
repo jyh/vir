@@ -74,6 +74,11 @@ saltbuild runs LOGGED under lean/VIRB/logs (mutants and audits included; overwri
 `.scope` row says). Selftest ARM18 plants an HEq, an extra axiom and a missing control and reads all three, and it goes
 red when `≍` is dropped from its class.
 
+Addendum 1 (2026-11-02, after every B′ proof; no figure above moves): later B′ runs go through
+`lean/VIRB/logged-build.sh NAME ...`, which refuses a log name already used (rc 3) before saltbuild runs, so no run
+can be written over and lost to `B.C6`. Selftest ARM19 drives it with a stub saltbuild and goes red when the refusal
+is removed. The 18 logs already in lean/VIRB/logs are unchanged.
+
 ## Limits
 - Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
