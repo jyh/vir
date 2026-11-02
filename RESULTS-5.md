@@ -78,3 +78,14 @@ MetaPRL arm's posts that this harness has not yet extracted. A prediction is SCO
   `mutant-002-call2orig`** (call 2 on the ORIGINAL store) is RED.
 - With stage 3 (`run_tokens` at the meaning), rate limiting composes: two calls at the machine (here), and n calls at the
   meaning. The machine n-call theorem is not built.
+
+## ADDENDUM 4 (2026-11-02, the 10th vir head): a STRANGER REPRODUCES stages 1–3 and V4 from GitHub (STATUS-vir row 89)
+- An anonymous `git clone https://github.com/jyh/vir` was taken into a scratch dir. Only dependency packages were copied in
+  (mathlib and its siblings at the manifest's pinned revs, checked; x86lean b1848ac and vir ba6f3fc). The spike's build dir
+  was REMOVED, so `Router.*` at 52772fa recompiled.
+- **virp** at 584809d: `virp/repro/repro-build-001` + `repro-audit-001` `saltbuild EXIT=0`. **All 32 axiom lines are
+  byte-identical to the committed `virp/logs/audit-005.log`.** `repro-audit-control-001`: control_sorry → [propext, sorryAx].
+- **x86compose** at 3127580: `x86compose/repro/repro-build-001` + `repro-audit-001` `saltbuild EXIT=0`. `Fc_faithful`,
+  `backend_F` and `backend_two` read **identically to `x86compose/logs/audit-002.log`**; control_sorry → [sorryAx].
+- The logs live in `repro/` dirs, never `logs/`, so the C6 counts are unchanged. Limit: mathlib's prebuilt files were copied
+  by pin, not fetched; a fully cold reproduction costs a mathlib cache fetch.
