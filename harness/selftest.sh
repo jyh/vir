@@ -256,6 +256,22 @@ if [ "$(g6 "$o" BM3.refines.thm)" = "$inthm" ] && [ "$(g6 "$o" BM3.C2gen.thm)" =
    && [ "$(g6 "$o" BM3.prims)" = 1 ] && [ "$(g6 "$o" BM3.C2genWf)" = "$(grep -c '^refine' "$BM/vir-arm-tools/steps/bp-vir3.mp")" ]; then say "ARM20 MetaPRL B′ scope OK"
 else say "ARM20 MetaPRL B′ scope FAIL (want $inthm)"; printf '%s\n' "$o" | grep BM3; fail=1; fi
 
+# (21) B4 on MetaPRL: a tc rule is CLOSED only when its refine ran ok and left no children. The fixture writes one rule
+# per line of $tc; a rule whose children field is non-empty must not count. Expected = rules with an empty field.
+TC="$F/tc/vir-metaprl/theories/vir/vir-arm-tools"; mkdir -p "$TC/steps"; : > "$TC/COUNTS-metaprl-bprime.md"; : > "$TC/steps/tc.mp"
+tc='tc_a|
+tc_b|wf
+tc_c|'
+n=0; : > "$TC/runs-tc.txt"
+while IFS='|' read -r r ch; do
+  n=$((n+1)); printf '=== STEP %d [ok] 0.00s :: cd "/vir/virtc/%s";;\n' $n "$r" >> "$TC/runs-tc.txt"
+  n=$((n+1)); printf '=== STEP %d [ok] 0.00s :: refine (logicAutoT);;\n=== CHILDREN %d: %s\n' $n $n "$ch" >> "$TC/runs-tc.txt"
+done <<< "$tc"
+want_rules=$(printf '%s\n' "$tc" | wc -l | tr -d ' '); want_closed=$(printf '%s\n' "$tc" | grep -c '|$')
+o=$(python3 "$H/count.py" --arm metaprlbp "$F/tc")
+if [ "$(g6 "$o" BMtc.rules)" = "$want_rules" ] && [ "$(g6 "$o" BMtc.closed)" = "$want_closed" ] && [ "$want_closed" -lt "$want_rules" ]; then say "ARM21 MetaPRL tc closed OK"
+else say "ARM21 MetaPRL tc closed FAIL (want $want_closed/$want_rules)"; printf '%s\n' "$o" | grep BMtc; fail=1; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

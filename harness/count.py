@@ -504,6 +504,29 @@ def metaprlbp(d):
                  ('BM%s.C2genCond' % prog, whole['assertion'], 'MEASURED'),
                  ('BM%s.C2gen.thm' % prog, sum(own.values()), 'MEASURED')]
     rows.append(('BM.prims', prims, 'MEASURED'))
+    # B4 (the A.2 transcription check, theory virtc): a tc rule is CLOSED when it is entered by `cd "/vir/virtc/<rule>"`
+    # and every refine under it ran [ok] and left NO children. Read from the run transcript, never from
+    # verdicttc.expected (an expectation, not a verdict). Limit: a goal closed by the replay, not status_all's "complete".
+    st, run = os.path.join(tools, 'steps', 'tc.mp'), os.path.join(tools, 'runs-tc.txt')
+    if os.path.isfile(st) and os.path.isfile(run):
+        txt = read(run)
+        steps = re.findall(r'^=== STEP (\d+) \[([^\]]*)\][^:]*:: (.*)$', txt, re.M)
+        kids = {k: v.split() for k, v in re.findall(r'^=== CHILDREN (\d+):(.*)$', txt, re.M)}
+        rules, cur = {}, None
+        for k, status, cmd in steps:
+            c = re.match(r'cd "/vir/virtc/([A-Za-z0-9_]+)"', cmd.strip())
+            if c:
+                cur = c.group(1); rules[cur] = {'refines': 0, 'bad': 0}
+            elif cmd.strip().startswith('cd '):
+                cur = None
+            elif cur and cmd.strip().startswith('refine'):
+                rules[cur]['refines'] += 1
+                if status != 'ok' or k not in kids or kids[k]:
+                    rules[cur]['bad'] += 1
+        closed = sum(1 for r in rules.values() if r['refines'] and not r['bad'])
+        rows += [('BMtc.rules', len(rules), 'MEASURED'), ('BMtc.closed', closed, 'MEASURED')]
+    else:
+        rows.append(('BMtc.rules', 0, 'EMPTY'))
     return rows
 
 

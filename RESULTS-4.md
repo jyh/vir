@@ -95,8 +95,15 @@ Still Q: primitive steps (516 → 290 and the rest; `status_all` output, which n
 keeps a theorem's scope across relative `cd`s, which program 3 uses. Selftest ARM20 plants that shape and goes red when
 a relative cd ends the scope (4 → 2).
 
+Addendum 3 (2026-11-02, the same day; after every proof): B4's MetaPRL cell is now a harness row too. In the run
+transcript `runs-tc.txt` at 93ff6b7c0, each of the **10** transcription-check rules (theory `virtc`) is entered by its
+`cd` and closed by one refine that ran `[ok]` and left no children: `BMtc.closed` = **10** of `BMtc.rules` = 10 (H).
+`verdicttc.expected` is not read, because it states an expectation and not a verdict. Limit: this is a goal closed in
+the replay, not `status_all`'s "complete"; the two agree here, and only the first is a harness row. Selftest ARM21
+plants a rule that leaves a child, and goes red when children are ignored (3 for 2).
+
 ## Limits
 - Programs 2–3 are exploratory under amend-10, which predicts program 1 only.
 - B2 compares program 1's module only (vir.ml). `take` and `ERR_BAD_PAYLOAD` arrive with program 2.
 - ~~This harness does not yet extract the MetaPRL B′ runs~~ (true until addendum 2, 2026-11-02; it now does, at
-  93ff6b7c0). Primitive steps and B3/B4's MetaPRL cells remain Q.
+  93ff6b7c0). Primitive steps and B3's MetaPRL cell remain Q (B4's is H since addendum 3).
