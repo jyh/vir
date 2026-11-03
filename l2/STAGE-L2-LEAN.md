@@ -43,7 +43,7 @@ Route: SYNTACTIC, by a runtime typing over configurations, because `fix` then ne
 7. DONE `OwnAll` (build-063): `OwnAll Ω` := ∗ over p ∈ Ω of (∃ n, IsRegion p n), with its permutation and append (Ω₁ ++ Ω₂ ↔ ∗) lemmas; region-
    level `load`/`store` from `IsRegion` alone (build the contents function from the fragment's own lookups, then `load_at` /
    `store_at`).
-8. OWED: PRESERVATION in frame form: RT [] [] Ω e τ ∧ OwnAll Ω σq ∧ Disj σq σf ∧ WF (σq ⊎ σf) ∧ Step₂ (e, σq ⊎ σf) (e', σ')
+8. DONE `Preservation` (build-066): PRESERVATION in frame form: RT [] [] Ω e τ ∧ OwnAll Ω σq ∧ Disj σq σf ∧ WF (σq ⊎ σf) ∧ Step₂ (e, σq ⊎ σf) (e', σ')
    ⇒ ∃ Ω' σq', RT [] [] Ω' e' τ ∧ OwnAll Ω' σq' ∧ Disj σq' σf ∧ σ' = σq' ⊎ σf ∧ WF σ'. Cases: L1's steps (letRet by
    substV or substC by whether τ₁ = cap; appLam/appFix by `subst₂` then `RT.ofTyped`; ite; case by substV); letStep (split
    Ω₁ ++ Ω₂, the e₂ part joins the frame); the four ops via the framed op axioms (`op_frame` with OwnAll of the rest).
