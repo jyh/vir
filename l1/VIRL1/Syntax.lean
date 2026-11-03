@@ -20,10 +20,11 @@ structure Sig where
   boolTy : B
   toBool : C → Option Bool
 
-/-- Types (OBJECT-L1 §2): base types of Σ and arrows. -/
+/-- Types (OBJECT-L1 §2): base types of Σ and arrows; W3 (ii) adds the product τ₁ × τ₂. -/
 inductive Ty (B : Type) where
   | base (b : B)
   | arr (τ₁ τ₂ : Ty B)
+  | prod (τ₁ τ₂ : Ty B)
   deriving DecidableEq, Repr
 
 /-- The arities of effect operators are over types (OBJECT-L1 §1, O). Kept outside `Sig` because they mention `Ty`. -/
@@ -39,6 +40,9 @@ inductive Atom (S : Sig) where
   | prim (p : S.P) (as : List (Atom S))
   | lam (τ : Ty S.B) (e : Tm S)                   -- λ(x:τ). e
   | fix (τ₁ τ₂ : Ty S.B) (e : Tm S)               -- fix f(x:τ₁):τ₂. e   (x = #0, f = #1)
+  | pair (a₁ a₂ : Atom S)                         -- (a₁, a₂)
+  | fst (a : Atom S)                              -- π₁ a
+  | snd (a : Atom S)                              -- π₂ a
 /-- Expressions (OBJECT-L1 §2), in ANF: every operand is an atom. -/
 inductive Tm (S : Sig) where
   | ret (a : Atom S)
@@ -59,6 +63,9 @@ def Atom.subst : Atom S → Nat → Atom S → Atom S
   | .prim p as, k, v => .prim p (Atom.substL k v as)
   | .lam τ e, k, v => .lam τ (Tm.subst (k + 1) v e)
   | .fix τ₁ τ₂ e, k, v => .fix τ₁ τ₂ (Tm.subst (k + 2) v e)
+  | .pair a₁ a₂, k, v => .pair (Atom.subst a₁ k v) (Atom.subst a₂ k v)
+  | .fst a, k, v => .fst (Atom.subst a k v)
+  | .snd a, k, v => .snd (Atom.subst a k v)
 def Atom.substL (k : Nat) (v : Atom S) : List (Atom S) → List (Atom S)
   | [] => []
   | a :: as => Atom.subst a k v :: Atom.substL k v as
@@ -78,6 +85,9 @@ def Atom.wf (n : Nat) : Atom S → Prop
   | .prim _ as => Atom.wfL n as
   | .lam _ e => Tm.wf (n + 1) e
   | .fix _ _ e => Tm.wf (n + 2) e
+  | .pair a₁ a₂ => Atom.wf n a₁ ∧ Atom.wf n a₂
+  | .fst a => Atom.wf n a
+  | .snd a => Atom.wf n a
 def Atom.wfL (n : Nat) : List (Atom S) → Prop
   | [] => True
   | a :: as => Atom.wf n a ∧ Atom.wfL n as
@@ -92,9 +102,10 @@ end
 /-- A PROGRAM is a closed, well-formed expression (OBJECT-L1 §3). -/
 def Tm.IsProgram (e : Tm S) : Prop := Tm.wf 0 e
 
-/-- Values (OBJECT-L1 §2): constants, λ and fix atoms. -/
+/-- Values (OBJECT-L1 §2): constants, λ and fix atoms; W3 (ii): a pair of values. -/
 def Atom.IsValue : Atom S → Prop
   | .const _ | .lam _ _ | .fix _ _ _ => True
+  | .pair a₁ a₂ => Atom.IsValue a₁ ∧ Atom.IsValue a₂
   | _ => False
 
 /-! ## Display forms (step 2): OBJECT-L1 §2's concrete syntax, binders shown as `#n`. -/
@@ -104,6 +115,7 @@ variable [ToString S.C] [ToString S.P] [ToString S.O] [ToString S.B]
 def Ty.show : Ty S.B → String
   | .base b => toString b
   | .arr t u => s!"({t.show} → {u.show})"
+  | .prod t u => s!"({t.show} × {u.show})"
 
 mutual
 def Atom.show : Atom S → String
@@ -112,6 +124,9 @@ def Atom.show : Atom S → String
   | .prim p as => s!"{p}({String.intercalate ", " (Atom.showL as)})"
   | .lam τ e => s!"λ(_:{τ.show}). {Tm.show e}"
   | .fix τ₁ τ₂ e => s!"fix _(_:{τ₁.show}):{τ₂.show}. {Tm.show e}"
+  | .pair a₁ a₂ => s!"({Atom.show a₁}, {Atom.show a₂})"
+  | .fst a => s!"π₁ {Atom.show a}"
+  | .snd a => s!"π₂ {Atom.show a}"
 def Atom.showL : List (Atom S) → List String
   | [] => []
   | a :: as => Atom.show a :: Atom.showL as
