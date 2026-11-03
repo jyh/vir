@@ -63,6 +63,8 @@ chk "$V/l1/out/counts-l1.tsv" --arm l1 "$M/l1at/l1"
 # amend-15: W3 on the Lean arm, one file per extension commit, each read from git at its pinned shas
 chk "$V/l1/out/counts-w3-i.tsv"  --arm v3l1 --base b156167 --ext 21c2b97 --prefix l1/VIRL1 "$V"
 chk "$V/l1/out/counts-w3-ii.tsv" --arm v3l1 --base 21c2b97 --ext ba9c696 --prefix l1/VIRL1 "$V"
+# amend-17: W3 (iii), the BLIND extension (the sum type), on the Lean arm
+chk "$V/l1/out/counts-w3-iii.tsv" --arm v3l1 --base 2fccab7 --ext 8c3320f --prefix l1/VIRL1 "$V"
 chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

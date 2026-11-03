@@ -70,3 +70,13 @@ category names declared first, amend-15), which is the arm's to make.
 **And a harness fix the extension forced:** `reproduce.sh` re-derived `counts-l1.tsv` from the WORKING tree, so the W3 commits moved
 L1's close record (theorems 64 → 65, C6 20 → 26, the audit read from audit-003). It now reads l1/ at the commit that wrote that
 file (derived by `git log`, c03cf34), and the W3 rows are pinned at their shas. Reproduce: 16 files, rc 0; a planted W3 value: rc 1.
+
+### W3 (iii) — the BLIND extension (amend-17, pinned on master at 2fccab7 before this commit)
+| commit | what | central categories EDITED | beside | prediction (amend-17) |
+|---|---|---|---|---|
+| (iii) `8c3320f` | `τ₁ + τ₂` in amend-17's fixed form: `inl[τ₂]`/`inr[τ₁]` atoms, `case` an expression binding #0 per branch, caseL/caseR, a head clause | **4**: syntax · step · typing · den (`l1/out/counts-w3-iii.tsv`; blocks Ty, Atom, Tm, Atom.eval, Step, HasTypeA, HasType, head) | 1 added (`canon_sum`), 23 other edits; 94 inserted lines, 0 deleted (`git diff --stat 2fccab7 8c3320f`) | Lean = 4: **HOLDS** |
+BLIND: made without reading the MetaPRL arm's (iii) post or files. Build w3-005 EXIT=0, every module rebuilt; audit-004 40 rows ⊆ the
+standard three, identical to audit-003; control audit-control-003 fires sorryAx. **Limit:** the Lean arm's builder also wrote
+amend-17's prediction (as for amend-13, E2′), so "Lean = 4" was predicted by the party who then built it. It is the construct's form,
+fixed in the file before the build, that makes the count a property of Lean's closed definitions and not of a choice made while
+building.
