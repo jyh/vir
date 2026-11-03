@@ -1,0 +1,322 @@
+saltqueue: ticket P2 seat=root pid=40256
+⚠ [3/703] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/703] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/703] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/738] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/738] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [735/738] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [736/738] Building VIRL2.Denot2 (998ms)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Denot2.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Denot2.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Denot2.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Denot2.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Denot2.setup.json --json
+error: VIRL2/Denot2.lean:32:23: Invalid field `run₂`: The environment does not contain `VIRL1.Head.run₂`, so it is not possible to project the field `run₂` from an expression
+  head e
+of type `Head S₂`
+error: VIRL2/Denot2.lean:47:22: typeclass instance problem is stuck
+  OmegaCompletePartialOrder ?m.152
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `OmegaCompletePartialOrder` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+error: VIRL2/Denot2.lean:48:18: Type mismatch
+  ωScottContinuous.apply ?m.168
+has type
+  ωScottContinuous fun f => f ?m.168
+but is expected to have type
+  ωScottContinuous fun x =>
+    match some vs with
+    | some vs =>
+      match opStep o vs σ with
+      | some (v, σ') => x (Tm.subst 0 v e, σ')
+      | none => Part.none
+    | none => Part.none
+warning: VIRL2/Denot2.lean:42:15: declaration uses `sorry`
+error: VIRL2/Denot2.lean:64:98: unsolved goals
+a v : Atom₂
+σ : Store
+h : Atom.eval a = some v
+⊢ sorry () = Part.some (v, σ)
+warning: VIRL2/Denot2.lean:65:22: declaration uses `sorry`
+warning: VIRL2/Denot2.lean:65:26: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, h̵e̵a̵d̵,̵ ̵h, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:65:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:65:35: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRL2/Denot2.lean:72:17: unsolved goals
+case appLam
+e e' : Tm₂
+a₁✝ a₂✝ : Atom S₂
+τ✝ : Ty S₂.B
+e✝ : Tm S₂
+v✝ : Atom S₂
+h₁ : a₁✝.eval = some (Atom.lam τ✝ e✝)
+h₂ : a₂✝.eval = some v✝
+σ : Store
+⊢ sorry () = den₂ (Tm.subst 0 v✝ e✝, σ)
+error: VIRL2/Denot2.lean:73:17: unsolved goals
+case appFix
+e e' : Tm₂
+a₁✝ a₂✝ : Atom S₂
+τ₁✝ τ₂✝ : Ty S₂.B
+e✝ : Tm S₂
+v✝ : Atom S₂
+h₁ : a₁✝.eval = some (Atom.fix τ₁✝ τ₂✝ e✝)
+h₂ : a₂✝.eval = some v✝
+σ : Store
+⊢ sorry () = den₂ (Tm.subst 0 (Atom.fix τ₁✝ τ₂✝ e✝) (Tm.subst 0 v✝ e✝), σ)
+error: VIRL2/Denot2.lean:74:15: unsolved goals
+case iteT
+e e' : Tm₂
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+c✝ : S₂.C
+ha : a✝.eval = some (Atom.const c✝)
+hb : S₂.toBool c✝ = some true
+σ : Store
+⊢ sorry () = den₂ (e₁✝, σ)
+error: VIRL2/Denot2.lean:75:15: unsolved goals
+case iteF
+e e' : Tm₂
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+c✝ : S₂.C
+ha : a✝.eval = some (Atom.const c✝)
+hb : S₂.toBool c✝ = some false
+σ : Store
+⊢ sorry () = den₂ (e₂✝, σ)
+error: VIRL2/Denot2.lean:76:13: unsolved goals
+case caseL
+e e' : Tm₂
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+τ✝ : Ty S₂.B
+v✝ : Atom S₂
+ha : a✝.eval = some (Atom.inl τ✝ v✝)
+σ : Store
+⊢ sorry () = den₂ (Tm.subst 0 v✝ e₁✝, σ)
+error: VIRL2/Denot2.lean:77:13: unsolved goals
+case caseR
+e e' : Tm₂
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+τ✝ : Ty S₂.B
+v✝ : Atom S₂
+ha : a✝.eval = some (Atom.inr τ✝ v✝)
+σ : Store
+⊢ sorry () = den₂ (Tm.subst 0 v✝ e₂✝, σ)
+warning: VIRL2/Denot2.lean:70:46: declaration uses `sorry`
+warning: VIRL2/Denot2.lean:72:53: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, he̵a̵d̵,̵ ̵h̵₁, h₂, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:72:59: This simp argument is unused:
+  h₁
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁̵,̵ ̵h̵₂, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:72:63: This simp argument is unused:
+  h₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁, h̵₂̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:72:67: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁, h₂,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:73:53: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, he̵a̵d̵,̵ ̵h̵₁, h₂, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:73:59: This simp argument is unused:
+  h₁
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁̵,̵ ̵h̵₂, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:73:63: This simp argument is unused:
+  h₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁, h̵₂̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:73:67: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h₁, h₂,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:74:51: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, h̵e̵a̵d̵,̵ ̵ha, hb, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:74:57: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha̵,̵ ̵h̵b, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:74:61: This simp argument is unused:
+  hb
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha, h̵b̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:74:65: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha, hb,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:75:51: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, h̵e̵a̵d̵,̵ ̵ha, hb, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:75:57: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha̵,̵ ̵h̵b, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:75:61: This simp argument is unused:
+  hb
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha, h̵b̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:75:65: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha, hb,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:76:49: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, h̵e̵a̵d̵,̵ ̵ha, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:76:55: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h̵a̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:76:59: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:77:49: This simp argument is unused:
+  head
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, h̵e̵a̵d̵,̵ ̵ha, Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:77:55: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, h̵a̵,̵ ̵Head.run₂]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:77:59: This simp argument is unused:
+  Head.run₂
+
+Hint: Omit it from the simp argument list.
+  simp [Φ₂, head, ha,̵ ̵H̵e̵a̵d̵.̵r̵u̵n̵₂̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:83:71: declaration uses `sorry`
+warning: VIRL2/Denot2.lean:99:22: declaration uses `sorry`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Denot2
+error: build failed
+saltbuild EXIT=1
