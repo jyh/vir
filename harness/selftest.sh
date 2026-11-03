@@ -478,6 +478,30 @@ sed "s/FIXI_RE = re.compile(r'(?<!\\[A-Za-z0-9_])fix_intro(?!\\[A-Za-z0-9_])')/F
 if cmp -s "$H/count.py" "$F/mutant32.py"; then say "ARM32 mutant NOT PLANTED"; fail=1
 elif check32 "$F/mutant32.py"; then say "ARM32 mutant SURVIVED (fix_intro2 read as fix_intro)"; fail=1
 else say "ARM32 mutant KILLED"; fi
+# (33) W3 on L1, MetaPRL (STATUS-vir row 98; mojave's category declaration 2026-11-03 06:38, before any extension commit): the
+# DEFINE/DECLARE items of virl1_{sig,syntax} (syntax) · {eval,step} (step) · typing · den, keyed by the defined TERM, compared at
+# two shas with comments stripped. Σ-instance names (the nine prims and their _op, sig1, interp, pty, pty1) and the K programs
+# (lit*, k*) are not central. Fixture: E1 edits interp (Σ), adds declare l1_max, edits k1, changes only a COMMENT in aeval; E2
+# edits aeval's body. Want E1: categories 0, altCentral 1, added 1; E2: categories 1 (step).
+R13="$F/ml13"; mkdir -p "$R13/theories/vir"; git -C "$R13" init -q; git -C "$R13" config user.email t@t; git -C "$R13" config user.name t
+printf "define unfold_aeval : aeval{'a} <--> x\ndefine unfold_interp : interp{'p} <--> y\n" > "$R13/theories/vir/virl1_eval.ml"
+printf "declare l1_add\ndeclare l1_app{'a}\n" > "$R13/theories/vir/virl1_sig.ml"
+printf "define unfold_k1 : k1 <--> z\n" > "$R13/theories/vir/virl1_syntax.ml"
+git -C "$R13" add -A; git -C "$R13" commit -qm B; B13=$(git -C "$R13" rev-parse HEAD)
+printf "(* note *) define unfold_aeval : aeval{'a} <--> x\ndefine unfold_interp : interp{'p} <--> y2\n" > "$R13/theories/vir/virl1_eval.ml"
+printf "declare l1_add\ndeclare l1_app{'a}\ndeclare l1_max\n" > "$R13/theories/vir/virl1_sig.ml"
+printf "define unfold_k1 : k1 <--> z2\n" > "$R13/theories/vir/virl1_syntax.ml"
+git -C "$R13" commit -qam E1; E13=$(git -C "$R13" rev-parse HEAD)
+printf "(* note *) define unfold_aeval : aeval{'a} <--> x3\ndefine unfold_interp : interp{'p} <--> y2\n" > "$R13/theories/vir/virl1_eval.ml"
+git -C "$R13" commit -qam E2; G13=$(git -C "$R13" rev-parse HEAD)
+check33() { local o q; o=$(python3 "$1" --arm v3l1m --base "$B13" --ext "$E13" "$R13"); q=$(python3 "$1" --arm v3l1m --base "$E13" --ext "$G13" "$R13")
+  [ "$(g6 "$o" W3M.categories)" = 0 ] && [ "$(g6 "$o" W3M.categories.altCentral)" = 1 ] && [ "$(g6 "$o" W3M.added)" = 1 ] && [ "$(g6 "$q" W3M.categories)" = 1 ]; }
+if check33 "$H/count.py"; then say "ARM33 v3l1m fixture OK (E1: 0 / alt 1 / added 1; E2: 1)"
+else say "ARM33 v3l1m fixture FAIL"; python3 "$H/count.py" --arm v3l1m --base "$B13" --ext "$E13" "$R13"; fail=1; fi
+sed "s/        t = strip_ml_comments(g('show', sha + ':' + path).stdout)/        t = g('show', sha + ':' + path).stdout/" "$H/count.py" > "$F/mutant33.py"
+if cmp -s "$H/count.py" "$F/mutant33.py"; then say "ARM33 mutant NOT PLANTED"; fail=1
+elif check33 "$F/mutant33.py"; then say "ARM33 mutant SURVIVED (a comment-only change counted as an edit)"; fail=1
+else say "ARM33 mutant KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"

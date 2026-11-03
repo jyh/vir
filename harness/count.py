@@ -790,7 +790,7 @@ def metaprll1_pin_prims(repo):
 # this is a LOWER BOUND; virl1_hoas_lang (Lang{sop}, REVIVED under amend-13) is printed beside as its own sub-column.
 FIXI_RE = re.compile(r'(?<![A-Za-z0-9_])fix_intro(?![A-Za-z0-9_])')
 MPL_BINDER_RE = re.compile(r"(?<![A-Za-z0-9_'])(subst|bind|bdepth|var)\{")
-MPL_ITEM_RE = re.compile(r'^(?=(?:interactive|interactive_rw|prim|prim_rw|define|declare|dform|let|doc|extends|open|val|topval)\b)', re.M)
+MPL_ITEM_RE = re.compile(r'^[ \t]*(?=(?:interactive|interactive_rw|prim|prim_rw|define|declare|dform|let|doc|extends|open|val|topval)\b)', re.M)
 MPL_RULE_RE = re.compile(r'^interactive(?:_rw)?\s+(\S+)')
 
 
@@ -810,6 +810,56 @@ def metaprll1_binders(root):
         if n:
             per.append('%s=%d' % (f[:-3], n))
     return tot, rev, sub, per
+
+
+# W3 on L1, MetaPRL (ARM33; STATUS-vir row 98). The category map is the MetaPRL arm's OWN declaration (bus 2026-11-03 06:38,
+# before any extension commit): by declaration, never by file alone. A central item is a define/declare in the files below,
+# keyed by the TERM it defines; the Σ instance and the K programs are not central. The arm's stated alternative (interp, pty,
+# pty1 as central, which it says reads W3 (i) as 2) is printed beside as W3M.categories.altCentral.
+W3_L1M_FILES = {'virl1_sig': 'syntax', 'virl1_syntax': 'syntax', 'virl1_eval': 'step', 'virl1_step': 'step',
+                'virl1_typing': 'typing', 'virl1_den': 'den'}
+W3_L1M_SIGMA = re.compile(r'^(?:l1_(?:add|sub|mul|lt|le|eq|and|or|not)|(?:add|sub|mul|lt|le|eq|and|or|not)_op|sig1|interp|pty|pty1)$')
+W3_L1M_ALT = re.compile(r'^(?:interp|pty|pty1)$')
+W3_L1M_PROG = re.compile(r'^(?:lit\d+|k\d+)$')
+MPL_DEF_RE = re.compile(r"^(?:declare\s+([A-Za-z_][A-Za-z0-9_]*)|define\s+\S+\s*:\s*([A-Za-z_][A-Za-z0-9_]*))")
+
+
+def mpl_items(t):
+    out = {}
+    for blk in MPL_ITEM_RE.split(t):
+        m = MPL_DEF_RE.match(blk)
+        if m:
+            out[m.group(1) or m.group(2)] = ' '.join(blk.split())
+    return out
+
+
+def v3l1m(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    def at(sha):
+        items, cats = {}, {}
+        for f, cat in W3_L1M_FILES.items():
+            path = 'theories/vir/%s.ml' % f
+            r = g('show', sha + ':' + path)
+            if r.returncode != 0:
+                continue
+            t = strip_ml_comments(g('show', sha + ':' + path).stdout)
+            for k, v in mpl_items(t).items():
+                items[k] = v; cats[k] = cat
+        return items, cats
+    b, bc = at(base)
+    a, ac = at(ext)
+    if not b:
+        return [('W3M.categories', 0, 'EMPTY:no-central-file-at-base')]
+    edited = [k for k in b if k in a and b[k] != a[k] and not W3_L1M_PROG.match(k)]
+    central = [k for k in edited if not W3_L1M_SIGMA.match(k)]
+    alt = [k for k in edited if not W3_L1M_SIGMA.match(k) or W3_L1M_ALT.match(k)]
+    cats = sorted(set(bc[k] for k in central)); altc = sorted(set(bc[k] for k in alt))
+    added = [k for k in a if k not in b]
+    return [('W3M.categories', len(cats), 'MEASURED:' + (','.join(cats) or '-')),
+            ('W3M.itemsEdited', len(central), 'BESIDE:' + (','.join(sorted(central)) or '-')),
+            ('W3M.categories.altCentral', len(altc), 'BESIDE:interp/pty/pty1 read as central:' + (','.join(altc) or '-')),
+            ('W3M.sigmaEdited', len([k for k in edited if W3_L1M_SIGMA.match(k)]), 'BESIDE'),
+            ('W3M.added', len(added), 'BESIDE:' + (','.join(sorted(added)) or '-'))]
 
 
 # FINDINGS M-F6: the floor is every soundness repair, by ANCESTRY, never by a date or a single sha. A checkout missing one
@@ -867,7 +917,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -887,6 +937,8 @@ def main():
         rows = leanbp(a.dir)
     elif a.arm == 'w8':
         rows = w8(a.dir, a.base, a.ext, a.prefix)
+    elif a.arm == 'v3l1m':
+        rows = v3l1m(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll1':
         rows = metaprll1(a.dir)
     elif a.arm == 'metaprlbp':
