@@ -115,4 +115,101 @@ theorem RT.perm : ∀ {Γ Δ Ω Ω' e τ}, Ω.Perm Ω' → RT Γ Δ Ω e τ → 
   | _, _, _, _, _, _, hp, .ite h h₁ h₂ => .ite h (RT.perm hp h₁) (RT.perm hp h₂)
   | _, _, _, _, _, _, hp, .case h h₁ h₂ => .case h (RT.perm hp h₁) (RT.perm hp h₂)
 
+theorem erase_cons_perm {p q : Int} {Ω : List Int} (hq : q ∈ Ω) : ((p :: Ω).erase q).Perm (p :: Ω.erase q) := by
+  by_cases h : p = q
+  · subst h; rw [List.erase_cons_head]; exact (List.perm_cons_erase hq)
+  · rw [List.erase_cons_tail (by simpa using h)]
+
+theorem set_self {Δ₁ Δ : List Bool} {b : Bool} : (Δ₁ ++ b :: Δ).set Δ₁.length false = Δ₁ ++ false :: Δ := by
+  rw [List.set_append_right _ _ (by omega)]; simp
+
+theorem fits_cap (p : Int) : Fits (.const (.cap p)) tcap := .inr rfl
+
+theorem subst_var_self {k : Nat} {v : Atom₂} : (Atom.var k : Atom₂).subst k v = v := by simp [Atom.subst]
+
+/-- `RT.substC`: ⟨p⟩ at a TRUE mask position (a capability variable the term owns): the term now owns p. -/
+theorem RT.substC : ∀ {Γ₁ Γ : Ctx S₂} {Δ₁ Δ : List Bool} {Ω e τ'} (p : Int), Δ₁.length = Γ₁.length →
+    RT (Γ₁ ++ tcap :: Γ) (Δ₁ ++ true :: Δ) Ω e τ' → RT (Γ₁ ++ Γ) (Δ₁ ++ Δ) (p :: Ω) (e.subst Γ₁.length (.const (.cap p))) τ'
+  | _, _, _, _, _, _, _, _, _, .ret hΔ _ => (mask_empty_true hΔ).elim
+  | Γ₁, _, Δ₁, _, _, .ret (.var n), _, p, hl, .retCap _ hΔ => by
+    have hn := mask_only_true hΔ; subst hn
+    show RT _ _ _ (.ret ((Atom.var Δ₁.length).subst Γ₁.length _)) _
+    rw [hl, subst_var_self]; exact .retCapC (mask_only_self (hl ▸ hΔ))
+  | _, _, _, _, _, _, _, _, _, .retCapC hΔ => (mask_empty_true hΔ).elim
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letE τ₁ e₁ e₂, _, p, hl, .letE hs hp hc h₁ h₂ => by
+    obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, hA, hB, hs'⟩ := split_mid_true hs
+    cases a with
+    | true =>
+      refine .letE hs' (hp.cons p) hc (RT.substC p (hA.trans hl) h₁) ?_
+      exact RT.substV (Γ₁ := τ₁ :: Γ₁) (Δ₁ := _ :: B₁) (by simp [hB, hl]) h₂ (fits_cap p)
+    | false =>
+      refine .letE hs' ((hp.cons p).trans List.perm_middle.symm) hc (RT.substV (hA.trans hl) h₁ (fits_cap p)) ?_
+      exact RT.substC (Γ₁ := τ₁ :: Γ₁) (Δ₁ := _ :: B₁) p (by simp [hB, hl]) h₂
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp .alloc [a] _ e, _, p, hl, .alloc ha h =>
+    .alloc (substA₂ ha (fits_cap p)) (RT.substC (Γ₁ := tcap :: Γ₁) (Δ₁ := true :: Δ₁) p (by simp [hl]) h)
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp .load [.var n, a] _ e, _, p, hl, .load hΓ hΔ ha h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT _ _ _ (.letOp .load [(Atom.var Γ₁.length).subst Γ₁.length _, _] _ _) _
+      rw [subst_var_self]
+      exact .loadC (List.mem_cons_self) (substA₂ ha (fits_cap p))
+        (RT.substC (Γ₁ := tint :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h)
+    · show RT _ _ _ (.letOp .load [(Atom.var n).subst Γ₁.length _, _] _ _) _
+      rw [subst_var_ne hn]
+      refine .load (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop (hl ▸ hn)]; exact hΔ)
+        (substA₂ ha (fits_cap p)) ?_
+      exact RT.substC (Γ₁ := tint :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp .load [.const (.cap q), a] _ e, _, p, hl, .loadC hq ha h =>
+    .loadC (List.mem_cons_of_mem _ hq) (substA₂ ha (fits_cap p))
+      (RT.substC (Γ₁ := tint :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h)
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .store [.var n, a₁, a₂] _ e, _, p, hl, .store hΓ hΔ h₁ h₂ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT _ _ _ (.letOp .store [(Atom.var Γ₁.length).subst Γ₁.length _, _, _] _ _) _
+      rw [subst_var_self]
+      rw [← hl, set_self] at h
+      refine .storeC (List.mem_cons_self) (substA₂ h₁ (fits_cap p)) (substA₂ h₂ (fits_cap p)) ?_
+      rw [List.erase_cons_head]
+      have := RT.substV (Γ₁ := tcap :: Γ₁) (Δ₁ := true :: Δ₁) (by simp [hl]) h (fits_cap p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT _ _ _ (.letOp .store [(Atom.var n).subst Γ₁.length _, _, _] _ _) _
+      rw [subst_var_ne hn]
+      refine .store (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop hn']; exact hΔ)
+        (substA₂ h₁ (fits_cap p)) (substA₂ h₂ (fits_cap p)) ?_
+      rw [set_mid hn'] at h
+      have := RT.substC (Γ₁ := tcap :: Γ₁) (Δ₁ := true :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .store [.const (.cap q), a₁, a₂] _ e, _, p, hl, .storeC hq h₁ h₂ h =>
+    .storeC (List.mem_cons_of_mem _ hq) (substA₂ h₁ (fits_cap p)) (substA₂ h₂ (fits_cap p))
+      (RT.perm (erase_cons_perm hq).symm (RT.substC (Γ₁ := tcap :: Γ₁) (Δ₁ := true :: Δ₁) p (by simp [hl]) h))
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .free [.var n] _ e, _, p, hl, .free hΓ hΔ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT _ _ _ (.letOp .free [(Atom.var Γ₁.length).subst Γ₁.length _] _ _) _
+      rw [subst_var_self]
+      rw [← hl, set_self] at h
+      refine .freeC (List.mem_cons_self) ?_
+      rw [List.erase_cons_head]
+      have := RT.substV (Γ₁ := tunit :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h (fits_cap p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT _ _ _ (.letOp .free [(Atom.var n).subst Γ₁.length _] _ _) _
+      rw [subst_var_ne hn]
+      refine .free (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop hn']; exact hΔ) ?_
+      rw [set_mid hn'] at h
+      have := RT.substC (Γ₁ := tunit :: Γ₁) (Δ₁ := false :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .free [.const (.cap q)] _ e, _, p, hl, .freeC hq h =>
+    .freeC (List.mem_cons_of_mem _ hq)
+      (RT.perm (erase_cons_perm hq).symm (RT.substC (Γ₁ := tunit :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h))
+  | _, _, _, _, _, _, _, _, _, .app hΔ _ _ => (mask_empty_true hΔ).elim
+  | _, _, _, _, _, .ite a e₁ e₂, _, p, hl, .ite h h₁ h₂ =>
+    .ite (substA₂ h (fits_cap p)) (RT.substC p hl h₁) (RT.substC p hl h₂)
+  | Γ₁, Γ, Δ₁, Δ, _, .case a e₁ e₂, _, p, hl, .case h h₁ h₂ =>
+    .case (substA₂ h (fits_cap p)) (RT.substC (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h₁)
+      (RT.substC (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h₂)
+
 end VIRL2
