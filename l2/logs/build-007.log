@@ -1,0 +1,57 @@
+saltqueue: ticket P2 seat=root pid=34953
+⚠ [4/731] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/731] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/731] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/731] Built VIRL2.Step2 (1.4s)
+warning: VIRL2/Step2.lean:30:11: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [729/731] Building VIRL2.Programs (839ms)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Programs.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Programs.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Programs.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Programs.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Programs.setup.json --json
+error: VIRL2/Programs.lean:44:64: Type mismatch
+  rfl
+has type
+  ?m.14 = ?m.14
+but is expected to have type
+  (run₂ 20 (M1, Store.empty)).1 = Tm.ret (ci 7)
+error: VIRL2/Programs.lean:45:64: Type mismatch
+  rfl
+has type
+  ?m.14 = ?m.14
+but is expected to have type
+  (run₂ 20 (M2, Store.empty)).1 = Tm.ret (ci 5)
+error: VIRL2/Programs.lean:46:0: Not a definitional equality: the left-hand side
+  (run₂ 20 (M3, Store.empty)).1
+is not definitionally equal to the right-hand side
+  Tm.letOp Op.load [Atom.const (Const.cap 0), ci 2] tint (Tm.letOp Op.free [vr 1] tunit (Tm.ret (vr 1)))
+error: VIRL2/Programs.lean:47:49: Type mismatch
+  rfl
+has type
+  ?m.28 = ?m.28
+but is expected to have type
+  (run₂ 20 (M3, Store.empty)).1 =
+    Tm.letOp Op.load [Atom.const (Const.cap 0), ci 2] tint (Tm.letOp Op.free [vr 1] tunit (Tm.ret (vr 1)))
+error: VIRL2/Programs.lean:48:64: Type mismatch
+  rfl
+has type
+  ?m.14 = ?m.14
+but is expected to have type
+  (run₂ 20 (M4, Store.empty)).1 = Tm.ret (ci 0)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Programs
+error: build failed
+saltbuild EXIT=1

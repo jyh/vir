@@ -1,0 +1,26 @@
+saltqueue: ticket P2 seat=root pid=20092
+⚠ [3/704] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/704] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/704] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [727/729] Building VIRL2.Store (1.0s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Store.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Store.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Store.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Store.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Store.setup.json --json
+error: VIRL2/Store.lean:31:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Finset.toList', which is 'noncomputable'
+error: VIRL2/Store.lean:34:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'ends', which is 'noncomputable'
+error: VIRL2/Store.lean:47:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'nextBase', which is 'noncomputable'
+error: VIRL2/Store.lean:74:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Store.alloc', which is 'noncomputable'
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Store
+error: build failed
+saltbuild EXIT=1

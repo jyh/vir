@@ -1,0 +1,17 @@
+name = "l2"
+defaultTargets = ["VIRL2"]
+
+# O95, PREDICTIONS-amend-16 (Y1-Y8): layer L2 (OBJECT-L2), the imperative core, Lean arm. A SEPARATE project beside l1/,
+# so L1's counts stay put. L1 is IMPORTED by path and never edited (W8/Y2, base vir 37c209e; l2/DECLARATIONS-LEAN.md).
+# mathlib at salt's pin (packages APFS-cloned from l1, manifest written by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l1"
+path = "../l1"
+
+[[lean_lib]]
+name = "VIRL2"
