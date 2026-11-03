@@ -1,0 +1,14 @@
+metaprll1	L1M.files	24	MEASURED
+metaprll1	L1M.W1	0	MEASURED:virl1_atom=0,virl1_bridge=0,virl1_canon=0,virl1_den=0,virl1_dent=0,virl1_dsem=0,virl1_eval=0,virl1_hoas_lang=0,virl1_k2=0,virl1_klang=0,virl1_ktyok=0,virl1_lsub=0,virl1_pres=0,virl1_sig=0,virl1_step=0,virl1_subst=0,virl1_syntax=0,virl1_tot=0,virl1_tot2=0,virl1_tot3=0,virl1_tot4=0,virl1_tsub=0,virl1_typing=0,virl1_vars=0
+metaprll1	L1M.binder	216	MEASURED:LOWER-BOUND(named ops only):virl1_atom=6,virl1_canon=1,virl1_den=12,virl1_dent=5,virl1_dsem=9,virl1_hoas_lang=23,virl1_klang=9,virl1_ktyok=45,virl1_lsub=7,virl1_pres=29,virl1_step=3,virl1_subst=4,virl1_tot=1,virl1_tot2=8,virl1_tot3=6,virl1_tot4=13,virl1_tsub=16,virl1_typing=3,virl1_vars=16
+metaprll1	L1M.binder.revived	23	BESIDE:virl1_hoas_lang
+metaprll1	L1M.binder.substOnly	51	BESIDE:subst{ alone
+metaprll1	L1M.fix	3	MEASURED:fix_intro in virl1_*.prla:virl1_dent=1,virl1_dsem=1,virl1_k2=1
+metaprll1	L1M.fixK2	1	MEASURED:virl1_k2 (fix_intro IS fixpoint induction: the W6 leastness use)
+metaprll1	L1M.PARTIALITY	31	BESIDE:NOT-AT-PIN
+metaprll1	L1M.interactive	635	MEASURED
+metaprll1	L1M.grounded	0	Q:check_all
+metaprll1	L1M.pinReflection	24	MEASURED:AT-PIN:tree
+metaprll1	L1M.pinInt	32	MEASURED:AT-PIN
+metaprll1	L1M.floorMissing	0	MEASURED
+metaprll1	L1M.frameworkEdits	4	BESIDE:theories/itt/core/itt_int_ext.ml,theories/itt/core/itt_int_ext.prla,theories/itt/core/itt_inv_typing.ml,theories/itt/core/itt_record0.prla
