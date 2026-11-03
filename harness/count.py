@@ -657,9 +657,60 @@ def v3(repo, base, ext, prefix):
     return rows
 
 
+# amend-15 (W3 on layer L1): the four CENTRAL-DEFINITION CATEGORIES of OBJECT-L1, by the Lean names fixed in amend-15 BEFORE
+# either arm's extension commit. A category is EDITED iff one of its declarations exists at BOTH shas with different text.
+# The count is the number of CATEGORIES edited (0-4), never the number of blocks. Additions are reported beside.
+W3_L1 = {'syntax': ('Ty', 'Atom', 'Tm'), 'step': ('Atom.eval', 'Atom.evalL', 'Step'),
+         'typing': ('HasTypeA', 'HasTypeL', 'HasType'), 'den': ('head', 'Head.run', 'Φ', 'den')}
+
+
+MODS = r'(?:(?:noncomputable|private|protected|partial|unsafe)\s+)*'
+
+
+def lean_decls_mod(text):
+    """lean_decls, but a declaration MODIFIER (noncomputable, private, ...) starts a block instead of gluing the declaration
+    onto the block before it. Local to W3 on L1: the shared `blocks` is left as it is, so no recorded router count moves."""
+    text = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', text)
+    kw = r'(?:theorem|lemma|def|structure|inductive|instance|abbrev)'
+    starts = [m.start() for m in re.finditer(r'^(?:@\[[^\]]*\]\s*)?' + MODS + kw + r'\b', text, re.M)] + [len(text)]
+    out = {}
+    for a, b in zip(starts, starts[1:]):
+        blk = text[a:b]
+        m = re.match(r'(?:@\[[^\]]*\]\s*)?' + MODS + kw + r'\s+(\S+)', blk)
+        if m:
+            out[m.group(1)] = re.sub(r'\s+', ' ', blk).strip()
+    return out
+
+
+def v3l1(repo, base, ext, prefix):
+    r = subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', ext, prefix], capture_output=True, text=True)
+    paths = [x for x in r.stdout.split() if x.endswith('.lean')]
+    if not paths:
+        return [('W3.categories', 0, 'EMPTY')]
+    before, after = {}, {}
+    for p in paths:
+        b, a = git_show(repo, base, p), git_show(repo, ext, p)
+        if b is not None:
+            before.update(lean_decls_mod(b))
+        if a is not None:
+            after.update(lean_decls_mod(a))
+    names = [(cat, n) for cat, ns in W3_L1.items() for n in ns]
+    edited = [(cat, n) for cat, n in names if n in before and n in after and before[n] != after[n]]
+    cats = sorted(set(cat for cat, n in edited))
+    # a name is required at base only if the category has no other name there (Head.run / Atom.evalL may not exist in an arm)
+    missing = [cat for cat, ns in W3_L1.items() if not any(n in before for n in ns)]
+    added = [n for n in after if n not in before]
+    central = set(n for _, n in names)
+    other = [n for n in after if n in before and before[n] != after[n] and n not in central]
+    return [('W3.categories', len(cats), 'MEASURED:' + (','.join(cats) or '-')),
+            ('W3.blocksEdited', len(edited), 'BESIDE:' + (','.join(n for _, n in edited) or '-')),
+            ('W3.central.missingAtBase', len(missing), 'MEASURED:' + (','.join(missing) or '-')),
+            ('W3.added', len(added), 'BESIDE'), ('W3.otherEdited', len(other), 'BESIDE')]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -669,6 +720,8 @@ def main():
     a = ap.parse_args()
     if a.arm == 'v3':
         rows = v3(a.dir, a.base, a.ext, a.prefix)
+    elif a.arm == 'v3l1':
+        rows = v3l1(a.dir, a.base, a.ext, a.prefix)
     elif a.arm == 'leanp':
         rows = leanp(a.dir)
     elif a.arm == 'l1':

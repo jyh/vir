@@ -335,6 +335,26 @@ if cmp -s "$H/count.py" "$F/mutant24.py"; then say "ARM24 mutant NOT PLANTED"; f
 elif check24 "$F/mutant24.py"; then say "ARM24 mutant SURVIVED (a mutant that BUILT is counted red)"; fail=1
 else say "ARM24 mutant KILLED"; fi
 
+# (25) W3 on layer L1 (amend-15): central-definition CATEGORIES edited by one commit. A fixture repo whose base has every
+# name amend-15 lists; the ext commit edits Atom AND Tm (one category, syntax) and the NONCOMPUTABLE den (one category,
+# den: a modifier must not hide a declaration), and ADDS a def.
+# Want categories=2 (syntax,den), added=1. A count of edited BLOCKS would read 3.
+R5="$F/v3l1"; mkdir -p "$R5/l1/VIRL1"; git -C "$R5" init -q; git -C "$R5" config user.email t@t; git -C "$R5" config user.name t
+{ for n in Ty Atom Tm Step HasTypeA HasTypeL HasType; do printf 'inductive %s where\n  | a\n' $n; done
+  for n in Atom.eval head Φ; do printf 'def %s := 1\n' $n; done; printf 'theorem gap : True := trivial\nnoncomputable def den := 1\ndef helper := 1\n'; } > "$R5/l1/VIRL1/S.lean"
+git -C "$R5" add -A; git -C "$R5" commit -qm base; B5=$(git -C "$R5" rev-parse HEAD)
+sed -i.bak -e 's/^inductive Atom where/inductive Atom where\n  | ext/' -e 's/^inductive Tm where/inductive Tm where\n  | ext/' -e 's/^noncomputable def den := 1/noncomputable def den := 2/' "$R5/l1/VIRL1/S.lean"; rm -f -- "${R5:?}/l1/VIRL1/S.lean.bak"
+printf 'def maxNew := 2\n' >> "$R5/l1/VIRL1/S.lean"
+git -C "$R5" add -A; git -C "$R5" commit -qm ext; X5=$(git -C "$R5" rev-parse HEAD)
+check25() { local o; o=$(python3 "$1" --arm v3l1 --base "$B5" --ext "$X5" --prefix l1/VIRL1 "$R5")
+  [ "$(g6 "$o" W3.categories)" = 2 ] && [ "$(g6 "$o" W3.added)" = 1 ] && [ "$(g6 "$o" W3.central.missingAtBase)" = 0 ]; }
+if check25 "$H/count.py"; then say "ARM25 v3l1 fixture OK (categories=2 added=1)"
+else say "ARM25 v3l1 fixture FAIL"; python3 "$H/count.py" --arm v3l1 --base "$B5" --ext "$X5" --prefix l1/VIRL1 "$R5"; fail=1; fi
+sed 's/    cats = sorted(set(cat for cat, n in edited))/    cats = [cat for cat, n in edited]/' "$H/count.py" > "$F/mutant25.py"
+if cmp -s "$H/count.py" "$F/mutant25.py"; then say "ARM25 mutant NOT PLANTED"; fail=1
+elif check25 "$F/mutant25.py"; then say "ARM25 mutant SURVIVED (edited BLOCKS counted as categories)"; fail=1
+else say "ARM25 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

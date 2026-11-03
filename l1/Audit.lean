@@ -35,3 +35,8 @@ open VIRL1 VIRL1.L1
 #print axioms VIRL1.L1.K4_meaning
 #print axioms VIRL1.L1.K5_meaning
 #print axioms VIRL1.L1.K2_diverges
+#print axioms VIRL1.Steps.trans
+#print axioms VIRL1.Steps.letE
+#print axioms VIRL1.approx_adequate
+#print axioms VIRL1.adequacy
+#print axioms VIRL1.den_iff_steps
