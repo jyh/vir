@@ -1,0 +1,7 @@
+saltqueue: ticket P2 seat=root pid=20436
+closure control_proof_uses_typing: constants 1221 · VIRL2 65 · typing2 9
+closure VIRL2.frame: constants 1362 · VIRL2 50 · typing2 0
+closure VIRL2.op_frame: constants 2262 · VIRL2 71 · typing2 0
+closure VIRL2.M2_triple: constants 2802 · VIRL2 168 · typing2 0
+closure VIRL2.M1_typed: constants 1220 · VIRL2 65 · typing2 9
+saltbuild EXIT=0
