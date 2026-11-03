@@ -142,4 +142,147 @@ end
 
 theorem toBool_emb (c : L1.Const) : Const.toBool (Const.ofL1 c) = L1.Const.toBool c := by cases c <;> rfl
 
+/-! ## ι is injective -/
+theorem embT_inj : ∀ {t u : Ty₁}, embT t = embT u → t = u
+  | .base a, .base b, h => by cases a <;> cases b <;> first | rfl | simp [embT, BTy.ofL1] at h
+  | .arr t₁ t₂, .arr u₁ u₂, h => by simp only [embT, Ty.arr.injEq] at h; rw [embT_inj h.1, embT_inj h.2]
+  | .prod t₁ t₂, .prod u₁ u₂, h => by simp only [embT, Ty.prod.injEq] at h; rw [embT_inj h.1, embT_inj h.2]
+  | .sum t₁ t₂, .sum u₁ u₂, h => by simp only [embT, Ty.sum.injEq] at h; rw [embT_inj h.1, embT_inj h.2]
+  | .base _, .arr _ _, h | .base _, .prod _ _, h | .base _, .sum _ _, h | .arr _ _, .base _, h
+  | .arr _ _, .prod _ _, h | .arr _ _, .sum _ _, h | .prod _ _, .base _, h | .prod _ _, .arr _ _, h
+  | .prod _ _, .sum _ _, h | .sum _ _, .base _, h | .sum _ _, .arr _ _, h | .sum _ _, .prod _ _, h => by
+    simp [embT] at h
+
+theorem ofL1_inj {c d : L1.Const} (h : Const.ofL1 c = Const.ofL1 d) : c = d := by
+  cases c <;> cases d <;> simp_all [Const.ofL1]
+
+mutual
+theorem embA_inj : ∀ {a b : Atom₁}, embA a = embA b → a = b
+  | .var n, .var m, h => by simp only [embA, Atom.var.injEq] at h; rw [h]
+  | .const c, .const d, h => by simp only [embA, Atom.const.injEq] at h; rw [ofL1_inj h]
+  | .prim p as, .prim q bs, h => by
+    simp only [embA, Atom.prim.injEq] at h; obtain ⟨rfl, h⟩ := h; rw [embL_inj h]
+  | .lam τ e, .lam τ' e', h => by
+    simp only [embA, Atom.lam.injEq] at h; rw [embT_inj h.1, embE_inj h.2]
+  | .fix τ₁ τ₂ e, .fix τ₁' τ₂' e', h => by
+    simp only [embA, Atom.fix.injEq] at h; rw [embT_inj h.1, embT_inj h.2.1, embE_inj h.2.2]
+  | .pair a b, .pair a' b', h => by simp only [embA, Atom.pair.injEq] at h; rw [embA_inj h.1, embA_inj h.2]
+  | .fst a, .fst a', h => by simp only [embA, Atom.fst.injEq] at h; rw [embA_inj h]
+  | .snd a, .snd a', h => by simp only [embA, Atom.snd.injEq] at h; rw [embA_inj h]
+  | .inl τ a, .inl τ' a', h => by simp only [embA, Atom.inl.injEq] at h; rw [embT_inj h.1, embA_inj h.2]
+  | .inr τ a, .inr τ' a', h => by simp only [embA, Atom.inr.injEq] at h; rw [embT_inj h.1, embA_inj h.2]
+  | .var _, .const _, h | .var _, .prim _ _, h | .var _, .lam _ _, h | .var _, .fix _ _ _, h | .var _, .pair _ _, h
+  | .var _, .fst _, h | .var _, .snd _, h | .var _, .inl _ _, h | .var _, .inr _ _, h
+  | .const _, .var _, h | .const _, .prim _ _, h | .const _, .lam _ _, h | .const _, .fix _ _ _, h
+  | .const _, .pair _ _, h | .const _, .fst _, h | .const _, .snd _, h | .const _, .inl _ _, h | .const _, .inr _ _, h
+  | .prim _ _, .var _, h | .prim _ _, .const _, h | .prim _ _, .lam _ _, h | .prim _ _, .fix _ _ _, h
+  | .prim _ _, .pair _ _, h | .prim _ _, .fst _, h | .prim _ _, .snd _, h | .prim _ _, .inl _ _, h | .prim _ _, .inr _ _, h
+  | .lam _ _, .var _, h | .lam _ _, .const _, h | .lam _ _, .prim _ _, h | .lam _ _, .fix _ _ _, h
+  | .lam _ _, .pair _ _, h | .lam _ _, .fst _, h | .lam _ _, .snd _, h | .lam _ _, .inl _ _, h | .lam _ _, .inr _ _, h
+  | .fix _ _ _, .var _, h | .fix _ _ _, .const _, h | .fix _ _ _, .prim _ _, h | .fix _ _ _, .lam _ _, h
+  | .fix _ _ _, .pair _ _, h | .fix _ _ _, .fst _, h | .fix _ _ _, .snd _, h | .fix _ _ _, .inl _ _, h
+  | .fix _ _ _, .inr _ _, h
+  | .pair _ _, .var _, h | .pair _ _, .const _, h | .pair _ _, .prim _ _, h | .pair _ _, .lam _ _, h
+  | .pair _ _, .fix _ _ _, h | .pair _ _, .fst _, h | .pair _ _, .snd _, h | .pair _ _, .inl _ _, h
+  | .pair _ _, .inr _ _, h
+  | .fst _, .var _, h | .fst _, .const _, h | .fst _, .prim _ _, h | .fst _, .lam _ _, h | .fst _, .fix _ _ _, h
+  | .fst _, .pair _ _, h | .fst _, .snd _, h | .fst _, .inl _ _, h | .fst _, .inr _ _, h
+  | .snd _, .var _, h | .snd _, .const _, h | .snd _, .prim _ _, h | .snd _, .lam _ _, h | .snd _, .fix _ _ _, h
+  | .snd _, .pair _ _, h | .snd _, .fst _, h | .snd _, .inl _ _, h | .snd _, .inr _ _, h
+  | .inl _ _, .var _, h | .inl _ _, .const _, h | .inl _ _, .prim _ _, h | .inl _ _, .lam _ _, h
+  | .inl _ _, .fix _ _ _, h | .inl _ _, .pair _ _, h | .inl _ _, .fst _, h | .inl _ _, .snd _, h
+  | .inl _ _, .inr _ _, h
+  | .inr _ _, .var _, h | .inr _ _, .const _, h | .inr _ _, .prim _ _, h | .inr _ _, .lam _ _, h
+  | .inr _ _, .fix _ _ _, h | .inr _ _, .pair _ _, h | .inr _ _, .fst _, h | .inr _ _, .snd _, h
+  | .inr _ _, .inl _ _, h => by simp [embA] at h
+theorem embL_inj : ∀ {as bs : List Atom₁}, embL as = embL bs → as = bs
+  | [], [], _ => rfl
+  | a :: as, b :: bs, h => by simp only [embL, List.cons.injEq] at h; rw [embA_inj h.1, embL_inj h.2]
+  | [], _ :: _, h | _ :: _, [], h => by simp [embL] at h
+theorem embE_inj : ∀ {e f : Tm₁}, embE e = embE f → e = f
+  | .ret a, .ret b, h => by simp only [embE, Tm.ret.injEq] at h; rw [embA_inj h]
+  | .letE τ e₁ e₂, .letE τ' f₁ f₂, h => by
+    simp only [embE, Tm.letE.injEq] at h; rw [embT_inj h.1, embE_inj h.2.1, embE_inj h.2.2]
+  | .app a b, .app a' b', h => by simp only [embE, Tm.app.injEq] at h; rw [embA_inj h.1, embA_inj h.2]
+  | .ite a e₁ e₂, .ite a' f₁ f₂, h => by
+    simp only [embE, Tm.ite.injEq] at h; rw [embA_inj h.1, embE_inj h.2.1, embE_inj h.2.2]
+  | .case a e₁ e₂, .case a' f₁ f₂, h => by
+    simp only [embE, Tm.case.injEq] at h; rw [embA_inj h.1, embE_inj h.2.1, embE_inj h.2.2]
+  | .letOp o _ _ _, _, _ | _, .letOp o _ _ _, _ => nomatch (o : Empty)
+  | .ret _, .letE _ _ _, h | .ret _, .app _ _, h | .ret _, .ite _ _ _, h | .ret _, .case _ _ _, h
+  | .letE _ _ _, .ret _, h | .letE _ _ _, .app _ _, h | .letE _ _ _, .ite _ _ _, h | .letE _ _ _, .case _ _ _, h
+  | .app _ _, .ret _, h | .app _ _, .letE _ _ _, h | .app _ _, .ite _ _ _, h | .app _ _, .case _ _ _, h
+  | .ite _ _ _, .ret _, h | .ite _ _ _, .letE _ _ _, h | .ite _ _ _, .app _ _, h | .ite _ _ _, .case _ _ _, h
+  | .case _ _ _, .ret _, h | .case _ _ _, .letE _ _ _, h | .case _ _ _, .app _ _, h | .case _ _ _, .ite _ _ _, h => by
+    simp [embE] at h
+end
+
+/-! ## The step function: complete (stated here, for any Σ, without editing L1) and commuting with ι -/
+theorem stepFn_complete {S : Sig} {e e' : Tm S} (h : Step e e') : stepFn e = some e' := by
+  induction h with
+  | letRet ha => simp [stepFn, ha]
+  | @letStep τ e₁ e₁' e₂ hs ih =>
+    cases e₁ with
+    | ret a => cases hs
+    | letOp => cases hs
+    | _ => show Option.map _ (stepFn _) = _; rw [ih]; rfl
+  | appLam h₁ h₂ => simp [stepFn, h₁, h₂]
+  | appFix h₁ h₂ => simp [stepFn, h₁, h₂]
+  | iteT ha hb => simp [stepFn, ha, hb]
+  | iteF ha hb => simp [stepFn, ha, hb]
+  | caseL ha => simp [stepFn, ha]
+  | caseR ha => simp [stepFn, ha]
+
+theorem stepFn_emb : ∀ (e : Tm₁), stepFn (embE e) = (stepFn e).map embE
+  | .ret a => by simp [embE, stepFn]
+  | .letE τ (.ret a) e₂ => by
+    simp only [embE, stepFn, embA_eval, Option.map_map]
+    congr 1; funext v; simp [embE_subst]
+  | .letE τ (.letE τ' e₁ e₃) e₂ => by
+    have ih := stepFn_emb (.letE τ' e₁ e₃)
+    show Option.map _ (stepFn (embE (.letE τ' e₁ e₃))) = Option.map embE (Option.map _ (stepFn (.letE τ' e₁ e₃)))
+    rw [ih, Option.map_map, Option.map_map]; rfl
+  | .letE τ (.letOp o _ _ _) e₂ => nomatch (o : Empty)
+  | .letE τ (.app a b) e₂ => by
+    have ih := stepFn_emb (.app a b)
+    show Option.map _ (stepFn (embE (.app a b))) = Option.map embE (Option.map _ (stepFn (.app a b)))
+    rw [ih, Option.map_map, Option.map_map]; rfl
+  | .letE τ (.ite a e₁ e₃) e₂ => by
+    have ih := stepFn_emb (.ite a e₁ e₃)
+    show Option.map _ (stepFn (embE (.ite a e₁ e₃))) = Option.map embE (Option.map _ (stepFn (.ite a e₁ e₃)))
+    rw [ih, Option.map_map, Option.map_map]; rfl
+  | .letE τ (.case a e₁ e₃) e₂ => by
+    have ih := stepFn_emb (.case a e₁ e₃)
+    show Option.map _ (stepFn (embE (.case a e₁ e₃))) = Option.map embE (Option.map _ (stepFn (.case a e₁ e₃)))
+    rw [ih, Option.map_map, Option.map_map]; rfl
+  | .letOp o _ _ _ => nomatch (o : Empty)
+  | .app a b => by
+    simp only [embE, stepFn, embA_eval]
+    cases Atom.eval a with
+    | none => rfl
+    | some w =>
+      cases Atom.eval b with
+      | none => cases w <;> rfl
+      | some v => cases w <;> simp [embA, embE_subst]
+  | .ite a e₁ e₂ => by
+    simp only [embE, stepFn, embA_eval]
+    cases Atom.eval a with
+    | none => rfl
+    | some w =>
+      cases w with
+      | const c =>
+        simp only [Option.map_some, embA]
+        change (match Const.toBool (Const.ofL1 c) with
+          | some true => some (embE e₁) | some false => some (embE e₂) | none => none) = _
+        rw [toBool_emb]
+        cases h : L1.Const.toBool c with
+        | none => simp [L1.S₁, h]; rfl
+        | some b => cases b <;> simp [L1.S₁, h] <;> exact ⟨_, rfl, rfl⟩
+      | _ => rfl
+  | .case a e₁ e₂ => by
+    simp only [embE, stepFn, embA_eval]
+    cases Atom.eval a with
+    | none => rfl
+    | some w => cases w <;> simp [embA, embE_subst]
+
 end VIRL2
