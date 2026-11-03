@@ -612,6 +612,49 @@ def leanl1(d):
     return rows
 
 
+# amend-16 (layer L2, STATUS-vir rows 105-106). d = l2. The leanp rows on VIRL2/ (Y1 = L2.C4vir, Y8 = L2.fix and the audit),
+# plus: Y4, the frame rule's explicit binder groups (`theorem frame`'s statement; the rule's own two are R and the triple, so
+# a side condition is any third group); Y3, the ⊢₂ family in the frame theorem's TRANSITIVE closure, read from the newest
+# logs/closure-NNN.log (l2/Closure.lean), REFUSED (row Y3.control = 0) unless the PROOF control's line reads typing2 > 0 in the
+# same log (a closure that follows statements only reads it 0: l2 mutant-001); Y7, statements mentioning the mask or its
+# split (EXPLORATORY); Y6, the acceptance-program theorems present by name.
+Y6_NAMES = ('M1_typed', 'M1_triple', 'M1_meaning', 'M2_typed', 'M2_triple', 'M2_meaning', 'M3_typed', 'M3_no_triple',
+            'M3_meaning', 'M4_untyped', 'M4_triple', 'M4_leak', 'M4_meaning', 'M5_typed', 'M5_triple', 'M5_meaning')
+
+
+def leanl2(d):
+    rows = leanp(d, 'VIRL2', 'L2')
+    src = files(os.path.join(d, 'VIRL2'), ('.lean',))
+    text = '\n'.join(re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p)) for p in src)
+    thms = [b for b in blocks(text) if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\b', b)]
+    fr = [b for b in thms if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+frame\s', b)]
+    if fr:
+        st = p_statement(fr[0])
+        rows.append(('L2.Y4.frameExplicitBinders', len(re.findall(r'\(\s*[^():]+?\s*:', st)), 'MEASURED'))
+    else:
+        rows.append(('L2.Y4.frameExplicitBinders', 0, 'EMPTY'))
+    logs = sorted(p for p in files(os.path.join(d, 'logs'), ('.log',)) if re.search(r'/closure-\d+\.log$', p))
+    if logs:
+        t = read(logs[-1])
+        def t2(name):
+            m = re.search(r'closure ' + re.escape(name) + r': constants \d+ · VIRL2 \d+ · typing2 (\d+)', t)
+            return int(m.group(1)) if m else None
+        ctl = t2('control_proof_uses_typing')
+        ok = 1 if ctl is not None and ctl > 0 else 0
+        rows.append(('L2.Y3.control', ok, 'READ:' + os.path.basename(logs[-1])))
+        for nm in ('VIRL2.frame', 'VIRL2.op_frame'):
+            v = t2(nm)
+            rows.append(('L2.Y3.' + nm.split('.')[-1], v if (v is not None and ok) else 0,
+                         ('MEASURED' if ok else 'REFUSED:control') if v is not None else 'EMPTY'))
+    else:
+        rows.append(('L2.Y3.control', 0, 'EMPTY'))
+    rows.append(('L2.Y7.maskLemmas', sum(1 for b in thms if re.search(r'(?<![A-Za-z0-9_])(?:Split|Mask\.\w+)(?![A-Za-z0-9_])', p_statement(b))), 'EXPLORATORY'))
+    names = set(re.findall(r'^(?:theorem|lemma)\s+(\S+)', text, re.M))
+    rows.append(('L2.Y6.theorems', sum(1 for n in Y6_NAMES if n in names), 'MEASURED:of%d' % len(Y6_NAMES)))
+    rows.append(('L2.continuity', sum(1 for b in thms if re.search(r'ωScottContinuous', p_statement(b))), 'MEASURED'))
+    return rows
+
+
 # amend-11 V3 (STATUS-vir row 87): how many of the CENTRAL DEFINITIONS one commit EDITS, as opposed to adds beside them.
 # Lean names fixed by amend-11 (term syntax, step relation, typing relation, denotation). A definition is EDITED iff its
 # declaration block exists at BOTH shas and its text differs. A block that only exists at `ext` is an ADDITION, and it is
@@ -938,7 +981,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -958,6 +1001,8 @@ def main():
         rows = leanbp(a.dir)
     elif a.arm == 'w8':
         rows = w8(a.dir, a.base, a.ext, a.prefix)
+    elif a.arm == 'l2':
+        rows = leanl2(a.dir)
     elif a.arm == 'v3l1m':
         rows = v3l1m(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll1':

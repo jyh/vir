@@ -521,6 +521,26 @@ if cmp -s "$H/count.py" "$F/mutant34.py"; then say "ARM34 mutant NOT PLANTED"; f
 elif check34 "$F/mutant34.py"; then say "ARM34 mutant SURVIVED (a comment glued onto r2 read as an edit)"; fail=1
 else say "ARM34 mutant KILLED"; fi
 
+# (35) amend-16 Y3/Y4 (count.py --arm l2): the closure line is REFUSED unless the newest closure log's PROOF control reads
+# typing2 > 0 (a closure that follows statements only reads it 0: l2 mutant-001), and Y4 counts the frame rule's explicit
+# binder groups. Fixture A: control 0, frame 5 => Y3.control 0, Y3.frame 0 REFUSED. Fixture B: control 9, frame 3, in the
+# NEWER of two logs => Y3.frame 3; binders 3 (a side condition planted). Mutant: the control check removed => A reads 5.
+for x in A B; do mkdir -p "$F/l2$x/VIRL2" "$F/l2$x/logs"; done
+printf 'theorem frame {P} (R : Assn) (h : Triple P e Q) : Triple P e Q := by\n  exact h\n' > "$F/l2A/VIRL2/L.lean"
+printf 'theorem frame {P} (R : Assn) (hx : Disjoint R P) (h : Triple P e Q) : Triple P e Q := by\n  exact h\n' > "$F/l2B/VIRL2/L.lean"
+printf 'closure control_proof_uses_typing: constants 2 · VIRL2 0 · typing2 0\nclosure VIRL2.frame: constants 9 · VIRL2 1 · typing2 5\n' > "$F/l2A/logs/closure-001.log"
+printf 'closure control_proof_uses_typing: constants 2 · VIRL2 0 · typing2 0\nclosure VIRL2.frame: constants 9 · VIRL2 1 · typing2 7\n' > "$F/l2B/logs/closure-001.log"
+printf 'closure control_proof_uses_typing: constants 9 · VIRL2 2 · typing2 9\nclosure VIRL2.frame: constants 9 · VIRL2 1 · typing2 3\n' > "$F/l2B/logs/closure-002.log"
+check35() { local a b; a=$(python3 "$1" --arm l2 "$F/l2A"); b=$(python3 "$1" --arm l2 "$F/l2B")
+  [ "$(g6 "$a" L2.Y3.control)" = 0 ] && [ "$(g6 "$a" L2.Y3.frame)" = 0 ] && [ "$(g6 "$b" L2.Y3.control)" = 1 ] &&
+  [ "$(g6 "$b" L2.Y3.frame)" = 3 ] && [ "$(g6 "$a" L2.Y4.frameExplicitBinders)" = 2 ] && [ "$(g6 "$b" L2.Y4.frameExplicitBinders)" = 3 ]; }
+if check35 "$H/count.py"; then say "ARM35 l2 Y3/Y4 fixture OK (A refused, B frame=3 from the newer log, binders 2 then 3)"
+else say "ARM35 l2 Y3/Y4 fixture FAIL"; python3 "$H/count.py" --arm l2 "$F/l2A"; python3 "$H/count.py" --arm l2 "$F/l2B"; fail=1; fi
+sed "s/        ok = 1 if ctl is not None and ctl > 0 else 0/        ok = 1/" "$H/count.py" > "$F/mutant35.py"
+if cmp -s "$H/count.py" "$F/mutant35.py"; then say "ARM35 mutant NOT PLANTED"; fail=1
+elif check35 "$F/mutant35.py"; then say "ARM35 mutant SURVIVED (a closure with a dead proof control was scored)"; fail=1
+else say "ARM35 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
