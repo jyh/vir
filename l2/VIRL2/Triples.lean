@@ -147,4 +147,22 @@ theorem semantic_typing_literal_false :
     ¬ ∀ (e : Tm₂) (τ : Ty₂), HasType₂ [] [] e τ → Triple Assn.emp e (fun _ σ => σ = Store.empty ∨ True) :=
   fun h => M3_no_triple (conseq (fun _ h => h) (fun _ _ _ => trivial) (h M3 tint M3_typed))
 
+/-- A0, the witness for erratum L2-E2: `let c:cap ← alloc(0) in let u:unit ← free(c) in ret 0`. WELL-TYPED (⊢₂ does not
+  constrain alloc's size) and it FAULTS at the `alloc`, which is NOT an out-of-bounds `load`/`store`: L2-E1's permitted
+  set is too narrow, and a non-positive size is the other index fact the logic, not the types, must exclude. -/
+def A0 : Tm₂ := .letOp .alloc [ci 0] tcap (.letOp .free [vr 0] tunit (.ret (ci 0)))
+
+theorem A0_typed : HasType₂ [] [] A0 tint := by
+  unfold A0
+  refine .alloc .int ?_
+  refine .free (n := 0) rfl rfl ?_
+  exact .ret (by simp [List.set]; mask_empty) .int
+
+theorem A0_faults : Faults (A0, Store.empty) := by
+  refine ⟨id, fun c hc => ?_⟩
+  obtain ⟨vs, v, σ', h₁, h₂, -⟩ := step₂_letOp_inv hc
+  cases h₁
+  have hnone : opStep .alloc [ci 0] Store.empty = none := rfl
+  rw [hnone] at h₂; cases h₂
+
 end VIRL2
