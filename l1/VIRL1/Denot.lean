@@ -32,6 +32,10 @@ def head : Tm S → Head S
       | some false => .go e₂
       | none => .stuck
     | _ => .stuck
+  | .case a e₁ e₂ => match a.eval with
+    | some (.inl _ v) => .go (e₁.subst 0 v)
+    | some (.inr _ v) => .go (e₂.subst 0 v)
+    | _ => .stuck
   | _ => .stuck
 
 def Head.run (D : Tm S → Part (Atom S)) : Head S → Part (Atom S)
@@ -80,6 +84,8 @@ theorem soundness {e e' : Tm S} (hs : Step e e') : den e = den e' := by
   | appFix h₁ h₂ => rw [den_eq]; simp [Φ, head, h₁, h₂, Head.run]
   | iteT ha hb => rw [den_eq]; simp [Φ, head, ha, hb, Head.run]
   | iteF ha hb => rw [den_eq]; simp [Φ, head, ha, hb, Head.run]
+  | caseL ha => rw [den_eq]; simp [Φ, head, ha, Head.run]
+  | caseR ha => rw [den_eq]; simp [Φ, head, ha, Head.run]
 
 theorem soundness_steps {e e' : Tm S} (hs : Steps e e') : den e = den e' := by
   induction hs with
@@ -110,6 +116,12 @@ theorem head_go_step {e e' : Tm S} (h : head e = .go e') : Step e e' := by
       · cases h; exact .iteT hc ‹_›
       · cases h; exact .iteF hc ‹_›
       · cases h
+    · cases h
+  | case a e₁ e₂ =>
+    simp only [head] at h
+    split at h
+    · next τ v hv => cases h; exact .caseL hv
+    · next τ v hv => cases h; exact .caseR hv
     · cases h
   | ret a => simp only [head] at h; split at h <;> cases h
   | letE => simp [head] at h

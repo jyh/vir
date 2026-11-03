@@ -33,6 +33,12 @@ theorem canon_prod {v : Atom S} {τ₁ τ₂} (hv : v.IsValue) (h : HasTypeA E [
   cases v <;> simp [Atom.IsValue] at hv <;> cases h
   exact ⟨_, _, rfl, hv.1, hv.2, ‹_›, ‹_›⟩
 
+theorem canon_sum {v : Atom S} {τ₁ τ₂} (hv : v.IsValue) (h : HasTypeA E [] v (.sum τ₁ τ₂)) :
+    (∃ w, v = .inl τ₂ w ∧ w.IsValue ∧ HasTypeA E [] w τ₁) ∨ (∃ w, v = .inr τ₁ w ∧ w.IsValue ∧ HasTypeA E [] w τ₂) := by
+  cases v <;> simp [Atom.IsValue] at hv <;> cases h
+  · exact .inl ⟨_, rfl, hv, ‹_›⟩
+  · exact .inr ⟨_, rfl, hv, ‹_›⟩
+
 /-! ## Atom evaluation is total on well-typed closed atoms, and typed -/
 mutual
 theorem Atom.eval_total (hS : S.Lawful) : ∀ (a : Atom S) {τ}, HasTypeA E [] a τ →
@@ -58,6 +64,12 @@ theorem Atom.eval_total (hS : S.Lawful) : ∀ (a : Atom S) {τ}, HasTypeA E [] a
       obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
       obtain ⟨v₁, v₂, rfl, -, h₂, -, ht₂⟩ := canon_prod hval ht
       exact ⟨v₂, by simp [Atom.eval, hv], h₂, ht₂⟩
+  | .inl τ a, _, .inl h => by
+      obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
+      exact ⟨.inl τ v, by simp [Atom.eval, hv], hval, .inl ht⟩
+  | .inr τ a, _, .inr h => by
+      obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
+      exact ⟨.inr τ v, by simp [Atom.eval, hv], hval, .inr ht⟩
 theorem Atom.evalL_total (hS : S.Lawful) : ∀ (as : List (Atom S)) {bs : List S.B}, HasTypeL E [] as (bs.map .base) →
     ∃ cs : List S.C, Atom.evalL as = some (cs.map .const) ∧ cs.map S.cTy = bs
   | [], [], _ => ⟨[], rfl, rfl⟩
@@ -96,6 +108,16 @@ theorem preservation (hS : S.Lawful) {e e' : Tm S} (hs : Step e e') : ∀ {τ}, 
           exact HasType.subst0 (HasType.subst0 hb (Atom.eval_typed hS ha₂ h₂).2) (Atom.eval_typed hS ha₁ h₁).2
   | iteT => intro τ h; cases h with | ite _ h₁ _ => exact h₁
   | iteF => intro τ h; cases h with | ite _ _ h₂ => exact h₂
+  | caseL ha =>
+      intro τ h; cases h with
+      | case hs h₁ _ =>
+        have hl := (Atom.eval_typed hS hs ha).2
+        cases hl with | inl hw => exact HasType.subst0 h₁ hw
+  | caseR ha =>
+      intro τ h; cases h with
+      | case hs _ h₂ =>
+        have hl := (Atom.eval_typed hS hs ha).2
+        cases hl with | inr hw => exact HasType.subst0 h₂ hw
 
 /-! ## Progress (needs O = ∅: L1 has no step rule for an effect operation) -/
 theorem progress (hS : S.Lawful) (hO : S.O → False) : ∀ (e : Tm S) {τ}, HasType E [] e τ → e.IsTerminal ∨ ∃ e', Step e e'
@@ -126,6 +148,12 @@ theorem progress (hS : S.Lawful) (hO : S.O → False) : ∀ (e : Tm S) {τ}, Has
       cases b
       · exact ⟨_, .iteF hv hb⟩
       · exact ⟨_, .iteT hv hb⟩
+  | .case a _ _, _, .case h _ _ => by
+      right
+      obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
+      rcases canon_sum hval ht with ⟨w, rfl, -⟩ | ⟨w, rfl, -⟩
+      · exact ⟨_, .caseL hv⟩
+      · exact ⟨_, .caseR hv⟩
 
 /-! ## Determinism -/
 theorem Step.ret_irred {a : Atom S} {e'} : ¬ Step (.ret a) e' := fun h => by cases h
@@ -150,6 +178,12 @@ theorem determinism {e e₁ : Tm S} (h₁ : Step e e₁) : ∀ {e₂}, Step e e�
   | iteF ha hb => intro e₂ h; cases h with
     | iteT ha' hb' => rw [ha] at ha'; cases ha'; rw [hb] at hb'; cases hb'
     | iteF => rfl
+  | caseL ha => intro e₂ h; cases h with
+    | caseL ha' => rw [ha] at ha'; cases ha'; rfl
+    | caseR ha' => rw [ha] at ha'; cases ha'
+  | caseR ha => intro e₂ h; cases h with
+    | caseL ha' => rw [ha] at ha'; cases ha'
+    | caseR ha' => rw [ha] at ha'; cases ha'; rfl
 
 /-! ## Safety: no well-typed program gets stuck -/
 theorem preservation_steps (hS : S.Lawful) {e e' : Tm S} (hs : Steps e e') {τ} (h : HasType E [] e τ) : HasType E [] e' τ := by

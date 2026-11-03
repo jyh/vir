@@ -1,0 +1,30 @@
+saltqueue: ticket P2 seat=root pid=48090
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     2008s      math         74206
+  P2     301s       root         48090
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     2310s      math         74206
+  P2     602s       root         48090
+saltqueue: HEAD OF QUEUE after 880s — attempting acquisition
+✔ [614/623] Built VIRL1.Syntax (467ms)
+⚠ [615/623] Built VIRL1.Semantics (435ms)
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [616/623] Built VIRL1.Typing (2.1s)
+✔ [617/623] Built VIRL1.Safety (563ms)
+✔ [618/623] Built VIRL1.Denot (2.7s)
+✔ [619/623] Built VIRL1.Adequacy (1.1s)
+⚠ [620/623] Built VIRL1.L1 (1.4s)
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✔ [621/623] Built VIRL1.Programs (1.1s)
+✔ [622/623] Built VIRL1 (819ms)
+Build completed successfully (623 jobs).
+saltbuild EXIT=0
