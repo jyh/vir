@@ -65,4 +65,54 @@ theorem RT.substV : ∀ {Γ₁ Γ : Ctx S₂} {Δ₁ Δ : List Bool} {Ω e τ τ
     .case (substA₂ h hv) (RT.substV (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h₁ hv)
       (RT.substV (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h₂ hv)
 
+/-! ## Mask facts at a TRUE position -/
+theorem mask_empty_true {Δ₁ Δ : List Bool} (h : Mask.empty (Δ₁ ++ true :: Δ)) : False :=
+  h Δ₁.length (by simp)
+
+theorem mask_only_true {Δ₁ Δ : List Bool} {n : Nat} (h : Mask.only (Δ₁ ++ true :: Δ) n) : n = Δ₁.length := by
+  by_contra hn; exact h.2 Δ₁.length (Ne.symm hn) (by simp)
+
+theorem mask_only_self {Δ₁ Δ : List Bool} (h : Mask.only (Δ₁ ++ true :: Δ) Δ₁.length) : Mask.empty (Δ₁ ++ Δ) := by
+  intro m hm
+  by_cases hk : m < Δ₁.length
+  · exact h.2 m (by omega) (by rw [get_mid, if_pos hk]; exact hm)
+  · exact h.2 (m + 1) (by omega) (by rw [get_mid, if_neg (by omega), if_neg (by omega)]; simpa using hm)
+
+theorem split_mid_true {Δ₁ Δ A B : List Bool} (h : Split (Δ₁ ++ true :: Δ) A B) :
+    ∃ A₁ A₂ B₁ B₂ a, A = A₁ ++ a :: A₂ ∧ B = B₁ ++ (!a) :: B₂ ∧ A₁.length = Δ₁.length ∧ B₁.length = Δ₁.length ∧
+      Split (Δ₁ ++ Δ) (A₁ ++ A₂) (B₁ ++ B₂) := by
+  induction Δ₁ generalizing A B with
+  | nil =>
+    cases h with
+    | left h => exact ⟨[], _, [], _, true, rfl, rfl, rfl, rfl, h⟩
+    | right h => exact ⟨[], _, [], _, false, rfl, rfl, rfl, rfl, h⟩
+  | cons d Δ₁ ih =>
+    cases h with
+    | left h =>
+      obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, h₁, h₂, hs⟩ := ih h
+      exact ⟨true :: A₁, A₂, false :: B₁, B₂, a, rfl, rfl, by simp [h₁], by simp [h₂], .left hs⟩
+    | right h =>
+      obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, h₁, h₂, hs⟩ := ih h
+      exact ⟨false :: A₁, A₂, true :: B₁, B₂, a, rfl, rfl, by simp [h₁], by simp [h₂], .right hs⟩
+    | none h =>
+      obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, h₁, h₂, hs⟩ := ih h
+      exact ⟨false :: A₁, A₂, false :: B₁, B₂, a, rfl, rfl, by simp [h₁], by simp [h₂], .none hs⟩
+
+/-! ## RT is invariant under permuting what it owns -/
+theorem RT.perm : ∀ {Γ Δ Ω Ω' e τ}, Ω.Perm Ω' → RT Γ Δ Ω e τ → RT Γ Δ Ω' e τ
+  | _, _, _, _, _, _, hp, .ret hΔ h => by rw [List.perm_nil.1 hp.symm]; exact .ret hΔ h
+  | _, _, _, _, _, _, hp, .retCap hΓ hΔ => by rw [List.perm_nil.1 hp.symm]; exact .retCap hΓ hΔ
+  | _, _, _, _, _, _, hp, .retCapC hΔ => by rw [List.perm_singleton.1 hp.symm]; exact .retCapC hΔ
+  | _, _, _, _, _, _, hp, .letE hs hp' hc h₁ h₂ => .letE hs (hp.symm.trans hp') hc h₁ h₂
+  | _, _, _, _, _, _, hp, .alloc ha h => .alloc ha (RT.perm hp h)
+  | _, _, _, _, _, _, hp, .load hΓ hΔ ha h => .load hΓ hΔ ha (RT.perm hp h)
+  | _, _, _, _, _, _, hp, .loadC hm ha h => .loadC (hp.subset hm) ha (RT.perm hp h)
+  | _, _, _, _, _, _, hp, .store hΓ hΔ h₁ h₂ h => .store hΓ hΔ h₁ h₂ (RT.perm hp h)
+  | _, _, _, _, _, _, hp, .storeC hm h₁ h₂ h => .storeC (hp.subset hm) h₁ h₂ (RT.perm (hp.erase _) h)
+  | _, _, _, _, _, _, hp, .free hΓ hΔ h => .free hΓ hΔ (RT.perm hp h)
+  | _, _, _, _, _, _, hp, .freeC hm h => .freeC (hp.subset hm) (RT.perm (hp.erase _) h)
+  | _, _, _, _, _, _, hp, .app hΔ h₁ h₂ => by rw [List.perm_nil.1 hp.symm]; exact .app hΔ h₁ h₂
+  | _, _, _, _, _, _, hp, .ite h h₁ h₂ => .ite h (RT.perm hp h₁) (RT.perm hp h₂)
+  | _, _, _, _, _, _, hp, .case h h₁ h₂ => .case h (RT.perm hp h₁) (RT.perm hp h₂)
+
 end VIRL2
