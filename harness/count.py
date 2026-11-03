@@ -709,7 +709,7 @@ def v3l1(repo, base, ext, prefix):
 
 
 # layer L1, the MetaPRL side (STATUS-vir row 99; amend-13 W1, amend-14's file rule). Read from a vir-metaprl checkout at the
-# arm's sha (FINDINGS M-F5: e0f16ac71 or later, never earlier). W1 = prims in virl1_* theories ALONE; itt_bar* is the
+# arm's sha (FINDINGS M-F6: at or after EVERY soundness repair, by ancestry; M-F5's e0f16ac71 alone is not enough). W1 = prims in virl1_* theories ALONE; itt_bar* is the
 # PARTIALITY THEORY column (NOT-AT-PIN), printed beside and never summed into W1. Groundedness comes from MetaPRL's check_all,
 # which no file records: it stays the arm's QUOTED figure.
 PRIM_RE = re.compile(r'^\s*prim(?:_rw)?\s', re.M)
@@ -726,9 +726,31 @@ def metaprll1(d):
             w1 += n; inter += len(re.findall(r'^\s*interactive(?:_rw)?\s', t, re.M)); per.append('%s=%d' % (f[:-3], n))
         elif f.startswith('itt_bar') and f.endswith('.ml'):
             part += len(PRIM_RE.findall(read(os.path.join(root, f))))
-    return [('L1M.files', nf, 'MEASURED'), ('L1M.W1', w1, 'MEASURED:' + (','.join(per) or '-')),
+    rows = [('L1M.files', nf, 'MEASURED'), ('L1M.W1', w1, 'MEASURED:' + (','.join(per) or '-')),
             ('L1M.PARTIALITY', part, 'BESIDE:NOT-AT-PIN'), ('L1M.interactive', inter, 'MEASURED'),
             ('L1M.grounded', 0, 'Q:check_all')]
+    return rows + metaprll1_floor(os.path.join(d, 'vir-metaprl'))
+
+
+# FINDINGS M-F6: the floor is every soundness repair, by ANCESTRY, never by a date or a single sha. A checkout missing one
+# reads VOID on its floor row (an inconsistent theory proves every row). FRAMEWORK EDITS = files under theories/ outside
+# theories/vir that differ from the pinned release: counted beside W1b, never in W1, and listed so each can be read.
+L1M_PIN = os.environ.get('VIR_L1M_PIN', 'fb8e715')
+L1M_FLOOR = os.environ.get('VIR_L1M_FLOOR', 'e0f16ac71,40a89d4fc,1b209a393,07d3b4537').split(',')
+
+
+def metaprll1_floor(repo):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if g('rev-parse', '--git-dir').returncode != 0:
+        return [('L1M.floorMissing', len(L1M_FLOOR), 'VOID:not-a-git-checkout'), ('L1M.frameworkEdits', 0, 'EMPTY')]
+    miss = [s for s in L1M_FLOOR if g('merge-base', '--is-ancestor', s, 'HEAD').returncode != 0]
+    r = g('diff', '--name-only', L1M_PIN, 'HEAD', '--', 'theories', ':!theories/vir')
+    if r.returncode != 0:
+        return [('L1M.floorMissing', len(miss), 'VOID:' + ','.join(miss) if miss else 'MEASURED'),
+                ('L1M.frameworkEdits', 0, 'EMPTY:pin-unreadable')]
+    fe = r.stdout.split()
+    return [('L1M.floorMissing', len(miss), ('VOID:' + ','.join(miss)) if miss else 'MEASURED'),
+            ('L1M.frameworkEdits', len(fe), 'BESIDE:' + (','.join(fe) or '-'))]
 
 
 # W8 at L2 (amend-13 W8, amend-16 Y2 draft; STATUS-vir row 104): how many L1 DEFINITIONS (def / inductive / structure /

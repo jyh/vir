@@ -8,7 +8,7 @@ two-arm prediction is UNSCORED below, never assumed.
 | prediction | Lean (l1/, this file's sha) | MetaPRL (mojave) | verdict |
 |---|---|---|---|
 | W1 C4vir = 0 | **0** (`L1.C4vir`) | owed (scored on `virl1_*` alone, amend-14) | Lean HOLDS · MetaPRL unscored |
-| W1b framework MetaPRL > Lean | Lean: axioms beyond the standard three **0** (`L1.C4`); the standard three only (`L1.audit` 35 rows) | owed: pin figure + PARTIALITY THEORY `itt_bar` (NOT-AT-PIN, 24 prims / 4 derived as the arm reports) beside it | unscored |
+| W1b framework MetaPRL > Lean | Lean: axioms beyond the standard three **0** (`L1.C4`); the standard three only (`L1.audit` 35 rows) | owed: pin figure + PARTIALITY THEORY `itt_bar` (NOT-AT-PIN; since the repair at 40a89d4fc: itt_bar 26 prims / 3 derived + itt_bar_bterm 1 prim, FINDINGS M-F6) beside it, and the FRAMEWORK EDITS (`L1M.frameworkEdits`, M-F6) beside that; scored only where `L1M.floorMissing` = 0 | unscored |
 | W2a Lean ≥ 6 binder lemmas | **3** (`L1.binder`), and **1 BESIDE** (`L1.binder.substLOnly`) | — | **FALSIFIED** (3; 4 with the one beside) |
 | W2c MetaPRL < Lean | 3 | owed (Lang{sop} REVIVED, sub-column) | unscored |
 | W3 (i) a new operator costs 0 edits, (ii) a type former costs Lean ≥ 3, MetaPRL 0 | — | — | after BOTH arms close (the extension commits) |

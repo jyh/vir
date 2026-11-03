@@ -389,6 +389,27 @@ if cmp -s "$H/count.py" "$F/mutant27.py"; then say "ARM27 mutant NOT PLANTED"; f
 elif check27 "$F/mutant27.py"; then say "ARM27 mutant SURVIVED (a theorem edit counted as a definition edit)"; fail=1
 else say "ARM27 mutant KILLED"; fi
 
+# (28) FINDINGS M-F6: the MetaPRL L1 soundness floor, by ANCESTRY, and the FRAMEWORK EDITS column. Fixture: a git repo
+# vir-metaprl/ with commit P (pin: theories/itt/core/r.ml + theories/vir/virl1_x.ml), A (edits theories/vir only), B (edits
+# theories/itt/core/r.ml), and a side branch S off P. At HEAD=B with floor A,B: floorMissing=0, frameworkEdits=1 (r.ml; the
+# theories/vir edit is NOT a framework edit). With floor A,S: floorMissing=1 (S is not an ancestor).
+R8="$F/ml8/vir-metaprl"; mkdir -p "$R8/theories/itt/core" "$R8/theories/vir"; git -C "$R8" init -q
+git -C "$R8" config user.email t@t; git -C "$R8" config user.name t
+printf 'prim r : a\n' > "$R8/theories/itt/core/r.ml"; printf 'interactive x : a\n' > "$R8/theories/vir/virl1_x.ml"
+git -C "$R8" add -A; git -C "$R8" commit -qm P; P8=$(git -C "$R8" rev-parse HEAD)
+git -C "$R8" checkout -q -b side; printf 'z\n' > "$R8/theories/side.txt"; git -C "$R8" add -A; git -C "$R8" commit -qm S; S8=$(git -C "$R8" rev-parse HEAD)
+git -C "$R8" checkout -q -; printf 'interactive y : b\n' >> "$R8/theories/vir/virl1_x.ml"; git -C "$R8" commit -qam A; A8=$(git -C "$R8" rev-parse HEAD)
+printf 'prim r : b\n' > "$R8/theories/itt/core/r.ml"; git -C "$R8" commit -qam B; B8=$(git -C "$R8" rev-parse HEAD)
+check28() { local o q; o=$(VIR_L1M_PIN=$P8 VIR_L1M_FLOOR=$A8,$B8 python3 "$1" --arm metaprll1 "$F/ml8")
+  q=$(VIR_L1M_PIN=$P8 VIR_L1M_FLOOR=$A8,$S8 python3 "$1" --arm metaprll1 "$F/ml8")
+  [ "$(g6 "$o" L1M.floorMissing)" = 0 ] && [ "$(g6 "$o" L1M.frameworkEdits)" = 1 ] && [ "$(g6 "$q" L1M.floorMissing)" = 1 ]; }
+if check28 "$H/count.py"; then say "ARM28 metaprll1 floor fixture OK (floorMissing 0 then 1, frameworkEdits=1)"
+else say "ARM28 metaprll1 floor fixture FAIL"; VIR_L1M_PIN=$P8 VIR_L1M_FLOOR=$A8,$S8 python3 "$H/count.py" --arm metaprll1 "$F/ml8"; fail=1; fi
+sed "s/'--', 'theories', ':!theories\/vir')/'--', 'theories')/" "$H/count.py" > "$F/mutant28.py"
+if cmp -s "$H/count.py" "$F/mutant28.py"; then say "ARM28 mutant NOT PLANTED"; fail=1
+elif check28 "$F/mutant28.py"; then say "ARM28 mutant SURVIVED (a theories/vir edit counted as a framework edit)"; fail=1
+else say "ARM28 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
