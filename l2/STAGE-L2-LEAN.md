@@ -27,7 +27,29 @@ Figures below are rows of `count.py --arm l2 l2` at this file's commit, or are l
 Y1 `L2.C4vir` 0 · Y2/W8 `W8.defsEdited` 0 · Y3 `L2.Y3.frame` 0 and `L2.Y3.op_frame` 0 with `L2.Y3.control` 1 (closure-003) ·
 Y4 `L2.Y4.frameExplicitBinders` 2 · Y6 `L2.Y6.theorems` 16 of 16 · Y7 `L2.Y7.maskLemmas` 4 (EXPLORATORY) · Y8 `L2.fix` 1,
 `L2.continuity` 1 · audit `L2.audit` 126 rows, `L2.C4` 0, control 1 (audit-003, audit-control-001) · C6 `L2.C6` 54.
-**Y5 (semantic typing) is NOT BUILT.** It is scored against L2-E1's bounds-tolerant triple.
+**Y5 (semantic typing) is PARTLY BUILT** and is scored against errata L2-E1 + L2-E2 (index faults permitted). The literal
+§5 formula is refuted twice in Lean: `semantic_typing_literal_false` (M3) and `A0_typed` + `A0_faults` (alloc(0)).
+
+## Y5, the route and where it stands (the next head's plan, in order)
+Route: SYNTACTIC, by a runtime typing over configurations, because `fix` then needs no step-indexing.
+1. DONE `SemBase`: atoms never carry a capability type; canonical forms; closed typed atoms evaluate to typed values.
+2. DONE `MaskLemmas`: masks with one position removed (lookup, empty, only, set, split) and padded at the end; weakening of
+   ⊢₂; closed values type in every context.
+3. DONE `Subst2`: substitution into ⊢₂ at depth k, of a closed typed value or (at an unused capability position) any value.
+4. DONE `Runtime`: `RT Γ Δ Ω e τ` (⊢₂ plus capability CONSTANTS ⟨p⟩, p ∈ Ω the regions owned); `RT.ofTyped`; `IndexFault`.
+5. DONE `Progress`: `progress_rt`: RT [] Δ Ω e τ, WF σ, every p ∈ Ω live ⇒ terminal ∨ steps ∨ IndexFault.
+6. DONE `RTSubst`: `RT.substV` (false position, Ω unchanged), `RT.substC` (⟨p⟩ at a true position, Ω grows by p),
+   `RT.perm` (Ω up to permutation), `split_mid_true`.
+7. OWED: `OwnAll Ω` := ∗ over p ∈ Ω of (∃ n, IsRegion p n), with its permutation and append (Ω₁ ++ Ω₂ ↔ ∗) lemmas; region-
+   level `load`/`store` from `IsRegion` alone (build the contents function from the fragment's own lookups, then `load_at` /
+   `store_at`).
+8. OWED: PRESERVATION in frame form: RT [] [] Ω e τ ∧ OwnAll Ω σq ∧ Disj σq σf ∧ WF (σq ⊎ σf) ∧ Step₂ (e, σq ⊎ σf) (e', σ')
+   ⇒ ∃ Ω' σq', RT [] [] Ω' e' τ ∧ OwnAll Ω' σq' ∧ Disj σq' σf ∧ σ' = σq' ⊎ σf ∧ WF σ'. Cases: L1's steps (letRet by
+   substV or substC by whether τ₁ = cap; appLam/appFix by `subst₂` then `RT.ofTyped`; ite; case by substV); letStep (split
+   Ω₁ ++ Ω₂, the e₂ part joins the frame); the four ops via the framed op axioms (`op_frame` with OwnAll of the rest).
+9. OWED: THE BRIDGE: an index-fault-tolerant triple (Triple with `Faults c ∧ ¬ IndexFault c` excluded instead of `Faults c`)
+   and Y5 for closed programs: `HasType₂ [] [] e τ ⇒ {emp} e {v. τ ≠ cap: ⌜⊢ v : τ⌝ ∧ emp; τ = cap: ∃ p n, v = ⟨p⟩ ∧ region(p, n)}`,
+   by induction on ⟶₂* with 5 + 8; then the open form (Γ ; Δ with each c ∈ Δ bound to ⟨p_c⟩ and region(p_c)) by 6.
 
 ## Limits, riding with the rows
 - **Y3 measured a closure, and the closure's first form was blind to proofs.** `ConstantInfo.value?` skips theorems, so
