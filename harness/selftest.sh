@@ -319,6 +319,22 @@ if cmp -s "$H/count.py" "$F/mutant23.py"; then say "ARM23 mutant NOT PLANTED"; f
 elif check23 "$F/mutant23.py"; then say "ARM23 mutant SURVIVED (an addition counted as an edit)"; fail=1
 else say "ARM23 mutant KILLED"; fi
 
+# (24) layer L1 (amend-13, row 94): the l1 extractor. A fixture VIRL1/ with one theorem whose STATEMENT mentions `subst`, one
+# whose PROOF alone does, one that uses the fixpoint's leastness, and three mutant logs: EXIT=1 (red), EXIT=0 (survived, NOT red)
+# and one with no EXIT line (unread). Want binder=1, leastness=1, mutants=3, red=1, unread=1.
+L="$F/l1"; mkdir -p "$L/VIRL1" "$L/logs"
+printf 'theorem a_subst (x : Nat) : Tm.subst x = x := rfl\ntheorem b_plain (x : Nat) : x = x := by simp [Tm.subst]\ntheorem c_least : True := by have := Part.Fix.mem_iff; trivial\n' > "$L/VIRL1/A.lean"
+printf 'saltbuild EXIT=1\n' > "$L/logs/mutant-001.log"; printf 'saltbuild EXIT=0\n' > "$L/logs/mutant-002.log"; printf 'no exit line\n' > "$L/logs/mutant-003.log"
+check24() { local o; o=$(python3 "$1" --arm l1 "$L")
+  [ "$(g6 "$o" L1.binder)" = 1 ] && [ "$(g6 "$o" L1.leastness)" = 1 ] && [ "$(g6 "$o" L1.mutants)" = 3 ] &&
+  [ "$(g6 "$o" L1.mutants.red)" = 1 ] && [ "$(g6 "$o" L1.mutants.unread)" = 1 ]; }
+if check24 "$H/count.py"; then say "ARM24 l1 fixture OK (binder=1 leastness=1 mutants 3/red 1/unread 1)"
+else say "ARM24 l1 fixture FAIL"; python3 "$H/count.py" --arm l1 "$L"; fail=1; fi
+sed "s/        elif ex\[-1\] != '0':/        else:/" "$H/count.py" > "$F/mutant24.py"
+if cmp -s "$H/count.py" "$F/mutant24.py"; then say "ARM24 mutant NOT PLANTED"; fail=1
+elif check24 "$F/mutant24.py"; then say "ARM24 mutant SURVIVED (a mutant that BUILT is counted red)"; fail=1
+else say "ARM24 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

@@ -1,0 +1,25 @@
+saltqueue: ticket P2 seat=root pid=65862
+⚠ [2/538] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [618/620] Building VIRL1.Denot (2.0s)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Denot.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Denot.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Denot.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Denot.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Denot.setup.json --json
+error: VIRL1/Denot.lean:52:10: Unknown constant `OmegaCompletePartialOrder.ωScottContinuous.bind`
+error: VIRL1/Denot.lean:120:25: unsolved goals
+S : Sig
+E : ESig S
+hS : S.Lawful
+x✝³ : Tm S
+x✝² : Ty S.B
+x✝¹ : Atom S
+x✝ : HasType E [] x✝³ x✝²
+hv : x✝¹ ∈ ⊥
+⊢ x✝¹.IsValue ∧ HasTypeA E [] x✝¹ x✝²
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Denot
+error: build failed
+saltbuild EXIT=1

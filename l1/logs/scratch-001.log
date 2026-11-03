@@ -1,0 +1,3 @@
+saltqueue: ticket P2 seat=root pid=88952
+Scratch.lean:1:0: error: object file '~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Programs.olean' of module VIRL1.Programs does not exist
+saltbuild EXIT=1

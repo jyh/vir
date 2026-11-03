@@ -1,0 +1,45 @@
+saltqueue: ticket P2 seat=root pid=31765
+⚠ [3/6] Built VIRL1.Semantics (356ms)
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [4/6] Building VIRL1.Typing (915ms)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Typing.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Typing.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Typing.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Typing.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Typing.setup.json --json
+error: VIRL1/Typing.lean:99:2: Type mismatch
+  HasTypeA.prim (HasTypeL.subst as h hv)
+has type
+  HasTypeA E (xs✝ ++ tail✝) (Atom.prim a✝ (Atom.substL (List.length xs✝) x✝ as)) (Ty.base (S.pRes a✝))
+but is expected to have type
+  HasTypeA E (xs✝ ++ tail✝) (Atom.subst (List.length xs✝) (Atom.prim a✝ as) x✝) (Ty.base (S.pRes a✝))
+error: VIRL1/Typing.lean:100:2: Type mismatch
+  HasTypeA.lam (HasType.subst e h hv)
+has type
+  HasTypeA E (List.append Δ Γ) (Atom.lam τ₁✝ (Tm.subst (τ₁✝ :: Δ).length x✝ e)) (τ₁✝.arr τ₂✝)
+but is expected to have type
+  HasTypeA E (Δ ++ Γ) (Atom.subst (List.length Δ) (Atom.lam τ₁✝ e) x✝) (τ₁✝.arr τ₂✝)
+error: VIRL1/Typing.lean:88:6: `simp` made no progress
+error: VIRL1/Typing.lean:103:6: Type mismatch
+  HasTypeA.fix
+    (Eq.mp
+      (congrFun'
+        (congrArg (HasType E (τ₁ :: τ₁.arr τ₂ :: (Δ ++ Γ)))
+          (congrFun' (congrFun' (congrArg Tm.subst (Nat.add_assoc (List.length Δ) 1 1)) x✝) e))
+        τ₂)
+      this)
+has type
+  HasTypeA E (Δ ++ Γ) (Atom.fix τ₁ τ₂ (Tm.subst (List.length Δ + 2) x✝ e)) (τ₁.arr τ₂)
+but is expected to have type
+  HasTypeA E (Δ ++ Γ) (Atom.subst (List.length Δ) (Atom.fix τ₁ τ₂ e) x✝) (τ₁.arr τ₂)
+error: VIRL1/Typing.lean:98:2: Type mismatch
+  HasTypeA.const
+has type
+  HasTypeA ?m.92 ?m.93 (Atom.const ?m.94) (Ty.base (Sig.cTy ?m.91 ?m.94))
+but is expected to have type
+  HasTypeA E (xs✝ ++ tail✝) (Atom.subst (List.length xs✝) (Atom.const a✝) x✝¹) (Ty.base (S.cTy a✝))
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Typing
+error: build failed
+saltbuild EXIT=1

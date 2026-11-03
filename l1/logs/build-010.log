@@ -1,0 +1,48 @@
+saltqueue: ticket P2 seat=root pid=82242
+⚠ [2/586] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/622] Built VIRL1.L1 (1.2s)
+warning: VIRL1/L1.lean:70:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [620/622] Building VIRL1.Programs (1.1s)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Programs.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Programs.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Programs.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Programs.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Programs.setup.json --json
+error: VIRL1/Programs.lean:57:50: Tactic `rfl` failed: The left-hand side
+  run 200 K1
+is not definitionally equal to the right-hand side
+  Tm.ret (ci 120)
+
+⊢ run 200 K1 = Tm.ret (ci 120)
+error: VIRL1/Programs.lean:58:49: Tactic `rfl` failed: The left-hand side
+  run 200 K3
+is not definitionally equal to the right-hand side
+  Tm.ret (ci 42)
+
+⊢ run 200 K3 = Tm.ret (ci 42)
+error: VIRL1/Programs.lean:79:24: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  head K2
+in the target expression
+  (match K2 with
+    | Tm.letE τ e₁ e₂ => (Φo (Part.Fix.approx (⇑Φo) i) e₁).bind fun v => Φo (Part.Fix.approx (⇑Φo) i) (Tm.subst 0 v e₂)
+    | e => Head.run (Φo (Part.Fix.approx (⇑Φo) i)) (head e)) =
+    Part.none
+
+i : ℕ
+⊢ (match K2 with
+    | Tm.letE τ e₁ e₂ => (Φo (Part.Fix.approx (⇑Φo) i) e₁).bind fun v => Φo (Part.Fix.approx (⇑Φo) i) (Tm.subst 0 v e₂)
+    | e => Head.run (Φo (Part.Fix.approx (⇑Φo) i)) (head e)) =
+    Part.none
+
+Note: The target expression is not type-correct under the `instances` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  function expected
+    Part.Fix.approx (⇑Φo) i
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Programs
+error: build failed
+saltbuild EXIT=1

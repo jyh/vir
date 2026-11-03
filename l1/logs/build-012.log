@@ -1,0 +1,15 @@
+saltqueue: ticket P2 seat=root pid=90615
+⚠ [3/622] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/622] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:70:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✔ [620/622] Built VIRL1.Programs (1.1s)
+✔ [621/622] Built VIRL1 (769ms)
+Build completed successfully (622 jobs).
+saltbuild EXIT=0

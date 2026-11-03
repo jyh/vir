@@ -543,10 +543,10 @@ def p_statement(block):
     return rest[:min(cut)] if cut else rest
 
 
-def leanp(d):
-    src = files(os.path.join(d, 'VIRP'), ('.lean',))
+def leanp(d, sub='VIRP', tag='P'):
+    src = files(os.path.join(d, sub), ('.lean',))
     if not src:
-        return [('P.src', 0, 'EMPTY')]
+        return [(tag + '.src', 0, 'EMPTY')]
     text = '\n'.join(re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p)) for p in src)
     ops = list(P_OPS) + re.findall(r'^(?:def|abbrev)\s+(?:\S*\.)?(lift|weaken)\b', text, re.M)
     op_re = re.compile(r'(?<![A-Za-z0-9_])(?:[A-Za-z0-9_]+\.)*(' + '|'.join(ops) + r')(?![A-Za-z0-9_])')
@@ -555,33 +555,60 @@ def leanp(d):
     stm = [p_statement(b) for b in thms]
     binder = sum(1 for x in stm if op_re.search(x))
     ins_only = sum(1 for x in stm if ins_re.search(x) and not op_re.search(x))
-    rows = [('P.src', len(src), 'MEASURED'), ('P.theorems', len(thms), 'MEASURED'),
-            ('P.C4vir', len(re.findall(r'^\s*(?:axiom|opaque|constant)\s', text, re.M)), 'MEASURED'),
-            ('P.binder', binder, 'MEASURED'), ('P.binder.insOnly', ins_only, 'BESIDE'),
-            ('P.fix', len(re.findall(r'(?<![A-Za-z0-9_])(?:Part|PFun)\.fix(?![A-Za-z0-9_])', text)), 'MEASURED')]
+    rows = [(tag + '.src', len(src), 'MEASURED'), (tag + '.theorems', len(thms), 'MEASURED'),
+            (tag + '.C4vir', len(re.findall(r'^\s*(?:axiom|opaque|constant)\s', text, re.M)), 'MEASURED'),
+            (tag + '.binder', binder, 'MEASURED'), (tag + '.binder.insOnly', ins_only, 'BESIDE'),
+            (tag + '.fix', len(re.findall(r'(?<![A-Za-z0-9_])(?:Part|PFun)\.fix(?![A-Za-z0-9_])', text)), 'MEASURED')]
     # S5 (inputs/vir-program-inputs.md, EXPLORATORY): the separation model's theorems, from VIRP/Sep.lean alone
     sep = [p for p in src if os.path.basename(p) == 'Sep.lean']
     if sep:
         st = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(sep[0]))
         sth = [b for b in blocks(st) if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\b', b)]
-        rows += [('P.sep.theorems', len(sth), 'EXPLORATORY'),
-                 ('P.sep.laws', sum(1 for b in sth if re.search(r'(?<![A-Za-z0-9_])(union|Disj|emp)(?![A-Za-z0-9_])', p_statement(b))
+        rows += [(tag + '.sep.theorems', len(sth), 'EXPLORATORY'),
+                 (tag + '.sep.laws', sum(1 for b in sth if re.search(r'(?<![A-Za-z0-9_])(union|Disj|emp)(?![A-Za-z0-9_])', p_statement(b))
                                     and not re.search(r'(?<![A-Za-z0-9_])(denote|own)(?![A-Za-z0-9_])', p_statement(b))), 'EXPLORATORY')]
     else:
-        rows.append(('P.sep.theorems', 0, 'EMPTY'))
+        rows.append((tag + '.sep.theorems', 0, 'EMPTY'))
     logs = files(os.path.join(d, 'logs'), ('.log',))
     audits = [p for p in logs if re.search(r'/audit-\d+\.log$', p)]
     if audits:
         t = read(sorted(audits)[-1])
         ax = re.findall(r"depends on axioms: \[([^\]]*)\]", t)
         extra = set(a.strip() for g in ax for a in g.split(',')) - STD_AXIOMS
-        rows += [('P.audit', len(ax) + len(re.findall(r'does not depend on any axioms', t)), 'READ:' + os.path.basename(sorted(audits)[-1])),
-                 ('P.C4', len(extra), 'MEASURED')]
+        rows += [(tag + '.audit', len(ax) + len(re.findall(r'does not depend on any axioms', t)), 'READ:' + os.path.basename(sorted(audits)[-1])),
+                 (tag + '.C4', len(extra), 'MEASURED')]
     else:
-        rows.append(('P.audit', 0, 'EMPTY'))
+        rows.append((tag + '.audit', 0, 'EMPTY'))
     ctl = [p for p in logs if re.search(r'/audit-control-\d+\.log$', p)]
-    rows.append(('P.control', 1 if ctl and re.search(r"'control_sorry' depends on axioms: \[[^\]]*sorryAx", read(sorted(ctl)[-1])) else 0, 'MEASURED'))
-    rows.append(('P.C6', sum(len(re.findall(r'^saltbuild EXIT=\d+', read(p), re.M)) for p in logs), 'MEASURED'))
+    rows.append((tag + '.control', 1 if ctl and re.search(r"'control_sorry' depends on axioms: \[[^\]]*sorryAx", read(sorted(ctl)[-1])) else 0, 'MEASURED'))
+    rows.append((tag + '.C6', sum(len(re.findall(r'^saltbuild EXIT=\d+', read(p), re.M)) for p in logs), 'MEASURED'))
+    return rows
+
+# amend-13 (layer L1, STATUS-vir row 94). d = l1. The leanp rows on VIRL1/ (W1 = L1.C4vir, W2a = L1.binder, W6 = L1.fix and
+# the audit), plus W6's LEASTNESS uses (the fixpoint's approximation characterisation or its least-prefixed-point rule), W6b's
+# continuity theorems (a statement mentioning ωScottContinuous), and the mutants: a mutant log counts RED only if its LAST
+# `saltbuild EXIT=N` line has N != 0. A mutant log with no EXIT line is UNREAD, never red.
+def leanl1(d):
+    rows = leanp(d, 'VIRL1', 'L1')
+    src = files(os.path.join(d, 'VIRL1'), ('.lean',))
+    text = '\n'.join(re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p)) for p in src)
+    thms = [b for b in blocks(text) if re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\b', b)]
+    # BESIDE W2a (never in it: amend-13 froze the token list before the count was read): statements that mention the LIST half
+    # of the mutual substitution (`substL`) and no token on the list.
+    op_re = re.compile(r'(?<![A-Za-z0-9_])(?:[A-Za-z0-9_]+\.)*(' + '|'.join(P_OPS) + r')(?![A-Za-z0-9_])')
+    rows.append(('L1.binder.substLOnly', sum(1 for b in thms if re.search(r'(?<![A-Za-z0-9_])(?:[A-Za-z0-9_]+\.)*substL(?![A-Za-z0-9_])', p_statement(b))
+                                          and not op_re.search(p_statement(b))), 'BESIDE'))
+    rows.append(('L1.leastness', len(re.findall(r'(?<![A-Za-z0-9_])Part\.(?:Fix\.mem_iff|Fix\.fix_le|fix_le)(?![A-Za-z0-9_])', text)), 'MEASURED'))
+    rows.append(('L1.continuity', sum(1 for b in thms if re.search(r'ωScottContinuous', p_statement(b))), 'MEASURED'))
+    muts = [p for p in files(os.path.join(d, 'logs'), ('.log',)) if re.search(r'/mutant-\d+\.log$', p)]
+    red = unread = 0
+    for p in muts:
+        ex = re.findall(r'^saltbuild EXIT=(\d+)', read(p), re.M)
+        if not ex:
+            unread += 1
+        elif ex[-1] != '0':
+            red += 1
+    rows += [('L1.mutants', len(muts), 'MEASURED'), ('L1.mutants.red', red, 'MEASURED'), ('L1.mutants.unread', unread, 'MEASURED')]
     return rows
 
 
@@ -632,7 +659,7 @@ def v3(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -644,6 +671,8 @@ def main():
         rows = v3(a.dir, a.base, a.ext, a.prefix)
     elif a.arm == 'leanp':
         rows = leanp(a.dir)
+    elif a.arm == 'l1':
+        rows = leanl1(a.dir)
     elif a.arm == 'leanbp':
         rows = leanbp(a.dir)
     elif a.arm == 'metaprlbp':
