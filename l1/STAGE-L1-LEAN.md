@@ -49,3 +49,24 @@ expressions.
 
 **Not done (declared, nothing cut):** the harness rows for W1/W2/W6 on `l1/` and RESULTS-6 ·
 W3 (the extension test, after BOTH arms close) · the MetaPRL arm (mojave, building now). The L1→L2 statement (§8) is proved at L2.
+
+## W3 — the extension test (amend-13 W3, amend-15), the Lean arm's two commits (2026-11-03, the 14th vir head)
+Made after BOTH arms posted "L1 closed" (the MetaPRL arm at be5312958, 06:11:12 PST), and before any MetaPRL extension exists, so
+the Lean arm read nothing of the MetaPRL arm's. ⚠️ **The converse is FALSE for (ii):** vir's post announcing these commits carried the
+Lean (ii) design to the MetaPRL arm before its own (ii), and the MetaPRL arm says it read it (bus 06:38). So (ii) is scored LABELLED
+**"MetaPRL arm informed of the Lean (ii) design"**. amend-17 adds a blind (iii). Counted by `count.py --arm v3l1` (ARM25) from git at the two shas; re-derived by `harness/reproduce.sh`.
+| commit | what | central categories EDITED (0–4) | beside | prediction (amend-13) |
+|---|---|---|---|---|
+| (i) `21c2b97` | the pure operator `max : (int, int) → int`, in the Σ₁ instance (`L1.lean`) | **0** (`l1/out/counts-w3-i.tsv`) | 4 Σ-instance edits (Prim, args, res, interp) | (i) costs 0: **HOLDS** for Lean |
+| (ii) `ba9c696` (MetaPRL arm INFORMED) | the type former `τ₁ × τ₂`, with pair, π₁ and π₂ as ATOMS | **3**: syntax · step · typing (`counts-w3-ii.tsv`; blocks Ty, Atom, Atom.eval, HasTypeA) | 1 added (`canon_prod`), 10 other edits (subst, wf, IsValue, show, the lemma cases) | (ii) Lean ≥ 3: **HOLDS, at the threshold** |
+Builds: w3-001 EXIT=1 and w3-002 EXIT=1 (a name clash, `Prim.max` against `max`; then `_root_.max` did not resolve), w3-003 EXIT=0
+for (i); w3-004 EXIT=0 for (ii), every module rebuilt from source. Audit audit-003: 40 rows, every one within {propext,
+Classical.choice, Quot.sound}, byte-identical to audit-002; control audit-control-002 fires sorryAx.
+**Limits.** (ii)'s denotation category reads 0 BECAUSE the projections are atoms, which amend-15 makes the arm's call. As
+expressions (a `let x ← π₁ a` form) they would need a step rule and a Φ clause, and the count would be 4. So the figure is a property
+of the design as declared, not of Lean alone. The proof cost beside the count is 56 inserted and 2 deleted lines (`git diff --stat 21c2b97 ba9c696`) across Syntax · Semantics ·
+Typing · Safety; Denot, Adequacy and Programs built unchanged. W3's verdict needs the MetaPRL column (its two commits, and its
+category names declared first, amend-15), which is the arm's to make.
+**And a harness fix the extension forced:** `reproduce.sh` re-derived `counts-l1.tsv` from the WORKING tree, so the W3 commits moved
+L1's close record (theorems 64 → 65, C6 20 → 26, the audit read from audit-003). It now reads l1/ at the commit that wrote that
+file (derived by `git log`, c03cf34), and the W3 rows are pinned at their shas. Reproduce: 16 files, rc 0; a planted W3 value: rc 1.
