@@ -1,0 +1,8 @@
+saltqueue: ticket P2 seat=root pid=39904
+mutants/Y5NoFault.lean:23:4: error: Type mismatch
+  h
+has type
+  IndexFault (e', σq' ⊎ σf)
+but is expected to have type
+  False
+saltbuild EXIT=1
