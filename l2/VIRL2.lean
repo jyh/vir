@@ -10,3 +10,4 @@ import VIRL2.Denot2
 import VIRL2.Programs
 import VIRL2.Triples
 import VIRL2.Meanings
+import VIRL2.Adequacy2
