@@ -1,0 +1,13 @@
+name = "l1"
+defaultTargets = ["VIRL1"]
+
+# O95, PREDICTIONS-amend-13 (E1-E4): layer L1 (OBJECT-L1), the typed pure core, Lean arm. A SEPARATE project beside virp/
+# and x86compose/, so their counts stay put. mathlib at salt's pin (packages APFS-cloned from virp, manifest copied by edit;
+# never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[lean_lib]]
+name = "VIRL1"

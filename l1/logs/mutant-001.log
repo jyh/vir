@@ -1,0 +1,16 @@
+saltqueue: ticket P2 seat=root pid=13320
+mutants/M001-K1-wrong-value.lean:4:81: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.19 = ?m.19
+but is expected to have type
+  ((((pr Prim.mul [Atom.var 1, Atom.var 0]).subst (0 + 1) (Atom.const (Const.int 5))).subst (0 + 1)
+            (Atom.fix tint tint
+              (Tm.ite (pr Prim.le [Atom.var 0, ci 0]) (Tm.ret (ci 1))
+                (Tm.letE tint (Tm.app (Atom.var 1) (pr Prim.sub [Atom.var 0, ci 1]))
+                  (Tm.ret (pr Prim.mul [Atom.var 1, Atom.var 0])))))).subst
+        0 (Atom.const (Const.int ((5 - 1) * ((5 - 1 - 1) * ((5 - 1 - 1 - 1) * ((5 - 1 - 1 - 1 - 1) * 1))))))).eval =
+    some (ci 121)
+in the application
+  ⟨rfl, rfl⟩
+saltbuild EXIT=1

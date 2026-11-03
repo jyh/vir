@@ -1,0 +1,10 @@
+saltqueue: ticket P2 seat=root pid=13748
+mutants/M002-K2-converges.lean:4:51: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.14 = ?m.14
+but is expected to have type
+  run 200 K2 = Tm.ret ?m.12
+in the application
+  Exists.intro ?m.12 rfl
+saltbuild EXIT=1

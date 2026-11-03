@@ -1,0 +1,37 @@
+saltqueue: ticket P2 seat=root pid=49038
+⚠ [3/102] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [100/102] Building VIRL1.Safety (623ms)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Safety.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Safety.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Safety.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Safety.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Safety.setup.json --json
+warning: VIRL1/Safety.lean:5:0: import Mathlib.Logic.IsEmpty.Basic instead
+'Mathlib.Logic.IsEmpty' has been deprecated: please replace this import by
+
+import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Relator
+error: VIRL1/Safety.lean:85:39: Function expected at
+  IsEmpty
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  S.O
+
+Hint: The identifier `IsEmpty` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRL1/Safety.lean:144:37: Function expected at
+  IsEmpty
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  S.O
+
+Hint: The identifier `IsEmpty` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Safety
+error: build failed
+saltbuild EXIT=1

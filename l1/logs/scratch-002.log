@@ -1,0 +1,13 @@
+saltqueue: ticket P2 seat=root pid=89713
+Tm.letE (Ty.base BTy.int)
+  (Tm.app
+    (Atom.fix (Ty.base BTy.int) (Ty.base BTy.int)
+      (Tm.ite (Atom.prim Prim.le [Atom.var 0, Atom.const (Const.int (Int.ofNat 0))])
+        (Tm.ret (Atom.const (Const.int (Int.ofNat 1))))
+        (Tm.letE (Ty.base BTy.int)
+          (Tm.app (Atom.var 1) (Atom.prim Prim.sub [Atom.var 0, Atom.const (Const.int (Int.ofNat 1))]))
+          (Tm.ret (Atom.prim Prim.mul [Atom.var 1, Atom.var 0])))))
+    (Atom.prim Prim.sub [Atom.const (Const.int (Int.ofNat 5)), Atom.const (Const.int (Int.ofNat 1))]))
+  (Tm.ret (Atom.prim Prim.mul [Atom.const (Const.int (Int.ofNat 5)), Atom.var 0]))
+Tm.ret (Atom.prim Prim.mul [Atom.const (Const.int (Int.ofNat 5)), Atom.const (Const.int (Int.ofNat 24))])
+saltbuild EXIT=0

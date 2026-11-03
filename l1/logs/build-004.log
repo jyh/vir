@@ -1,0 +1,152 @@
+saltqueue: ticket P2 seat=root pid=46871
+⚠ [3/7] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:50:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [5/7] Building VIRL1.Safety (317ms)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Safety.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Safety.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Safety.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Safety.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Safety.setup.json --json
+error: VIRL1/Safety.lean:45:32: Invalid field notation: Type of
+  cs
+is not known; cannot resolve field `map`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Array.map`
+  • `BaseIO.map`
+  • `EIO.map`
+  • `EStateM.map`
+  • `Except.map`
+  • `ExceptT.map`
+  • `Functor.map`
+  • `List.map`
+  • `Option.map`
+  • `Prod.map`
+  • `StateT.map`
+  • `String.map`
+  • `Sum.map`
+  • `Task.map`
+  • `Thunk.map`
+  • `Vector.map`
+  • `Array.mapFinIdxM.map`
+  • `List.IsInfix.map`
+  • `List.IsPrefix.map`
+  • `List.IsSuffix.map`
+  • `List.Pairwise.map`
+  • `List.Perm.map`
+  • `List.Sublist.map`
+  • `Std.Iter.map`
+  • `Std.IterM.map`
+  • `Vector.mapFinIdxM.map`
+  • `Lean.Omega.Coeffs.map`
+  • `Lean.Omega.Constraint.map`
+  • `Std.IterM.InternalCombinators.map`
+  • `Std.Iterators.PostconditionT.map`
+error: VIRL1/Safety.lean:45:49: Invalid field notation: Type of
+  cs
+is not known; cannot resolve field `map`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Array.map`
+  • `BaseIO.map`
+  • `EIO.map`
+  • `EStateM.map`
+  • `Except.map`
+  • `ExceptT.map`
+  • `Functor.map`
+  • `List.map`
+  • `Option.map`
+  • `Prod.map`
+  • `StateT.map`
+  • `String.map`
+  • `Sum.map`
+  • `Task.map`
+  • `Thunk.map`
+  • `Vector.map`
+  • `Array.mapFinIdxM.map`
+  • `List.IsInfix.map`
+  • `List.IsPrefix.map`
+  • `List.IsSuffix.map`
+  • `List.Pairwise.map`
+  • `List.Perm.map`
+  • `List.Sublist.map`
+  • `Std.Iter.map`
+  • `Std.IterM.map`
+  • `Vector.mapFinIdxM.map`
+  • `Lean.Omega.Coeffs.map`
+  • `Lean.Omega.Constraint.map`
+  • `Std.IterM.InternalCombinators.map`
+  • `Std.Iterators.PostconditionT.map`
+error: VIRL1/Safety.lean:39:41: Application type mismatch: The argument
+  cs
+has type
+  ?m.31 hS as
+of sort `Sort u_1` but is expected to have type
+  List S.C
+of sort `Type` in the application
+  hS.pTotal p cs
+error: VIRL1/Safety.lean:53:22: unsolved goals
+S : Sig
+E : ESig S
+hS : S.Lawful
+a : Atom S
+as : List (Atom S)
+bs : List S.B
+hs : HasTypeL E [] as (List.map Ty.base bs)
+c : S.C
+hv : a.eval = some (const c)
+hval : (const c).IsValue
+h : HasTypeA E [] a (Ty.base (S.cTy c))
+hvt : HasTypeA E [] (const c) (Ty.base (S.cTy c))
+cs : sorry hS as
+hcs : evalL as = some sorry
+hty : sorry = bs
+⊢ False
+error: VIRL1/Safety.lean:53:53: unsolved goals
+S : Sig
+E : ESig S
+hS : S.Lawful
+a : Atom S
+as : List (Atom S)
+bs : List S.B
+hs : HasTypeL E [] as (List.map Ty.base bs)
+c : S.C
+hv : a.eval = some (const c)
+hval : (const c).IsValue
+h : HasTypeA E [] a (Ty.base (S.cTy c))
+hvt : HasTypeA E [] (const c) (Ty.base (S.cTy c))
+cs : sorry hS as
+hcs : evalL as = some sorry
+hty : sorry = bs
+⊢ False
+error: VIRL1/Safety.lean:56:0: declaration `VIRL1.Atom.eval_typed` contains universe level metavariables at the expression
+  eval_total.{?u.14} hS a h
+in the declaration body
+  fun {S} {E} hS {a v} {τ} h he =>
+    Exists.casesOn (eval_total.{?u.14} hS a h) fun v' h =>
+      And.casesOn h fun h' right =>
+        And.casesOn right fun hv ht =>
+          Eq.casesOn (motive := fun a_1 t =>
+            some v' = a_1 → Eq.mp (congrArg (fun _a => _a = some v') he) h' ≍ t → v.IsValue ∧ HasTypeA E [] v τ)
+            (Eq.mp (congrArg (fun _a => _a = some v') he) h')
+            (fun h =>
+              Option.some.noConfusion h fun val_eq =>
+                Eq.ndrec (motive := fun v' =>
+                  ∀ (h' : some v = some v'),
+                    v'.IsValue → HasTypeA E [] v' τ → h' ≍ Eq.refl (some v) → v.IsValue ∧ HasTypeA E [] v τ)
+                  (fun h' hv ht h => ⟨hv, ht⟩) (Eq.symm (eq_of_heq val_eq))
+                  (Eq.mp (congrArg (fun _a => _a = some v') he) h') hv ht)
+            (Eq.refl (some v')) (HEq.refl (Eq.mp (congrArg (fun _a => _a = some v') he) h'))
+error: VIRL1/Safety.lean:84:34: invalid binder annotation, type is not a class instance
+  ?m.2
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
+error: VIRL1/Safety.lean:143:32: invalid binder annotation, type is not a class instance
+  ?m.2
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Safety
+error: build failed
+saltbuild EXIT=1
