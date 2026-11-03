@@ -12,7 +12,7 @@ inductive BTy | int | bool
 inductive Const | int (n : Int) | bool (b : Bool)
   deriving DecidableEq, Repr
 
-inductive Prim | add | sub | mul | lt | le | eq | and | or | not
+inductive Prim | add | sub | mul | lt | le | eq | and | or | not | max
   deriving DecidableEq, Repr
 
 def Const.ty : Const → BTy
@@ -20,12 +20,12 @@ def Const.ty : Const → BTy
   | .bool _ => .bool
 
 def Prim.args : Prim → List BTy
-  | .add | .sub | .mul | .lt | .le | .eq => [.int, .int]
+  | .add | .sub | .mul | .lt | .le | .eq | .max => [.int, .int]
   | .and | .or => [.bool, .bool]
   | .not => [.bool]
 
 def Prim.res : Prim → BTy
-  | .add | .sub | .mul => .int
+  | .add | .sub | .mul | .max => .int
   | .lt | .le | .eq | .and | .or | .not => .bool
 
 def Prim.interp : Prim → List Const → Option Const
@@ -38,6 +38,7 @@ def Prim.interp : Prim → List Const → Option Const
   | .and, [.bool a, .bool b] => some (.bool (a && b))
   | .or, [.bool a, .bool b] => some (.bool (a || b))
   | .not, [.bool a] => some (.bool (!a))
+  | .max, [.int a, .int b] => some (.int (Max.max a b))
   | _, _ => none
 
 def Const.toBool : Const → Option Bool
