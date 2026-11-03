@@ -47,11 +47,13 @@ end Assn
 infixr:35 " ∗ " => Assn.sep
 
 /-- `{P} e {v. Q}` (OBJECT-L2 §5): from any σ ⊨ P with any disjoint frame σ_f (the whole store well-formed), no reachable
-  configuration FAULTS, and every reached `ret a` evaluates to a value v and leaves σ′ ⊎ σ_f with σ′ ⊨ Q v. -/
+  configuration FAULTS, and every reached `ret a` evaluates to a value v and leaves σ′ ⊎ σ_f with σ′ ⊨ Q v, the whole store
+  still well-formed (so a sequenced continuation needs no separate preservation theorem). -/
 def Triple (P : Assn) (e : Tm₂) (Q : Atom₂ → Assn) : Prop :=
   ∀ σ σf, P σ → Store.Disj σ σf → Store.WF (σ ⊎ σf) →
     (∀ c, Steps₂ (e, σ ⊎ σf) c → ¬ Faults c) ∧
-    (∀ a σ', Steps₂ (e, σ ⊎ σf) (.ret a, σ') → ∃ v σq, a.eval = some v ∧ Store.Disj σq σf ∧ σ' = σq ⊎ σf ∧ Q v σq)
+    (∀ a σ', Steps₂ (e, σ ⊎ σf) (.ret a, σ') →
+      ∃ v σq, a.eval = some v ∧ Store.Disj σq σf ∧ σ' = σq ⊎ σf ∧ Store.WF σ' ∧ Q v σq)
 
 /-- THE FRAME RULE, for EVERY L2 program e (OBJECT-L2 §5): no side condition, and no ⊢₂ judgement in its statement or proof. -/
 theorem frame {P : Assn} {e : Tm₂} {Q : Atom₂ → Assn} (R : Assn) (h : Triple P e Q) :
@@ -65,9 +67,9 @@ theorem frame {P : Assn} {e : Tm₂} {Q : Atom₂ → Assn} (R : Assn) (h : Trip
   rw [Store.union_assoc] at hwf ⊢
   obtain ⟨hsafe, hpost⟩ := h σp (σr ⊎ σf) hP hd' hwf
   refine ⟨hsafe, fun a σ' hs => ?_⟩
-  obtain ⟨v, σq, hv, hq, rfl, hQ⟩ := hpost a σ' hs
+  obtain ⟨v, σq, hv, hq, rfl, hw, hQ⟩ := hpost a σ' hs
   obtain ⟨hqr, hqf⟩ := (Store.disj_union_right _ _ _).1 hq
-  exact ⟨v, σq ⊎ σr, hv, (Store.disj_union_left _ _ _).2 ⟨hqf, hdr⟩, (Store.union_assoc _ _ _).symm,
+  exact ⟨v, σq ⊎ σr, hv, (Store.disj_union_left _ _ _).2 ⟨hqf, hdr⟩, (Store.union_assoc _ _ _).symm, hw,
     σq, σr, hqr, rfl, hQ, hR⟩
 
 /-- Consequence. -/
@@ -76,7 +78,7 @@ theorem conseq {P P' : Assn} {e : Tm₂} {Q Q' : Atom₂ → Assn} (hP : ∀ σ,
   intro σ σf hp hd hwf
   obtain ⟨hs, hpost⟩ := h σ σf (hP σ hp) hd hwf
   refine ⟨hs, fun a σ' hst => ?_⟩
-  obtain ⟨v, σq, hv, hq, he, hQq⟩ := hpost a σ' hst
-  exact ⟨v, σq, hv, hq, he, hQ v σq hQq⟩
+  obtain ⟨v, σq, hv, hq, he, hw, hQq⟩ := hpost a σ' hst
+  exact ⟨v, σq, hv, hq, he, hw, hQ v σq hQq⟩
 
 end VIRL2
