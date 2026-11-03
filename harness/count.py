@@ -621,6 +621,9 @@ def leanl1(d):
 Y6_NAMES = ('M1_typed', 'M1_triple', 'M1_meaning', 'M2_typed', 'M2_triple', 'M2_meaning', 'M3_typed', 'M3_no_triple',
             'M3_meaning', 'M4_untyped', 'M4_triple', 'M4_leak', 'M4_meaning', 'M5_typed', 'M5_triple', 'M5_meaning')
 
+Y5_ROUTE = ('SemBase.lean', 'MaskLemmas.lean', 'Subst2.lean', 'Runtime.lean', 'Progress.lean', 'RTSubst.lean',
+            'OwnAll.lean', 'Preservation.lean', 'Y5.lean')
+
 
 def leanl2(d):
     rows = leanp(d, 'VIRL2', 'L2')
@@ -652,6 +655,26 @@ def leanl2(d):
     names = set(re.findall(r'^(?:theorem|lemma)\s+(\S+)', text, re.M))
     rows.append(('L2.Y6.theorems', sum(1 for n in Y6_NAMES if n in names), 'MEASURED:of%d' % len(Y6_NAMES)))
     rows.append(('L2.continuity', sum(1 for b in thms if re.search(r'ωScottContinuous', p_statement(b))), 'MEASURED'))
+    # amend-16 Y5 (STATUS-vir row 124; selftest ARM36): the two theorems by name; fuel tokens in THEIR statements (Y5 is
+    # FALSIFIED if it cannot be stated without fuel); bound premises inside the ⊢₂ inductives (FALSIFIED under (ii) if ⊢₂
+    # needs one; each block cut at its namespace's `end`). Y7 (EXPLORATORY): the C5 size of the nine route files.
+    y5 = {}
+    for b in thms:
+        m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+(y5_closed|y5_open)\s', b)
+        if m:
+            y5[m.group(1)] = b
+    rows.append(('L2.Y5.closed', 1 if 'y5_closed' in y5 else 0, 'MEASURED'))
+    rows.append(('L2.Y5.open', 1 if 'y5_open' in y5 else 0, 'MEASURED'))
+    fuel = r'(?<![A-Za-z0-9_])(?:Nat|fuel|run₂?|stepFn₂?)(?![A-Za-z0-9_₂])'
+    rows.append(('L2.Y5.fuelInStatement', sum(len(re.findall(fuel, p_statement(b))) for b in y5.values()),
+                 'MEASURED' if y5 else 'EMPTY'))
+    typ = [re.split(r'^end\b', b, flags=re.M)[0] for b in blocks(text) if re.match(r'inductive\s+HasType[AL]?₂\s', b)]
+    rows.append(('L2.Y5.boundsInTyping', sum(len(re.findall(r'<|≤|InRegion|lookup', b)) for b in typ),
+                 ('MEASURED:%d blocks' % len(typ)) if typ else 'EMPTY'))
+    route = [p for p in src if os.path.basename(p) in Y5_ROUTE]
+    sz = size(route)
+    rows.append(('L2.Y7.semTypingC5', sz[0][1], 'EXPLORATORY:%d of %d files' % (len(route), len(Y5_ROUTE))))
+    rows.append(('L2.Y7.semTypingC5tok', sz[-1][1], 'EXPLORATORY'))
     return rows
 
 

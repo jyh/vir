@@ -35,6 +35,8 @@ formula is refuted twice in Lean: `semantic_typing_literal_false` (M3) and `A0_t
 path (`Store.` matters); the walk reproduced all 126 audit-003 rows before adding the 79 new ones.
 **Y5 is red BACKWARDS**: `mutants/Y5NoFault.lean` runs `rt_triple`'s proof against the no-fault `Triple`; `mutant-002`
 reads EXIT=1 with ONE error, at the IndexFault branch (line 23), so the index-fault exception is what the proof needs.
+Harness rows (selftest ARM36): `L2.Y5.closed` 1 · `L2.Y5.open` 1 · `L2.Y5.fuelInStatement` 0 · `L2.Y5.boundsInTyping` 0 over
+the 3 ⊢₂ inductives · Y7 EXPLORATORY `L2.Y7.semTypingC5` 1092 lines / 13155 tokens over the 9 route files.
 
 ## Y5, the route and where it stands (the next head's plan, in order)
 Route: SYNTACTIC, by a runtime typing over configurations, because `fix` then needs no step-indexing.

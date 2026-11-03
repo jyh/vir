@@ -541,6 +541,27 @@ if cmp -s "$H/count.py" "$F/mutant35.py"; then say "ARM35 mutant NOT PLANTED"; f
 elif check35 "$F/mutant35.py"; then say "ARM35 mutant SURVIVED (a closure with a dead proof control was scored)"; fail=1
 else say "ARM35 mutant KILLED"; fi
 
+# (36) amend-16 Y5 (count.py --arm l2; STATUS-vir row 124): Y5.closed / Y5.open by name; Y5.fuelInStatement = fuel tokens
+# (Nat · fuel · run · stepFn) in THOSE TWO statements (amend-16 Y5 is FALSIFIED if it cannot be stated without fuel);
+# Y5.boundsInTyping = bound premises (< · ≤ · InRegion · lookup) inside the ⊢₂ inductives (FALSIFIED under (ii) if ⊢₂ needs
+# one). Fixture C: both theorems, clean => 1 1 0 0. Fixture D: no y5_closed, y5_open's statement carries a Nat, HasType₂
+# carries i < n => 0 1 1 1. Mutant: the fuel scan reads y5_closed's statement only => D reads fuel 0.
+for x in C D; do mkdir -p "$F/l2$x/VIRL2" "$F/l2$x/logs"; done
+printf 'inductive HasType₂ : Ctx -> Tm -> Prop where\n  | ret {G a} : HasType₂ G (.ret a)\nend\n' > "$F/l2C/VIRL2/Typing2.lean"
+printf 'theorem y5_closed {e t} (h : HasType₂ [] [] e t) : TripleIF emp e (Y5Post t) := by\n  exact rt h\n\ntheorem y5_open {G D e t vs O} (h : HasType₂ G D e t) (hb : Binds G D vs O) : TripleIF (OwnAll O) e (Y5Post t) := by\n  exact rt h\n' > "$F/l2C/VIRL2/Y5.lean"
+printf 'inductive HasType₂ : Ctx -> Tm -> Prop where\n  | load {G a i n} : i < n -> HasType₂ G (.ret a)\nend\n' > "$F/l2D/VIRL2/Typing2.lean"
+printf 'theorem y5_open {G D e t vs O} (k : Nat) (h : HasType₂ G D e t) : TripleIF (OwnAll O) e (Y5Post t) := by\n  exact rt h\n' > "$F/l2D/VIRL2/Y5.lean"
+check36() { local c d; c=$(python3 "$1" --arm l2 "$F/l2C"); d=$(python3 "$1" --arm l2 "$F/l2D")
+  [ "$(g6 "$c" L2.Y5.closed)" = 1 ] && [ "$(g6 "$c" L2.Y5.open)" = 1 ] && [ "$(g6 "$c" L2.Y5.fuelInStatement)" = 0 ] &&
+  [ "$(g6 "$c" L2.Y5.boundsInTyping)" = 0 ] && [ "$(g6 "$d" L2.Y5.closed)" = 0 ] && [ "$(g6 "$d" L2.Y5.open)" = 1 ] &&
+  [ "$(g6 "$d" L2.Y5.fuelInStatement)" = 1 ] && [ "$(g6 "$d" L2.Y5.boundsInTyping)" = 1 ]; }
+if check36 "$H/count.py"; then say "ARM36 l2 Y5 fixture OK (C: 1 1 0 0; D: 0 1 1 1)"
+else say "ARM36 l2 Y5 fixture FAIL"; python3 "$H/count.py" --arm l2 "$F/l2C"; python3 "$H/count.py" --arm l2 "$F/l2D"; fail=1; fi
+sed "s/for b in y5.values()),/for b in [y5.get('y5_closed', '')]),/" "$H/count.py" > "$F/mutant36.py"
+if cmp -s "$H/count.py" "$F/mutant36.py"; then say "ARM36 mutant NOT PLANTED"; fail=1
+elif check36 "$F/mutant36.py"; then say "ARM36 mutant SURVIVED (a fuel premise in y5_open went unread)"; fail=1
+else say "ARM36 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
