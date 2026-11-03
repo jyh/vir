@@ -410,6 +410,75 @@ if cmp -s "$H/count.py" "$F/mutant28.py"; then say "ARM28 mutant NOT PLANTED"; f
 elif check28 "$F/mutant28.py"; then say "ARM28 mutant SURVIVED (a theories/vir edit counted as a framework edit)"; fail=1
 else say "ARM28 mutant KILLED"; fi
 
+# (29) OCaml COMMENTS (the 14th head, scoring MetaPRL L1 at be5312958): the revived virl1_hoas_lang carries 4 `interactive`
+# lines inside (* ... *) blocks, which the line regex counted (639 against check_all's 635). A commented `prim` would be read
+# into W1 the same way. Fixture: virl1_c.ml with one live prim, one live interactive, a commented prim, and a NESTED comment
+# holding an interactive; itt_bar_c.ml with one live prim and one commented. Want W1=1, interactive=1, PARTIALITY=1.
+R9="$F/ml9/vir-metaprl/theories/vir"; mkdir -p "$R9"
+printf 'prim a : x\n(* prim b : y *)\n(* outer (* inner *)\ninteractive z : w\n*)\ninteractive q : r\n' > "$R9/virl1_c.ml"
+printf 'prim p : x\n(*\nprim d : y\n*)\n' > "$R9/itt_bar_c.ml"
+check29() { local o; o=$(python3 "$1" --arm metaprll1 "$F/ml9")
+  [ "$(g6 "$o" L1M.W1)" = 1 ] && [ "$(g6 "$o" L1M.interactive)" = 1 ] && [ "$(g6 "$o" L1M.PARTIALITY)" = 1 ]; }
+if check29 "$H/count.py"; then say "ARM29 metaprll1 comment fixture OK (W1=1 interactive=1 PARTIALITY=1)"
+else say "ARM29 metaprll1 comment fixture FAIL"; python3 "$H/count.py" --arm metaprll1 "$F/ml9"; fail=1; fi
+sed "s/t = strip_ml_comments(read(os.path.join(root, f)))/t = read(os.path.join(root, f))/" "$H/count.py" > "$F/mutant29.py"
+if cmp -s "$H/count.py" "$F/mutant29.py"; then say "ARM29 mutant NOT PLANTED"; fail=1
+elif check29 "$F/mutant29.py"; then say "ARM29 mutant SURVIVED (a commented prim counted in W1)"; fail=1
+else say "ARM29 mutant KILLED"; fi
+
+# (30) W2b at L1, MetaPRL (the 14th head): a BINDER LEMMA is a rule in virl1_* whose STATEMENT applies one of amend-11's NAMED
+# reflection binder operators (subst · bind · bdepth · var, as op{...}). Fixture: 5 rules; a uses subst{, d uses bdepth{,
+# b uses none, c is commented out, e uses substl{ (a different operator). Want L1M.binder=2, and REVIVED=1 (hoas_lang's 1).
+R10="$F/ml10/vir-metaprl/theories/vir"; mkdir -p "$R10"
+printf 'interactive a :\n   sequent { <H> >- subst{%se; %sv} in BTerm }\n\ninteractive b : foo{%sx}\n(* interactive c : bind{x. %st} *)\ninteractive_rw d : bdepth{%se} <--> 0\ninteractive e : substl{%sx}\n' "'" "'" "'" "'" "'" "'" > "$R10/virl1_b.ml"
+printf 'interactive h : var{0; 1} in BTerm\n' > "$R10/virl1_hoas_lang.ml"
+check30() { local o; o=$(python3 "$1" --arm metaprll1 "$F/ml10")
+  [ "$(g6 "$o" L1M.binder)" = 3 ] && [ "$(g6 "$o" L1M.binder.revived)" = 1 ] && [ "$(g6 "$o" L1M.binder.substOnly)" = 1 ]; }
+if check30 "$H/count.py"; then say "ARM30 metaprll1 binder fixture OK (binder=3, revived=1, substOnly=1)"
+else say "ARM30 metaprll1 binder fixture FAIL"; python3 "$H/count.py" --arm metaprll1 "$F/ml10"; fail=1; fi
+sed 's/(subst|bind|bdepth|var)\\{/(subst|bind|bdepth|var)/' "$H/count.py" > "$F/mutant30.py"
+if cmp -s "$H/count.py" "$F/mutant30.py"; then say "ARM30 mutant NOT PLANTED"; fail=1
+elif check30 "$F/mutant30.py"; then say "ARM30 mutant SURVIVED (substl read as subst)"; fail=1
+else say "ARM30 mutant KILLED"; fi
+
+# (31) W1b's PIN figure, MetaPRL (the 14th head): prims READ AT THE PIN (git show, never the working tree) in the reflection
+# theories (theories/itt/reflection, obsolete/ excluded) and the integer theory (itt_int_base + itt_int_ext). Fixture: pin P
+# has reflection/core/x.ml (2 live prims + 1 commented), reflection/obsolete/y.ml + obsolete_flat/z.ml (1 prim each, NOT in
+# reflection/MetaprlInfo's DIRS), core/itt_int_base.ml (1 prim);
+# HEAD adds a prim to x.ml. Want pinReflection=2, pinInt=1.
+R11="$F/ml11/vir-metaprl"; mkdir -p "$R11/theories/itt/reflection/core" "$R11/theories/itt/reflection/obsolete" "$R11/theories/itt/core" "$R11/theories/vir"
+git -C "$R11" init -q; git -C "$R11" config user.email t@t; git -C "$R11" config user.name t
+printf 'prim a : x\nprim b : y\n(* prim c : z *)\n' > "$R11/theories/itt/reflection/core/x.ml"
+printf 'prim o : x\n' > "$R11/theories/itt/reflection/obsolete/y.ml"; printf 'prim i : x\n' > "$R11/theories/itt/core/itt_int_base.ml"
+mkdir -p "$R11/theories/itt/reflection/obsolete_flat"; printf 'prim f : x\n' > "$R11/theories/itt/reflection/obsolete_flat/z.ml"
+printf 'DIRS[] =\n    core\n#    obsolete\n\nVirtualTheory($(DIRS))\n' > "$R11/theories/itt/reflection/MetaprlInfo"
+printf 'interactive v : x\n' > "$R11/theories/vir/virl1_v.ml"
+git -C "$R11" add -A; git -C "$R11" commit -qm P; P11=$(git -C "$R11" rev-parse HEAD)
+printf 'prim d : w\n' >> "$R11/theories/itt/reflection/core/x.ml"; git -C "$R11" commit -qam H
+check31() { local o; o=$(VIR_L1M_PIN=$P11 VIR_L1M_FLOOR=$P11 python3 "$1" --arm metaprll1 "$F/ml11")
+  [ "$(g6 "$o" L1M.pinReflection)" = 2 ] && [ "$(g6 "$o" L1M.pinInt)" = 1 ]; }
+if check31 "$H/count.py"; then say "ARM31 metaprll1 pin-prims fixture OK (pinReflection=2 pinInt=1)"
+else say "ARM31 metaprll1 pin-prims fixture FAIL"; VIR_L1M_PIN=$P11 VIR_L1M_FLOOR=$P11 python3 "$H/count.py" --arm metaprll1 "$F/ml11"; fail=1; fi
+sed "s/if p.split('\\/')\\[3\\] in built:/if True:/" "$H/count.py" > "$F/mutant31.py"
+if cmp -s "$H/count.py" "$F/mutant31.py"; then say "ARM31 mutant NOT PLANTED"; fail=1
+elif check31 "$F/mutant31.py"; then say "ARM31 mutant SURVIVED (an unbuilt dir counted at the pin)"; fail=1
+else say "ARM31 mutant KILLED"; fi
+
+# (32) W6 at L1, MetaPRL (the 14th head): uses of itt_bar's fix_intro (its ONLY fixpoint rule, and it IS fixpoint induction, so
+# "uses the fixpoint" and "uses leastness" are one rule there) in the PROOF scripts virl1_*.prla. Fixture: virl1_k2.prla uses it
+# twice, virl1_den.prla once plus a near-miss fix_intro2, itt_bar.prla once (framework, not counted). Want fix=3, fixK2=2.
+R12="$F/ml12/vir-metaprl/theories/vir"; mkdir -p "$R12"
+printf 'x fix_intro y\nz fix_intro\n' > "$R12/virl1_k2.prla"; printf 'fix_intro fix_intro2\n' > "$R12/virl1_den.prla"
+printf 'fix_intro\n' > "$R12/itt_bar.prla"; printf 'interactive q : r\n' > "$R12/virl1_k2.ml"
+check32() { local o; o=$(python3 "$1" --arm metaprll1 "$F/ml12")
+  [ "$(g6 "$o" L1M.fix)" = 3 ] && [ "$(g6 "$o" L1M.fixK2)" = 2 ]; }
+if check32 "$H/count.py"; then say "ARM32 metaprll1 fix fixture OK (fix=3 fixK2=2)"
+else say "ARM32 metaprll1 fix fixture FAIL"; python3 "$H/count.py" --arm metaprll1 "$F/ml12"; fail=1; fi
+sed "s/FIXI_RE = re.compile(r'(?<!\\[A-Za-z0-9_])fix_intro(?!\\[A-Za-z0-9_])')/FIXI_RE = re.compile(r'fix_intro')/" "$H/count.py" > "$F/mutant32.py"
+if cmp -s "$H/count.py" "$F/mutant32.py"; then say "ARM32 mutant NOT PLANTED"; fail=1
+elif check32 "$F/mutant32.py"; then say "ARM32 mutant SURVIVED (fix_intro2 read as fix_intro)"; fail=1
+else say "ARM32 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

@@ -715,6 +715,21 @@ def v3l1(repo, base, ext, prefix):
 PRIM_RE = re.compile(r'^\s*prim(?:_rw)?\s', re.M)
 
 
+def strip_ml_comments(t):
+    # OCaml comments NEST; a commented-out prim or interactive is not a rule (ARM29: virl1_hoas_lang carries 4 commented
+    # interactives). Newlines inside a comment are KEPT so the line structure (and ^-anchored regexes) survive.
+    out, depth, i, n = [], 0, 0, len(t)
+    while i < n:
+        if t.startswith('(*', i):
+            depth += 1; i += 2; continue
+        if depth and t.startswith('*)', i):
+            depth -= 1; i += 2; continue
+        if depth == 0 or t[i] == '\n':
+            out.append(t[i])
+        i += 1
+    return ''.join(out)
+
+
 def metaprll1(d):
     root = os.path.join(d, 'vir-metaprl', 'theories', 'vir')
     if not os.path.isdir(root):
@@ -722,21 +737,86 @@ def metaprll1(d):
     w1 = part = inter = 0; nf = 0; per = []
     for f in sorted(os.listdir(root)):
         if f.startswith('virl1_') and f.endswith('.ml'):
-            t = read(os.path.join(root, f)); n = len(PRIM_RE.findall(t)); nf += 1
+            t = strip_ml_comments(read(os.path.join(root, f))); n = len(PRIM_RE.findall(t)); nf += 1
             w1 += n; inter += len(re.findall(r'^\s*interactive(?:_rw)?\s', t, re.M)); per.append('%s=%d' % (f[:-3], n))
         elif f.startswith('itt_bar') and f.endswith('.ml'):
-            part += len(PRIM_RE.findall(read(os.path.join(root, f))))
+            part += len(PRIM_RE.findall(strip_ml_comments(read(os.path.join(root, f)))))
+    bd, rv, bs, bper = metaprll1_binders(root)
+    fx, fk2, fper = 0, 0, []
+    for f in sorted(os.listdir(root)):
+        if f.startswith('virl1_') and f.endswith('.prla'):
+            n = len(FIXI_RE.findall(read(os.path.join(root, f))))
+            fx += n; fk2 += n if f == 'virl1_k2.prla' else 0
+            if n:
+                fper.append('%s=%d' % (f[:-5], n))
     rows = [('L1M.files', nf, 'MEASURED'), ('L1M.W1', w1, 'MEASURED:' + (','.join(per) or '-')),
+            ('L1M.binder', bd, 'MEASURED:LOWER-BOUND(named ops only):' + (','.join(bper) or '-')),
+            ('L1M.binder.revived', rv, 'BESIDE:virl1_hoas_lang'), ('L1M.binder.substOnly', bs, 'BESIDE:subst{ alone'),
+            ('L1M.fix', fx, 'MEASURED:fix_intro in virl1_*.prla:' + (','.join(fper) or '-')),
+            ('L1M.fixK2', fk2, 'MEASURED:virl1_k2 (fix_intro IS fixpoint induction: the W6 leastness use)'),
             ('L1M.PARTIALITY', part, 'BESIDE:NOT-AT-PIN'), ('L1M.interactive', inter, 'MEASURED'),
             ('L1M.grounded', 0, 'Q:check_all')]
-    return rows + metaprll1_floor(os.path.join(d, 'vir-metaprl'))
+    return rows + metaprll1_pin_prims(os.path.join(d, 'vir-metaprl')) + metaprll1_floor(os.path.join(d, 'vir-metaprl'))
+
+
+# W1b's PIN figure (ARM31): prims READ AT L1M_PIN from git objects, in the reflection dirs the pin BUILDS (reflection/MetaprlInfo's
+# DIRS, read at the pin: obsolete/ and obsolete_flat/ are present and unbuilt, so not framework, amend-13) and the integer theory. These are TREE figures, an upper reading of what L1 rests on;
+# the arm's own closure figure (reflection 23, RESULTS-5) is quoted beside. Lean's side is L1.audit's standard three.
+L1M_INT = ('theories/itt/core/itt_int_base.ml', 'theories/itt/core/itt_int_ext.ml')
+
+
+def metaprll1_pin_prims(repo):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    ls = g('ls-tree', '-r', '--name-only', L1M_PIN, '--', 'theories/itt')
+    if ls.returncode != 0:
+        return [('L1M.pinReflection', 0, 'EMPTY:pin-unreadable'), ('L1M.pinInt', 0, 'EMPTY:pin-unreadable')]
+    info = g('show', L1M_PIN + ':theories/itt/reflection/MetaprlInfo').stdout
+    m = re.search(r'DIRS\[\]\s*=\s*\n((?:[ \t]+\S.*\n|#.*\n)+)', info)
+    built = [x.strip() for x in (m.group(1).splitlines() if m else []) if x.strip() and not x.strip().startswith('#')]
+    refl = intg = 0
+    for p in ls.stdout.split():
+        if not p.endswith('.ml'):
+            continue
+        if p.startswith('theories/itt/reflection/'):
+            if p.split('/')[3] in built:
+                refl += len(PRIM_RE.findall(strip_ml_comments(g('show', L1M_PIN + ':' + p).stdout)))
+        elif p in L1M_INT:
+            intg += len(PRIM_RE.findall(strip_ml_comments(g('show', L1M_PIN + ':' + p).stdout)))
+    return [('L1M.pinReflection', refl, 'MEASURED:AT-PIN:tree'), ('L1M.pinInt', intg, 'MEASURED:AT-PIN')]
+
+
+# W2b at L1, MetaPRL (ARM30): a BINDER LEMMA is a rule in virl1_* whose STATEMENT (the .ml text; proofs live in .prla)
+# applies one of amend-11's NAMED reflection binder operators as op{...}. amend-11's "and siblings" was never enumerated, so
+# this is a LOWER BOUND; virl1_hoas_lang (Lang{sop}, REVIVED under amend-13) is printed beside as its own sub-column.
+FIXI_RE = re.compile(r'(?<![A-Za-z0-9_])fix_intro(?![A-Za-z0-9_])')
+MPL_BINDER_RE = re.compile(r"(?<![A-Za-z0-9_'])(subst|bind|bdepth|var)\{")
+MPL_ITEM_RE = re.compile(r'^(?=(?:interactive|interactive_rw|prim|prim_rw|define|declare|dform|let|doc|extends|open|val|topval)\b)', re.M)
+MPL_RULE_RE = re.compile(r'^interactive(?:_rw)?\s+(\S+)')
+
+
+def metaprll1_binders(root):
+    tot = rev = sub = 0; per = []
+    for f in sorted(os.listdir(root)):
+        if not (f.startswith('virl1_') and f.endswith('.ml')):
+            continue
+        n = 0
+        for blk in MPL_ITEM_RE.split(strip_ml_comments(read(os.path.join(root, f)))):
+            if MPL_RULE_RE.match(blk) and MPL_BINDER_RE.search(blk):
+                n += 1
+                sub += 1 if re.search(r"(?<![A-Za-z0-9_'])subst\{", blk) else 0
+        tot += n
+        if f == 'virl1_hoas_lang.ml':
+            rev = n
+        if n:
+            per.append('%s=%d' % (f[:-3], n))
+    return tot, rev, sub, per
 
 
 # FINDINGS M-F6: the floor is every soundness repair, by ANCESTRY, never by a date or a single sha. A checkout missing one
 # reads VOID on its floor row (an inconsistent theory proves every row). FRAMEWORK EDITS = files under theories/ outside
 # theories/vir that differ from the pinned release: counted beside W1b, never in W1, and listed so each can be read.
 L1M_PIN = os.environ.get('VIR_L1M_PIN', 'fb8e715')
-L1M_FLOOR = os.environ.get('VIR_L1M_FLOOR', 'e0f16ac71,40a89d4fc,1b209a393,07d3b4537').split(',')
+L1M_FLOOR = os.environ.get('VIR_L1M_FLOOR', 'e0f16ac71,40a89d4fc,1b209a393,07d3b4537,80fca4bec').split(',')
 
 
 def metaprll1_floor(repo):
