@@ -1,0 +1,252 @@
+saltqueue: ticket P2 seat=root pid=92301
+⚠ [3/692] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/692] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/692] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/745] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/745] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [734/745] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [736/745] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [738/745] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [739/745] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [741/745] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [742/745] Built VIRL2.MaskLemmas (1.2s)
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [743/745] Building VIRL2.Subst2 (3.2s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Subst2.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Subst2.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Subst2.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Subst2.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Subst2.setup.json --json
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+error: VIRL2/Subst2.lean:54:44: unsolved goals
+Γ₁ Γ : Ctx S₂
+τ₁ : Ty S₂.B
+e : Tm S₂
+head✝ : Ty S₂.B
+x✝ : Atom₂
+τ₂✝ : Ty₂
+Δ✝ : List Bool
+h₁ : hasCap τ₁ = false
+h₂ : hasCap τ₂✝ = false
+hΔ : Mask.empty Δ✝
+hl : Δ✝.length = List.length (Γ₁ ++ head✝ :: Γ) + 1
+h :
+  HasType₂ (τ₁ :: (Γ₁ ++ head✝ :: Γ))
+    (List.replicate (List.length Γ₁ + 1) false ++ false :: List.replicate (List.length Γ) false) e τ₂✝
+hv : Fits x✝ head✝
+hs : Δ✝ = List.replicate (List.length Γ₁ + 1) false ++ false :: List.replicate (List.length Γ) false
+this :
+  HasType₂ (τ₁ :: Γ₁ ++ Γ) (List.replicate (List.length Γ₁ + 1) false ++ List.replicate (List.length Γ) false)
+    (Tm.subst (τ₁ :: Γ₁).length x✝ e) τ₂✝
+⊢ List.length Γ₁ + 1 + List.length Γ = List.length Γ₁ + List.length Γ + 1
+error: VIRL2/Subst2.lean:60:44: unsolved goals
+Γ₁ Γ : Ctx S₂
+τ₁ τ₂ : Ty S₂.B
+e : Tm S₂
+head✝ : Ty S₂.B
+x✝ : Atom₂
+Δ✝ : List Bool
+h₁ : hasCap τ₁ = false
+h₂ : hasCap τ₂ = false
+hΔ : Mask.empty Δ✝
+hl : Δ✝.length = List.length (Γ₁ ++ head✝ :: Γ) + 2
+h :
+  HasType₂ (τ₁ :: τ₁.arr τ₂ :: (Γ₁ ++ head✝ :: Γ))
+    (List.replicate (List.length Γ₁ + 2) false ++ false :: List.replicate (List.length Γ) false) e τ₂
+hv : Fits x✝ head✝
+hs : Δ✝ = List.replicate (List.length Γ₁ + 2) false ++ false :: List.replicate (List.length Γ) false
+this :
+  HasType₂ (τ₁ :: τ₁.arr τ₂ :: Γ₁ ++ Γ)
+    (List.replicate (List.length Γ₁ + 2) false ++ List.replicate (List.length Γ) false)
+    (Tm.subst (List.length Γ₁ + (1 + 1)) x✝ e) τ₂
+⊢ List.length Γ₁ + 2 + List.length Γ = List.length Γ₁ + List.length Γ + 2
+error: VIRL2/Subst2.lean:101:27: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+    if n < Δ₁.length then ?m.39236 else List.set ?m.39236 (n - Δ₁.length - 1) false
+in the target expression
+  HasType₂ (tcap :: (Γ₁ ++ Γ))
+    ((true :: if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+      if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false)
+    (Tm.subst (tcap :: Γ₁).length x✝ e) x✝¹
+
+Γ₁ Γ : Ctx S₂
+Δ₁ Δ : List Bool
+n : ℕ
+a₁ a₂ : Atom S₂
+e : Tm S₂
+head✝ : Ty S₂.B
+x✝¹ : Ty₂
+x✝ : Atom₂
+hl : Δ₁.length = List.length Γ₁
+hΓ : (Γ₁ ++ head✝ :: Γ)[n]? = some tcap
+hΔ : (Δ₁ ++ false :: Δ)[n]? = some true
+h₁ : HasTypeA₂ (Γ₁ ++ head✝ :: Γ) a₁ tint
+h₂ : HasTypeA₂ (Γ₁ ++ head✝ :: Γ) a₂ tint
+h :
+  HasType₂ (tcap :: (Γ₁ ++ head✝ :: Γ))
+    (true ::
+      ((if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+        false :: if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false))
+    e x✝¹
+hv : Fits x✝ head✝
+hn : n ≠ List.length Γ₁
+hn' : n ≠ Δ₁.length
+this :
+  HasType₂ (tcap :: (Γ₁ ++ Γ))
+    ((true :: if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+      if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false)
+    (Tm.subst (tcap :: Γ₁).length x✝ e) x✝¹
+⊢ HasType₂ (tcap :: (Γ₁ ++ Γ)) (true :: (Δ₁ ++ Δ).set (dropIdx (List.length Γ₁) n) false)
+    (Tm.subst (List.length Γ₁ + 1) x✝ e) x✝¹
+error: VIRL2/Subst2.lean:110:27: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+    if n < Δ₁.length then ?m.39336 else List.set ?m.39336 (n - Δ₁.length - 1) false
+in the target expression
+  HasType₂ (tunit :: (Γ₁ ++ Γ))
+    ((false :: if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+      if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false)
+    (Tm.subst (tunit :: Γ₁).length x✝ e) x✝¹
+
+Γ₁ Γ : Ctx S₂
+Δ₁ Δ : List Bool
+n : ℕ
+e : Tm S₂
+head✝ : Ty S₂.B
+x✝¹ : Ty₂
+x✝ : Atom₂
+hl : Δ₁.length = List.length Γ₁
+hΓ : (Γ₁ ++ head✝ :: Γ)[n]? = some tcap
+hΔ : (Δ₁ ++ false :: Δ)[n]? = some true
+h :
+  HasType₂ (tunit :: (Γ₁ ++ head✝ :: Γ))
+    (false ::
+      ((if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+        false :: if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false))
+    e x✝¹
+hv : Fits x✝ head✝
+hn : n ≠ List.length Γ₁
+hn' : n ≠ Δ₁.length
+this :
+  HasType₂ (tunit :: (Γ₁ ++ Γ))
+    ((false :: if n < Δ₁.length then Δ₁.set n false else Δ₁) ++
+      if n < Δ₁.length then Δ else Δ.set (n - Δ₁.length - 1) false)
+    (Tm.subst (tunit :: Γ₁).length x✝ e) x✝¹
+⊢ HasType₂ (tunit :: (Γ₁ ++ Γ)) (false :: (Δ₁ ++ Δ).set (dropIdx (List.length Γ₁) n) false)
+    (Tm.subst (List.length Γ₁ + 1) x✝ e) x✝¹
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:109:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Subst2
+error: build failed
+saltbuild EXIT=1

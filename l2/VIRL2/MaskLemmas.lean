@@ -8,7 +8,7 @@ import VIRL2.Typing2
 namespace VIRL2
 open VIRL1
 
-theorem get_mid {Δ₁ Δ : List Bool} {b : Bool} (n : Nat) :
+theorem get_mid {α : Type} {Δ₁ Δ : List α} {b : α} (n : Nat) :
     (Δ₁ ++ b :: Δ)[n]? = if n < Δ₁.length then (Δ₁ ++ Δ)[n]? else if n = Δ₁.length then some b else (Δ₁ ++ Δ)[n - 1]? := by
   split_ifs with h₁ h₂
   · rw [List.getElem?_append_left h₁, List.getElem?_append_left h₁]
@@ -20,7 +20,7 @@ theorem get_mid {Δ₁ Δ : List Bool} {b : Bool} (n : Nat) :
 /-- The index a variable keeps after the position k is removed (n ≠ k). -/
 def dropIdx (k n : Nat) : Nat := if n < k then n else n - 1
 
-theorem get_drop {Δ₁ Δ : List Bool} {b : Bool} {n : Nat} (hn : n ≠ Δ₁.length) :
+theorem get_drop {α : Type} {Δ₁ Δ : List α} {b : α} {n : Nat} (hn : n ≠ Δ₁.length) :
     (Δ₁ ++ b :: Δ)[n]? = (Δ₁ ++ Δ)[dropIdx Δ₁.length n]? := by
   rw [get_mid]; unfold dropIdx; split_ifs <;> first | rfl | omega
 
