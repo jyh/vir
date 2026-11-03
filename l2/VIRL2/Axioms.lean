@@ -84,4 +84,193 @@ theorem store_axiom (p : Int) (n : Nat) (i w v : Int) (hi : 0 ≤ i ∧ i < n) :
     rw [hins] at this
     simpa [Store.union, cellFrag] using this
 
+/-! ## alloc and free: a fragment owning a WHOLE region, its entry and exactly its cells (contents unconstrained). -/
+
+namespace Store
+
+theorem le_fold_max (s : Multiset Int) : 0 ≤ s.fold max 0 ∧ ∀ x ∈ s, x ≤ s.fold max 0 := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+    rw [Multiset.fold_cons_left]
+    refine ⟨le_max_of_le_right ih.1, fun x hx => ?_⟩
+    rcases Multiset.mem_cons.1 hx with rfl | hx
+    · exact le_max_left _ _
+    · exact le_max_of_le_right (ih.2 x hx)
+
+theorem nextBase_nonneg (σ : Store) : 0 ≤ nextBase σ := (le_fold_max _).1
+
+theorem end_le_nextBase {σ : Store} {q : Int} {m : Nat} (h : σ.R.lookup q = some m) : q + m ≤ nextBase σ :=
+  (le_fold_max _).2 _ (Multiset.mem_map.2 ⟨⟨q, m⟩, Finmap.lookup_eq_some_iff.1 h, rfl⟩)
+
+theorem mem_fill (h : Finmap (fun _ : Int => Int)) (p v : Int) :
+    ∀ (k : Nat) (a : Int), a ∈ fill h p v k ↔ (p ≤ a ∧ a < p + k) ∨ a ∈ h
+  | 0, a => by
+    simp only [fill]
+    constructor
+    · exact Or.inr
+    · rintro (⟨h₁, h₂⟩ | h)
+      · omega
+      · exact h
+  | k + 1, a => by
+    rw [fill, Finmap.mem_insert, mem_fill h p v k]
+    by_cases ha : a ∈ h
+    · simp [ha]
+    · simp only [ha, or_false]; push_cast; omega
+
+theorem fill_union (h : Finmap (fun _ : Int => Int)) (p v : Int) : ∀ k, fill h p v k = fill ∅ p v k ∪ h
+  | 0 => by simp [fill, Finmap.empty_union]
+  | k + 1 => by rw [fill, fill, fill_union h p v k, Finmap.insert_union]
+
+theorem lookup_clear (h : Finmap (fun _ : Int => Int)) (p : Int) :
+    ∀ (k : Nat) (a : Int), (clear h p k).lookup a = if p ≤ a ∧ a < p + k then none else h.lookup a
+  | 0, a => by
+    simp only [clear]
+    split_ifs with hc
+    · omega
+    · rfl
+  | k + 1, a => by
+    rw [clear]
+    by_cases ha : a = p + k
+    · subst ha; rw [Finmap.lookup_erase]; split_ifs with hc
+      · rfl
+      · push_cast at hc; omega
+    · rw [Finmap.lookup_erase_ne ha, lookup_clear h p k a]
+      split_ifs with h₁ h₂ h₂ <;> first | rfl | (push_cast at *; omega)
+
+theorem lookup_sing_union {β : Type} (p q : Int) (b : β) (R : Finmap (fun _ : Int => β)) :
+    (Finmap.singleton p b ∪ R).lookup q = if q = p then some b else R.lookup q := by
+  split_ifs with h
+  · subst h; rw [Finmap.lookup_union_left (by simp [Finmap.mem_singleton]), Finmap.lookup_singleton_eq]
+  · rw [Finmap.lookup_union_right (by simp [Finmap.mem_singleton, h])]
+
+theorem empty_union (σ : Store) : Store.empty ⊎ σ = σ := by
+  simp [Store.empty, Store.union, Finmap.empty_union]
+
+end Store
+
+/-- σ owns exactly the region at p of length n: its entry R(p) = n and every one of its cells (any contents). -/
+def IsRegion (p : Int) (n : Nat) (σ : Store) : Prop :=
+  σ.R = Finmap.singleton p n ∧ ∀ a, a ∈ σ.H ↔ Store.InRegion a p n
+
+theorem alloc_axiom (n : Int) (hn : 0 < n) :
+    OpTriple Assn.emp .alloc [.const (.int n)] (fun v σ => ∃ p, v = .const (.cap p) ∧ IsRegion p n.toNat σ) := by
+  rintro σ σf rfl hd hwf
+  rw [Store.empty_union] at hwf ⊢
+  set p := Store.nextBase σf with hp
+  set N := n.toNat with hN
+  have hNpos : 0 < N := by omega
+  have hNn : (N : Int) = n := by omega
+  let σq : Store := ⟨Store.fill ∅ p 0 N, Finmap.singleton p N⟩
+  have hpR : p ∉ σf.R := by
+    intro hm
+    obtain ⟨m, hm⟩ := Finmap.mem_iff.1 hm
+    have := Store.end_le_nextBase hm
+    have := hwf.pos _ _ hm
+    omega
+  have hRq : ∀ q, (σq ⊎ σf).R.lookup q = if q = p then some N else σf.R.lookup q := fun q =>
+    Store.lookup_sing_union p q N σf.R
+  have hdisjH : ∀ a, a ∈ Store.fill ∅ p 0 N → a ∉ σf.H := by
+    intro a ha hf
+    rw [Store.mem_fill] at ha
+    obtain ⟨q, m, hqm, hin⟩ := (hwf.domH a).1 hf
+    have := Store.end_le_nextBase hqm
+    rcases ha with ⟨h₁, _⟩ | ha
+    · unfold Store.InRegion at hin; omega
+    · exact absurd ha Finmap.notMem_empty
+  refine ⟨.const (.cap p), σq, ?_, ⟨hdisjH, fun a ha => ?_⟩, ?_, p, rfl, rfl, fun a => ?_⟩
+  · show Option.map _ (Store.alloc n σf) = _
+    unfold Store.alloc
+    rw [if_pos hn]
+    simp only [Option.map_some]
+    congr 2
+    show (⟨Store.fill σf.H p 0 N, σf.R.insert p N⟩ : Store) = ⟨Store.fill ∅ p 0 N ∪ σf.H, Finmap.singleton p N ∪ σf.R⟩
+    rw [Store.fill_union]
+    apply congrArg
+    apply Finmap.ext_lookup; intro q
+    rw [Store.lookup_sing_union]
+    split_ifs with h
+    · subst h; exact Finmap.lookup_insert _
+    · exact Finmap.lookup_insert_of_ne _ h
+  · rw [Finmap.mem_singleton] at ha; subst ha; exact hpR
+  · refine ⟨fun q m h => ?_, fun q₁ q₂ m₁ m₂ h₁ h₂ hne a ha₁ ha₂ => ?_, fun a => ?_⟩
+    · rw [hRq] at h; split_ifs at h with hq
+      · cases h; exact hNpos
+      · exact hwf.pos _ _ h
+    · rw [hRq] at h₁ h₂
+      unfold Store.InRegion at ha₁ ha₂
+      split_ifs at h₁ h₂ with e₁ e₂ e₂
+      · exact hne (e₁.trans e₂.symm)
+      · cases h₁; have := Store.end_le_nextBase h₂; omega
+      · cases h₂; have := Store.end_le_nextBase h₁; omega
+      · exact hwf.disj _ _ _ _ h₁ h₂ hne a ha₁ ha₂
+    · show a ∈ Store.fill ∅ p 0 N ∪ σf.H ↔ _
+      rw [Finmap.mem_union, Store.mem_fill]
+      constructor
+      · rintro ((hin | hin) | hf)
+        · exact ⟨p, N, by simp [hRq], hin⟩
+        · exact absurd hin Finmap.notMem_empty
+        · obtain ⟨q, m, hqm, hin⟩ := (hwf.domH a).1 hf
+          refine ⟨q, m, ?_, hin⟩
+          rw [hRq]; split_ifs with hq
+          · subst hq; exact absurd (Finmap.mem_of_lookup_eq_some hqm) hpR
+          · exact hqm
+      · rintro ⟨q, m, hqm, hin⟩
+        rw [hRq] at hqm; split_ifs at hqm with hq
+        · cases hqm; subst hq; exact Or.inl (Or.inl hin)
+        · exact Or.inr ((hwf.domH a).2 ⟨q, m, hqm, hin⟩)
+  · show a ∈ Store.fill ∅ p 0 N ↔ _
+    rw [Store.mem_fill]
+    constructor
+    · rintro (h | h)
+      · exact h
+      · exact absurd h Finmap.notMem_empty
+    · exact Or.inl
+
+theorem free_axiom (p : Int) (n : Nat) :
+    OpTriple (IsRegion p n) .free [.const (.cap p)] (fun v σ => v = .const .unit ∧ σ = Store.empty) := by
+  rintro σ σf ⟨hR, hH⟩ hd hwf
+  have hpf : p ∉ σf.R := hd.2 p (by rw [hR]; simp [Finmap.mem_singleton])
+  have hlook : (σ ⊎ σf).R.lookup p = some n := by
+    show (σ.R ∪ σf.R).lookup p = some n
+    rw [hR, Store.lookup_sing_union]; simp
+  have hfrH : Store.clear (σ.H ∪ σf.H) p n = σf.H := by
+    apply Finmap.ext_lookup; intro a
+    rw [Store.lookup_clear]
+    split_ifs with hin
+    · have ha : a ∈ σ.H := (hH a).2 hin
+      exact (Finmap.lookup_eq_none.2 (hd.1 a ha)).symm
+    · exact Finmap.lookup_union_right (fun ha => hin ((hH a).1 ha))
+  have hfrR : (σ.R ∪ σf.R).erase p = σf.R := by
+    apply Finmap.ext_lookup; intro a
+    by_cases ha : a = p
+    · subst ha; rw [Finmap.lookup_erase]; exact (Finmap.lookup_eq_none.2 hpf).symm
+    · rw [Finmap.lookup_erase_ne ha, hR, Store.lookup_sing_union, if_neg ha]
+  refine ⟨.const .unit, Store.empty, ?_, ⟨Finmap.disjoint_empty _, Finmap.disjoint_empty _⟩, ?_, rfl, rfl⟩
+  · simp only [opStep, Store.free, hlook, Option.map_some, Store.empty_union]
+    congr 2
+    show (⟨Store.clear (σ.H ∪ σf.H) p n, (σ.R ∪ σf.R).erase p⟩ : Store) = σf
+    rw [hfrH, hfrR]
+  · rw [Store.empty_union]
+    have hRu : ∀ q, (σ ⊎ σf).R.lookup q = if q = p then some n else σf.R.lookup q := fun q => by
+      show (σ.R ∪ σf.R).lookup q = _
+      rw [hR, Store.lookup_sing_union]
+    refine ⟨fun q m h => hwf.pos q m ?_, fun q₁ q₂ m₁ m₂ h₁ h₂ hne => hwf.disj q₁ q₂ m₁ m₂ ?_ ?_ hne, fun a => ?_⟩
+    · rw [hRu, if_neg (fun (e : q = p) => hpf (e ▸ Finmap.mem_of_lookup_eq_some h))]; exact h
+    · rw [hRu, if_neg (fun (e : q₁ = p) => hpf (e ▸ Finmap.mem_of_lookup_eq_some h₁))]; exact h₁
+    · rw [hRu, if_neg (fun (e : q₂ = p) => hpf (e ▸ Finmap.mem_of_lookup_eq_some h₂))]; exact h₂
+    · constructor
+      · intro hf
+        obtain ⟨q, m, hqm, hin⟩ := (hwf.domH a).1 (Finmap.mem_union.2 (Or.inr hf))
+        rw [hRu] at hqm; split_ifs at hqm with hq
+        · cases hqm; subst hq; exact absurd ((hH a).2 hin) (fun h => hd.1 a h hf)
+        · exact ⟨q, m, hqm, hin⟩
+      · rintro ⟨q, m, hqm, hin⟩
+        have hq : q ≠ p := fun e => hpf (e ▸ Finmap.mem_of_lookup_eq_some hqm)
+        have hu := (hwf.domH a).2 ⟨q, m, by rw [hRu, if_neg hq]; exact hqm, hin⟩
+        rcases Finmap.mem_union.1 hu with hσ | hf
+        · have hpin := (hH a).1 hσ
+          exact absurd hpin (hwf.disj q p m n (by rw [hRu, if_neg hq]; exact hqm) hlook hq a hin)
+        · exact hf
+
 end VIRL2
