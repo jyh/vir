@@ -19,7 +19,7 @@ The Lean L2-closed sha is **dc95b53** (l2-lean).
 | Y8 one least fixed point | `L2.fix` **1**, `L2.continuity` **1**; no fuel | owed | Lean HOLDS |
 
 C6 for the Lean arm: **79** logged saltbuild runs (`L2.C6`; one log each: 67 builds · 4 audits · 1 audit control · 4 closures · 2 mutants · 1 scratch).
-Binder lemmas (C3's amend-13 reading, `L2.binder`): **13**.
+Binder lemmas (`L2.binder`, the leanp binder row on VIRL2/): **13**.
 
 ## The literal §5 formula
 OBJECT-L2 §5's semantic-typing statement, read with §5's NO-FAULT triple, is false, twice, in Lean:
