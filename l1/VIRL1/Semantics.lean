@@ -27,6 +27,8 @@ def Atom.eval : Atom S → Option (Atom S)
   | .snd a => (Atom.eval a).bind fun v => match v with
     | .pair _ v₂ => some v₂
     | _ => none
+  | .inl τ a => (Atom.eval a).map (.inl τ)
+  | .inr τ a => (Atom.eval a).map (.inr τ)
 def Atom.evalL : List (Atom S) → Option (List (Atom S))
   | [] => some []
   | a :: as => (Atom.eval a).bind fun v => (Atom.evalL as).map (v :: ·)
@@ -41,6 +43,8 @@ inductive Step : Tm S → Tm S → Prop where
       Step (.app a₁ a₂) ((e.subst 0 v).subst 0 (.fix τ₁ τ₂ e))
   | iteT {a e₁ e₂ c} : Atom.eval a = some (.const c) → S.toBool c = some true → Step (.ite a e₁ e₂) e₁
   | iteF {a e₁ e₂ c} : Atom.eval a = some (.const c) → S.toBool c = some false → Step (.ite a e₁ e₂) e₂
+  | caseL {a e₁ e₂ τ v} : Atom.eval a = some (.inl τ v) → Step (.case a e₁ e₂) (e₁.subst 0 v)
+  | caseR {a e₁ e₂ τ v} : Atom.eval a = some (.inr τ v) → Step (.case a e₁ e₂) (e₂.subst 0 v)
 
 /-- The reflexive-transitive closure ⟶*. -/
 inductive Steps : Tm S → Tm S → Prop where
@@ -68,6 +72,11 @@ def stepFn : Tm S → Option (Tm S)
       | some false => some e₂
       | none => none
     | _ => none
+  | .case a e₁ e₂ =>
+    match Atom.eval a with
+    | some (.inl _ v) => some (e₁.subst 0 v)
+    | some (.inr _ v) => some (e₂.subst 0 v)
+    | _ => none
   | _ => none
 
 theorem stepFn_sound : ∀ {e e' : Tm S}, stepFn e = some e' → Step e e'
@@ -86,6 +95,15 @@ theorem stepFn_sound : ∀ {e e' : Tm S}, stepFn e = some e' → Step e e'
   | .letE τ (.ite a e₁ e₃) e₂, e', h => by
       simp only [stepFn, Option.map_eq_some_iff] at h
       obtain ⟨e₁', h₁, rfl⟩ := h; exact .letStep (stepFn_sound h₁)
+  | .letE τ (.case a e₁ e₃) e₂, e', h => by
+      simp only [stepFn, Option.map_eq_some_iff] at h
+      obtain ⟨e₁', h₁, rfl⟩ := h; exact .letStep (stepFn_sound h₁)
+  | .case a e₁ e₂, e', h => by
+      simp only [stepFn] at h
+      split at h
+      · next τ v hv => cases h; exact .caseL hv
+      · next τ v hv => cases h; exact .caseR hv
+      · cases h
   | .app a₁ a₂, e', h => by
       simp only [stepFn] at h
       split at h
