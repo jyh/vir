@@ -371,6 +371,24 @@ if cmp -s "$H/count.py" "$F/mutant26.py"; then say "ARM26 mutant NOT PLANTED"; f
 elif check26 "$F/mutant26.py"; then say "ARM26 mutant SURVIVED (itt_bar counted in W1)"; fail=1
 else say "ARM26 mutant KILLED"; fi
 
+# (27) W8 at L2 (amend-13 W8, amend-16 Y2 draft; STATUS-vir row 104): L1 DEFINITIONS edited between the L1-closed sha and the
+# L2-closed sha. Base: inductive I, noncomputable def D, def A, theorem T in l1/VIRL1/S.lean. Ext edits I, D and T, and adds a
+# NEW file with def N. Want W8=2 (I and D: a theorem edit is BESIDE, a modifier must not hide D), thmEdited=1, newFiles=1.
+R7="$F/w8"; mkdir -p "$R7/l1/VIRL1"; git -C "$R7" init -q; git -C "$R7" config user.email t@t; git -C "$R7" config user.name t
+printf 'inductive I where\n  | a\nnoncomputable def D := 1\ndef A := 1\ntheorem T : True := trivial\n' > "$R7/l1/VIRL1/S.lean"
+git -C "$R7" add -A; git -C "$R7" commit -qm base; B7=$(git -C "$R7" rev-parse HEAD)
+printf 'inductive I where\n  | a\n  | b\nnoncomputable def D := 2\ndef A := 1\ntheorem T : True := by trivial\n' > "$R7/l1/VIRL1/S.lean"
+printf 'def N := 1\n' > "$R7/l1/VIRL1/L2.lean"
+git -C "$R7" add -A; git -C "$R7" commit -qm ext; X7=$(git -C "$R7" rev-parse HEAD)
+check27() { local o; o=$(python3 "$1" --arm w8 --base "$B7" --ext "$X7" --prefix l1/VIRL1 "$R7")
+  [ "$(g6 "$o" W8.defsEdited)" = 2 ] && [ "$(g6 "$o" W8.thmEdited)" = 1 ] && [ "$(g6 "$o" W8.newFiles)" = 1 ]; }
+if check27 "$H/count.py"; then say "ARM27 w8 fixture OK (defsEdited=2 thmEdited=1 newFiles=1)"
+else say "ARM27 w8 fixture FAIL"; python3 "$H/count.py" --arm w8 --base "$B7" --ext "$X7" --prefix l1/VIRL1 "$R7"; fail=1; fi
+sed "s/        if not ISTHM.match(before\[n\]):/        if True:/" "$H/count.py" > "$F/mutant27.py"
+if cmp -s "$H/count.py" "$F/mutant27.py"; then say "ARM27 mutant NOT PLANTED"; fail=1
+elif check27 "$F/mutant27.py"; then say "ARM27 mutant SURVIVED (a theorem edit counted as a definition edit)"; fail=1
+else say "ARM27 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
