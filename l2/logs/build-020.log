@@ -1,0 +1,54 @@
+saltqueue: ticket P2 seat=root pid=88996
+⚠ [4/736] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/736] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/736] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✔ [727/736] Built VIRL2.Store (886ms)
+⚠ [728/736] Built VIRL2.Step2 (1.0s)
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [729/736] Built VIRL2.Typing2 (961ms)
+✔ [730/736] Built VIRL2.Logic (1.1s)
+✔ [731/736] Built VIRL2.Programs (1.1s)
+✖ [732/736] Building VIRL2.Axioms (1.1s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Axioms.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Axioms.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Axioms.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Axioms.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Axioms.setup.json --json
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: VIRL2/Axioms.lean:248:2: unsolved goals
+case refine_4
+n : ℤ
+hn : 0 < n
+σf : Store
+hd : Store.empty.Disj σf
+hwf : σf.WF
+p : ℤ := σf.nextBase
+hp : p = σf.nextBase
+N : ℕ := n.toNat
+hN : N = n.toNat
+hNpos : 0 < N
+hNn : ↑N = n
+σq : Store := { H := Store.fill ∅ p 0 N, R := Finmap.singleton p N }
+hpR : p ∉ σf.R
+hRq : ∀ (q : ℤ), Finmap.lookup q (σq ⊎ σf).R = if q = p then some N else Finmap.lookup q σf.R
+hdisjH : ∀ a ∈ Store.fill ∅ p 0 N, a ∉ σf.H
+a : ℤ
+⊢ (if p ≤ a ∧ a < p + ↑N then some 0 else none) = if Store.InRegion a p N then some ((fun x => 0) a) else none
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Axioms
+error: build failed
+saltbuild EXIT=1

@@ -21,6 +21,8 @@ def empty : Store := ⟨∅, ∅⟩
 /-- A cell `a` lies in the region based at `p` of length `n`. -/
 def InRegion (a p : Int) (n : Nat) : Prop := p ≤ a ∧ a < p + n
 
+instance (a p : Int) (n : Nat) : Decidable (InRegion a p n) := inferInstanceAs (Decidable (p ≤ a ∧ a < p + n))
+
 /-- OBJECT-L2 §2: dom H = ⋃ regions, regions pairwise disjoint, every length positive. -/
 structure WF (σ : Store) : Prop where
   pos : ∀ p n, σ.R.lookup p = some n → 0 < n

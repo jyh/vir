@@ -122,6 +122,22 @@ theorem fill_union (h : Finmap (fun _ : Int => Int)) (p v : Int) : ∀ k, fill h
   | 0 => by simp [fill, Finmap.empty_union]
   | k + 1 => by rw [fill, fill, fill_union h p v k, Finmap.insert_union]
 
+theorem lookup_fill (h : Finmap (fun _ : Int => Int)) (p v : Int) :
+    ∀ (k : Nat) (a : Int), (fill h p v k).lookup a = if p ≤ a ∧ a < p + k then some v else h.lookup a
+  | 0, a => by
+    simp only [fill]
+    split_ifs with hc
+    · omega
+    · rfl
+  | k + 1, a => by
+    rw [fill]
+    by_cases ha : a = p + k
+    · subst ha; rw [Finmap.lookup_insert]; split_ifs with hc
+      · rfl
+      · push_cast at hc; omega
+    · rw [Finmap.lookup_insert_of_ne _ ha, lookup_fill h p v k a]
+      split_ifs with h₁ h₂ h₂ <;> first | rfl | (push_cast at *; omega)
+
 theorem lookup_clear (h : Finmap (fun _ : Int => Int)) (p : Int) :
     ∀ (k : Nat) (a : Int), (clear h p k).lookup a = if p ≤ a ∧ a < p + k then none else h.lookup a
   | 0, a => by
@@ -153,8 +169,18 @@ end Store
 def IsRegion (p : Int) (n : Nat) (σ : Store) : Prop :=
   σ.R = Finmap.singleton p n ∧ ∀ a, a ∈ σ.H ↔ Store.InRegion a p n
 
+/-- σ owns exactly the region at p of length n, with contents f: its entry R(p) = n and its cells, cell a holding f a. -/
+def RegionAt (p : Int) (n : Nat) (f : Int → Int) (σ : Store) : Prop :=
+  σ.R = Finmap.singleton p n ∧ ∀ a, σ.H.lookup a = if Store.InRegion a p n then some (f a) else none
+
+theorem RegionAt.isRegion {p n f σ} (h : RegionAt p n f σ) : IsRegion p n σ := by
+  refine ⟨h.1, fun a => ?_⟩
+  rw [Finmap.mem_iff, h.2 a]
+  split_ifs with hc <;> simp [hc]
+
 theorem alloc_axiom (n : Int) (hn : 0 < n) :
-    OpTriple Assn.emp .alloc [.const (.int n)] (fun v σ => ∃ p, v = .const (.cap p) ∧ IsRegion p n.toNat σ) := by
+    OpTriple Assn.emp .alloc [.const (.int n)]
+      (fun v σ => ∃ p, v = .const (.cap p) ∧ RegionAt p n.toNat (fun _ => 0) σ) := by
   rintro σ σf rfl hd hwf
   rw [Store.empty_union] at hwf ⊢
   set p := Store.nextBase σf with hp
@@ -219,13 +245,9 @@ theorem alloc_axiom (n : Int) (hn : 0 < n) :
         rw [hRq] at hqm; split_ifs at hqm with hq
         · cases hqm; subst hq; exact Or.inl (Or.inl hin)
         · exact Or.inr ((hwf.domH a).2 ⟨q, m, hqm, hin⟩)
-  · show a ∈ Store.fill ∅ p 0 N ↔ _
-    rw [Store.mem_fill]
-    constructor
-    · rintro (h | h)
-      · exact h
-      · exact absurd h Finmap.notMem_empty
-    · exact Or.inl
+  · show (Store.fill ∅ p 0 N).lookup a = _
+    rw [Store.lookup_fill, Finmap.lookup_empty]
+    simp only [Store.InRegion]
 
 theorem free_axiom (p : Int) (n : Nat) :
     OpTriple (IsRegion p n) .free [.const (.cap p)] (fun v σ => v = .const .unit ∧ σ = Store.empty) := by
