@@ -40,7 +40,7 @@ Route: SYNTACTIC, by a runtime typing over configurations, because `fix` then ne
 5. DONE `Progress`: `progress_rt`: RT [] Δ Ω e τ, WF σ, every p ∈ Ω live ⇒ terminal ∨ steps ∨ IndexFault.
 6. DONE `RTSubst`: `RT.substV` (false position, Ω unchanged), `RT.substC` (⟨p⟩ at a true position, Ω grows by p),
    `RT.perm` (Ω up to permutation), `split_mid_true`.
-7. OWED: `OwnAll Ω` := ∗ over p ∈ Ω of (∃ n, IsRegion p n), with its permutation and append (Ω₁ ++ Ω₂ ↔ ∗) lemmas; region-
+7. DONE `OwnAll` (build-063): `OwnAll Ω` := ∗ over p ∈ Ω of (∃ n, IsRegion p n), with its permutation and append (Ω₁ ++ Ω₂ ↔ ∗) lemmas; region-
    level `load`/`store` from `IsRegion` alone (build the contents function from the fragment's own lookups, then `load_at` /
    `store_at`).
 8. OWED: PRESERVATION in frame form: RT [] [] Ω e τ ∧ OwnAll Ω σq ∧ Disj σq σf ∧ WF (σq ⊎ σf) ∧ Step₂ (e, σq ⊎ σf) (e', σ')
