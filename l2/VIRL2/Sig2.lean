@@ -46,8 +46,8 @@ def Const.toBool : Const → Option Bool
   | .bool b => some b
   | _ => none
 
-/-- Σ₂. -/
-def S₂ : Sig where
+/-- Σ₂. Reducible, so `S₂.B` is `BTy` to instance search. -/
+@[reducible] def S₂ : Sig where
   B := BTy
   C := Const
   P := L1.Prim

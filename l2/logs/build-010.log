@@ -1,0 +1,57 @@
+saltqueue: ticket P2 seat=root pid=56418
+⚠ [3/42] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/683] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/683] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/732] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [729/732] Building VIRL2.Typing2 (4.2s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Typing2.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Typing2.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Typing2.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Typing2.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Typing2.setup.json --json
+error: VIRL2/Typing2.lean:15:15: failed to synthesize instance of type class
+  BEq S₂.B
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: VIRL2/Typing2.lean:19:46: typeclass instance problem is stuck
+  GetElem? (List Bool) ?m.1 Bool (?m.9 n)
+
+Note: Lean will not try to resolve this typeclass instance problem because the second type argument to `GetElem?` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+error: VIRL2/Typing2.lean:40:27: Invalid field `hasCap`: The environment does not contain `VIRL1.Ty.hasCap`, so it is not possible to project the field `hasCap` from an expression
+  τ₁
+of type `Ty S₂.B`
+error: VIRL2/Typing2.lean:42:27: Invalid field `hasCap`: The environment does not contain `VIRL1.Ty.hasCap`, so it is not possible to project the field `hasCap` from an expression
+  τ₁
+of type `Ty S₂.B`
+error: VIRL2/Typing2.lean:42:47: Invalid field `hasCap`: The environment does not contain `VIRL1.Ty.hasCap`, so it is not possible to project the field `hasCap` from an expression
+  τ₂
+of type `Ty S₂.B`
+error: VIRL2/Typing2.lean:47:25: Invalid field `hasCap`: The environment does not contain `VIRL1.Ty.hasCap`, so it is not possible to project the field `hasCap` from an expression
+  τ₂
+of type `Ty S₂.B`
+error: VIRL2/Typing2.lean:48:25: Invalid field `hasCap`: The environment does not contain `VIRL1.Ty.hasCap`, so it is not possible to project the field `hasCap` from an expression
+  τ₁
+of type `Ty S₂.B`
+error: VIRL2/Typing2.lean:57:49: failed to synthesize instance of type class
+  BEq Ty₂
+
+Hint: Adding the command `deriving instance BEq for VIRL2.Ty₂` may allow Lean to derive the missing instance.
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Typing2
+error: build failed
+saltbuild EXIT=1
