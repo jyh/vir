@@ -6,6 +6,7 @@
 import VIRL2.Typing2
 
 namespace VIRL2
+open VIRL1
 
 theorem get_mid {Δ₁ Δ : List Bool} {b : Bool} (n : Nat) :
     (Δ₁ ++ b :: Δ)[n]? = if n < Δ₁.length then (Δ₁ ++ Δ)[n]? else if n = Δ₁.length then some b else (Δ₁ ++ Δ)[n - 1]? := by
@@ -84,5 +85,89 @@ theorem split_mid {Δ₁ Δ A B : List Bool} (h : Split (Δ₁ ++ false :: Δ) A
     | none h =>
       obtain ⟨A₁, A₂, B₁, B₂, rfl, rfl, h₁, h₂, hs⟩ := ih h
       exact ⟨false :: A₁, A₂, false :: B₁, B₂, rfl, rfl, by simp [h₁], by simp [h₂], .none hs⟩
+
+/-! ## Weakening at the END of the context (masks padded with `false`): a closed value types in every context. -/
+theorem mask_empty_pad {Δ : List Bool} (k : Nat) (h : Mask.empty Δ) : Mask.empty (Δ ++ List.replicate k false) := by
+  intro m hm
+  by_cases hl : m < Δ.length
+  · exact h m (by rw [List.getElem?_append_left hl] at hm; exact hm)
+  · rw [List.getElem?_append_right (by omega), List.getElem?_replicate] at hm; split_ifs at hm <;> simp at hm
+
+theorem get_pad {Δ : List Bool} {k n : Nat} (h : Δ[n]? = some true) : (Δ ++ List.replicate k false)[n]? = some true := by
+  have hl : n < Δ.length := by
+    rcases Nat.lt_or_ge n Δ.length with h' | h'
+    · exact h'
+    · rw [List.getElem?_eq_none h'] at h; cases h
+  rw [List.getElem?_append_left hl]; exact h
+
+theorem mask_only_pad {Δ : List Bool} {n : Nat} (k : Nat) (h : Mask.only Δ n) : Mask.only (Δ ++ List.replicate k false) n := by
+  refine ⟨get_pad h.1, fun m hm hm' => ?_⟩
+  by_cases hl : m < Δ.length
+  · exact h.2 m hm (by rw [List.getElem?_append_left hl] at hm'; exact hm')
+  · rw [List.getElem?_append_right (by omega), List.getElem?_replicate] at hm'; split_ifs at hm' <;> simp at hm'
+
+theorem set_pad {Δ : List Bool} {k n : Nat} (h : Δ[n]? = some true) :
+    (Δ ++ List.replicate k false).set n false = Δ.set n false ++ List.replicate k false := by
+  have hl : n < Δ.length := by
+    rcases Nat.lt_or_ge n Δ.length with h' | h'
+    · exact h'
+    · rw [List.getElem?_eq_none h'] at h; cases h
+  rw [List.set_append_left _ _ hl]
+
+theorem split_pad {Δ Δ₁ Δ₂ : List Bool} (k : Nat) (h : Split Δ Δ₁ Δ₂) :
+    Split (Δ ++ List.replicate k false) (Δ₁ ++ List.replicate k false) (Δ₂ ++ List.replicate k false) := by
+  induction h with
+  | nil => induction k with
+    | zero => exact .nil
+    | succ k ih => exact .none ih
+  | left _ ih => exact .left ih
+  | right _ ih => exact .right ih
+  | none _ ih => exact .none ih
+
+mutual
+theorem weakA₂ : ∀ {Γ a τ} (Γ' : Ctx S₂), HasTypeA₂ Γ a τ → HasTypeA₂ (Γ ++ Γ') a τ
+  | _, _, _, _, .var h hc => .var (by
+      have hl : _ < _ := (List.getElem?_eq_some_iff.1 h).1
+      rw [List.getElem?_append_left hl]; exact h) hc
+  | _, _, _, _, .int => .int
+  | _, _, _, _, .bool => .bool
+  | _, _, _, _, .unit => .unit
+  | _, _, _, Γ', .prim h => .prim (weakL₂ Γ' h)
+  | _, _, _, Γ', .lam h₁ h₂ hΔ hl h => .lam h₁ h₂ (mask_empty_pad Γ'.length hΔ) (by simp [hl]; omega) (weak₂ Γ' h)
+  | _, _, _, Γ', .fix h₁ h₂ hΔ hl h => .fix h₁ h₂ (mask_empty_pad Γ'.length hΔ) (by simp [hl]; omega) (weak₂ Γ' h)
+  | _, _, _, Γ', .pair h₁ h₂ => .pair (weakA₂ Γ' h₁) (weakA₂ Γ' h₂)
+  | _, _, _, Γ', .fst h => .fst (weakA₂ Γ' h)
+  | _, _, _, Γ', .snd h => .snd (weakA₂ Γ' h)
+  | _, _, _, Γ', .inl hc h => .inl hc (weakA₂ Γ' h)
+  | _, _, _, Γ', .inr hc h => .inr hc (weakA₂ Γ' h)
+theorem weakL₂ : ∀ {Γ as τs} (Γ' : Ctx S₂), HasTypeL₂ Γ as τs → HasTypeL₂ (Γ ++ Γ') as τs
+  | _, _, _, _, .nil => .nil
+  | _, _, _, Γ', .cons h hs => .cons (weakA₂ Γ' h) (weakL₂ Γ' hs)
+theorem weak₂ : ∀ {Γ Δ e τ} (Γ' : Ctx S₂), HasType₂ Γ Δ e τ →
+    HasType₂ (Γ ++ Γ') (Δ ++ List.replicate Γ'.length false) e τ
+  | _, _, _, _, Γ', .ret hΔ h => .ret (mask_empty_pad _ hΔ) (weakA₂ Γ' h)
+  | _, _, _, _, Γ', .retCap hΓ hΔ => .retCap (by
+      have hl : _ < _ := (List.getElem?_eq_some_iff.1 hΓ).1
+      rw [List.getElem?_append_left hl]; exact hΓ) (mask_only_pad _ hΔ)
+  | _, _, _, _, Γ', .letE hs hc h₁ h₂ => .letE (split_pad _ hs) hc (weak₂ Γ' h₁) (weak₂ Γ' h₂)
+  | _, _, _, _, Γ', .alloc ha h => .alloc (weakA₂ Γ' ha) (weak₂ Γ' h)
+  | _, _, _, _, Γ', .load hΓ hΔ ha h => .load (by
+      have hl : _ < _ := (List.getElem?_eq_some_iff.1 hΓ).1
+      rw [List.getElem?_append_left hl]; exact hΓ) (get_pad hΔ) (weakA₂ Γ' ha) (weak₂ Γ' h)
+  | _, _, _, _, Γ', .store hΓ hΔ h₁ h₂ h => .store (by
+      have hl : _ < _ := (List.getElem?_eq_some_iff.1 hΓ).1
+      rw [List.getElem?_append_left hl]; exact hΓ) (get_pad hΔ) (weakA₂ Γ' h₁) (weakA₂ Γ' h₂)
+      (by rw [set_pad hΔ]; exact weak₂ Γ' h)
+  | _, _, _, _, Γ', .free hΓ hΔ h => .free (by
+      have hl : _ < _ := (List.getElem?_eq_some_iff.1 hΓ).1
+      rw [List.getElem?_append_left hl]; exact hΓ) (get_pad hΔ)
+      (by rw [set_pad hΔ]; exact weak₂ Γ' h)
+  | _, _, _, _, Γ', .app hΔ h₁ h₂ => .app (mask_empty_pad _ hΔ) (weakA₂ Γ' h₁) (weakA₂ Γ' h₂)
+  | _, _, _, _, Γ', .ite h h₁ h₂ => .ite (weakA₂ Γ' h) (weak₂ Γ' h₁) (weak₂ Γ' h₂)
+  | _, _, _, _, Γ', .case h h₁ h₂ => .case (weakA₂ Γ' h) (weak₂ Γ' h₁) (weak₂ Γ' h₂)
+end
+
+theorem closedA₂ {v : Atom₂} {τ} (Γ : Ctx S₂) (h : HasTypeA₂ [] v τ) : HasTypeA₂ Γ v τ := by
+  simpa using weakA₂ Γ h
 
 end VIRL2
