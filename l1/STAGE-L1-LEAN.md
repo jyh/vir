@@ -30,13 +30,17 @@ the `rfl` that carries the value.
   (`Φ_cont`, 12 lines) from mathlib's `ωScottContinuous.bind`/`apply`/`const`. The unfolding equation is then mathlib's
   `Part.fix_eq_of_ωScottContinuous`.
 
-**Counts (PRELIMINARY: read by hand at the object; the harness extractor is owed, red first, before RESULTS-6 quotes them).**
-W1 C4vir: 0 (no axiom, opaque or structure field standing for an L1 construct; P₁ is defined by `Prim.interp`). W2a binder
-lemmas by amend-13's operator list (`subst`; no `shift`/`rename` defined): **4** (`HasTypeA.subst`, `HasTypeL.subst`,
-`HasType.subst`, `HasType.subst0`). **amend-13 predicted ≥ 6, so W2a reads FALSIFIED** pending the harness. The cause is the
-closed-value design above: it was not a choice made to move the count (E1 declares de Bruijn and extrinsic typing, and both
-hold), and it is recorded as a finding, not routed around. W6: `Part.fix` 1 use (`den`); leastness used in `den_typed` and
-`K2_diverges`; W6b: 1 continuity theorem. W7: all six steps close with no fuel and no primitive step rule.
+**Counts (`harness/count.py --arm l1 l1` → `l1/out/counts-l1.tsv`; `harness/reproduce.sh` rc 0; selftest ARM24, mutant KILLED).**
+W1 `L1.C4vir` **0** (P₁ is defined by `Prim.interp`; no axiom, opaque or structure field stands for an L1 construct) · W2a
+`L1.binder` **3** under amend-13's frozen token list (`HasTypeA.subst`, `HasType.subst`, `HasType.subst0`), with **1 BESIDE**
+(`HasTypeL.subst`, whose statement names the list half `substL`, a token not on the list; the list is not widened after the
+count was read). **amend-13 predicted ≥ 6, so W2a is FALSIFIED (3, or 4 counting the one beside).** The cause is the
+closed-value design: CBV substitutes only closed values, so no shift is defined and weakening needs no index arithmetic. It
+was not chosen to move the count (E1's de Bruijn + extrinsic typing both hold), and it is a finding about what an L1 needs,
+not routed around. The author's hand count on this page first read 4. The harness's 3 is the figure. · W6 `L1.fix` **1**
+(`den`), `L1.leastness` **2** (`den_typed`, `K2_diverges`) · W6b `L1.continuity` **1** (`Φ_cont`) · W7: all required
+theorems close with no fuel and no primitive step rule · audit 35 rows, extra axioms 0, control 1 · mutants 2, red 2 · C6 18
+logged runs.
 
 **Not done (declared, nothing cut):** adequacy (OBJECT-L1 §6 step 6b) · the harness rows for W1/W2/W6 on `l1/` and RESULTS-6 ·
 W3 (the extension test, after BOTH arms close) · the MetaPRL arm (mojave, building now). The L1→L2 statement (§8) is proved at L2.
