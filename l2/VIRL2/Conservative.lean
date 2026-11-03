@@ -285,4 +285,89 @@ theorem stepFn_emb : ∀ (e : Tm₁), stepFn (embE e) = (stepFn e).map embE
     | none => rfl
     | some w => cases w <;> simp [embA, embE_subst]
 
+/-! ## CLAUSE 2: the steps correspond, and the store is untouched -/
+
+/-- No O₂ operation in evaluation position. -/
+def NoOpHead : Tm₂ → Prop
+  | .letE _ e₁ _ => NoOpHead e₁
+  | .letOp .. => False
+  | _ => True
+
+theorem noOpHead_emb : ∀ (e : Tm₁), NoOpHead (embE e)
+  | .letE _ e₁ _ => noOpHead_emb e₁
+  | .letOp o _ _ _ => nomatch (o : Empty)
+  | .ret _ | .app _ _ | .ite _ _ _ | .case _ _ _ => trivial
+
+theorem step₂_pure_inv {e : Tm₂} {σ c} (hn : NoOpHead e) (h : Step₂ (e, σ) c) : ∃ e', Step e e' ∧ c = (e', σ) := by
+  generalize hc : (e, σ) = c₀ at h
+  induction h generalizing e σ with
+  | pure hs => injection hc with h₁ h₂; subst h₁ h₂; exact ⟨_, hs, rfl⟩
+  | letStep _ ih =>
+    injection hc with h₁ h₂; subst h₁ h₂
+    obtain ⟨e₁'', hs, heq⟩ := ih (by exact hn) rfl
+    injection heq with h₁ h₂; subst h₁ h₂
+    exact ⟨_, .letStep hs, rfl⟩
+  | op => injection hc with h₁ h₂; subst h₁; exact hn.elim
+
+theorem step_emb {e e' : Tm₁} (h : Step e e') : Step (embE e) (embE e') :=
+  stepFn_sound (by rw [stepFn_emb, stepFn_complete h]; rfl)
+
+theorem step_unemb {e : Tm₁} {e'' : Tm₂} (h : Step (embE e) e'') : ∃ e', Step e e' ∧ e'' = embE e' := by
+  have h' := stepFn_complete h
+  rw [stepFn_emb] at h'
+  obtain ⟨e', h₁, h₂⟩ := Option.map_eq_some_iff.1 h'
+  exact ⟨e', stepFn_sound h₁, h₂.symm⟩
+
+/-- OBJECT-L1 §8 CLAUSE 2: `e ⟶₁ e′` iff `⟨ι e, σ⟩ ⟶₂ ⟨ι e′, σ⟩`, for every σ. -/
+theorem conservative_steps {e e' : Tm₁} (σ : Store) : Step e e' ↔ Step₂ (embE e, σ) (embE e', σ) := by
+  refine ⟨fun h => .pure (step_emb h), fun h => ?_⟩
+  obtain ⟨e'', hs, heq⟩ := step₂_pure_inv (noOpHead_emb e) h
+  injection heq with h₁; subst h₁
+  obtain ⟨x, hx, hxe⟩ := step_unemb hs
+  rw [embE_inj hxe.symm] at hx
+  exact hx
+
+theorem steps_emb {e e' : Tm₁} (σ : Store) (h : Steps e e') : Steps₂ (embE e, σ) (embE e', σ) := by
+  induction h with
+  | refl => exact .refl _
+  | step s _ ih => exact .step (.pure (step_emb s)) ih
+
+theorem steps₂_unemb {e : Tm₁} {σ c} (h : Steps₂ (embE e, σ) c) : ∃ e', Steps e e' ∧ c = (embE e', σ) := by
+  generalize hc : (embE e, σ) = c₀ at h
+  induction h generalizing e with
+  | refl => subst hc; exact ⟨e, .refl _, rfl⟩
+  | step h₁ _ ih =>
+    subst hc
+    obtain ⟨e'', hs, rfl⟩ := step₂_pure_inv (noOpHead_emb e) h₁
+    obtain ⟨x, hx, rfl⟩ := step_unemb hs
+    obtain ⟨e', hs', rfl⟩ := ih rfl
+    exact ⟨e', .step hx hs', rfl⟩
+
+/-! ## CLAUSE 3: the meaning is L1's, paired with the unchanged store -/
+theorem embE_eq_ret {e : Tm₁} {a : Atom₂} (h : embE e = .ret a) : ∃ a₁, e = .ret a₁ ∧ a = embA a₁ := by
+  cases e with
+  | ret a₁ => simp only [embE, Tm.ret.injEq] at h; exact ⟨a₁, rfl, h.symm⟩
+  | letOp o _ _ _ => exact nomatch (o : Empty)
+  | _ => simp [embE] at h
+
+/-- OBJECT-L1 §8 CLAUSE 3: `⟦ι e⟧₂ σ = ⟦e⟧₁ >>= (c ↦ ⌊(ι c, σ)⌋)`, for every σ. -/
+theorem conservative_den (e : Tm₁) (σ : Store) :
+    den₂ (embE e, σ) = (den e).bind fun c => Part.some (embA c, σ) := by
+  apply Part.ext; rintro ⟨v, σ'⟩
+  rw [Part.mem_bind_iff]
+  constructor
+  · intro h
+    obtain ⟨a, hs, ha⟩ := adequacy₂ h
+    obtain ⟨e', hs₁, heq⟩ := steps₂_unemb hs
+    injection heq with h₁ h₂; subst h₂
+    obtain ⟨a₁, rfl, rfl⟩ := embE_eq_ret h₁.symm
+    rw [embA_eval] at ha
+    obtain ⟨v₁, hv₁, rfl⟩ := Option.map_eq_some_iff.1 ha
+    exact ⟨v₁, by rw [den_of_steps hs₁ hv₁]; exact Part.mem_some _, Part.mem_some _⟩
+  · rintro ⟨c, hc, hr⟩
+    rw [Part.mem_some_iff] at hr; cases hr
+    obtain ⟨a₁, hs₁, ha₁⟩ := adequacy hc
+    have h := den₂_of_steps (steps_emb σ hs₁) (a := embA a₁) (v := embA c) (by rw [embA_eval, ha₁]; rfl)
+    rw [h]; exact Part.mem_some _
+
 end VIRL2
