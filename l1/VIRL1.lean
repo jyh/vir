@@ -5,3 +5,4 @@ import VIRL1.Safety
 import VIRL1.Denot
 import VIRL1.L1
 import VIRL1.Programs
+import VIRL1.Adequacy

@@ -18,9 +18,10 @@ two-arm prediction is UNSCORED below, never assumed.
 | W6 the fixpoint is used, and leastness for K2 | `L1.fix` **1** · `L1.leastness` **2** | owed (itt_bar's fix rule) | Lean HOLDS · MetaPRL unscored |
 | W6b the side condition | `L1.continuity` **1** (`Φ_cont`, 12 lines) | owed (adm) | EXPLORATORY |
 | W7 the six steps close | all required theorems, no fuel, no primitive step rule (`l1/STAGE-L1-LEAN.md`) | owed | Lean HOLDS · MetaPRL unscored |
+| (W7) step 6b adequacy, scored when built | **built**: `adequacy`, `den_iff_steps` (build-013, audit-002) | owed | Lean BUILT |
 | W8 conservative extension | — | — | at L2 |
 
-C6 for the Lean arm: 18 logged saltbuild runs (`L1.C6`; 12 builds, 2 scratch, 2 audit, 2 mutants).
+C6 for the Lean arm: 20 logged saltbuild runs (`L1.C6`; 13 builds, 2 scratch, 3 audit, 2 mutants).
 
 ## What the W2a falsification says
 amend-13 predicted at least 6 Lean binder lemmas from two syntactic categories and three binder shapes. The arm needed 3 (4

@@ -42,5 +42,10 @@ not routed around. The author's hand count on this page first read 4. The harnes
 theorems close with no fuel and no primitive step rule · audit 35 rows, extra axioms 0, control 1 · mutants 2, red 2 · C6 18
 logged runs.
 
-**Not done (declared, nothing cut):** adequacy (OBJECT-L1 §6 step 6b) · the harness rows for W1/W2/W6 on `l1/` and RESULTS-6 ·
+**Step 6b, ADEQUACY — built after the close (`Adequacy.lean`, build-013 EXIT=0, audit-002: 40 rows, all within the
+standard three).** `adequacy`: v ∈ ⟦e⟧ ⇒ e ⟶* ret a with ⟨a⟩ = v, by the same approximation induction, needing NO typing.
+With soundness, `den_iff_steps`: the denotation and the small-step semantics define the same partial function on closed
+expressions.
+
+**Not done (declared, nothing cut):** the harness rows for W1/W2/W6 on `l1/` and RESULTS-6 ·
 W3 (the extension test, after BOTH arms close) · the MetaPRL arm (mojave, building now). The L1→L2 statement (§8) is proved at L2.
