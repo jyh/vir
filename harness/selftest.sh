@@ -355,6 +355,22 @@ if cmp -s "$H/count.py" "$F/mutant25.py"; then say "ARM25 mutant NOT PLANTED"; f
 elif check25 "$F/mutant25.py"; then say "ARM25 mutant SURVIVED (edited BLOCKS counted as categories)"; fail=1
 else say "ARM25 mutant KILLED"; fi
 
+# (26) layer L1, the MetaPRL side (row 99; amend-14's file rule). A fixture vir-metaprl/theories/vir with one virl1_ theory
+# holding ONE prim and one interactive, and itt_bar + itt_bar_bterm holding 3 prims between them. W1 is scored on virl1_*
+# alone and the PARTIALITY THEORY column sits beside it. Want W1=1, PARTIALITY=3, interactive=1.
+M6="$F/ml1/vir-metaprl/theories/vir"; mkdir -p "$M6"
+printf 'prim foo :\n   sequent { <H> >- a }\ninteractive bar :\n   sequent { <H> >- b }\n' > "$M6/virl1_x.ml"
+printf 'prim h1 : a\nprim h2 : b\n' > "$M6/itt_bar.ml"; printf 'prim_rw h3 : c <--> d\n' > "$M6/itt_bar_bterm.ml"
+printf 'prim notcounted : z\n' > "$M6/other.ml"
+check26() { local o; o=$(python3 "$1" --arm metaprll1 "$F/ml1")
+  [ "$(g6 "$o" L1M.W1)" = 1 ] && [ "$(g6 "$o" L1M.PARTIALITY)" = 3 ] && [ "$(g6 "$o" L1M.interactive)" = 1 ]; }
+if check26 "$H/count.py"; then say "ARM26 metaprll1 fixture OK (W1=1 PARTIALITY=3 interactive=1)"
+else say "ARM26 metaprll1 fixture FAIL"; python3 "$H/count.py" --arm metaprll1 "$F/ml1"; fail=1; fi
+sed "s/if f.startswith('virl1_') and f.endswith('.ml')/if (f.startswith('virl1_') or f.startswith('itt_bar')) and f.endswith('.ml')/" "$H/count.py" > "$F/mutant26.py"
+if cmp -s "$H/count.py" "$F/mutant26.py"; then say "ARM26 mutant NOT PLANTED"; fail=1
+elif check26 "$F/mutant26.py"; then say "ARM26 mutant SURVIVED (itt_bar counted in W1)"; fail=1
+else say "ARM26 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
