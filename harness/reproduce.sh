@@ -53,8 +53,16 @@ else echo "  MISSING  spike repo $SP (compiler rows not re-derived)"; fail=1; fi
 # amend-10: the Lean B′ mirror (lean/VIRB), read from its own logs
 chk "$V/lean/VIRB/out/counts-bp.tsv" --arm leanbp "$V/lean/VIRB"
 chk "$V/virp/out/counts-p.tsv" --arm leanp "$V/virp"
-# amend-13: layer L1, the Lean arm (l1/VIRL1), read from its own logs
-chk "$V/l1/out/counts-l1.tsv" --arm l1 "$V/l1"
+# amend-13: layer L1, the Lean arm (l1/VIRL1), read from its own logs AT THE SHA THAT WROTE ITS COUNTS (W3's extension commits
+# and their logs must not move L1's close record: the row-45 defect, met again at W3 (i)/(ii)). The sha is DERIVED from git.
+L1SHA=$(git -C "$V" log -1 --format=%H -- l1/out/counts-l1.tsv)
+mkdir -p "$M/l1at" && git -C "$V" archive "$L1SHA" l1 | tar -x -C "$M/l1at" \
+  || { echo "REPRODUCE MISSING-INPUT l1/ at $L1SHA"; exit 2; }
+echo "  PINNED   l1/ at its counts commit ${L1SHA:0:12}"
+chk "$V/l1/out/counts-l1.tsv" --arm l1 "$M/l1at/l1"
+# amend-15: W3 on the Lean arm, one file per extension commit, each read from git at its pinned shas
+chk "$V/l1/out/counts-w3-i.tsv"  --arm v3l1 --base b156167 --ext 21c2b97 --prefix l1/VIRL1 "$V"
+chk "$V/l1/out/counts-w3-ii.tsv" --arm v3l1 --base 21c2b97 --ext ba9c696 --prefix l1/VIRL1 "$V"
 chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

@@ -28,6 +28,11 @@ theorem canon_arr {v : Atom S} {τ₁ τ₂} (hv : v.IsValue) (h : HasTypeA E []
   · exact .inl ⟨_, rfl, ‹_›⟩
   · exact .inr ⟨_, rfl, ‹_›⟩
 
+theorem canon_prod {v : Atom S} {τ₁ τ₂} (hv : v.IsValue) (h : HasTypeA E [] v (.prod τ₁ τ₂)) :
+    ∃ v₁ v₂, v = .pair v₁ v₂ ∧ v₁.IsValue ∧ v₂.IsValue ∧ HasTypeA E [] v₁ τ₁ ∧ HasTypeA E [] v₂ τ₂ := by
+  cases v <;> simp [Atom.IsValue] at hv <;> cases h
+  exact ⟨_, _, rfl, hv.1, hv.2, ‹_›, ‹_›⟩
+
 /-! ## Atom evaluation is total on well-typed closed atoms, and typed -/
 mutual
 theorem Atom.eval_total (hS : S.Lawful) : ∀ (a : Atom S) {τ}, HasTypeA E [] a τ →
@@ -41,6 +46,18 @@ theorem Atom.eval_total (hS : S.Lawful) : ∀ (a : Atom S) {τ}, HasTypeA E [] a
       simp [Atom.eval, hcs, constsOf_map, hc]
   | .lam τ e, _, h => ⟨_, rfl, trivial, h⟩
   | .fix τ₁ τ₂ e, _, h => ⟨_, rfl, trivial, h⟩
+  | .pair a₁ a₂, _, .pair h₁ h₂ => by
+      obtain ⟨v₁, hv₁, hval₁, ht₁⟩ := Atom.eval_total hS a₁ h₁
+      obtain ⟨v₂, hv₂, hval₂, ht₂⟩ := Atom.eval_total hS a₂ h₂
+      exact ⟨.pair v₁ v₂, by simp [Atom.eval, hv₁, hv₂], ⟨hval₁, hval₂⟩, .pair ht₁ ht₂⟩
+  | .fst a, _, .fst h => by
+      obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
+      obtain ⟨v₁, v₂, rfl, h₁, -, ht₁, -⟩ := canon_prod hval ht
+      exact ⟨v₁, by simp [Atom.eval, hv], h₁, ht₁⟩
+  | .snd a, _, .snd h => by
+      obtain ⟨v, hv, hval, ht⟩ := Atom.eval_total hS a h
+      obtain ⟨v₁, v₂, rfl, -, h₂, -, ht₂⟩ := canon_prod hval ht
+      exact ⟨v₂, by simp [Atom.eval, hv], h₂, ht₂⟩
 theorem Atom.evalL_total (hS : S.Lawful) : ∀ (as : List (Atom S)) {bs : List S.B}, HasTypeL E [] as (bs.map .base) →
     ∃ cs : List S.C, Atom.evalL as = some (cs.map .const) ∧ cs.map S.cTy = bs
   | [], [], _ => ⟨[], rfl, rfl⟩

@@ -20,6 +20,13 @@ def Atom.eval : Atom S → Option (Atom S)
   | .prim p as => (Atom.evalL as).bind fun vs => (constsOf vs).bind fun cs => (S.pInterp p cs).map .const
   | .lam τ e => some (.lam τ e)
   | .fix τ₁ τ₂ e => some (.fix τ₁ τ₂ e)
+  | .pair a₁ a₂ => (Atom.eval a₁).bind fun v₁ => (Atom.eval a₂).map fun v₂ => .pair v₁ v₂
+  | .fst a => (Atom.eval a).bind fun v => match v with
+    | .pair v₁ _ => some v₁
+    | _ => none
+  | .snd a => (Atom.eval a).bind fun v => match v with
+    | .pair _ v₂ => some v₂
+    | _ => none
 def Atom.evalL : List (Atom S) → Option (List (Atom S))
   | [] => some []
   | a :: as => (Atom.eval a).bind fun v => (Atom.evalL as).map (v :: ·)

@@ -18,6 +18,9 @@ inductive HasTypeA : Ctx S → Atom S → Ty S.B → Prop where
   | prim {Γ p as} : HasTypeL Γ as ((S.pArgs p).map .base) → HasTypeA Γ (.prim p as) (.base (S.pRes p))
   | lam {Γ τ₁ τ₂ e} : HasType (τ₁ :: Γ) e τ₂ → HasTypeA Γ (.lam τ₁ e) (.arr τ₁ τ₂)
   | fix {Γ τ₁ τ₂ e} : HasType (τ₁ :: .arr τ₁ τ₂ :: Γ) e τ₂ → HasTypeA Γ (.fix τ₁ τ₂ e) (.arr τ₁ τ₂)
+  | pair {Γ a₁ a₂ τ₁ τ₂} : HasTypeA Γ a₁ τ₁ → HasTypeA Γ a₂ τ₂ → HasTypeA Γ (.pair a₁ a₂) (.prod τ₁ τ₂)
+  | fst {Γ a τ₁ τ₂} : HasTypeA Γ a (.prod τ₁ τ₂) → HasTypeA Γ (.fst a) τ₁
+  | snd {Γ a τ₁ τ₂} : HasTypeA Γ a (.prod τ₁ τ₂) → HasTypeA Γ (.snd a) τ₂
 inductive HasTypeL : Ctx S → List (Atom S) → List (Ty S.B) → Prop where
   | nil {Γ} : HasTypeL Γ [] []
   | cons {Γ a as τ τs} : HasTypeA Γ a τ → HasTypeL Γ as τs → HasTypeL Γ (a :: as) (τ :: τs)
@@ -40,6 +43,12 @@ theorem HasTypeA.unique : ∀ {Γ : Ctx S} (a : Atom S) {τ τ'}, HasTypeA E Γ 
   | _, .prim _ _, _, _, .prim _, .prim _ => rfl
   | _, .lam _ e, _, _, .lam h, .lam h' => by rw [HasType.unique e h h']
   | _, .fix _ _ _, _, _, .fix _, .fix _ => rfl
+  | _, .pair a₁ a₂, _, _, .pair h₁ h₂, .pair h₁' h₂' => by
+      rw [HasTypeA.unique a₁ h₁ h₁', HasTypeA.unique a₂ h₂ h₂']
+  | _, .fst a, _, _, .fst h, .fst h' => by
+      have := HasTypeA.unique a h h'; cases this; rfl
+  | _, .snd a, _, _, .snd h, .snd h' => by
+      have := HasTypeA.unique a h h'; cases this; rfl
 theorem HasType.unique : ∀ {Γ : Ctx S} (e : Tm S) {τ τ'}, HasType E Γ e τ → HasType E Γ e τ' → τ = τ'
   | _, .ret a, _, _, .ret h, .ret h' => HasTypeA.unique a h h'
   | _, .letE _ _ e₂, _, _, .letE _ h, .letE _ h' => HasType.unique e₂ h h'
@@ -57,6 +66,9 @@ theorem HasTypeA.weaken : ∀ {Γ : Ctx S} (a : Atom S) {τ} (Δ : Ctx S), HasTy
   | _, .prim _ as, _, Δ, .prim h => .prim (HasTypeL.weaken as Δ h)
   | _, .lam _ e, _, Δ, .lam h => .lam (HasType.weaken e Δ h)
   | _, .fix _ _ e, _, Δ, .fix h => .fix (HasType.weaken e Δ h)
+  | _, .pair a₁ a₂, _, Δ, .pair h₁ h₂ => .pair (HasTypeA.weaken a₁ Δ h₁) (HasTypeA.weaken a₂ Δ h₂)
+  | _, .fst a, _, Δ, .fst h => .fst (HasTypeA.weaken a Δ h)
+  | _, .snd a, _, Δ, .snd h => .snd (HasTypeA.weaken a Δ h)
 theorem HasTypeL.weaken : ∀ {Γ : Ctx S} (as : List (Atom S)) {τs} (Δ : Ctx S), HasTypeL E Γ as τs → HasTypeL E (Γ ++ Δ) as τs
   | _, [], _, _, .nil => .nil
   | _, a :: as, _, Δ, .cons h hs => .cons (HasTypeA.weaken a Δ h) (HasTypeL.weaken as Δ hs)
@@ -101,6 +113,9 @@ theorem HasTypeA.subst : ∀ (a : Atom S) {Δ Γ : Ctx S} {τ τ' v}, HasTypeA E
   | .fix τ₁ τ₂ e, Δ, Γ, _, _, _, .fix h, hv => by
       have := HasType.subst e (Δ := τ₁ :: .arr τ₁ τ₂ :: Δ) h hv
       exact .fix (by simpa [Nat.add_assoc] using this)
+  | .pair a₁ a₂, _, _, _, _, _, .pair h₁ h₂, hv => .pair (HasTypeA.subst a₁ h₁ hv) (HasTypeA.subst a₂ h₂ hv)
+  | .fst a, _, _, _, _, _, .fst h, hv => .fst (HasTypeA.subst a h hv)
+  | .snd a, _, _, _, _, _, .snd h, hv => .snd (HasTypeA.subst a h hv)
 theorem HasTypeL.subst : ∀ (as : List (Atom S)) {Δ Γ : Ctx S} {τ τs v}, HasTypeL E (Δ ++ τ :: Γ) as τs → HasTypeA E [] v τ →
     HasTypeL E (Δ ++ Γ) (Atom.substL Δ.length v as) τs
   | [], _, _, _, _, _, .nil, _ => .nil
