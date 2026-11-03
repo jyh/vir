@@ -7,3 +7,4 @@ import VIRL2.Axioms
 import VIRL2.Rules
 import VIRL2.Regions
 import VIRL2.Programs
+import VIRL2.Triples
