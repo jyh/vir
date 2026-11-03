@@ -848,14 +848,35 @@ def v3l1m(repo, base, ext):
         return items, cats
     b, bc = at(base)
     a, ac = at(ext)
-    if not b:
-        return [('W3M.categories', 0, 'EMPTY:no-central-file-at-base')]
+    empty = not b
     edited = [k for k in b if k in a and b[k] != a[k] and not W3_L1M_PROG.match(k)]
     central = [k for k in edited if not W3_L1M_SIGMA.match(k)]
     alt = [k for k in edited if not W3_L1M_SIGMA.match(k) or W3_L1M_ALT.match(k)]
     cats = sorted(set(bc[k] for k in central)); altc = sorted(set(bc[k] for k in alt))
     added = [k for k in a if k not in b]
+    # W3b (ARM34): rules over EVERY theories/vir/*.ml, and the stored-proof archives changed, beside the count
+    def rules_at(sha):
+        out = {}
+        for p in g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split():
+            if not p.endswith('.ml'):
+                continue
+            rt = strip_ml_comments(g('show', sha + ':' + p).stdout)
+            for blk in MPL_ITEM_RE.split(rt):
+                m = re.match(r'(?:interactive|prim)(?:_rw)?\s+(\S+)', blk)
+                if m:
+                    out[p + ':' + m.group(1)] = ' '.join(blk.split())
+        return out
+    rb, ra = rules_at(base), rules_at(ext)
+    redit = [k for k in rb if k in ra and rb[k] != ra[k]]
+    radd = [k for k in ra if k not in rb]
+    prla = [p for p in g('diff', '--name-only', base, ext, '--', 'theories/vir').stdout.split() if p.endswith('.prla')]
+    w3b = [('W3M.rulesEdited', len(redit), 'BESIDE:W3b'), ('W3M.rulesAdded', len(radd), 'BESIDE:W3b'),
+           ('W3M.prlaChanged', len(prla), 'BESIDE:W3b:stored-proof archives')]
+    if empty:
+        return [('W3M.categories', 0, 'EMPTY:no-central-file-at-base')] + w3b
     return [('W3M.categories', len(cats), 'MEASURED:' + (','.join(cats) or '-')),
+            ('W3M.rulesEdited', len(redit), 'BESIDE:W3b'), ('W3M.rulesAdded', len(radd), 'BESIDE:W3b'),
+            ('W3M.prlaChanged', len(prla), 'BESIDE:W3b:stored-proof archives'),
             ('W3M.itemsEdited', len(central), 'BESIDE:' + (','.join(sorted(central)) or '-')),
             ('W3M.categories.altCentral', len(altc), 'BESIDE:interp/pty/pty1 read as central:' + (','.join(altc) or '-')),
             ('W3M.sigmaEdited', len([k for k in edited if W3_L1M_SIGMA.match(k)]), 'BESIDE'),

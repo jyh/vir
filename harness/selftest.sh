@@ -503,6 +503,24 @@ if cmp -s "$H/count.py" "$F/mutant33.py"; then say "ARM33 mutant NOT PLANTED"; f
 elif check33 "$F/mutant33.py"; then say "ARM33 mutant SURVIVED (a comment-only change counted as an edit)"; fail=1
 else say "ARM33 mutant KILLED"; fi
 
+# (34) W3b, MetaPRL (amend-17 (iii)b; STATUS-vir row 115): beside the category count, the RULES (interactive/prim) edited or added
+# across theories/vir/*.ml, and the stored-proof archives (.prla) changed. Fixture: base has rule r1 and r2 in virl1_x.ml and
+# virl1_x.prla; ext edits r1, adds r3, leaves r2, changes virl1_x.prla, and adds a comment-only change above r2. Want
+# rulesEdited=1, rulesAdded=1, prlaChanged=1.
+R14="$F/ml14"; mkdir -p "$R14/theories/vir"; git -C "$R14" init -q; git -C "$R14" config user.email t@t; git -C "$R14" config user.name t
+printf "interactive r1 : a\ninteractive r2 : b\n" > "$R14/theories/vir/virl1_x.ml"; printf "p1\n" > "$R14/theories/vir/virl1_x.prla"
+git -C "$R14" add -A; git -C "$R14" commit -qm B; B14=$(git -C "$R14" rev-parse HEAD)
+printf "interactive r1 : a2\ninteractive r2 : b\n(* note *)\ninteractive r3 : c\n" > "$R14/theories/vir/virl1_x.ml"; printf "p2\n" > "$R14/theories/vir/virl1_x.prla"
+git -C "$R14" commit -qam E; E14=$(git -C "$R14" rev-parse HEAD)
+check34() { local o; o=$(python3 "$1" --arm v3l1m --base "$B14" --ext "$E14" "$R14")
+  [ "$(g6 "$o" W3M.rulesEdited)" = 1 ] && [ "$(g6 "$o" W3M.rulesAdded)" = 1 ] && [ "$(g6 "$o" W3M.prlaChanged)" = 1 ]; }
+if check34 "$H/count.py"; then say "ARM34 v3l1m W3b fixture OK (rulesEdited=1 rulesAdded=1 prlaChanged=1)"
+else say "ARM34 v3l1m W3b fixture FAIL"; python3 "$H/count.py" --arm v3l1m --base "$B14" --ext "$E14" "$R14"; fail=1; fi
+sed "s/        rt = strip_ml_comments(g('show', sha + ':' + p).stdout)/        rt = g('show', sha + ':' + p).stdout/" "$H/count.py" > "$F/mutant34.py"
+if cmp -s "$H/count.py" "$F/mutant34.py"; then say "ARM34 mutant NOT PLANTED"; fail=1
+elif check34 "$F/mutant34.py"; then say "ARM34 mutant SURVIVED (a comment glued onto r2 read as an edit)"; fail=1
+else say "ARM34 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
