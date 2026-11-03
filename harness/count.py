@@ -731,9 +731,41 @@ def metaprll1(d):
             ('L1M.grounded', 0, 'Q:check_all')]
 
 
+# W8 at L2 (amend-13 W8, amend-16 Y2 draft; STATUS-vir row 104): how many L1 DEFINITIONS (def / inductive / structure /
+# instance / abbrev, any modifier) differ between the arm's L1-closed sha (base) and its L2-closed sha (ext), over the files
+# under prefix that exist at BASE. A vanished definition is an edit. A theorem edit is printed BESIDE, never in W8. New files
+# are L2's own and are counted beside.
+ISTHM = re.compile(r'(?:@\[[^\]]*\]\s*)?' + MODS + r'(?:theorem|lemma)\b')
+
+
+def w8(repo, base, ext, prefix):
+    ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
+                                                 capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
+    old, new = ls(base), ls(ext)
+    if not old:
+        return [('W8.defsEdited', 0, 'EMPTY')]
+    before, after = {}, {}
+    for p in old:
+        before.update(lean_decls_mod(git_show(repo, base, p) or ''))
+        a = git_show(repo, ext, p)
+        if a is not None:
+            after.update(lean_decls_mod(a))
+    defs, thms = [], []
+    for n in before:
+        if after.get(n) == before[n]:
+            continue
+        if not ISTHM.match(before[n]):
+            defs.append(n)
+        else:
+            thms.append(n)
+    return [('W8.defsEdited', len(defs), 'MEASURED:' + (','.join(defs) or '-')),
+            ('W8.thmEdited', len(thms), 'BESIDE:' + (','.join(thms) or '-')),
+            ('W8.newFiles', len([p for p in new if p not in old]), 'BESIDE')]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -751,6 +783,8 @@ def main():
         rows = leanl1(a.dir)
     elif a.arm == 'leanbp':
         rows = leanbp(a.dir)
+    elif a.arm == 'w8':
+        rows = w8(a.dir, a.base, a.ext, a.prefix)
     elif a.arm == 'metaprll1':
         rows = metaprll1(a.dir)
     elif a.arm == 'metaprlbp':
