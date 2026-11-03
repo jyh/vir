@@ -51,9 +51,9 @@ theorem RT.ofTyped : ∀ {Γ Δ e τ}, HasType₂ Γ Δ e τ → RT Γ Δ [] e �
 /-- An INDEX fault (errata L2-E1, L2-E2): stuck at a `load`/`store` whose index is out of range for a LIVE region, or at an
   `alloc` whose size is non-positive; or such a fault in a `let`'s head. -/
 inductive IndexFault : Config → Prop where
-  | load {p i a τ e σ n} : Atom.eval (S := S₂) a = some (.const (Const.int i)) → σ.R.lookup p = some n → ¬ (0 ≤ i ∧ i < n) →
+  | load {p i a τ e σ} {n : Nat} : Atom.eval (S := S₂) a = some (.const (Const.int i)) → σ.R.lookup p = some n → ¬ (0 ≤ i ∧ i < (n : Int)) →
       IndexFault (.letOp .load [.const (.cap p), a] τ e, σ)
-  | store {p i a₁ a₂ τ e σ n} : Atom.eval (S := S₂) a₁ = some (.const (Const.int i)) → σ.R.lookup p = some n → ¬ (0 ≤ i ∧ i < n) →
+  | store {p i a₁ a₂ τ e σ} {n : Nat} : Atom.eval (S := S₂) a₁ = some (.const (Const.int i)) → σ.R.lookup p = some n → ¬ (0 ≤ i ∧ i < (n : Int)) →
       IndexFault (.letOp .store [.const (.cap p), a₁, a₂] τ e, σ)
   | alloc {a k τ e σ} : Atom.eval (S := S₂) a = some (.const (Const.int k)) → k ≤ 0 → IndexFault (.letOp .alloc [a] τ e, σ)
   | letE {τ e₁ e₂ σ} : IndexFault (e₁, σ) → IndexFault (.letE τ e₁ e₂, σ)
