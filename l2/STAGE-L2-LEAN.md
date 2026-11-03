@@ -47,7 +47,7 @@ Route: SYNTACTIC, by a runtime typing over configurations, because `fix` then ne
    ⇒ ∃ Ω' σq', RT [] [] Ω' e' τ ∧ OwnAll Ω' σq' ∧ Disj σq' σf ∧ σ' = σq' ⊎ σf ∧ WF σ'. Cases: L1's steps (letRet by
    substV or substC by whether τ₁ = cap; appLam/appFix by `subst₂` then `RT.ofTyped`; ite; case by substV); letStep (split
    Ω₁ ++ Ω₂, the e₂ part joins the frame); the four ops via the framed op axioms (`op_frame` with OwnAll of the rest).
-9. OWED: THE BRIDGE: an index-fault-tolerant triple (Triple with `Faults c ∧ ¬ IndexFault c` excluded instead of `Faults c`)
+9. DONE `Y5` (build-067: `TripleIF`, `rt_triple`, `y5_closed`, `y5_open` with `Binds`): THE BRIDGE: an index-fault-tolerant triple (Triple with `Faults c ∧ ¬ IndexFault c` excluded instead of `Faults c`)
    and Y5 for closed programs: `HasType₂ [] [] e τ ⇒ {emp} e {v. τ ≠ cap: ⌜⊢ v : τ⌝ ∧ emp; τ = cap: ∃ p n, v = ⟨p⟩ ∧ region(p, n)}`,
    by induction on ⟶₂* with 5 + 8; then the open form (Γ ; Δ with each c ∈ Δ bound to ⟨p_c⟩ and region(p_c)) by 6.
 
