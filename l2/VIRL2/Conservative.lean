@@ -370,4 +370,61 @@ theorem conservative_den (e : Tm₁) (σ : Store) :
     have h := den₂_of_steps (steps_emb σ hs₁) (a := embA a₁) (v := embA c) (by rw [embA_eval, ha₁]; rfl)
     rw [h]; exact Part.mem_some _
 
+/-! ## CLAUSE 1: the typing is preserved verbatim (⊢₁ e : τ implies ∅-masked ⊢₂ ι e : ι τ) -/
+theorem hasCap_embT : ∀ (τ : Ty₁), hasCap (embT τ) = false
+  | .base b => by cases b <;> rfl
+  | .arr t u | .prod t u | .sum t u => by simp [embT, hasCap, hasCap_embT t, hasCap_embT u]
+
+theorem embT_ne_cap (τ : Ty₁) : decide (embT τ = tcap) = false := by
+  have := hasCap_embT τ
+  rw [decide_eq_false_iff_not]; intro h; rw [h] at this; exact absurd this (by decide)
+
+theorem mask_empty_rep (n : Nat) : Mask.empty (List.replicate n false) := by
+  intro m h; rw [List.getElem?_replicate] at h; split_ifs at h <;> simp at h
+
+theorem split_rep : ∀ (n : Nat), Split (List.replicate n false) (List.replicate n false) (List.replicate n false)
+  | 0 => .nil
+  | n + 1 => .none (split_rep n)
+
+mutual
+theorem typeA_emb : ∀ {Γ : Ctx L1.S₁} {a : Atom₁} {τ : Ty₁}, HasTypeA L1.E₁ Γ a τ → HasTypeA₂ (Γ.map embT) (embA a) (embT τ)
+  | _, _, _, .var h => .var (by rw [List.getElem?_map, h]; rfl) (hasCap_embT _)
+  | _, .const c, _, .const => by cases c <;> first | exact .int | exact .bool
+  | _, .prim p as, _, .prim h => by
+    have h' := typeL_emb h
+    have e : List.map embT (List.map Ty.base (L1.S₁.pArgs p)) = List.map Ty.base (S₂.pArgs p) := by
+      simp only [S₂, List.map_map]; rfl
+    rw [e] at h'
+    exact .prim h'
+  | Γ, _, _, .lam (τ₁ := τ₁) (τ₂ := τ₂) h =>
+    .lam (hasCap_embT τ₁) (hasCap_embT τ₂) (mask_empty_rep _) (by simp) (type_emb h)
+  | Γ, _, _, .fix (τ₁ := τ₁) (τ₂ := τ₂) h =>
+    .fix (hasCap_embT τ₁) (hasCap_embT τ₂) (mask_empty_rep _) (by simp) (type_emb h)
+  | _, _, _, .pair h₁ h₂ => .pair (typeA_emb h₁) (typeA_emb h₂)
+  | _, _, _, .fst h => .fst (typeA_emb h)
+  | _, _, _, .snd h => .snd (typeA_emb h)
+  | _, _, _, .inl (τ₂ := τ₂) h => .inl (hasCap_embT τ₂) (typeA_emb h)
+  | _, _, _, .inr (τ₁ := τ₁) h => .inr (hasCap_embT τ₁) (typeA_emb h)
+theorem typeL_emb : ∀ {Γ : Ctx L1.S₁} {as : List Atom₁} {τs : List Ty₁}, HasTypeL L1.E₁ Γ as τs →
+    HasTypeL₂ (Γ.map embT) (embL as) (τs.map embT)
+  | _, _, _, .nil => .nil
+  | _, _, _, .cons h hs => .cons (typeA_emb h) (typeL_emb hs)
+theorem type_emb : ∀ {Γ : Ctx L1.S₁} {e : Tm₁} {τ : Ty₁}, HasType L1.E₁ Γ e τ →
+    HasType₂ (Γ.map embT) (List.replicate Γ.length false) (embE e) (embT τ)
+  | _, _, _, .ret h => .ret (mask_empty_rep _) (typeA_emb h)
+  | Γ, _, _, .letE (τ₁ := τ₁) h₁ h₂ => by
+    have h₂' := type_emb h₂
+    simp only [List.map_cons, List.length_cons, List.replicate_succ] at h₂'
+    refine .letE (split_rep _) (.inr (hasCap_embT τ₁)) (type_emb h₁) ?_
+    rw [embT_ne_cap]; exact h₂'
+  | _, _, _, .letOp (o := o) _ _ => nomatch (o : Empty)
+  | _, _, _, .app h₁ h₂ => .app (mask_empty_rep _) (typeA_emb h₁) (typeA_emb h₂)
+  | _, _, _, .ite h h₁ h₂ => .ite (typeA_emb h) (type_emb h₁) (type_emb h₂)
+  | _, _, _, .case h h₁ h₂ => .case (typeA_emb h) (type_emb h₁) (type_emb h₂)
+end
+
+/-- OBJECT-L1 §8 CLAUSE 1, for closed programs: `⊢₁ e : τ` implies `∅ ; ∅ ⊢₂ ι e : ι τ`. -/
+theorem conservative_typing {e : Tm₁} {τ : Ty₁} (h : HasType L1.E₁ [] e τ) : HasType₂ [] [] (embE e) (embT τ) :=
+  type_emb h
+
 end VIRL2
