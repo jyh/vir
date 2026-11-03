@@ -140,4 +140,11 @@ theorem M4_leak : ¬ Triple Assn.emp M4 (fun v σ => v = ci 0 ∧ σ = Store.emp
   rw [hσ, Store.empty_union] at hR
   simp [Store.empty, Finmap.lookup_empty] at hR
 
+/-- OBJECT-L2 §5's SEMANTIC TYPING, read LITERALLY with §5's triple (partial correctness + NO FAULT), is FALSE: M3 is
+  well-typed at ∅ ; ∅ and has no triple at all. The prose beside the formula ("does not fault EXCEPT OUT OF BOUNDS") is the
+  intended statement; the formula needs a triple that tolerates bounds faults (errata/ERRATA-L2.md E1). -/
+theorem semantic_typing_literal_false :
+    ¬ ∀ (e : Tm₂) (τ : Ty₂), HasType₂ [] [] e τ → Triple Assn.emp e (fun _ σ => σ = Store.empty ∨ True) :=
+  fun h => M3_no_triple (conseq (fun _ h => h) (fun _ _ _ => trivial) (h M3 tint M3_typed))
+
 end VIRL2
