@@ -708,9 +708,32 @@ def v3l1(repo, base, ext, prefix):
             ('W3.added', len(added), 'BESIDE'), ('W3.otherEdited', len(other), 'BESIDE')]
 
 
+# layer L1, the MetaPRL side (STATUS-vir row 99; amend-13 W1, amend-14's file rule). Read from a vir-metaprl checkout at the
+# arm's sha (FINDINGS M-F5: e0f16ac71 or later, never earlier). W1 = prims in virl1_* theories ALONE; itt_bar* is the
+# PARTIALITY THEORY column (NOT-AT-PIN), printed beside and never summed into W1. Groundedness comes from MetaPRL's check_all,
+# which no file records: it stays the arm's QUOTED figure.
+PRIM_RE = re.compile(r'^\s*prim(?:_rw)?\s', re.M)
+
+
+def metaprll1(d):
+    root = os.path.join(d, 'vir-metaprl', 'theories', 'vir')
+    if not os.path.isdir(root):
+        return [('L1M.root', 0, 'EMPTY')]
+    w1 = part = inter = 0; nf = 0; per = []
+    for f in sorted(os.listdir(root)):
+        if f.startswith('virl1_') and f.endswith('.ml'):
+            t = read(os.path.join(root, f)); n = len(PRIM_RE.findall(t)); nf += 1
+            w1 += n; inter += len(re.findall(r'^\s*interactive(?:_rw)?\s', t, re.M)); per.append('%s=%d' % (f[:-3], n))
+        elif f.startswith('itt_bar') and f.endswith('.ml'):
+            part += len(PRIM_RE.findall(read(os.path.join(root, f))))
+    return [('L1M.files', nf, 'MEASURED'), ('L1M.W1', w1, 'MEASURED:' + (','.join(per) or '-')),
+            ('L1M.PARTIALITY', part, 'BESIDE:NOT-AT-PIN'), ('L1M.interactive', inter, 'MEASURED'),
+            ('L1M.grounded', 0, 'Q:check_all')]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -728,6 +751,8 @@ def main():
         rows = leanl1(a.dir)
     elif a.arm == 'leanbp':
         rows = leanbp(a.dir)
+    elif a.arm == 'metaprll1':
+        rows = metaprll1(a.dir)
     elif a.arm == 'metaprlbp':
         rows = metaprlbp(a.dir)
     elif a.arm == 'compiler':
