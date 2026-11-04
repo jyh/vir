@@ -1217,12 +1217,23 @@ def metaprll2(repo, base, ext):
     prims = sum(len(PRIM_RE.findall(show(ext, p))) for p in l2)
     fw = [p for p in sorted(le) if os.path.basename(p).startswith('itt_bar') and p.endswith('.ml')
           and (p not in lb or show(base, p) != show(ext, p))]
-    # a framework file that EXTENDS a VIR module (Virl1_*/Virl2_*) states its prims over VIR's own definitions: VIR-specific,
-    # so its prims count in Y1's FIGURE (vir 2026-11-03 18:08 ruling (b): adequacy's one prim "counted in L2's prim figure").
-    # A file extending only generic theories (itt_bar_list) stays BESIDE. Read from the file's own `extends` lines.
-    vdep = [p for p in fw if re.search(r'^extends\s+Virl[12]_', show(ext, p), re.M)]
-    fwp = sum(len(PRIM_RE.findall(show(ext, p))) for p in fw if p not in vdep)
-    vdp = sum(len(PRIM_RE.findall(show(ext, p))) for p in vdep)
+    # Y1's FIGURE counts a framework prim as VIR-SPECIFIC when its OWN TEXT names a term that a virl1_*/virl2_* module defines or
+    # declares (the CONTENT test, mojave 2026-11-04 00:50 fork (B), adopted by vir). It replaced an `extends Virl2_` test, which
+    # read the name a file IMPORTS rather than what the prim is OVER (a label, not the instrument). Generic prims stay BESIDE.
+    vterms = set()
+    for p in le:
+        b = os.path.basename(p)
+        if (b.startswith('virl1_') or b.startswith('virl2_')) and b.endswith('.ml'):
+            vterms |= set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, p), re.M))
+    vre = re.compile(r"(?<![A-Za-z0-9_'])(?:%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms)))) if vterms else None
+    fwp = vdp = 0; vnames = []
+    for p in fw:
+        for blk in MPL_ITEM_RE.split(show(ext, p)):
+            if PRIM_RE.match(blk):
+                if vre and vre.search(blk):
+                    vdp += 1; vnames.append(re.match(r'\s*prim(?:_rw)?\s+(\S+)', blk).group(1))
+                else:
+                    fwp += 1
     def items(sha, p):
         out = {}
         for blk in MPL_ITEM_RE.split(show(sha, p)):
@@ -1243,8 +1254,8 @@ def metaprll2(repo, base, ext):
     newl1 = sorted(os.path.basename(p) for p in le - lb if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'))
     rows = [('L2M.files', len(l2), 'MEASURED:virl2_*.ml at ext'),
             ('L2M.Y1.prims', prims, 'MEASURED:prim/prim_rw in virl2_*, comments stripped'),
-            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:generic itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw if p not in vdep) or '-')),
-            ('L2M.Y1.virDependentPrims', vdp, 'MEASURED:itt_bar* extending a Virl1_/Virl2_ module:' + (','.join(os.path.basename(p) for p in vdep) or '-')),
+            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:generic prims in itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw) or '-')),
+            ('L2M.Y1.virDependentPrims', vdp, 'MEASURED:framework prims whose text names a virl1_/virl2_ term:' + (','.join(vnames) or '-')),
             ('L2M.Y1.primFigure', prims + vdp, 'MEASURED:Y1 figure = virl2_* prims + VIR-dependent framework prims'),
             ('L2M.Y2.defsEdited', dedit, 'MEASURED:virl1_* at base vs ext'), ('L2M.Y2.rulesEdited', redit, 'BESIDE'),
             ('L2M.Y2.newL1Files', len(newl1), 'BESIDE:' + (','.join(newl1) or '-'))]
