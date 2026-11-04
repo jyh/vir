@@ -1217,7 +1217,12 @@ def metaprll2(repo, base, ext):
     prims = sum(len(PRIM_RE.findall(show(ext, p))) for p in l2)
     fw = [p for p in sorted(le) if os.path.basename(p).startswith('itt_bar') and p.endswith('.ml')
           and (p not in lb or show(base, p) != show(ext, p))]
-    fwp = sum(len(PRIM_RE.findall(show(ext, p))) for p in fw)
+    # a framework file that EXTENDS a VIR module (Virl1_*/Virl2_*) states its prims over VIR's own definitions: VIR-specific,
+    # so its prims count in Y1's FIGURE (vir 2026-11-03 18:08 ruling (b): adequacy's one prim "counted in L2's prim figure").
+    # A file extending only generic theories (itt_bar_list) stays BESIDE. Read from the file's own `extends` lines.
+    vdep = [p for p in fw if re.search(r'^extends\s+Virl[12]_', show(ext, p), re.M)]
+    fwp = sum(len(PRIM_RE.findall(show(ext, p))) for p in fw if p not in vdep)
+    vdp = sum(len(PRIM_RE.findall(show(ext, p))) for p in vdep)
     def items(sha, p):
         out = {}
         for blk in MPL_ITEM_RE.split(show(sha, p)):
@@ -1238,7 +1243,9 @@ def metaprll2(repo, base, ext):
     newl1 = sorted(os.path.basename(p) for p in le - lb if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'))
     rows = [('L2M.files', len(l2), 'MEASURED:virl2_*.ml at ext'),
             ('L2M.Y1.prims', prims, 'MEASURED:prim/prim_rw in virl2_*, comments stripped'),
-            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw) or '-')),
+            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:generic itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw if p not in vdep) or '-')),
+            ('L2M.Y1.virDependentPrims', vdp, 'MEASURED:itt_bar* extending a Virl1_/Virl2_ module:' + (','.join(os.path.basename(p) for p in vdep) or '-')),
+            ('L2M.Y1.primFigure', prims + vdp, 'MEASURED:Y1 figure = virl2_* prims + VIR-dependent framework prims'),
             ('L2M.Y2.defsEdited', dedit, 'MEASURED:virl1_* at base vs ext'), ('L2M.Y2.rulesEdited', redit, 'BESIDE'),
             ('L2M.Y2.newL1Files', len(newl1), 'BESIDE:' + (','.join(newl1) or '-'))]
     # keyed MODULE:NAME — a rule name may recur across modules (two of virl2_rules' do), and a bare-name key drops one
