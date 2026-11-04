@@ -6,6 +6,16 @@
 branch is unsealed (STATUS-vir 121); the MetaPRL column is scored when that arm posts L2 closed (STATUS-vir 122).
 The Lean L2-closed sha is **dc95b53** (l2-lean).
 
+## The declarations (amend-16), both written before the arm's first L2 file, neither arm reading the other's
+| arm | file | commit (time) | sha256/16 |
+|---|---|---|---|
+| Lean | `l2/DECLARATIONS-LEAN.md` | vir 161a6fc (2026-11-03 08:54 PST), SEALED until the MetaPRL post | 0b17b029e13a3bf5 |
+| MetaPRL | `theories/vir/DECLARATIONS-L2-METAPRL.md` in mojave's metaprl clone, copied byte for byte to `l2/DECLARATIONS-METAPRL-d3a3f91a7.md` | d3a3f91a7 (10:52 PST), the first commit of mojave/vir-l2 on ec912bd80, 0 `virl2_` files at it | c156e11f78f6a303 |
+
+Both hashes were re-read at the unseal (the Lean file at 161a6fc, the MetaPRL file at d3a3f91a7). The MetaPRL arm's post of its
+declarations said it had not read `l2/DECLARATIONS-LEAN.md`, any `l2/` file or this branch, and the Lean branch was not
+pushed until after that post. A later MetaPRL text amendment (a99bea205, after the fifth refuter pass) is read when its column is scored.
+
 ## The scoreboard (amend-16 Y1–Y8)
 | prediction | Lean (l2/) | MetaPRL (mojave) | verdict |
 |---|---|---|---|
