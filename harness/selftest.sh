@@ -562,6 +562,20 @@ if cmp -s "$H/count.py" "$F/mutant36.py"; then say "ARM36 mutant NOT PLANTED"; f
 elif check36 "$F/mutant36.py"; then say "ARM36 mutant SURVIVED (a fuel premise in y5_open went unread)"; fail=1
 else say "ARM36 mutant KILLED"; fi
 
+# (37) the L3 transcription check (harness/transcribe_l3.py; l3/DECLARATIONS-LEAN.md): the TEXT of inputs/L3-programs.md,
+# parsed and macro-expanded by the script, against the Lean arm's printed F / U / U_tx (l3/logs/transcribe-001.log).
+# Real: SAME ×3, rc 0. Mutant: RD32's first load reads offset 4+o for 3+o => every term DIFF, rc 1. Skipped (said so) where the Lean log
+# is absent (a checkout without the L3 Lean arm).
+TL="$H/../l3/logs/transcribe-001.log"
+if [ -f "$TL" ]; then
+  if python3 "$H/transcribe_l3.py" "$H/../inputs/L3-programs.md" "$TL" > "$F/t37.txt" 2>&1; then say "ARM37 transcribe L3 OK (F U U_tx SAME)"
+  else say "ARM37 transcribe L3 FAIL"; cat "$F/t37.txt"; fail=1; fi
+  sed "s/ld(x + '0', 3 + o,/ld(x + '0', 4 + o,/" "$H/transcribe_l3.py" > "$F/mutant37.py"
+  if cmp -s "$H/transcribe_l3.py" "$F/mutant37.py"; then say "ARM37 mutant NOT PLANTED"; fail=1
+  elif python3 "$F/mutant37.py" "$H/../inputs/L3-programs.md" "$TL" > /dev/null 2>&1; then say "ARM37 mutant SURVIVED"; fail=1
+  else say "ARM37 mutant KILLED"; fi
+else say "ARM37 SKIPPED (no l3/logs/transcribe-001.log in this checkout)"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
