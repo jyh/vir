@@ -7,3 +7,4 @@ import VIRL3.R3False
 import VIRL3.Sym
 import VIRL3.Rollback
 import VIRL3.RouterTriple
+import VIRL3.Trace

@@ -91,4 +91,17 @@ theorem R4 {p : Int} {f : Int → Int} (hs0 : 0 ≤ SvA f p) (hs4 : SvA f p < 4)
     subst hc; simp only [Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, Nat.reduceAdd, Nat.reduceLT, Nat.reduceSub, Nat.reduceEqDiff, Int.reduceAdd]
     exact ret_rule' rfl (fun σ h => ⟨rfl, by simpa [postF, hn'] using h⟩)
 
+/-- R5 (OBJECT-L3 §3.4), the contents half: F's post-state agrees with f off the bucket cell and the out cells. -/
+theorem R5_contents (f : Int → Int) (p a : Int) (hb : a ≠ bktA f p) (h1 : a ≠ p + 1) (h2 : a ≠ p + 2) :
+    postF f p a = f a := by
+  unfold postF; split_ifs <;> simp [Function.update_apply, hb, h1, h2]
+
+/-- R5, the caller half: the router triple holds beside ANY frame R the caller owns, with no premise naming R — ONE
+  application of L2's frame rule (Z6). -/
+theorem R5_frame {p : Int} {f : Int → Int} (R : Assn) (hs0 : 0 ≤ SvA f p) (hs4 : SvA f p < 4) (ht0 : 0 ≤ TvA f p)
+    (ht4 : TvA f p < 4) :
+    Triple (RegionAt p 87 f ∗ R) (closeAt p F)
+      (fun v => (fun σ => v = .const (.cap p) ∧ RegionAt p 87 (postF f p) σ) ∗ R) :=
+  frame R (R4 hs0 hs4 ht0 ht4)
+
 end VIRL3
