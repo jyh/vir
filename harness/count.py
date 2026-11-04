@@ -1227,9 +1227,19 @@ def metaprll2(repo, base, ext):
             vterms |= set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, p), re.M))
     vre = re.compile(r"(?<![A-Za-z0-9_'])(?:%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms)))) if vterms else None
     fwp = vdp = 0; vnames = []
+    MLI_RULE = re.compile(r'^[ \t]*(?=(?:rule|prim|rewrite|val|topval|declare|define|extends|open|doc|dform)\b)', re.M)
     for p in fw:
+        # the prim's OWN TEXT is its .ml block AND its .mli declaration (`rule <name>`); sixth pass 2026-11-04: an .mli
+        # still naming Store while the .ml was restated, invisible to an .ml-only reader
+        mli = {}
+        if p[:-3] + '.mli' in le:
+            for b2 in MLI_RULE.split(show(ext, p[:-3] + '.mli')):
+                m2 = re.match(r'\s*(?:rule|prim)\s+(\S+)', b2)
+                if m2:
+                    mli[m2.group(1)] = b2
         for blk in MPL_ITEM_RE.split(show(ext, p)):
             if PRIM_RE.match(blk):
+                blk = blk + '\n' + mli.get(re.match(r'\s*prim(?:_rw)?\s+(\S+)', blk).group(1), '')
                 if vre and vre.search(blk):
                     vdp += 1; vnames.append(re.match(r'\s*prim(?:_rw)?\s+(\S+)', blk).group(1))
                 else:
