@@ -1,0 +1,7 @@
+saltqueue: ticket P2 seat=root pid=65010
+'VIRL1.ind_ty' does not depend on any axioms
+'VIRL1.ind_atom' depends on axioms: [propext]
+'VIRL1.ind_atoms' depends on axioms: [propext]
+'VIRL1.ind_tm' depends on axioms: [propext]
+'VIRL1.three_sorted_induction' depends on axioms: [propext]
+saltbuild EXIT=0
