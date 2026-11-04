@@ -1,0 +1,34 @@
+l3	L3.src	11	MEASURED
+l3	L3.theorems	46	MEASURED
+l3	L3.C4vir	0	MEASURED
+l3	L3.binder	1	MEASURED
+l3	L3.binder.insOnly	0	BESIDE
+l3	L3.fix	0	MEASURED
+l3	L3.sep.theorems	0	EMPTY
+l3	L3.audit	14	READ:audit-001.log
+l3	L3.C4	0	MEASURED
+l3	L3.control	1	MEASURED
+l3	L3.C6	41	MEASURED
+l3	L3.rows.present	10	MEASURED:of 10:F_typed,U_typed,R2,R3,R4,R5_contents,R5_frame,R6,R7,R8
+l3	L3.Z2.casts	0	MEASURED:CAST_RE over VIRL3
+l3	L3.Z3.tripleInR2File	0	MEASURED:Inequality.lean
+l3	L3.Z5.stepInR4	0	MEASURED
+l3	L3.Z5.stepInFile	2	BESIDE:RouterTriple.lean (the derived if / let-ret rules' determinism helpers)
+l3	L3.Z6.frameApps	1	MEASURED
+l3	L3.Z6.localityCited	0	MEASURED
+l3	L3.Z7.fixInTerms	0	MEASURED:Router+Layout
+l3	L3.Z8.R7ProofLines	8	MEASURED
+l3	L3.Z8.R8ProofLines	17	MEASURED
+l3	L3.C5.Inequality	264	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Layout	476	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.R3False	295	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Refusals	519	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Rollback	452	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Router	283	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.RouterTriple	1170	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Sym	399	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Trace	696	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Transcribe	254	BESIDE:whitespace tokens, comments stripped
+l3	L3.C5.Typing	374	BESIDE:whitespace tokens, comments stripped
+l3	L3.Z4.R3C5	851	MEASURED:Rollback+Sym
+l3	L3.Z4.maxOtherC5	1170	MEASURED:R4R5

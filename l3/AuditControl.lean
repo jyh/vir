@@ -1,3 +1,3 @@
 import VIRL3
-theorem auditControl : False := sorry
-#print axioms auditControl
+theorem control_sorry : False := sorry
+#print axioms control_sorry

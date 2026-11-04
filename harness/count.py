@@ -625,6 +625,61 @@ Y5_ROUTE = ('SemBase.lean', 'MaskLemmas.lean', 'Subst2.lean', 'Runtime.lean', 'P
             'OwnAll.lean', 'Preservation.lean', 'Y5.lean')
 
 
+
+STEP_RE = re.compile(r'(?<![A-Za-z0-9_])(?:Step₂|Steps₂|stepFn₂|run₂)[A-Za-z0-9_₂.]*')  # run₂_steps counts (ARM38 H)
+LOCALITY_RE = re.compile(r'(?<![A-Za-z0-9_])(load_at|store_at|free_at|alloc_axiom|op_frame|[A-Za-z0-9_]*local[A-Za-z0-9_]*)(?![A-Za-z0-9_])')
+
+
+def proof_of(block):
+    """A theorem's PROOF: its text after the statement (amend-18 Z5/Z6/Z8)."""
+    st = p_statement(block)
+    i = block.find(st) + len(st) if st else 0
+    return block[i:]
+
+
+def leanl3(d):
+    """amend-18 Z rows on the Lean L3 arm (VIRL3). Theorem blocks are found over the comment-stripped files; a FILE-FINAL
+    block runs to the end of its file (selftest ARM38's fixture H puts R4 last)."""
+    rows = leanp(d, 'VIRL3', 'L3')
+    src = files(os.path.join(d, 'VIRL3'), ('.lean',))
+    per = {os.path.basename(p): re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p)) for p in src}
+    thm = {}
+    for k in sorted(per):
+        for b in blocks(per[k]):
+            m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+([A-Za-z0-9_.]+)', b)
+            if m:
+                thm[m.group(1)] = b
+    names = ['F_typed', 'U_typed', 'R2', 'R3', 'R4', 'R5_contents', 'R5_frame', 'R6', 'R7', 'R8']
+    have = [n for n in names if n in thm]
+    rows.append(('L3.rows.present', len(have), 'MEASURED:of %d:%s' % (len(names), ','.join(have) or '-')))
+    alltext = '\n'.join(per[k] for k in sorted(per))
+    rows.append(('L3.Z2.casts', len(CAST_RE.findall(alltext)), 'MEASURED:CAST_RE over VIRL3'))
+    rows.append(('L3.Z3.tripleInR2File', len(re.findall(r'(?<![A-Za-z0-9_])Triple(?![A-Za-z0-9_])', per.get('Inequality.lean', ''))),
+                 'MEASURED:Inequality.lean' if 'Inequality.lean' in per else 'EMPTY'))
+    rows.append(('L3.Z5.stepInR4', len(STEP_RE.findall(proof_of(thm.get('R4', '')))), 'MEASURED' if 'R4' in thm else 'EMPTY'))
+    rows.append(('L3.Z5.stepInFile', len(STEP_RE.findall(per.get('RouterTriple.lean', ''))),
+                 'BESIDE:RouterTriple.lean (the derived if / let-ret rules\' determinism helpers)'))
+    r5 = proof_of(thm.get('R5_frame', ''))
+    rows.append(('L3.Z6.frameApps', len(re.findall(r'(?<![A-Za-z0-9_.])frame(?![A-Za-z0-9_])', r5)), 'MEASURED' if r5 else 'EMPTY'))
+    rows.append(('L3.Z6.localityCited', len(LOCALITY_RE.findall(r5)), 'MEASURED' if r5 else 'EMPTY'))
+    terms = per.get('Router.lean', '') + per.get('Layout.lean', '')
+    rows.append(('L3.Z7.fixInTerms', len(re.findall(r'(?<![A-Za-z0-9_])fix(?![A-Za-z0-9_])', terms)), 'MEASURED:Router+Layout'))
+    for n in ('R7', 'R8'):
+        pr = proof_of(thm.get(n, ''))
+        rows.append(('L3.Z8.%sProofLines' % n, len([l for l in pr.splitlines() if l.strip() and l.strip() not in (':=', 'by', ':= by')]),
+                     'MEASURED' if n in thm else 'EMPTY'))
+    tok = {k: len(v.split()) for k, v in per.items()}
+    for k in sorted(tok):
+        rows.append(('L3.C5.' + k[:-5], tok[k], 'BESIDE:whitespace tokens, comments stripped'))
+    rowfile = {'R1': ['Typing.lean'], 'R2': ['Inequality.lean'], 'R3': ['Rollback.lean', 'Sym.lean'],
+               'R4R5': ['RouterTriple.lean'], 'R6': ['Trace.lean'], 'R7R8': ['Refusals.lean']}
+    c5 = {r: sum(tok.get(f, 0) for f in fs) for r, fs in rowfile.items()}
+    other = max((v, r) for r, v in c5.items() if r != 'R3') if len(c5) > 1 else (0, '-')
+    rows.append(('L3.Z4.R3C5', c5.get('R3', 0), 'MEASURED:Rollback+Sym'))
+    rows.append(('L3.Z4.maxOtherC5', other[0], 'MEASURED:' + other[1]))
+    return rows
+
+
 def leanl2(d):
     rows = leanp(d, 'VIRL2', 'L2')
     src = files(os.path.join(d, 'VIRL2'), ('.lean',))
@@ -1004,7 +1059,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1026,6 +1081,8 @@ def main():
         rows = w8(a.dir, a.base, a.ext, a.prefix)
     elif a.arm == 'l2':
         rows = leanl2(a.dir)
+    elif a.arm == 'l3':
+        rows = leanl3(a.dir)
     elif a.arm == 'v3l1m':
         rows = v3l1m(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll1':
