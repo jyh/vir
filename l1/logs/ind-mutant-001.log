@@ -1,0 +1,10 @@
+saltqueue: ticket P2 seat=root pid=65306
+mutants/IndSameDepth.lean:60:57: error: Application type mismatch: The argument
+  ind_tm (n + 1) e h
+has type
+  Pe (n + 1) e
+but is expected to have type
+  Pe n e
+in the application
+  A4 n τ e (ind_ty Pτ T1 T2 X1 X2 τ) (ind_tm (n + 1) e h)
+saltbuild EXIT=1
