@@ -625,6 +625,53 @@ Y5_ROUTE = ('SemBase.lean', 'MaskLemmas.lean', 'Subst2.lean', 'Runtime.lean', 'P
             'OwnAll.lean', 'Preservation.lean', 'Y5.lean')
 
 
+
+
+def proof_of(block):
+    """A theorem's PROOF: its text after the statement (amend-18 Z5/Z6/Z8; amend-19 I3)."""
+    st = p_statement(block)
+    i = block.find(st) + len(st) if st else 0
+    return block[i:]
+
+
+IND_NAMES = ('ind_ty', 'ind_atom', 'ind_atoms', 'ind_tm', 'three_sorted_induction')
+STD_AX = {'propext', 'Classical.choice', 'Quot.sound'}
+NONPROOF_RE = re.compile(r'^\s*(?:include\b|mutual\b|end\b|set_option\b|section\b|variable\b|namespace\b|open\b|:=\s*$|by\s*$|:=\s*by\s*$)')
+
+
+def leanind(d):
+    """amend-19 on the Lean arm: DIR is the L1 project (l1/), the rule in VIRL1/Induction.lean."""
+    p = os.path.join(d, 'VIRL1', 'Induction.lean')
+    if not os.path.exists(p):
+        return [('IND.src', 0, 'EMPTY')]
+    text = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p))
+    thm = {}
+    for b in blocks(text):
+        m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+([A-Za-z0-9_.]+)', b)
+        if m:
+            thm[m.group(1)] = b
+    lines = 0
+    for n in IND_NAMES:
+        if n in thm:
+            lines += len([l for l in proof_of(thm[n]).splitlines() if l.strip() and not NONPROOF_RE.match(l)])
+    aux = [n for n in thm if n not in IND_NAMES]
+    rows = [('IND.I3.theorems', len([n for n in IND_NAMES if n in thm]), 'MEASURED:of %d' % len(IND_NAMES)),
+            ('IND.I3.proofLines', lines, 'MEASURED:proof bodies of the five, statements and include/mutual/end lines excluded'),
+            ('IND.I3.auxLemmas', len(aux), 'MEASURED:' + (','.join(aux) or '-')),
+            ('IND.I3.proofTokens', sum(len(proof_of(thm[n]).split()) for n in IND_NAMES if n in thm), 'BESIDE:for I4(b)'),
+            ('IND.I6.w3Premises', len(re.findall(r'\(X\d+\s*:', text)), 'MEASURED')]
+    logs = sorted(q for q in files(os.path.join(d, 'logs'), ('.log',)) if re.search(r'/ind-audit-\d+\.log$', q))
+    if logs:
+        t = read(logs[-1])
+        ax = re.findall(r"depends on axioms: \[([^\]]*)\]", t)
+        bad = [a for a in ax if not {x.strip() for x in a.split(',')} <= STD_AX]
+        rows.append(('IND.I2.audited', len(ax) + len(re.findall(r'does not depend on any axioms', t)), 'READ:' + os.path.basename(logs[-1])))
+        rows.append(('IND.I2.nonStandard', len(bad), 'MEASURED'))
+    else:
+        rows += [('IND.I2.audited', 0, 'EMPTY'), ('IND.I2.nonStandard', 0, 'EMPTY')]
+    return rows
+
+
 def leanl2(d):
     rows = leanp(d, 'VIRL2', 'L2')
     src = files(os.path.join(d, 'VIRL2'), ('.lean',))
@@ -1004,7 +1051,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'ind'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1026,6 +1073,8 @@ def main():
         rows = w8(a.dir, a.base, a.ext, a.prefix)
     elif a.arm == 'l2':
         rows = leanl2(a.dir)
+    elif a.arm == 'ind':
+        rows = leanind(a.dir)
     elif a.arm == 'v3l1m':
         rows = v3l1m(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll1':

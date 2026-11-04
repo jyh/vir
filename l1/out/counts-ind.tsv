@@ -1,0 +1,10 @@
+ind	IND.I3.theorems	5	MEASURED:of 5
+ind	IND.I3.proofLines	25	MEASURED:proof bodies of the five, statements and include/mutual/end lines excluded
+ind	IND.I3.auxLemmas	0	MEASURED:-
+ind	IND.I3.proofTokens	509	BESIDE:for I4(b)
+ind	IND.I6.w3Premises	8	MEASURED
+ind	IND.I2.audited	5	READ:ind-audit-001.log
+ind	IND.I2.nonStandard	0	MEASURED
+ind	IND.I1.W8.defsEdited	0	MEASURED:-
+ind	IND.I1.W8.thmEdited	0	BESIDE:-
+ind	IND.I1.W8.newFiles	1	BESIDE

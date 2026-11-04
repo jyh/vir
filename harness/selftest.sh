@@ -562,6 +562,26 @@ if cmp -s "$H/count.py" "$F/mutant36.py"; then say "ARM36 mutant NOT PLANTED"; f
 elif check36 "$F/mutant36.py"; then say "ARM36 mutant SURVIVED (a fuel premise in y5_open went unread)"; fail=1
 else say "ARM36 mutant KILLED"; fi
 
+# (39) amend-19 on the Lean arm (count.py --arm ind DIR): I3 proof lines of the rule's theorems (ind_ty ind_atom ind_atoms ind_tm
+# three_sorted_induction, the statement excluded) and AUXILIARY lemmas (any other theorem in Induction.lean); I6 the W3 premises
+# (X1… binders); I2 theorems in the newest ind-audit log outside the standard three. Fixture I: the five, 3 proof lines in all,
+# 2 X premises, a clean audit => 3 0 2 0. Fixture J: one extra lemma, an audit line with sorryAx => aux 1, I2 1.
+# Mutant: aux lemmas counted from the five names' complement read as 0 => J reads aux 0.
+for x in I J; do mkdir -p "$F/ind$x/VIRL1" "$F/ind$x/logs"; done
+printf 'variable (X1 : P) (X2 : Q)\ntheorem ind_ty : A\n  | x => h\ntheorem ind_atom : B := by\n  exact h\ntheorem three_sorted_induction : C :=\n  h\n' > "$F/indI/VIRL1/Induction.lean"
+printf "'VIRL1.ind_ty' does not depend on any axioms\n'VIRL1.three_sorted_induction' depends on axioms: [propext]\n" > "$F/indI/logs/ind-audit-001.log"
+printf 'variable (X1 : P)\ntheorem helper : D := h\ntheorem ind_ty : A\n  | x => h\n' > "$F/indJ/VIRL1/Induction.lean"
+printf "'VIRL1.ind_ty' depends on axioms: [propext, sorryAx]\n" > "$F/indJ/logs/ind-audit-001.log"
+check39() { local i j; i=$(python3 "$1" --arm ind "$F/indI"); j=$(python3 "$1" --arm ind "$F/indJ")
+  [ "$(g6 "$i" IND.I3.proofLines)" = 3 ] && [ "$(g6 "$i" IND.I3.auxLemmas)" = 0 ] && [ "$(g6 "$i" IND.I6.w3Premises)" = 2 ] &&
+  [ "$(g6 "$i" IND.I2.nonStandard)" = 0 ] && [ "$(g6 "$j" IND.I3.auxLemmas)" = 1 ] && [ "$(g6 "$j" IND.I2.nonStandard)" = 1 ]; }
+if check39 "$H/count.py"; then say "ARM39 ind fixture OK (I: 3 0 2 0; J: aux 1, I2 1)"
+else say "ARM39 ind fixture FAIL"; python3 "$H/count.py" --arm ind "$F/indI"; python3 "$H/count.py" --arm ind "$F/indJ"; fail=1; fi
+sed "s/aux = \[n for n in thm if n not in IND_NAMES\]/aux = []/" "$H/count.py" > "$F/mutant39.py"
+if cmp -s "$H/count.py" "$F/mutant39.py"; then say "ARM39 mutant NOT PLANTED"; fail=1
+elif check39 "$F/mutant39.py"; then say "ARM39 mutant SURVIVED (an auxiliary lemma went uncounted)"; fail=1
+else say "ARM39 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
