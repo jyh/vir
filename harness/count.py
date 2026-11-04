@@ -1262,7 +1262,23 @@ def metaprll2(repo, base, ext):
                     else:
                         dedit += 1
     newl1 = sorted(os.path.basename(p) for p in le - lb if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'))
+    # TRUSTED BASE (STATUS-vir 145): the prims L2 RESTS ON are those of every non-virl theories/vir module in the `extends`
+    # closure of the virl2_* modules (.ml and .mli), CHANGED OR NOT since base. A file unchanged since L1 but newly in L2's
+    # ancestry (Itt_bar_bset via CONS clause 3 (ii)) is invisible to the added-or-changed row above.
+    def ext_of(p):
+        t = show(ext, p) + '\n' + (show(ext, p[:-3] + '.mli') if p[:-3] + '.mli' in le else '')
+        return ['theories/vir/' + m[0].lower() + m[1:] + '.ml' for m in re.findall(r'^extends\s+([A-Z][A-Za-z0-9_]*)', t, re.M)]
+    seen, todo = set(), list(l2)
+    while todo:
+        x = todo.pop()
+        if x in seen or x not in le:
+            continue
+        seen.add(x); todo += ext_of(x)
+    tb = sorted(p for p in seen if not re.match(r'virl[12]_', os.path.basename(p)))
+    tbp = [(os.path.basename(p)[:-3], len(PRIM_RE.findall(show(ext, p)))) for p in tb]
     rows = [('L2M.files', len(l2), 'MEASURED:virl2_*.ml at ext'),
+            ('L2M.trustedBase.files', len(tb), 'MEASURED:non-virl theories/vir modules in the extends closure of virl2_*'),
+            ('L2M.trustedBase.prims', sum(n for _, n in tbp), 'MEASURED:' + (','.join('%s=%d' % x for x in tbp) or '-') + ':LIMIT theories/itt release prims not included (L1M.pinReflection)'),
             ('L2M.Y1.prims', prims, 'MEASURED:prim/prim_rw in virl2_*, comments stripped'),
             ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:generic prims in itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw) or '-')),
             ('L2M.Y1.virDependentPrims', vdp, 'MEASURED:framework prims whose text names a virl1_/virl2_ term:' + (','.join(vnames) or '-')),
