@@ -582,6 +582,76 @@ if cmp -s "$H/count.py" "$F/mutant39.py"; then say "ARM39 mutant NOT PLANTED"; f
 elif check39 "$F/mutant39.py"; then say "ARM39 mutant SURVIVED (an auxiliary lemma went uncounted)"; fail=1
 else say "ARM39 mutant KILLED"; fi
 
+# (40) amend-19 on the MetaPRL arm (--arm indm): a git fixture whose counts are fixed by its construction.
+# base: theories/vir/virl1_sig.ml (core_ops a_op b_op c_op; sig1 d_op, shapes {} {0;0} {0;1} {}: 3 distinct) + virl1_old.ml.
+# ext: virl1_old.ml UNCHANGED but for a comment; NEW virl1_induct.ml (unpack lemmas for shapes nil and 0::0, one prim)
+# + virl1_induct.prla: rule l1_op_induction (root step + 1 subgoal step + 1 EXTRA step, which is NOT the proof) and
+# rule l1_induction (one step naming l1_op_induction and helper_s), helper_s (one step).
+R40="$F/indm"; mkdir -p "$R40/theories/vir" "$R40/theories/itt"; git -C "$R40" init -q; git -C "$R40" config user.email t@t; git -C "$R40" config user.name t
+cat > "$R40/theories/vir/virl1_sig.ml" <<'EOS'
+define unfold_a_op : a_op <--> operator[(l1_a):op]
+define unfold_b_op : b_op <--> operator[(l1_b{it; it}):op]
+define unfold_c_op : c_op <--> operator[(l1_c{it; x. it}):op]
+define unfold_d_op : d_op <--> operator[(l1_d):op]
+define unfold_z_op : z_op <--> operator[(l1_z{it; x, y. it}):op]
+define unfold_core_ops : core_ops <-->
+   a_op :: b_op :: c_op :: nil
+define unfold_sig1 : sig1 <-->
+   ((nil), ((d_op :: nil), nil))
+EOS
+printf 'interactive old_r :\n   sequent { <H> >- \x27a }\n' > "$R40/theories/vir/virl1_old.ml"
+git -C "$R40" add -A; git -C "$R40" commit -qm base; B40=$(git -C "$R40" rev-parse HEAD)
+printf '(* a comment only *)\n' >> "$R40/theories/vir/virl1_old.ml"
+cat > "$R40/theories/vir/virl1_induct.ml" <<'EOS'
+interactive unpack_s 'd :
+   sequent { <H> >- compatible_shapes{'d; nil; 'subs} } -->
+   sequent { <H> >- ('subs ~ (nil)) }
+interactive unpack_s00 'd :
+   sequent { <H> >- compatible_shapes{'d; 0 :: 0 :: nil; 'subs} } -->
+   sequent { <H> >- 'subs }
+(* interactive unpack_s01 'd : sequent { <H> >- compatible_shapes{'d; 0 :: 1 :: nil; 'subs} } *)
+prim new_prim : sequent { <H> >- 'a } = it
+interactive helper_s : sequent { <H> >- 'a }
+interactive l1_op_induction : sequent { <H> >- 'a }
+interactive l1_induction : sequent { <H> >- 'a }
+EOS
+W_ROOT="(dT 0 thenT helper_x y)"; W_SUB="a b c"; W_EXTRA="e1 e2 e3 e4 e5 e6"; W_IND="(l1_op_induction thenT helper_s)"; W_HELP="autoT x"
+{ printf '#PRL version 1.0.28 ASCII term\n'
+  printf 'NSummary!rule\trule\trule Summary\nNSummary!ext_rule\text_rule\text_rule Summary\nNSummary!interactive\tinteractive\tinteractive Summary\n'
+  printf 'NSummary!status_incomplete\tstatus_incomplete\tstatus_incomplete Summary\nNSummary!ext_unjustified\text_unjustified\text_unjustified Summary\n'
+  printf 'NPerv!xnil\txnil\txnil Perv\nNPerv!xcons\txcons\txcons Perv\nNPerv!rule\trule9\trule Perv\n'
+  printf 'O\tost\tstatus_incomplete\nT\ttst\tost\nB\tbst\ttst\nO\tou\text_unjustified\nT\ttu\tou\nB\tbu\ttu\n'
+  printf 'O\ton\txnil\nT\ttn\ton\nB\tbn\ttn\nO\toc\txcons\nO\toi\tinteractive\nO\tdecoy\trule9 pdn\nP\tpdn\tString decoy\n'
+  step() { printf 'P\tp%s\tString "%s"\nO\to%s\text_rule p%s\n' "$1" "$2" "$1" "$1"; }
+  step sub "$W_SUB"; printf 'T\ttsub\tosub bst bu bn bn\nB\tbsub\ttsub\nT\ttls\toc bsub bn\nB\tbls\ttls\n'
+  step ex "$W_EXTRA"; printf 'T\ttex\toex bst bu bn bn\nB\tbex\ttex\nT\ttlx\toc bex bn\nB\tblx\ttlx\n'
+  step root "$W_ROOT"; printf 'T\ttroot\toroot bst bu bls blx\nB\tbroot\ttroot\nT\ttir\toi broot\nB\tbir\ttir\n'
+  printf 'P\tpn1\tString l1_op_induction\nO\tor1\trule pn1\nT\ttr1\tor1 bir bn\n'
+  step ind "$W_IND"; printf 'T\ttind\toind bst bu bn bn\nB\tbind\ttind\nT\ttii\toi bind\nB\tbii\ttii\n'
+  printf 'P\tpn2\tString l1_induction\nO\tor2\trule pn2\nT\ttr2\tor2 bii bn\n'
+  step help "$W_HELP"; printf 'T\tthelp\tohelp bst bu bn bn\nB\tbhelp\tthelp\nT\ttih\toi bhelp\nB\tbih\ttih\n'
+  printf 'P\tpn3\tString helper_s\nO\tor3\trule pn3\nT\ttr3\tor3 bih bn\nT\ttdecoy\tdecoy bn\n'
+} > "$R40/theories/vir/virl1_induct.prla"
+git -C "$R40" add -A; git -C "$R40" commit -qm ext; X40=$(git -C "$R40" rev-parse HEAD)
+wc_w() { printf '%s\n' "$1" | wc -w | tr -d ' '; }
+E40_U=$(( $(wc_w "$W_ROOT") + $(wc_w "$W_SUB") )); E40_S=$(( $(wc_w "$W_IND") + $(wc_w "$W_HELP") )); E40_X=$(wc_w "$W_EXTRA")
+check40() {
+  o=$(python3 "$1" --arm indm --base "$B40" --ext "$X40" "$R40") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v INDM.I1.rulesEdited)" = 0 ] && [ "$(v INDM.I1.defsEdited)" = 0 ] && [ "$(v INDM.I1.prlaChanged)" = 0 ] \
+  && [ "$(v INDM.I2.newPrims)" = 1 ] && [ "$(v INDM.I4a.arityShapes)" = 3 ] && [ "$(v INDM.I4a.unpackLemmas)" = 2 ] \
+  && [ "$(v INDM.I4a.shapesCovered)" = 2 ] && [ "$(v INDM.rules)" = 3 ] \
+  && [ "$(v INDM.I5.U.C5tok)" = "$E40_U" ] && [ "$(v INDM.I5.S.C5tok)" = "$E40_S" ] \
+  && [ "$(v INDM.I4b.C5tok)" = "$((E40_U + E40_S))" ] && [ "$(v INDM.extras.C5tok)" = "$E40_X" ] \
+  && [ "$(v INDM.I4a.unpack.U)" = 0 ] && [ "$(v INDM.I4a.unpack.notU)" = 2 ] && [ "$(v INDM.I5.U.rules)" = 1 ] && [ "$(v INDM.I5.S.rules)" = 2 ] && [ "$(v INDM.I5.neither)" = 0 ]
+}
+if check40 "$H/count.py"; then say "ARM40 indm fixture OK (I1 0/0/0; prim 1; shapes 3, lemmas 2; U $E40_U S $E40_S, extras $E40_X kept out)"
+else say "ARM40 indm fixture FAIL"; python3 "$H/count.py" --arm indm --base "$B40" --ext "$X40" "$R40"; fail=1; fi
+sed 's/xs += a\[0\] + a\[2\]; xw += a\[1\] + a\[3\]  # EXTRAS/s += a[0] + a[2]; w += a[1] + a[3]  # EXTRAS/' "$H/count.py" > "$F/mutant40.py"
+if cmp -s "$H/count.py" "$F/mutant40.py"; then say "ARM40 mutant NOT PLANTED"; fail=1
+elif check40 "$F/mutant40.py"; then say "ARM40 mutant SURVIVED (stale extras counted as proof)"; fail=1
+else say "ARM40 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
