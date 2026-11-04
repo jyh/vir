@@ -652,6 +652,50 @@ if cmp -s "$H/count.py" "$F/mutant40.py"; then say "ARM40 mutant NOT PLANTED"; f
 elif check40 "$F/mutant40.py"; then say "ARM40 mutant SURVIVED (stale extras counted as proof)"; fail=1
 else say "ARM40 mutant KILLED"; fi
 
+# (41) the MetaPRL L2 column (--arm metaprll2): a git fixture whose counts are fixed by its construction.
+# base: virl1_a.ml (rule r1) + itt_bar.ml. ext: virl1_a.ml + a comment only; NEW virl1_new.ml (an L1 addendum, beside);
+# virl2_typing (ty_r) · virl2_triple (triple_frame using helper_h and naming ty_rx, a DIFFERENT rule; helper_h) ·
+# virl2_tot (tot_r using ty_r: the live control) · virl2_store.ml with a COMMENTED prim (not counted) · NEW itt_bar_list.ml
+# with 2 prims (framework, beside Y1).
+R41="$F/l2m"; mkdir -p "$R41/theories/vir"; git -C "$R41" init -q; git -C "$R41" config user.email t@t; git -C "$R41" config user.name t
+printf 'interactive r1 :\n   sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_a.ml"; printf 'prim old_bar : sequent { <H> >- \x27a } = it\n' > "$R41/theories/vir/itt_bar.ml"
+git -C "$R41" add -A; git -C "$R41" commit -qm base; B41=$(git -C "$R41" rev-parse HEAD)
+printf '(* comment *)\n' >> "$R41/theories/vir/virl1_a.ml"; printf 'interactive n1 : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_new.ml"
+printf 'prim p1 : sequent { <H> >- \x27a } = it\nprim_rw p2 : \x27a <--> \x27a\n' > "$R41/theories/vir/itt_bar_list.ml"
+printf '(* prim hidden : sequent { <H> >- \x27a } = it *)\ninteractive st_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_store.ml"
+printf 'define unfold_tcx : tcx{\x27a} <--> \x27a\ninteractive ty_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\ninteractive ty_use : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_typing.ml"
+Y4N=2; printf 'interactive triple_frame :\n   [wf] sequent { <H> >- \x27a } -->\n   sequent { <H> >- \x27b } -->\n   sequent { <H> >- \x27c }\ninteractive helper_h : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_triple.ml"
+printf 'interactive tot_r : sequent { <H> >- tcx{\x27a} }\n' > "$R41/theories/vir/virl2_tot.ml"
+prla() { # $1 file, then name=text pairs
+  f=$1; shift
+  { printf '#PRL version 1.0.28 ASCII term\n'
+    printf 'NSummary!rule\trule\trule Summary\nNSummary!ext_rule\text_rule\text_rule Summary\nNSummary!interactive\tinteractive\tinteractive Summary\n'
+    printf 'NSummary!status_incomplete\tsi\tstatus_incomplete Summary\nNSummary!ext_unjustified\teu\text_unjustified Summary\nNPerv!xnil\txnil\txnil Perv\n'
+    printf 'O\tost\tsi\nT\ttst\tost\nB\tbst\ttst\nO\tou\teu\nT\ttu\tou\nB\tbu\ttu\nO\ton\txnil\nT\ttn\ton\nB\tbn\ttn\nO\toi\tinteractive\n'
+    i=0; for kv in "$@"; do n=${kv%%=*}; t=${kv#*=}; i=$((i+1))
+      printf 'P\tpt%d\tString "%s"\nO\tot%d\text_rule pt%d\nT\ttt%d\tot%d bst bu bn bn\nB\tbt%d\ttt%d\nT\tti%d\toi bt%d\nB\tbi%d\tti%d\n' $i "$t" $i $i $i $i $i $i $i $i $i $i
+      printf 'P\tpn%d\tString %s\nO\tor%d\trule pn%d\nT\ttr%d\tor%d bi%d bn\n' $i "$n" $i $i $i $i $i; done; } > "$f"; }
+prla "$R41/theories/vir/virl2_typing.prla" "ty_r=autoT" "ty_rx=autoT" "ty_use=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_triple.prla" "triple_frame=(helper_h thenT ty_rx_note autoT)" "helper_h=autoT"
+prla "$R41/theories/vir/virl2_tot.prla" "tot_r=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_store.prla" "st_r=autoT" "ty_rx=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ext; X41=$(git -C "$R41" rev-parse HEAD)
+check41() {
+  o=$(python3 "$1" --arm metaprll2 --base "$B41" --ext "$X41" "$R41") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L2M.files)" = 4 ] && [ "$(v L2M.Y1.prims)" = 0 ] && [ "$(v L2M.Y1.frameworkPrims)" = 2 ] \
+  && [ "$(v L2M.Y2.defsEdited)" = 0 ] && [ "$(v L2M.Y2.rulesEdited)" = 0 ] && [ "$(v L2M.Y2.newL1Files)" = 1 ] \
+  && [ "$(v L2M.Y3.frameClosure)" = 2 ] && [ "$(v L2M.Y3.frameTyping)" = 0 ] && [ "$(v L2M.Y3.control)" = 2 ] \
+  && [ "$(v L2M.Y3.frameTypingTerms)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L2M.Y3.frameTyping"' | grep -q MEASURED && [ "$(v L2M.Y3.termControl)" = 1 ] \
+  && [ "$(v L2M.Y4.framePremises)" = "$Y4N" ] && [ "$(v L2M.rules)" = 8 ]
+}
+if check41 "$H/count.py"; then say "ARM41 metaprll2 fixture OK (Y1 0 / fw 2; Y2 0 0 new 1; Y3 closure 2 typing 0 control 2 terms 0/1; Y4 $Y4N)"
+else say "ARM41 metaprll2 fixture FAIL"; python3 "$H/count.py" --arm metaprll2 --base "$B41" --ext "$X41" "$R41"; fail=1; fi
+sed 's/return {m for m in names if m != n and re.search(r"(?<!\[A-Za-z0-9_\x27\])%s(?!\[A-Za-z0-9_\x27\])" % re.escape(m), text)}  # REFS/return {m for m in names if m != n and m in text}  # REFS/' "$H/count.py" > "$F/mutant41.py"
+if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
+elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a name read inside a longer name)"; fail=1
+else say "ARM41 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

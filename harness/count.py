@@ -1194,6 +1194,103 @@ def indm(repo, base, ext):
     return rows
 
 
+def mpl_refs(n, text, names):
+    """The rule names a derivation's text names, as whole identifiers (ARM41: `ty_rx_note` does not name `ty_r`)."""
+    return {m for m in names if m != n and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(m), text)}  # REFS
+
+
+# The MetaPRL L2 column (ARM41; STATUS-vir rows 122/134). DIR is a clone of the arm's tree, --base its L1-closed sha
+# (ec912bd80), --ext the sha it names when it posts L2 CLOSED. Its DECLARATIONS-L2-METAPRL D0 fixes the reading: every L2
+# module is `virl2_*`, ⊢₂ lives in `virl2_typing`, the frame rule is `triple_frame` (D6), and partiality's framework file
+# `itt_bar_list` sits beside Y1 (its D1), never in it.
+L2M_FRAME, L2M_TYPING = 'triple_frame', 'virl2_typing'
+
+
+def metaprll2(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('L2M.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    show = lambda sha, p: strip_ml_comments(g('show', sha + ':' + p).stdout)
+    l2 = sorted(p for p in le if os.path.basename(p).startswith('virl2_') and p.endswith('.ml'))
+    prims = sum(len(PRIM_RE.findall(show(ext, p))) for p in l2)
+    fw = [p for p in sorted(le) if os.path.basename(p).startswith('itt_bar') and p.endswith('.ml')
+          and (p not in lb or show(base, p) != show(ext, p))]
+    fwp = sum(len(PRIM_RE.findall(show(ext, p))) for p in fw)
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    redit = dedit = 0
+    for p in sorted(lb & le):
+        if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'):
+            b, a = items(base, p), items(ext, p)
+            for k in b:
+                if k not in a or b[k] != a[k]:
+                    if k[0] in 'ip':
+                        redit += 1
+                    else:
+                        dedit += 1
+    newl1 = sorted(os.path.basename(p) for p in le - lb if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'))
+    rows = [('L2M.files', len(l2), 'MEASURED:virl2_*.ml at ext'),
+            ('L2M.Y1.prims', prims, 'MEASURED:prim/prim_rw in virl2_*, comments stripped'),
+            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw) or '-')),
+            ('L2M.Y2.defsEdited', dedit, 'MEASURED:virl1_* at base vs ext'), ('L2M.Y2.rulesEdited', redit, 'BESIDE'),
+            ('L2M.Y2.newL1Files', len(newl1), 'BESIDE:' + (','.join(newl1) or '-'))]
+    # keyed MODULE:NAME — a rule name may recur across modules (two of virl2_rules' do), and a bare-name key drops one
+    R, mod, byname = {}, {}, {}
+    for p in sorted(le):
+        b = os.path.basename(p)
+        if b.startswith('virl2_') and b.endswith('.prla'):
+            for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
+                k = b[:-5] + ':' + n
+                R[k] = v; mod[k] = b[:-5]; byname.setdefault(n, set()).add(k)
+    names = set(byname)
+    def clos(k0):
+        seen, todo = set(), [k0] if k0 in R else []
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x)
+                for n in mpl_refs(x.split(':', 1)[1], ' '.join(R[x][4]), names):
+                    todo += list(byname[n])
+        return seen
+    typing = {k for k in R if mod[k] == L2M_TYPING}
+    fk = sorted(byname.get(L2M_FRAME, ()))
+    fc = clos(fk[0]) if fk else set()
+    ctrl = len([n for n in R if (clos(n) - {n}) & typing])
+    # the STATEMENT axis: a rule applied by resolution (autoT, dT) is never NAMED, so the name closure cannot see it; its
+    # goal must still mention the judgement. Typing terms = what virl2_typing defines or declares.
+    stm = {}
+    for p in l2:
+        for blk in MPL_ITEM_RE.split(show(ext, p)):
+            m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
+            if m:
+                stm[os.path.basename(p)[:-3] + ':' + m.group(1)] = blk
+    tt = set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, 'theories/vir/%s.ml' % L2M_TYPING), re.M))
+    has_tt = lambda n: bool(tt) and bool(re.search(r"(?<![A-Za-z0-9_'])(?:%s)\{" % '|'.join(map(re.escape, sorted(tt))), stm.get(n, '')))
+    tctrl = len([k for k in stm if not k.startswith(L2M_TYPING + ':') and has_tt(k)])
+    stmt = stm.get(fk[0], '') if fk else ''
+    rows += [('L2M.rules', len(R), 'MEASURED:rules with a stored proof in virl2_*.prla'),
+             ('L2M.Y3.frameClosure', len(fc), ('MEASURED:%s and every rule its derivation names, transitively' % L2M_FRAME + (':AMBIGUOUS %d' % len(fk) if len(fk) > 1 else '')) if fc else 'EMPTY:no %s' % L2M_FRAME),
+             ('L2M.Y3.frameTyping', len(fc & typing), ('MEASURED:' if ctrl else 'VOID:name control 0, a 0 here is not a pass:') + '%s rules in the closure:' % L2M_TYPING + (','.join(sorted(fc & typing)) or '-')),
+             ('L2M.Y3.control', ctrl, 'BESIDE:rules whose closure, less themselves, names a typing rule (the name reader can see one)'),
+             ('L2M.Y3.frameTypingTerms', len([k for k in fc if has_tt(k)]), ('MEASURED:' if tctrl else 'VOID:term control 0:') + 'closure rules whose STATEMENT names a %s term' % L2M_TYPING),
+             ('L2M.Y3.termControl', tctrl, 'BESIDE:non-typing rules whose statement names a typing term (0 = nothing outside %s consumes it yet)' % L2M_TYPING),
+             ('L2M.Y3.limit', 0, 'LIMIT:a typing rule applied by resolution whose name and judgement appear in no closure statement or text is invisible to both axes'),
+             ('L2M.Y4.framePremises', stmt.count('-->'), 'MEASURED:premises of %s as stated' % L2M_FRAME if stmt else 'EMPTY')]
+    for m in sorted(set(mod.values())):
+        ns = [n for n in R if mod[n] == m]
+        rows.append(('L2M.C5tok.' + m, sum(R[n][1] for n in ns), 'BESIDE:%d rules; extras %d tok kept out' % (len(ns), sum(R[n][3] for n in ns))))
+    rows += [('L2M.Y5', 0, 'Q:owed until the arm\'s semantic typing lands'), ('L2M.Y6', 0, 'Q:owed (M1-M5)'),
+             ('L2M.Y8', 0, 'Q:owed (read at L2 CLOSED)')]
+    return rows
+
+
 def w8(repo, base, ext, prefix):
     ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
                                                  capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
@@ -1221,7 +1318,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'ind', 'indm'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'ind', 'indm', 'metaprll2'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1245,6 +1342,8 @@ def main():
         rows = leanl2(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
+    elif a.arm == 'metaprll2':
+        rows = metaprll2(a.dir, a.base, a.ext)
     elif a.arm == 'indm':
         rows = indm(a.dir, a.base, a.ext)
     elif a.arm == 'v3l1m':
