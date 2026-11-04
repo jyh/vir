@@ -1,0 +1,17 @@
+name = "l3"
+defaultTargets = ["VIRL3"]
+
+# O95, PREDICTIONS-amend-18 (Z1-Z9): layer L3 (OBJECT-L3), the router as an L2 program, Lean arm. A SEPARATE project beside
+# l1/ and l2/, so their counts stay put. L2 is IMPORTED by path and never edited (Z1, base vir dc95b53; l3/DECLARATIONS-LEAN.md).
+# mathlib at salt's pin (packages APFS-cloned from l2, manifest written by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l2"
+path = "../l2"
+
+[[lean_lib]]
+name = "VIRL3"
