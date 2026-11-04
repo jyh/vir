@@ -4,3 +4,5 @@ import VIRL3.Typing
 import VIRL3.Inequality
 import VIRL3.Refusals
 import VIRL3.R3False
+import VIRL3.Sym
+import VIRL3.Rollback
