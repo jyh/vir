@@ -1,0 +1,264 @@
+saltqueue: ticket P2 seat=root pid=56440
+✖ [3/3] Building VIRL1.Induction (2.2s)
+trace: .> LEAN_PATH=~/fleet/vir/l1/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l1/VIRL1/Induction.lean -o ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Induction.olean -i ~/fleet/vir/l1/.lake/build/lib/lean/VIRL1/Induction.ilean -c ~/fleet/vir/l1/.lake/build/ir/VIRL1/Induction.c --setup ~/fleet/vir/l1/.lake/build/ir/VIRL1/Induction.setup.json --json
+warning: VIRL1/Induction.lean:53:0: automatically included section variable(s) unused in theorem `VIRL1.ind_atom`:
+  E1
+  E2
+  E3
+  E4
+  E5
+  X8
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit E1 E2 E3 E4 E5 X8 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: VIRL1/Induction.lean:64:0: automatically included section variable(s) unused in theorem `VIRL1.ind_atoms`:
+  T1
+  T2
+  A1
+  A2
+  A3
+  A4
+  A5
+  E1
+  E2
+  E3
+  E4
+  E5
+  X1
+  X2
+  X3
+  X4
+  X5
+  X6
+  X7
+  X8
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit T1 T2 A1 A2 A3 A4 A5 E1 E2 E3 E4 E5 X1 X2 X3 X4 X5 X6 X7 X8 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: VIRL1/Induction.lean:70:0: automatically included section variable(s) unused in theorem `VIRL1.ind_tm`:
+  A1
+  A2
+  A3
+  A4
+  A5
+  X3
+  X4
+  X5
+  X6
+  X7
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit A1 A2 A3 A4 A5 X3 X4 X5 X6 X7 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: VIRL1/Induction.lean:68:12: unsolved goals
+S : Sig
+Pτ : Ty S.B → Prop
+Pa : Nat → Atom S → Prop
+Pe : Nat → Tm S → Prop
+T1 : ∀ (b : S.B), Pτ (Ty.base b)
+T2 : ∀ (τ₁ τ₂ : Ty S.B), Pτ τ₁ → Pτ τ₂ → Pτ (τ₁.arr τ₂)
+A1 : ∀ (n m : Nat), m < n → Pa n (Atom.var m)
+A2 : ∀ (n : Nat) (c : S.C), Pa n (Atom.const c)
+A3 : ∀ (n : Nat) (p : S.P) (as : List (Atom S)), (∀ (a : Atom S), a ∈ as → Pa n a) → Pa n (Atom.prim p as)
+A4 : ∀ (n : Nat) (τ : Ty S.B) (e : Tm S), Pτ τ → Pe (n + 1) e → Pa n (Atom.lam τ e)
+A5 : ∀ (n : Nat) (τ₁ τ₂ : Ty S.B) (e : Tm S), Pτ τ₁ → Pτ τ₂ → Pe (n + 2) e → Pa n (Atom.fix τ₁ τ₂ e)
+E1 : ∀ (n : Nat) (a : Atom S), Pa n a → Pe n (Tm.ret a)
+E2 : ∀ (n : Nat) (τ : Ty S.B) (e₁ e₂ : Tm S), Pτ τ → Pe n e₁ → Pe (n + 1) e₂ → Pe n (Tm.letE τ e₁ e₂)
+E3 :
+  ∀ (n : Nat) (o : S.O) (as : List (Atom S)) (τ : Ty S.B) (e : Tm S),
+    (∀ (a : Atom S), a ∈ as → Pa n a) → Pτ τ → Pe (n + 1) e → Pe n (Tm.letOp o as τ e)
+E4 : ∀ (n : Nat) (a₁ a₂ : Atom S), Pa n a₁ → Pa n a₂ → Pe n (Tm.app a₁ a₂)
+E5 : ∀ (n : Nat) (a : Atom S) (e₁ e₂ : Tm S), Pa n a → Pe n e₁ → Pe n e₂ → Pe n (Tm.ite a e₁ e₂)
+X1 : ∀ (τ₁ τ₂ : Ty S.B), Pτ τ₁ → Pτ τ₂ → Pτ (τ₁.prod τ₂)
+X2 : ∀ (τ₁ τ₂ : Ty S.B), Pτ τ₁ → Pτ τ₂ → Pτ (τ₁.sum τ₂)
+X3 : ∀ (n : Nat) (a₁ a₂ : Atom S), Pa n a₁ → Pa n a₂ → Pa n (a₁.pair a₂)
+X4 : ∀ (n : Nat) (a : Atom S), Pa n a → Pa n a.fst
+X5 : ∀ (n : Nat) (a : Atom S), Pa n a → Pa n a.snd
+X6 : ∀ (n : Nat) (τ : Ty S.B) (a : Atom S), Pτ τ → Pa n a → Pa n (Atom.inl τ a)
+X7 : ∀ (n : Nat) (τ : Ty S.B) (a : Atom S), Pτ τ → Pa n a → Pa n (Atom.inr τ a)
+X8 : ∀ (n : Nat) (a : Atom S) (e₁ e₂ : Tm S), Pa n a → Pe (n + 1) e₁ → Pe (n + 1) e₂ → Pe n (Tm.case a e₁ e₂)
+x✝¹ :
+  (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+    (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+      (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as
+a✝¹¹ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+_x✝ :
+  (x : Nat) ×' (x_1 : Tm S) ×' Tm.wf x x_1 ⊕'
+    (x : Nat) ×' (x_1 : List (Atom S)) ×' (_ : Atom.wfL x x_1) ×' (x : Atom S) ×' x ∈ x_1
+a✝¹⁰ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr _x✝) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+_x : (x : Nat) ×' (x_1 : List (Atom S)) ×' (_ : Atom.wfL x x_1) ×' (x : Atom S) ×' x ∈ x_1
+a✝⁹ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr _x)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+n✝ : Nat
+as✝ : (x : List (Atom S)) ×' (_ : Atom.wfL n✝ x) ×' (x_2 : Atom S) ×' x_2 ∈ x
+a✝⁸ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr ⟨n✝, as✝⟩)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+as : List (Atom S)
+a✝⁷ : (_ : Atom.wfL n✝ as) ×' (x : Atom S) ×' x ∈ as
+a✝⁶ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr ⟨n✝, ⟨as, a✝⁷⟩⟩)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+a✝⁵ : Atom.wfL n✝ as
+a✝⁴ : (x : Atom S) ×' x ∈ as
+a✝³ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr ⟨n✝, ⟨as, ⟨a✝⁵, a✝⁴⟩⟩⟩)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+a✝² : Atom S
+a✝¹ : a✝² ∈ as
+a✝ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr ⟨n✝, ⟨as, ⟨a✝⁵, ⟨a✝², a✝¹⟩⟩⟩⟩)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+n : Nat
+b : Atom S
+bs : List (Atom S)
+h✝¹ : Atom.wfL n (b :: bs)
+a : Atom S
+ha✝ : a ∈ b :: bs
+x✝ :
+  ∀
+    (y :
+      (n : Nat) ×' (a : Atom S) ×' Atom.wf n a ⊕'
+        (n : Nat) ×' (e : Tm S) ×' Tm.wf n e ⊕'
+          (n : Nat) ×' (as : List (Atom S)) ×' (_ : Atom.wfL n as) ×' (a : Atom S) ×' a ∈ as),
+    (invImage
+            (fun x =>
+              PSum.casesOn x (fun _x => PSigma.casesOn _x fun n a => PSigma.casesOn a fun a a_1 => (sizeOf a, 0))
+                fun _x =>
+                PSum.casesOn _x (fun _x => PSigma.casesOn _x fun n e => PSigma.casesOn e fun e a => (sizeOf e, 0))
+                  fun _x =>
+                  PSigma.casesOn _x fun n as =>
+                    PSigma.casesOn as fun as a =>
+                      PSigma.casesOn a fun a a_1 => PSigma.casesOn a_1 fun a a_2 => (sizeOf as, 1))
+            Prod.instWellFoundedRelation).1
+        y (PSum.inr (PSum.inr ⟨n, ⟨b :: bs, ⟨h✝¹, ⟨a, ha✝⟩⟩⟩⟩)) →
+      PSum.casesOn y (fun _x => Pa _x.1 _x.2.1) fun _x =>
+        PSum.casesOn _x (fun _x => Pe _x.1 _x.2.1) fun _x => Pa _x.1 _x.2.2.2.1
+h✝ : a = b
+h : Atom.wfL n (a :: bs)
+ha : a ∈ a :: bs
+⊢ sizeOf a ≤ sizeOf b
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL1.Induction
+error: build failed
+saltbuild EXIT=1
