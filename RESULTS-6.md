@@ -13,8 +13,8 @@ row, Q = quoted from the arm's check_all, which no file records).
 | W2a Lean ≥ 6 binder lemmas | **3** (`L1.binder`), and **1 BESIDE** (`L1.binder.substLOnly`) | — | **FALSIFIED** (3; 4 with the one beside) |
 | W2b the MetaPRL count (no threshold) | — | **216** rules (`L1M.binder`, H, a LOWER BOUND: amend-11's four named operators only), of which REVIVED **23** (`virl1_hoas_lang`); `subst{` alone **51** (`L1M.binder.substOnly`) | reported |
 | W2c MetaPRL < Lean | 3 | 216 (51 on `subst{` alone) | **FALSIFIED** (on every reading) |
-| W3 (i) a new operator costs 0 edits, (ii) a type former costs Lean ≥ 3, MetaPRL 0 | (i) **0** (`l1/out/counts-w3-i.tsv`, 21c2b97) · (ii) **3**, syntax · step · typing (`counts-w3-ii.tsv`, ba9c696) | (i) **0**, alt **2** with interp/pty central (`count.py --arm v3l1m`, ec912bd80 → f18367eb2, H = Q); W3b: 0 rules edited, 11 proof archives regenerated (→ b1c075d68). (ii): owed | (i) **HOLDS on both** · (ii) Lean HOLDS at the threshold; MetaPRL owed; **(ii) is INFORMED**: vir's announcement carried the Lean (ii) design to the MetaPRL arm before its (ii), and the arm read it (FINDINGS, amend-17) |
-| W3 (iii), amend-17, BLIND: the sum type in a fixed form, Lean 4, MetaPRL 0 | **4**, syntax · step · typing · den (`counts-w3-iii.tsv`, 8c3320f) | owed | Lean HOLDS · MetaPRL owed |
+| W3 (i) a new operator costs 0 edits, (ii) a type former costs Lean ≥ 3, MetaPRL 0 | (i) **0** (`l1/out/counts-w3-i.tsv`, 21c2b97) · (ii) **3**, syntax · step · typing (`counts-w3-ii.tsv`, ba9c696) | (i) **0**, alt **2** with interp/pty central (`count.py --arm v3l1m`, ec912bd80 → f18367eb2, H = Q); W3b: 0 rules edited, 11 proof archives regenerated (→ b1c075d68). (ii): **4**, syntax · step · typing · den (`l1/out/counts-w3m-ii.tsv`: `count.py --arm v3l1m --base b1c075d68 --ext 3e533a029`; central items edited aeval · core_ops · is_val · tc · ty_eq; W3b 6 rules edited, 66 added, 14 archives); REPLAY 738/738 over 28 modules, 0 incomplete | (i) **HOLDS on both** · (ii) Lean HOLDS at the threshold; **MetaPRL FALSIFIED (4 against 0)**; **(ii) is INFORMED**: vir's announcement carried the Lean (ii) design to the MetaPRL arm before its (ii), and the arm read it (FINDINGS, amend-17) |
+| W3 (iii), amend-17, BLIND: the sum type in a fixed form, Lean 4, MetaPRL 0 | **4**, syntax · step · typing · den (`counts-w3-iii.tsv`, 8c3320f) | **4**, syntax · step · typing · den (`l1/out/counts-w3m-iii.tsv`: `--base 3e533a029 --ext 05e83b7dc`; central items aeval · core_ops · is_val · l1phi · l1step · tc · ty_eq; W3b 8 edited, 53 added, 17 archives); REPLAY 791/791 over 28 modules, 0 incomplete | Lean HOLDS · **MetaPRL FALSIFIED (4 against 0)**, BLIND |
 | W3b the parameter's own cost | the hypotheses about Σ: `Sig.Lawful` (2 fields) + `S.O → False` | unread (not measured in addendum 1) | EXPLORATORY |
 | W4 the backend | not in L1 | — | at L3 |
 | W5 K1–K5 agree | 120 · ¬Dom · 42 · 7 · 55, each terminating program with a ⟶* trace (`Programs.lean`) | 120 · ¬halts · 42 · 7 · 55 (`virl1_den` k1/k3/k4/k5_den, `virl1_k2` k2_diverges), traces `l1run{n; k}` = value (`virl1_step` k1/k3/k4/k5_run), typing `virl1_typing` ty_k1..k5; read at the object, replayed complete (Q, the arm's replay log) | **HOLDS on both** |
@@ -86,3 +86,14 @@ does not wait on it. **The arm's literal "L1 closed" post (amend-15's W3 trigger
   that needed two soundness repairs before it could certify anything. The repairs are listed, never folded into the figure.
 - **W6b and W3b are not measured here.** The adm list above is quoted from the arm's posts. W3 (the extension test) waits on both arms'
   "L1 closed" posts (amend-15).
+
+## Addendum 2 — W3 (ii) and (iii) on the MetaPRL arm (2026-11-03, the 17th vir head)
+Scored at mojave's posted commits in a `--no-local` clone of its vir-l1 tree: (ii) 3e533a029 on the (i) repair b1c075d68, (iii)
+05e83b7dc on 3e533a029, each against its parent as the Lean cells are. Both FALSIFY amend-13/17's "MetaPRL 0": a new type former
+costs the MetaPRL arm the same four categories it costs the Lean arm, because its L1 dispatches on operators INSIDE its central
+definitions (aeval, tc, ty_eq, is_val, and for sums l1step and l1phi), which mojave said before building it would happen. The
+verdict figures are the REPLAY (`status_all`, one fresh mp per module, tags w3ii-p3b and w3iii-r2), recounted by vir from the
+logs' own `Status:` lines: 738 and 791 complete, 0 incomplete, every module's log reaching its END marker. LIMITS: the replay
+logs are mojave's runs, recounted, not re-run; that the replayed tree equals the scored commit is mojave's statement (WIP kept on
+`-wip` branches); (ii) is INFORMED (FINDINGS V-F5), (iii) is BLIND (amend-17). mojave's (ii) post reports a swallowed
+"Refine error" printed inside a `tryT` in two modules whose proofs read complete; the verdict is the status line.
