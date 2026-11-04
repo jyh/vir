@@ -1,0 +1,256 @@
+saltqueue: ticket P2 seat=root pid=24921
+⚠ [4/747] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/747] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/747] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/747] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/747] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [734/747] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [736/747] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [738/747] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [739/747] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [741/747] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [742/747] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [743/747] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [745/747] Building VIRL2.Progress (1.1s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Progress.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Progress.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Progress.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Progress.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Progress.setup.json --json
+error: VIRL2/Progress.lean:43:74: unsolved goals
+x✝⁴ : List Bool
+x✝³ : List ℤ
+x✝² : Ty₂
+σ : Store
+a : Atom₂
+e✝ : Tm₂
+ha : HasTypeA₂ [] a tint
+a✝ : RT [tcap] (true :: x✝⁴) x✝³ e✝ x✝²
+x✝¹ : σ.WF
+x✝ : ∀ p ∈ x✝³, ∃ n, Finmap.lookup p σ.R = some n
+k : ℤ
+hv : Atom.eval a = some (Atom.const (Const.int k))
+hval : (Atom.const (Const.int k)).IsValue
+hvt : HasTypeA₂ [] (Atom.const (Const.int k)) tint
+hk : 0 < k
+⊢ Atom.const (Const.cap σ.nextBase) = ?m.2257 ∧
+    { H := Store.fill σ.H σ.nextBase 0 k.toNat, R := Finmap.insert σ.nextBase k.toNat σ.R } = ?m.2259
+error: VIRL2/Progress.lean:55:9: unsolved goals
+x✝² : List Bool
+x✝¹ : List ℤ
+x✝ : Ty₂
+σ : Store
+p : ℤ
+a : Atom₂
+e✝ : Tm₂
+hp : p ∈ x✝¹
+ha : HasTypeA₂ [] a tint
+a✝ : RT [tint] (false :: x✝²) x✝¹ e✝ x✝
+hwf : σ.WF
+hown : ∀ p ∈ x✝¹, ∃ n, Finmap.lookup p σ.R = some n
+n : ℕ
+hn : Finmap.lookup p σ.R = some n
+i : ℤ
+hv : Atom.eval a = some (Atom.const (Const.int i))
+hval : (Atom.const (Const.int i)).IsValue
+hvt : HasTypeA₂ [] (Atom.const (Const.int i)) tint
+hi : 0 ≤ i ∧ i < ↑n
+hmem : p + i ∈ σ.H
+w : ℤ
+hw : Finmap.lookup (p + i) σ.H = some w
+⊢ Atom.const (Const.int w) = ?m.2410 ∧ σ = ?m.2412
+error: VIRL2/Progress.lean:56:33: Application type mismatch: The argument
+  hn
+has type
+  Finmap.lookup p σ.R = some n
+but is expected to have type
+  (do
+      let a ← Finmap.lookup p σ.R
+      pure ↑a) =
+    some ?m.2426
+in the application
+  IndexFault.load hv hn
+error: VIRL2/Progress.lean:67:9: unsolved goals
+x✝² : List Bool
+x✝¹ : List ℤ
+x✝ : Ty₂
+σ : Store
+p : ℤ
+a₁ a₂ : Atom₂
+e✝ : Tm₂
+hp : p ∈ x✝¹
+h₁ : HasTypeA₂ [] a₁ tint
+h₂ : HasTypeA₂ [] a₂ tint
+a✝ : RT [tcap] (true :: x✝²) (x✝¹.erase p) e✝ x✝
+hwf : σ.WF
+hown : ∀ p ∈ x✝¹, ∃ n, Finmap.lookup p σ.R = some n
+n : ℕ
+hn : Finmap.lookup p σ.R = some n
+i : ℤ
+hv₁ : Atom.eval a₁ = some (Atom.const (Const.int i))
+hval₁ : (Atom.const (Const.int i)).IsValue
+hvt₁ : HasTypeA₂ [] (Atom.const (Const.int i)) tint
+w : ℤ
+hv₂ : Atom.eval a₂ = some (Atom.const (Const.int w))
+hval₂ : (Atom.const (Const.int w)).IsValue
+hvt₂ : HasTypeA₂ [] (Atom.const (Const.int w)) tint
+hi : 0 ≤ i ∧ i < ↑n
+⊢ Atom.const (Const.cap p) = ?m.2560 ∧ { H := Finmap.insert (p + i) w σ.H, R := σ.R } = ?m.2562
+error: VIRL2/Progress.lean:68:35: Application type mismatch: The argument
+  hn
+has type
+  Finmap.lookup p σ.R = some n
+but is expected to have type
+  (do
+      let a ← Finmap.lookup p σ.R
+      pure ↑a) =
+    some ?m.2577
+in the application
+  IndexFault.store hv₁ hn
+error: VIRL2/Progress.lean:73:79: unsolved goals
+x✝³ : List Bool
+x✝² : List ℤ
+x✝¹ : Ty₂
+σ : Store
+p : ℤ
+e✝ : Tm₂
+hp : p ∈ x✝²
+a✝ : RT [tunit] (false :: x✝³) (x✝².erase p) e✝ x✝¹
+x✝ : σ.WF
+hown : ∀ p ∈ x✝², ∃ n, Finmap.lookup p σ.R = some n
+n : ℕ
+hn : Finmap.lookup p σ.R = some n
+⊢ Atom.const Const.unit = ?m.2604 ∧ { H := Store.clear σ.H p n, R := Finmap.erase p σ.R } = ?m.2606
+error: VIRL2/Progress.lean:70:52: unsolved goals
+x✝³ : List Bool
+x✝² : List ℤ
+x✝¹ : Ty₂
+σ : Store
+p : ℤ
+e✝ : Tm₂
+hp : p ∈ x✝²
+a✝ : RT [tunit] (false :: x✝³) (x✝².erase p) e✝ x✝¹
+x✝ : σ.WF
+hown : ∀ p ∈ x✝², ∃ n, Finmap.lookup p σ.R = some n
+n : ℕ
+hn : Finmap.lookup p σ.R = some n
+⊢ ∃ c, Step₂ (Tm.letOp Op.free [Atom.const (Const.cap p)] tunit e✝, σ) c
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Progress
+error: build failed
+saltbuild EXIT=1

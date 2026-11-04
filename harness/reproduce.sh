@@ -65,6 +65,14 @@ chk "$V/l1/out/counts-w3-i.tsv"  --arm v3l1 --base b156167 --ext 21c2b97 --prefi
 chk "$V/l1/out/counts-w3-ii.tsv" --arm v3l1 --base 21c2b97 --ext ba9c696 --prefix l1/VIRL1 "$V"
 # amend-17: W3 (iii), the BLIND extension (the sum type), on the Lean arm
 chk "$V/l1/out/counts-w3-iii.tsv" --arm v3l1 --base 2fccab7 --ext 8c3320f --prefix l1/VIRL1 "$V"
+# amend-16: layer L2, the Lean arm (l2/VIRL2), read from its own logs AT THE SHA THAT WROTE ITS COUNTS (derived from git, as L1)
+L2SHA=$(git -C "$V" log -1 --format=%H -- l2/out/counts-l2.tsv)
+mkdir -p "$M/l2at" && git -C "$V" archive "$L2SHA" l2 | tar -x -C "$M/l2at" \
+  || { echo "REPRODUCE MISSING-INPUT l2/ at $L2SHA"; exit 2; }
+echo "  PINNED   l2/ at its counts commit ${L2SHA:0:12}"
+chk "$V/l2/out/counts-l2.tsv" --arm l2 "$M/l2at/l2"
+# amend-16 Y2 = amend-13 W8: L1's definitions unedited from 37c209e to the Lean L2-closed sha
+chk "$V/l2/out/counts-w8.tsv" --arm w8 --base 37c209e --ext dc95b53 --prefix l1/VIRL1 "$V"
 chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do

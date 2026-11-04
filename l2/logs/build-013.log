@@ -1,0 +1,55 @@
+saltqueue: ticket P2 seat=root pid=90744
+⚠ [3/691] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/691] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/691] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/734] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [732/734] Building VIRL2.Axioms (1.0s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Axioms.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Axioms.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Axioms.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Axioms.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Axioms.setup.json --json
+error: VIRL2/Axioms.lean:78:2: unsolved goals
+case refine_1
+p : ℤ
+n : ℕ
+i w v : ℤ
+hi : 0 ≤ i ∧ i < ↑n
+σf : Store
+hd : (cellFrag p n i w).Disj σf
+hwf : (cellFrag p n i w ⊎ σf).WF
+hR : Finmap.lookup p (cellFrag p n i w ⊎ σf).R = some n
+hins : Finmap.insert (p + i) v (cellFrag p n i w ⊎ σf).H = (cellFrag p n i v ⊎ σf).H
+hmem : p + i ∈ (cellFrag p n i w ⊎ σf).H
+⊢ Finmap.insert (p + i) v (Finmap.singleton (p + i) w ∪ σf.H) = Finmap.singleton (p + i) v ∪ σf.H
+warning: VIRL2/Axioms.lean:78:31: This simp argument is unused:
+  hR
+
+Hint: Omit it from the simp argument list.
+  simp [opStep, Store.store, hR̵,̵ ̵h̵i, hins, Store.union, cellFrag]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Axioms.lean:78:39: This simp argument is unused:
+  hins
+
+Hint: Omit it from the simp argument list.
+  simp [opStep, Store.store, hR, hi, h̵i̵n̵s̵,̵ ̵Store.union, cellFrag]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Axioms
+error: build failed
+saltbuild EXIT=1

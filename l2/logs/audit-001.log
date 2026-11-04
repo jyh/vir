@@ -1,0 +1,70 @@
+saltqueue: ticket P2 seat=root pid=32151
+Audit.lean:2:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.union_assoc`
+Audit.lean:3:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.disj_union_left`
+Audit.lean:4:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.disj_union_right`
+'VIRL2.frame' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.conseq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.step₂_letOp_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.letOp_rule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.load_axiom' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.wf_insert_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.store_axiom' depends on axioms: [propext, Classical.choice, Quot.sound]
+Audit.lean:12:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.le_fold_max`
+Audit.lean:13:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.nextBase_nonneg`
+Audit.lean:14:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.end_le_nextBase`
+Audit.lean:15:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.mem_fill`
+Audit.lean:16:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.fill_union`
+Audit.lean:17:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.lookup_fill`
+Audit.lean:18:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.lookup_clear`
+Audit.lean:19:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.lookup_sing_union`
+Audit.lean:20:14: error(lean.unknownIdentifier): Unknown constant `VIRL2.empty_union`
+'VIRL2.RegionAt.isRegion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.alloc_axiom' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.free_axiom' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.lawful' depends on axioms: [propext, Quot.sound]
+'VIRL2.step_ret_none' depends on axioms: [propext]
+'VIRL2.step₂_ret_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.steps₂_ret' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.ret_rule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.step₂_letE_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.steps₂_letE' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.letE_rule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.pure_step_rule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.regionAt_lookup_p' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.load_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.store_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.free_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.op_frame' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.pre_ex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.pre_pure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M1_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M2_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M3_stuck' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M4_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.mask_empty_nil' depends on axioms: [propext]
+'VIRL2.mask_empty_cons' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M1_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M2_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M3_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M4_untyped' depends on axioms: [propext]
+'VIRL2.ret_rule'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M1_triple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.store_empty_union_right' depends on axioms: [propext, Quot.sound]
+'VIRL2.disj_empty_left' depends on axioms: [propext, Quot.sound]
+'VIRL2.disj_symm' depends on axioms: [propext, Quot.sound]
+'VIRL2.union_comm_disj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.emp_sep' depends on axioms: [propext, Quot.sound]
+'VIRL2.sep_emp_inv' depends on axioms: [propext, Quot.sound]
+'VIRL2.sep_comm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.sep_pure_left' depends on axioms: [propext, Quot.sound]
+'VIRL2.sep_ex_pure_left' depends on axioms: [propext, Quot.sound]
+'VIRL2.op_conseq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.pre_conseq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M2_triple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.wf_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M3_no_triple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M4_triple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.M4_leak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.stepFn₂_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL2.run₂_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=1

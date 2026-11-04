@@ -1,0 +1,182 @@
+saltqueue: ticket P2 seat=root pid=51216
+⚠ [4/743] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/743] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/743] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/743] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/743] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [734/743] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [736/743] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [738/743] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [739/743] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [741/743] Building VIRL2.SemBase (1.1s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/SemBase.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/SemBase.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/SemBase.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/SemBase.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/SemBase.setup.json --json
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+error: VIRL2/SemBase.lean:43:2: unsolved goals
+case lam.lam
+τ₁ τ₂ : Ty S₂.B
+e✝ : Tm S₂
+hv : True
+Δ✝ : List Bool
+a✝³ : Mask.empty Δ✝
+a✝² : Δ✝.length = [].length + 1
+a✝¹ : hasCap τ₁ = false
+a✝ : hasCap τ₂ = false
+h : HasType₂ [τ₁] Δ✝ e✝ τ₂
+⊢ (∃ e Δ, Atom.lam τ₁ e✝ = Atom.lam τ₁ e ∧ Mask.empty Δ ∧ HasType₂ [τ₁] Δ e τ₂) ∨
+    ∃ e Δ, Atom.lam τ₁ e✝ = Atom.fix τ₁ τ₂ e ∧ Mask.empty Δ ∧ HasType₂ [τ₁, τ₁.arr τ₂] Δ e τ₂
+error: VIRL2/SemBase.lean:44:32: Tactic `assumption` failed
+
+τ₁ τ₂ : Ty S₂.B
+e✝ : Tm S₂
+hv : True
+Δ✝ : List Bool
+a✝⁴ : Mask.empty Δ✝
+a✝³ : Δ✝.length = [].length + 2
+a✝² : hasCap τ₁ = false
+a✝¹ : hasCap τ₂ = false
+a✝ : HasType₂ [τ₁, τ₁.arr τ₂] Δ✝ e✝ τ₂
+⊢ HasType₂ [τ₁] Δ✝ ?m.1674 τ₂
+error: VIRL2/SemBase.lean:44:22: Application type mismatch: The argument
+  rfl
+has type
+  ?m.1681 = ?m.1681
+but is expected to have type
+  Atom.fix τ₁ τ₂ e✝ = Atom.lam τ₁ ?m.1674
+in the application
+  And.intro rfl
+error: VIRL2/SemBase.lean:45:2: No goals to be solved
+error: VIRL2/SemBase.lean:50:2: unsolved goals
+case pair.pair
+τ₁ τ₂ : Ty S₂.B
+a₁✝ a₂✝ : Atom S₂
+hv : a₁✝.IsValue ∧ a₂✝.IsValue
+a✝ : HasTypeA₂ [] a₁✝ τ₁
+h : HasTypeA₂ [] a₂✝ τ₂
+⊢ ∃ v₁ v₂, a₁✝.pair a₂✝ = v₁.pair v₂ ∧ v₁.IsValue ∧ v₂.IsValue ∧ HasTypeA₂ [] v₁ τ₁ ∧ HasTypeA₂ [] v₂ τ₂
+error: VIRL2/SemBase.lean:51:2: No goals to be solved
+error: VIRL2/SemBase.lean:56:16: `simp` made no progress
+error: VIRL2/SemBase.lean:57:28: Tactic `assumption` failed
+
+τ₁ τ₂ : Ty S₂.B
+a✝² : Atom S₂
+hv : a✝².IsValue
+a✝¹ : hasCap τ₁ = false
+a✝ : HasTypeA₂ [] a✝² τ₂
+⊢ HasTypeA₂ [] a✝² τ₁
+error: VIRL2/SemBase.lean:57:19: Application type mismatch: The argument
+  rfl
+has type
+  ?m.1671 = ?m.1671
+but is expected to have type
+  Atom.inr τ₁ a✝² = Atom.inl τ₂ a✝²
+in the application
+  And.intro rfl
+error: VIRL2/SemBase.lean:58:2: No goals to be solved
+error: VIRL2/SemBase.lean:73:6: unsolved goals
+case refine_1
+p : S₂.P
+as : List (Atom S₂)
+h : HasTypeL₂ [] as (List.map Ty.base (S₂.pArgs p))
+cs : List S₂.C
+hcs : Atom.evalL as = some (List.map Atom.const cs)
+hty : List.map S₂.cTy cs = S₂.pArgs p
+c : S₂.C
+hc : S₂.pInterp p cs = some c
+hct : S₂.cTy c = S₂.pRes p
+hne : Const.ty c ≠ BTy.cap
+⊢ ((constsOf (List.map Atom.const cs)).bind fun a => Option.map Atom.const (pInterp p a)) = some (Atom.const c)
+error: VIRL2/SemBase.lean:104:68: No goals to be solved
+warning: VIRL2/SemBase.lean:73:30: This simp argument is unused:
+  constsOf_map
+
+Hint: Omit it from the simp argument list.
+  simp [Atom.eval, hcs, c̵o̵n̵s̵t̵s̵O̵f̵_̵m̵a̵p̵,̵ ̵hc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/SemBase.lean:73:44: This simp argument is unused:
+  hc
+
+Hint: Omit it from the simp argument list.
+  simp [Atom.eval, hcs, constsOf_map,̵ ̵h̵c̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.SemBase
+error: build failed
+saltbuild EXIT=1

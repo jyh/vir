@@ -1,0 +1,68 @@
+saltqueue: ticket P2 seat=root pid=3336
+⚠ [3/690] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [619/690] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [623/690] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/737] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/737] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [735/737] Building VIRL2.Triples (980ms)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Triples.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Triples.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Triples.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Triples.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Triples.setup.json --json
+error: VIRL2/Triples.lean:26:100: Application type mismatch: The argument
+  ret_rule ?m.161
+has type
+  Triple (?m.158 ?m.157) (Tm.ret ?m.156) ?m.158
+but is expected to have type
+  Triple (fun σ => ci 7 = ci 7 ∧ σ = Store.empty)
+    (Tm.ret
+      ((((if 1 < 0 + 1 + 1 + 1 then Atom.var 1
+                  else if 1 = 0 + 1 + 1 + 1 then Atom.const (Const.cap p) else Atom.var (1 - 1)).subst
+                (0 + 1 + 1) (Atom.const (Const.cap p))).subst
+            (0 + 1) (Atom.const (Const.int 7))).subst
+        0 (Atom.const Const.unit)))
+    fun x x_1 => x = ci 7 ∧ x_1 = Store.empty
+in the application
+  conseq (fun σ h => ⟨rfl, h⟩) (fun x x_1 h => h) (ret_rule ?m.161)
+warning: VIRL2/Triples.lean:22:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:25:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L, Function.update_self]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:25:35: This simp argument is unused:
+  Atom.substL
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst, A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L̵,̵ ̵Function.update_self]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Triples
+error: build failed
+saltbuild EXIT=1

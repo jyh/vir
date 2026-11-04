@@ -1,0 +1,59 @@
+saltqueue: ticket P2 seat=root pid=31827
+⚠ [4/731] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/731] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/731] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [728/731] Building VIRL2.Step2 (1.4s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Step2.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Step2.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Step2.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Step2.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Step2.setup.json --json
+warning: VIRL2/Step2.lean:30:11: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+error: VIRL2/Step2.lean:51:70: Application type mismatch: The argument
+  h₁
+has type
+  ((Atom.evalL as).bind fun a => Option.map (fun x => (Tm.subst 0 x.1 e₁, x.2)) (opStep o a σ)) = some (e₁', σ')
+but is expected to have type
+  stepFn₂ (Tm.letOp o as τ' e₁, σ) = some ((e₁', σ').1, (e₁', σ').2)
+in the application
+  stepFn₂_sound h₁
+error: VIRL2/Step2.lean:54:70: Application type mismatch: The argument
+  h₁
+has type
+  ∃ a, stepFn (Tm.app a₁ a₂) = some a ∧ (a, σ) = (e₁', σ')
+but is expected to have type
+  stepFn₂ (Tm.app a₁ a₂, σ) = some ((e₁', σ').1, (e₁', σ').2)
+in the application
+  stepFn₂_sound h₁
+error: VIRL2/Step2.lean:57:70: Application type mismatch: The argument
+  h₁
+has type
+  ∃ a_1, stepFn (Tm.ite a e₁ e₃) = some a_1 ∧ (a_1, σ) = (e₁', σ')
+but is expected to have type
+  stepFn₂ (Tm.ite a e₁ e₃, σ) = some ((e₁', σ').1, (e₁', σ').2)
+in the application
+  stepFn₂_sound h₁
+error: VIRL2/Step2.lean:60:70: Application type mismatch: The argument
+  h₁
+has type
+  ∃ a_1, stepFn (Tm.case a e₁ e₃) = some a_1 ∧ (a_1, σ) = (e₁', σ')
+but is expected to have type
+  stepFn₂ (Tm.case a e₁ e₃, σ) = some ((e₁', σ').1, (e₁', σ').2)
+in the application
+  stepFn₂_sound h₁
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Step2
+error: build failed
+saltbuild EXIT=1

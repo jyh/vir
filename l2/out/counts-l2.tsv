@@ -1,0 +1,24 @@
+l2	L2.src	24	MEASURED
+l2	L2.theorems	205	MEASURED
+l2	L2.C4vir	0	MEASURED
+l2	L2.binder	13	MEASURED
+l2	L2.binder.insOnly	0	BESIDE
+l2	L2.fix	1	MEASURED
+l2	L2.sep.theorems	0	EMPTY
+l2	L2.audit	205	READ:audit-004.log
+l2	L2.C4	0	MEASURED
+l2	L2.control	1	MEASURED
+l2	L2.C6	79	MEASURED
+l2	L2.Y4.frameExplicitBinders	2	MEASURED
+l2	L2.Y3.control	1	READ:closure-004.log
+l2	L2.Y3.frame	0	MEASURED
+l2	L2.Y3.op_frame	0	MEASURED
+l2	L2.Y7.maskLemmas	21	EXPLORATORY
+l2	L2.Y6.theorems	16	MEASURED:of16
+l2	L2.continuity	1	MEASURED
+l2	L2.Y5.closed	1	MEASURED
+l2	L2.Y5.open	1	MEASURED
+l2	L2.Y5.fuelInStatement	0	MEASURED
+l2	L2.Y5.boundsInTyping	0	MEASURED:3 blocks
+l2	L2.Y7.semTypingC5	1092	EXPLORATORY:9 of 9 files
+l2	L2.Y7.semTypingC5tok	13155	EXPLORATORY

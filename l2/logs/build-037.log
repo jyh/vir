@@ -1,0 +1,278 @@
+saltqueue: ticket P2 seat=root pid=96743
+⚠ [4/741] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/741] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/741] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [728/741] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [731/741] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [734/741] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [736/741] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [738/741] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✖ [739/741] Building VIRL2.Conservative (1.5s)
+trace: .> LEAN_PATH=~/fleet/vir/l2/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l2/VIRL2/Conservative.lean -o ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Conservative.olean -i ~/fleet/vir/l2/.lake/build/lib/lean/VIRL2/Conservative.ilean -c ~/fleet/vir/l2/.lake/build/ir/VIRL2/Conservative.c --setup ~/fleet/vir/l2/.lake/build/ir/VIRL2/Conservative.setup.json --json
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRL2/Conservative.lean:227:8: unsolved goals
+case letStep.letOp
+S : Sig
+e e' : Tm S
+τ : Ty S.B
+e₁' e₂ : Tm S
+o✝ : S.O
+as✝ : List (Atom S)
+τ✝ : Ty S.B
+e✝ : Tm S
+hs : Step (Tm.letOp o✝ as✝ τ✝ e✝) e₁'
+ih : stepFn (Tm.letOp o✝ as✝ τ✝ e✝) = some e₁'
+⊢ False
+error: VIRL2/Conservative.lean:227:8: unsolved goals
+case letStep.app
+S : Sig
+e e' : Tm S
+τ : Ty S.B
+e₁' e₂ : Tm S
+a₁✝ a₂✝ : Atom S
+hs : Step (Tm.app a₁✝ a₂✝) e₁'
+ih : stepFn (Tm.app a₁✝ a₂✝) = some e₁'
+⊢ (match a₁✝.eval, a₂✝.eval with
+    | some (Atom.lam τ e), some v => some (Tm.subst 0 v e)
+    | some (Atom.fix τ₁ τ₂ e), some v => some (Tm.subst 0 (Atom.fix τ₁ τ₂ e) (Tm.subst 0 v e))
+    | x, x_1 => none) =
+    some e₁'
+error: VIRL2/Conservative.lean:227:8: unsolved goals
+case letStep.ite
+S : Sig
+e e' : Tm S
+τ : Ty S.B
+e₁' e₂ : Tm S
+a✝ : Atom S
+e₁✝ e₂✝ : Tm S
+hs : Step (Tm.ite a✝ e₁✝ e₂✝) e₁'
+ih : stepFn (Tm.ite a✝ e₁✝ e₂✝) = some e₁'
+⊢ (match a✝.eval with
+    | some (Atom.const c) =>
+      match S.toBool c with
+      | some true => some e₁✝
+      | some false => some e₂✝
+      | none => none
+    | x => none) =
+    some e₁'
+error: VIRL2/Conservative.lean:227:8: unsolved goals
+case letStep.case
+S : Sig
+e e' : Tm S
+τ : Ty S.B
+e₁' e₂ : Tm S
+a✝ : Atom S
+e₁✝ e₂✝ : Tm S
+hs : Step (Tm.case a✝ e₁✝ e₂✝) e₁'
+ih : stepFn (Tm.case a✝ e₁✝ e₂✝) = some e₁'
+⊢ (match a✝.eval with
+    | some (Atom.inl τ₂ v) => some (Tm.subst 0 v e₁✝)
+    | some (Atom.inr τ₁ v) => some (Tm.subst 0 v e₂✝)
+    | x => none) =
+    some e₁'
+error: VIRL2/Conservative.lean:246:70: Tactic `rfl` failed: The left-hand side
+  Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+    (match Atom.eval (embA a), Atom.eval (embA b) with
+    | some (Atom.lam τ e), some v => some (Tm.subst 0 v e)
+    | some (Atom.fix τ₁ τ₂ e), some v => some (Tm.subst 0 (Atom.fix τ₁ τ₂ e) (Tm.subst 0 v e))
+    | x, x_1 => none)
+is not definitionally equal to the right-hand side
+  Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+    (match a.eval, b.eval with
+    | some (Atom.lam τ e), some v => some (Tm.subst 0 v e)
+    | some (Atom.fix τ₁ τ₂ e), some v => some (Tm.subst 0 (Atom.fix τ₁ τ₂ e) (Tm.subst 0 v e))
+    | x, x_1 => none)
+
+τ : Ty L1.S₁.B
+a b : Atom L1.S₁
+e₂ : Tm L1.S₁
+ih : stepFn (Tm.app (embA a) (embA b)) = Option.map embE (stepFn (Tm.app a b))
+⊢ Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+      (match Atom.eval (embA a), Atom.eval (embA b) with
+      | some (Atom.lam τ e), some v => some (Tm.subst 0 v e)
+      | some (Atom.fix τ₁ τ₂ e), some v => some (Tm.subst 0 (Atom.fix τ₁ τ₂ e) (Tm.subst 0 v e))
+      | x, x_1 => none) =
+    Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+      (match a.eval, b.eval with
+      | some (Atom.lam τ e), some v => some (Tm.subst 0 v e)
+      | some (Atom.fix τ₁ τ₂ e), some v => some (Tm.subst 0 (Atom.fix τ₁ τ₂ e) (Tm.subst 0 v e))
+      | x, x_1 => none)
+error: VIRL2/Conservative.lean:249:70: Tactic `rfl` failed: The left-hand side
+  Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+    (match Atom.eval (embA a) with
+    | some (Atom.const c) =>
+      match c.toBool with
+      | some true => some (embE e₁)
+      | some false => some (embE e₃)
+      | none => none
+    | x => none)
+is not definitionally equal to the right-hand side
+  Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+    (match a.eval with
+    | some (Atom.const c) =>
+      match L1.S₁.toBool c with
+      | some true => some e₁
+      | some false => some e₃
+      | none => none
+    | x => none)
+
+τ : Ty L1.S₁.B
+a : Atom L1.S₁
+e₁ e₃ e₂ : Tm L1.S₁
+ih : stepFn (Tm.ite (embA a) (embE e₁) (embE e₃)) = Option.map embE (stepFn (Tm.ite a e₁ e₃))
+⊢ Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+      (match Atom.eval (embA a) with
+      | some (Atom.const c) =>
+        match c.toBool with
+        | some true => some (embE e₁)
+        | some false => some (embE e₃)
+        | none => none
+      | x => none) =
+    Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+      (match a.eval with
+      | some (Atom.const c) =>
+        match L1.S₁.toBool c with
+        | some true => some e₁
+        | some false => some e₃
+        | none => none
+      | x => none)
+error: VIRL2/Conservative.lean:252:70: Tactic `rfl` failed: The left-hand side
+  Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+    (match Atom.eval (embA a) with
+    | some (Atom.inl τ₂ v) => some (Tm.subst 0 v (embE e₁))
+    | some (Atom.inr τ₁ v) => some (Tm.subst 0 v (embE e₃))
+    | x => none)
+is not definitionally equal to the right-hand side
+  Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+    (match a.eval with
+    | some (Atom.inl τ₂ v) => some (Tm.subst 0 v e₁)
+    | some (Atom.inr τ₁ v) => some (Tm.subst 0 v e₃)
+    | x => none)
+
+τ : Ty L1.S₁.B
+a : Atom L1.S₁
+e₁ e₃ e₂ : Tm L1.S₁
+ih : stepFn (Tm.case (embA a) (embE e₁) (embE e₃)) = Option.map embE (stepFn (Tm.case a e₁ e₃))
+⊢ Option.map (fun e₁' => Tm.letE (embT τ) e₁' (embE e₂))
+      (match Atom.eval (embA a) with
+      | some (Atom.inl τ₂ v) => some (Tm.subst 0 v (embE e₁))
+      | some (Atom.inr τ₁ v) => some (Tm.subst 0 v (embE e₃))
+      | x => none) =
+    Option.map (embE ∘ fun e₁' => Tm.letE τ e₁' e₂)
+      (match a.eval with
+      | some (Atom.inl τ₂ v) => some (Tm.subst 0 v e₁)
+      | some (Atom.inr τ₁ v) => some (Tm.subst 0 v e₃)
+      | x => none)
+error: VIRL2/Conservative.lean:274:15: unsolved goals
+case some.const.none
+a : Atom L1.S₁
+e₁ e₂ : Tm L1.S₁
+c : L1.S₁.C
+h : L1.Const.toBool c = none
+⊢ none = none
+error: VIRL2/Conservative.lean:275:17: unsolved goals
+case some.const.some.false
+a : Atom L1.S₁
+e₁ e₂ : Tm L1.S₁
+c : L1.S₁.C
+h : L1.Const.toBool c = some false
+⊢ ∃ a, some e₂ = some a ∧ embE a = embE e₂
+
+case some.const.some.true
+a : Atom L1.S₁
+e₁ e₂ : Tm L1.S₁
+c : L1.S₁.C
+h : L1.Const.toBool c = some true
+⊢ ∃ a, some e₁ = some a ∧ embE a = embE e₁
+warning: VIRL2/Conservative.lean:246:49: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp only [stepFn, i̵h̵,̵ ̵Option.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:249:49: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp only [stepFn, i̵h̵,̵ ̵Option.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:252:49: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp only [stepFn, i̵h̵,̵ ̵Option.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL2.Conservative
+error: build failed
+saltbuild EXIT=1
