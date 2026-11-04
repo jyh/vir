@@ -1,0 +1,26 @@
+indm	INDM.newFiles	3	BESIDE:virl1_induct.ml,virl1_induct.mli,virl1_induct.prla
+indm	INDM.I1.rulesEdited	0	MEASURED:pre-existing theories/vir/*.ml, rules edited or removed (comments stripped)
+indm	INDM.I1.defsEdited	0	MEASURED
+indm	INDM.I1.prlaChanged	0	MEASURED:-
+indm	INDM.I2.newPrims	0	MEASURED:prim/prim_rw in new files
+indm	INDM.I2.frameworkFiles	0	MEASURED:theories/ outside vir changed:-
+indm	INDM.I2.grounded	0	Q:the arm's REPLAY post (status_all, fresh session)
+indm	INDM.I4a.operators	28	MEASURED:core_ops + sig1 at base
+indm	INDM.I4a.arityShapes	8	MEASURED:[] [0] [0,0] [0,0,0] [0,0,0,1] [0,0,1] [0,0,2] [0,1]
+indm	INDM.I4a.unpackLemmas	9	MEASURED:new rules with a literal compatible_shapes premise
+indm	INDM.I4a.shapesCovered	8	BESIDE:ALL
+indm	INDM.I4a.unpack.U	8	BESIDE:unpack_s,unpack_s0,unpack_s00,unpack_s01,unpack_s002,unpack_s001,unpack_s000,unpack_s0001
+indm	INDM.I4a.unpack.notU	1	BESIDE:compat_nil_st(S)
+indm	INDM.rules	37	MEASURED:rules with a stored proof in new .prla
+indm	INDM.I4b.C5tok	69794	MEASURED:whitespace tokens, every new rule, subgoal tree
+indm	INDM.I4b.C5steps	40	MEASURED
+indm	INDM.I5.U.rules	17	MEASURED:closure of l1_op_induction by name in its derivation
+indm	INDM.I5.U.C5tok	19130	MEASURED
+indm	INDM.I5.S.rules	20	MEASURED:closure of l1_induction minus U
+indm	INDM.I5.S.C5tok	50664	MEASURED
+indm	INDM.I5.neither	0	BESIDE:-
+indm	INDM.top.l1_op_induction	10689	BESIDE
+indm	INDM.top.l1_induction	38702	BESIDE
+indm	INDM.extras.steps	38	BESIDE:stale subtrees, NOT the proof
+indm	INDM.extras.C5tok	39002	BESIDE:stale subtrees, NOT the proof
+indm	INDM.I4b.ratioX100	13711	MEASURED:vs Lean IND.I3.proofTokens 509

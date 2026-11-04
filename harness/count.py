@@ -631,7 +631,7 @@ LOCALITY_RE = re.compile(r'(?<![A-Za-z0-9_])(load_at|store_at|free_at|alloc_axio
 
 
 def proof_of(block):
-    """A theorem's PROOF: its text after the statement (amend-18 Z5/Z6/Z8)."""
+    """A theorem's PROOF: its text after the statement (amend-18 Z5/Z6/Z8; amend-19 I3)."""
     st = p_statement(block)
     i = block.find(st) + len(st) if st else 0
     return block[i:]
@@ -677,6 +677,44 @@ def leanl3(d):
     other = max((v, r) for r, v in c5.items() if r != 'R3') if len(c5) > 1 else (0, '-')
     rows.append(('L3.Z4.R3C5', c5.get('R3', 0), 'MEASURED:Rollback+Sym'))
     rows.append(('L3.Z4.maxOtherC5', other[0], 'MEASURED:' + other[1]))
+    return rows
+
+
+IND_NAMES = ('ind_ty', 'ind_atom', 'ind_atoms', 'ind_tm', 'three_sorted_induction')
+STD_AX = {'propext', 'Classical.choice', 'Quot.sound'}
+NONPROOF_RE = re.compile(r'^\s*(?:include\b|mutual\b|end\b|set_option\b|section\b|variable\b|namespace\b|open\b|:=\s*$|by\s*$|:=\s*by\s*$)')
+
+
+def leanind(d):
+    """amend-19 on the Lean arm: DIR is the L1 project (l1/), the rule in VIRL1/Induction.lean."""
+    p = os.path.join(d, 'VIRL1', 'Induction.lean')
+    if not os.path.exists(p):
+        return [('IND.src', 0, 'EMPTY')]
+    text = re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', read(p))
+    thm = {}
+    for b in blocks(text):
+        m = re.match(r'(?:@\[[^\]]*\]\s*)?(?:private\s+)?(?:theorem|lemma)\s+([A-Za-z0-9_.]+)', b)
+        if m:
+            thm[m.group(1)] = b
+    lines = 0
+    for n in IND_NAMES:
+        if n in thm:
+            lines += len([l for l in proof_of(thm[n]).splitlines() if l.strip() and not NONPROOF_RE.match(l)])
+    aux = [n for n in thm if n not in IND_NAMES]
+    rows = [('IND.I3.theorems', len([n for n in IND_NAMES if n in thm]), 'MEASURED:of %d' % len(IND_NAMES)),
+            ('IND.I3.proofLines', lines, 'MEASURED:proof bodies of the five, statements and include/mutual/end lines excluded'),
+            ('IND.I3.auxLemmas', len(aux), 'MEASURED:' + (','.join(aux) or '-')),
+            ('IND.I3.proofTokens', sum(len(proof_of(thm[n]).split()) for n in IND_NAMES if n in thm), 'BESIDE:for I4(b)'),
+            ('IND.I6.w3Premises', len(re.findall(r'\(X\d+\s*:', text)), 'MEASURED')]
+    logs = sorted(q for q in files(os.path.join(d, 'logs'), ('.log',)) if re.search(r'/ind-audit-\d+\.log$', q))
+    if logs:
+        t = read(logs[-1])
+        ax = re.findall(r"depends on axioms: \[([^\]]*)\]", t)
+        bad = [a for a in ax if not {x.strip() for x in a.split(',')} <= STD_AX]
+        rows.append(('IND.I2.audited', len(ax) + len(re.findall(r'does not depend on any axioms', t)), 'READ:' + os.path.basename(logs[-1])))
+        rows.append(('IND.I2.nonStandard', len(bad), 'MEASURED'))
+    else:
+        rows += [('IND.I2.audited', 0, 'EMPTY'), ('IND.I2.nonStandard', 0, 'EMPTY')]
     return rows
 
 
@@ -1032,6 +1070,176 @@ def metaprll1_floor(repo):
 ISTHM = re.compile(r'(?:@\[[^\]]*\]\s*)?' + MODS + r'(?:theorem|lemma)\b')
 
 
+# amend-19 on the MetaPRL arm (ARM40; STATUS-vir row 136). DIR is a clone of the arm's vir-l1 tree; --base the L1-closed sha,
+# --ext the sha the arm named for its rule. Everything is read from git objects at those two shas.
+# A .prla is a hash-consed term DAG (P params · O ops · T terms · B bterms; N lines name each local op). A stored proof step is
+# Summary!ext_rule[text]{status; goal; subgoals; extras} (MetaPRL tactics/proof/proof_term_boot.ml, HeadRule): the
+# DERIVATION is the text plus its SUBGOALS' derivations; EXTRAS are subtrees kept from earlier refinements that no longer
+# match a subgoal, so they are NOT the proof and are printed beside (INDM.extras.*). C5 is whitespace tokens of step texts,
+# with multiplicity over the tree (a shared DAG node used twice is two steps).
+IND_M_U, IND_M_S = 'l1_op_induction', 'l1_induction'
+PRLA_RULES = ('Summary!rule', 'Summary!rewrite', 'Summary!cond_rewrite')
+
+
+def prla_rules(text):
+    P, O, T, B, N = {}, {}, {}, {}, {}
+    for ln in text.splitlines():
+        f = ln.split('\t')
+        if len(f) < 3:
+            continue
+        if f[0].startswith('N') and len(f[0]) > 1:
+            N[f[1]] = f[0][1:]
+        elif f[0] in ('P', 'O', 'T', 'B'):
+            {'P': P, 'O': O, 'T': T, 'B': B}[f[0]][f[1]] = f[2] if f[0] == 'P' else f[2].split(' ')
+    def sval(pid):
+        m = re.fullmatch(r'String (?:"(.*)"|(\S+))', P.get(pid, ''))
+        return (m.group(1) if m.group(1) is not None else m.group(2)) if m else None
+    term = lambda b: B[b][-1] if b in B else b
+    opn = lambda t: N.get(O.get(T[t][0], [''])[0], '') if t in T else ''
+    def xlist(t):
+        out = []
+        while opn(t) == 'Perv!xcons':
+            out.append(term(T[t][1])); t = term(T[t][2])
+        return out
+    memo = {}
+    def proof(t):   # (steps, tokens, extraSteps, extraTokens, texts)
+        if t in memo:
+            return memo[t]
+        o = opn(t); k = [term(b) for b in T.get(t, [''])[1:]]
+        s = w = xs = xw = 0; tx = []
+        if o == 'Summary!ext_rule':
+            txt = sval(O[T[t][0]][1]) or ''
+            s, w, tx = 1, len(txt.split()), [txt]
+            for c in xlist(k[2]):
+                a = proof(c); s += a[0]; w += a[1]; xs += a[2]; xw += a[3]; tx += a[4]
+            for c in xlist(k[3]):
+                a = proof(c); xs += a[0] + a[2]; xw += a[1] + a[3]  # EXTRAS
+        elif o == 'Summary!compose':
+            for c in [k[0]] + xlist(k[1]):
+                a = proof(c); s += a[0]; w += a[1]; xs += a[2]; xw += a[3]; tx += a[4]
+            for c in xlist(k[2]):
+                a = proof(c); xs += a[0] + a[2]; xw += a[1] + a[3]
+        elif o == 'Summary!wrapped':
+            s, w, xs, xw, tx = proof(k[1])
+        memo[t] = (s, w, xs, xw, tx)
+        return memo[t]
+    def first_extract(t, depth=0):
+        if opn(t) in ('Summary!ext_rule', 'Summary!compose', 'Summary!wrapped'):
+            return t
+        for b in T.get(t, [''])[1:]:
+            r = first_extract(term(b), depth + 1) if depth < 64 else None
+            if r:
+                return r
+        return None
+    out = {}
+    for tid, row in T.items():
+        op = O.get(row[0], [''])
+        if N.get(op[0], '') in PRLA_RULES and len(op) > 1:
+            e = first_extract(tid)
+            out[sval(op[1])] = proof(e) if e else (0, 0, 0, 0, [])
+    return out
+
+
+def ind_shapes(sig):
+    """L1's operator list (core_ops + sig1's three lists) and each operator's arity SHAPE (binders per slot)."""
+    shape = {}
+    for name, body in re.findall(r'define\s+unfold_(\w+)\s*:\s*\1\s*<-->\s*operator\[\(l1_\w+(?:\{([^}]*)\})?\):op\]', sig):
+        shape[name] = tuple(len(sl.split('.')[0].split(',')) if '.' in sl else 0 for sl in body.split(';')) if body else ()
+    lst = []
+    for d in ('core_ops', 'sig1'):
+        m = re.search(r'define\s+unfold_%s\s*:\s*%s\s*<-->([\s\S]*?)(?=\n\S|\Z)' % (d, d), sig)
+        lst += re.findall(r'\b(\w+_op)\b', m.group(1)) if m else []
+    return {n: shape.get(n) for n in lst}
+
+
+def indm(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('INDM.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    new = sorted(p for p in le - lb)
+    def items(sha, p):
+        t = strip_ml_comments(g('show', sha + ':' + p).stdout); out = {}
+        for blk in MPL_ITEM_RE.split(t):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    redit = dedit = 0
+    for p in sorted(lb & le):
+        if p.endswith('.ml'):
+            b, a = items(base, p), items(ext, p)
+            for k in b:
+                if k in a and b[k] != a[k]:
+                    if k[0] in 'ip':
+                        redit += 1
+                    else:
+                        dedit += 1
+                elif k not in a:
+                    redit += 1
+    prla = [p for p in g('diff', '--name-only', base, ext, '--', 'theories/vir').stdout.split() if p.endswith('.prla') and p in lb]
+    fw = [p for p in g('diff', '--name-only', base, ext, '--', 'theories', ':!theories/vir').stdout.split()]
+    nprim = sum(len(PRIM_RE.findall(strip_ml_comments(g('show', ext + ':' + p).stdout))) for p in new if p.endswith('.ml'))
+    rows = [('INDM.newFiles', len(new), 'BESIDE:' + (','.join(os.path.basename(p) for p in new) or '-')),
+            ('INDM.I1.rulesEdited', redit, 'MEASURED:pre-existing theories/vir/*.ml, rules edited or removed (comments stripped)'),
+            ('INDM.I1.defsEdited', dedit, 'MEASURED'), ('INDM.I1.prlaChanged', len(prla), 'MEASURED:' + (','.join(os.path.basename(p) for p in prla) or '-')),
+            ('INDM.I2.newPrims', nprim, 'MEASURED:prim/prim_rw in new files'),
+            ('INDM.I2.frameworkFiles', len(fw), 'MEASURED:theories/ outside vir changed:' + (','.join(fw) or '-')),
+            ('INDM.I2.grounded', 0, 'Q:the arm\'s REPLAY post (status_all, fresh session)')]
+    sh = ind_shapes(g('show', base + ':theories/vir/virl1_sig.ml').stdout)
+    shapes = {s for s in sh.values() if s is not None}
+    unpack, cov, unames = 0, set(), []
+    for p in new:
+        if not p.endswith('.ml'):
+            continue
+        for blk in MPL_ITEM_RE.split(strip_ml_comments(g('show', ext + ':' + p).stdout)):
+            if not re.match(r'interactive\s', blk):
+                continue
+            m = re.search(r"compatible_shapes\{'\w+;\s*((?:\d+\s*::\s*)*nil)\s*;", blk)
+            if m:
+                unpack += 1; cov.add(tuple(int(x) for x in re.findall(r'\d+', m.group(1))))
+                unames.append(re.match(r'interactive\s+(\S+)', blk).group(1))
+    rows += [('INDM.I4a.operators', len(sh), 'MEASURED:core_ops + sig1 at base' + ('' if None not in sh.values() else ':UNSHAPED-OP')),
+             ('INDM.I4a.arityShapes', len(shapes), 'MEASURED:' + ' '.join('[' + ','.join(map(str, s)) + ']' for s in sorted(shapes))),
+             ('INDM.I4a.unpackLemmas', unpack, 'MEASURED:new rules with a literal compatible_shapes premise'),
+             ('INDM.I4a.shapesCovered', len(cov & shapes), 'BESIDE:' + ('ALL' if cov == shapes else 'missing ' + str(sorted(shapes - cov)) + ' extra ' + str(sorted(cov - shapes))))]
+    R = {}
+    for p in new:
+        if p.endswith('.prla'):
+            R.update(prla_rules(g('show', ext + ':' + p).stdout))
+    def uses(n):
+        t = ' '.join(R[n][4])
+        return {m for m in R if m != n and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(m), t)}
+    def clos(n):
+        seen, todo = set(), [n] if n in R else []
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x); todo += list(uses(x))
+        return seen
+    U = clos(IND_M_U); S = clos(IND_M_S) - U
+    tok = lambda ns: sum(R[n][1] for n in ns)
+    stage = lambda n: 'U' if n in U else 'S' if n in S else '?'
+    rows += [('INDM.I4a.unpack.U', len([n for n in unames if n in U]), 'BESIDE:' + (','.join(n for n in unames if n in U) or '-')),
+             ('INDM.I4a.unpack.notU', len([n for n in unames if n not in U]), 'BESIDE:' + (','.join('%s(%s)' % (n, stage(n)) for n in unames if n not in U) or '-'))]
+    rows += [('INDM.rules', len(R), 'MEASURED:rules with a stored proof in new .prla'),
+             ('INDM.I4b.C5tok', tok(R), 'MEASURED:whitespace tokens, every new rule, subgoal tree'),
+             ('INDM.I4b.C5steps', sum(R[n][0] for n in R), 'MEASURED'),
+             ('INDM.I5.U.rules', len(U), 'MEASURED:closure of %s by name in its derivation' % IND_M_U),
+             ('INDM.I5.U.C5tok', tok(U), 'MEASURED'),
+             ('INDM.I5.S.rules', len(S), 'MEASURED:closure of %s minus U' % IND_M_S),
+             ('INDM.I5.S.C5tok', tok(S), 'MEASURED'),
+             ('INDM.I5.neither', len(set(R) - U - S), 'BESIDE:' + (','.join(sorted(set(R) - U - S)) or '-')),
+             ('INDM.top.' + IND_M_U, R.get(IND_M_U, (0, 0))[1], 'BESIDE'), ('INDM.top.' + IND_M_S, R.get(IND_M_S, (0, 0))[1], 'BESIDE'),
+             ('INDM.extras.steps', sum(R[n][2] for n in R), 'BESIDE:stale subtrees, NOT the proof'),
+             ('INDM.extras.C5tok', sum(R[n][3] for n in R), 'BESIDE:stale subtrees, NOT the proof')]
+    lc = os.environ.get('VIR_IND_LEAN', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'l1', 'out', 'counts-ind.tsv'))
+    lt = next((int(f[2]) for f in (l.split('\t') for l in (read(lc).splitlines() if os.path.isfile(lc) else [])) if len(f) > 2 and f[1] == 'IND.I3.proofTokens'), 0)
+    rows.append(('INDM.I4b.ratioX100', tok(R) * 100 // lt if lt else 0, ('MEASURED:vs Lean IND.I3.proofTokens %d' % lt) if lt else 'EMPTY:no Lean counts'))
+    return rows
+
+
 def w8(repo, base, ext, prefix):
     ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
                                                  capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
@@ -1059,7 +1267,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1083,6 +1291,10 @@ def main():
         rows = leanl2(a.dir)
     elif a.arm == 'l3':
         rows = leanl3(a.dir)
+    elif a.arm == 'ind':
+        rows = leanind(a.dir)
+    elif a.arm == 'indm':
+        rows = indm(a.dir, a.base, a.ext)
     elif a.arm == 'v3l1m':
         rows = v3l1m(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll1':

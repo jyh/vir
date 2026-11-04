@@ -1,0 +1,55 @@
+saltqueue: ticket P2 seat=root pid=61200
+⚠ [3/3] Built VIRL1.Induction (287ms)
+warning: VIRL1/Induction.lean:53:0: automatically included section variable(s) unused in theorem `VIRL1.ind_atom`:
+  E1
+  E2
+  E3
+  E4
+  E5
+  X8
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit E1 E2 E3 E4 E5 X8 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: VIRL1/Induction.lean:64:0: automatically included section variable(s) unused in theorem `VIRL1.ind_atoms`:
+  T1
+  T2
+  A1
+  A2
+  A3
+  A4
+  A5
+  E1
+  E2
+  E3
+  E4
+  E5
+  X1
+  X2
+  X3
+  X4
+  X5
+  X6
+  X7
+  X8
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit T1 T2 A1 A2 A3 A4 A5 E1 E2 E3 E4 E5 X1 X2 X3 X4 X5 X6 X7 X8 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: VIRL1/Induction.lean:67:0: automatically included section variable(s) unused in theorem `VIRL1.ind_tm`:
+  A1
+  A2
+  A3
+  A4
+  A5
+  X3
+  X4
+  X5
+  X6
+  X7
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit A1 A2 A3 A4 A5 X3 X4 X5 X6 X7 in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Build completed successfully (3 jobs).
+saltbuild EXIT=0
