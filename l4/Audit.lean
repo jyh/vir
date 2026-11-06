@@ -42,3 +42,7 @@ import VIRL4
 #print axioms VIRL4.INC_triple
 #print axioms VIRL4.TAIL_triple
 #print axioms VIRL4.N1_S
+#print axioms VIRL4.reach_aux
+#print axioms VIRL4.triple₄_invariant
+#print axioms VIRL4.N3_run
+#print axioms VIRL4.N3_no_triple

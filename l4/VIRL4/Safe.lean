@@ -105,6 +105,41 @@ theorem triple₄_adequate {I : Int → Assn} {P : Assn₄} {e : Tm₄} {Q : Ato
   obtain ⟨k, hk⟩ := hc.toN
   exact adequate_aux hk 0 e L σ σS σF rfl hg (h _ L σ hP)
 
+/-- Every ⟶₄*-reachable configuration from a safe thread still splits as thread ⊎ shared ⊎ frame with `Shared` holding. -/
+theorem reach_aux {I : Int → Assn} {Q : Atom₄ → Assn₄} :
+    ∀ {k : Nat} {c c' : Config₄}, StepsN k c c' →
+    ∀ (n : Nat) (e : Tm₄) (L : List LockSt) (σ σS σF : Store),
+      c = (e, ⟨σ ⊎ σS ⊎ σF, L⟩) → Glob I σ σS σF L → safe₄ I (n + k + 1) e L σ Q →
+      ∃ σ' σS', Glob I σ' σS' σF c'.2.locks ∧ c'.2.σ = σ' ⊎ σS' ⊎ σF := by
+  intro k c c' hk
+  induction hk with
+  | refl c =>
+    intro n e L σ σS σF hc hg _
+    subst hc
+    exact ⟨σ, σS, hg, rfl⟩
+  | @step k c c₁ c'' h1 _ ih =>
+    intro n e L σ σS σF hc hg hs
+    subst hc
+    have hs' : safe₄ I ((n + k + 1) + 1) e L σ Q := by
+      have : n + (k + 1) + 1 = (n + k + 1) + 1 := by omega
+      rw [← this]; exact hs
+    obtain ⟨_, hstep⟩ := hs'
+    obtain ⟨e', s'⟩ := c₁
+    obtain ⟨σ', σS', _, hg', hσ, hsafe⟩ := (hstep L σS σF (Ext.refl L) hg).2 e' s' h1
+    obtain ⟨σs, Ls⟩ := s'
+    simp only at hσ hg' hsafe
+    subst hσ
+    exact ih n e' Ls σ' σS' σF rfl hg' hsafe
+
+/-- THE RESOURCE INVARIANT, over every interleaving: from a `Triple₄`, at EVERY ⟶₄*-reachable configuration the store splits so
+  that each FREE lock's region is owned by the shared part and satisfies its invariant (`Shared`). -/
+theorem triple₄_invariant {I : Int → Assn} {P : Assn₄} {e : Tm₄} {Q : Atom₄ → Assn₄} (h : Triple₄ I P e Q)
+    {L : List LockSt} {σ σS σF : Store} (hP : P L σ) (hg : Glob I σ σS σF L) :
+    ∀ c, Steps₄ (e, ⟨σ ⊎ σS ⊎ σF, L⟩) c → ∃ σ' σS', Glob I σ' σS' σF c.2.locks ∧ c.2.σ = σ' ⊎ σS' ⊎ σF := by
+  intro c hc
+  obtain ⟨k, hk⟩ := hc.toN
+  exact reach_aux hk 0 e L σ σS σF rfl hg (h _ L σ hP)
+
 /-! ## Controls: the triple is neither vacuous nor indiscriminate. -/
 
 /-- A fault reachable in zero steps from an admissible state refutes every triple whose precondition admits it. -/

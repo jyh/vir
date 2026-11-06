@@ -255,4 +255,38 @@ theorem N1_S : Triple₄ I₁ (fun _ σ => σ = Store.empty) N1 (fun v _ _ => �
           rintro L σ ⟨σ₁, σ₂, _, rfl, ⟨rfl, hb⟩, ⟨rfl, _⟩⟩
           exact ⟨Store.empty_union _, hb⟩
 
+/-! ## N3: NO TRIPLE under inv(v) := v ≥ 0 (inputs §3, erratum L4-E2's term). Its one run reaches a configuration where the lock
+  is free and its cell holds −1, and `triple₄_invariant` says every reachable configuration keeps the invariant. -/
+
+def I₃ : Int → Assn := fun p σ => ∃ v, 0 ≤ v ∧ RegionAt p 1 (fun _ => v) σ
+
+/-- N3's run, six ⟶₄ steps from the empty store: after the release, lock 0 is free over base 0 and cell 0 holds −1. -/
+theorem N3_run : ∃ c, Steps₄ (N3, ⟨Store.empty ⊎ Store.empty ⊎ Store.empty, []⟩) c ∧
+    c.2.locks = [.free 0] ∧ c.2.σ.H.lookup 0 = some (-1) := by
+  refine ⟨_, .step (.op rfl rfl) (.step (.op rfl rfl) (.step (.op rfl rfl) (.step (.op rfl rfl)
+    (.step (.op rfl rfl) (.step (.op rfl rfl) (.refl _)))))), rfl, ?_⟩
+  rfl
+
+theorem N3_no_triple (Q : Atom₄ → Assn₄) : ¬ Triple₄ I₃ (fun _ σ => σ = Store.empty) N3 Q := by
+  intro h
+  obtain ⟨c, hrun, hL, hH⟩ := N3_run
+  obtain ⟨σ', σS', ⟨hA, _, hC, _⟩, hσ⟩ := triple₄_invariant h (L := []) rfl (glob_empty I₃) c hrun
+  rw [hL] at hC
+  simp only [Shared] at hC
+  obtain ⟨σ₁, σ₂, _, rfl, _, ⟨v, hv0, hR⟩, rfl⟩ := hC
+  have h1 : σ₁.H.lookup 0 = some v := by
+    have := hR.2 0
+    rw [if_pos (by unfold Store.InRegion; omega)] at this
+    exact this
+  have hm : (0 : Int) ∈ σ₁.H := Finmap.mem_of_lookup_eq_some h1
+  have hn : (0 : Int) ∉ σ'.H := fun hm' => hA.1 0 hm' (Finmap.mem_union.2 (Or.inl hm))
+  have hc : c.2.σ.H.lookup 0 = some v := by
+    rw [hσ]
+    show ((σ'.H ∪ (σ₁.H ∪ Store.empty.H)) ∪ Store.empty.H).lookup 0 = _
+    rw [Finmap.lookup_union_left (Finmap.mem_union.2 (Or.inr (Finmap.mem_union.2 (Or.inl hm)))),
+      Finmap.lookup_union_right hn, Finmap.lookup_union_left hm, h1]
+  rw [hH] at hc
+  injection hc with hc
+  omega
+
 end VIRL4
