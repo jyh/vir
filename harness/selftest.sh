@@ -700,6 +700,26 @@ if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; f
 elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a name read inside a longer name)"; fail=1
 else say "ARM41 mutant KILLED"; fi
 
+# ARM42 (STATUS-vir 151): grammar carving by CONTENT. On X41 no carving predicate is defined: EMPTY, never a 0 that reads
+# as a pass. On X42: one define, two rules whose statement names wfs2{ (a wf rule, a hypothesis), one naming only wfs2x{ (a
+# longer name, NOT counted) and one naming none.
+c42() { python3 "$1" --arm metaprll2 --base "$B41" --ext "$2" "$R41" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+printf 'define unfold_wfs2 : wfs2{\x27k; \x27t} <--> \x27t\ndefine unfold_wfs2x : wfs2x{\x27t} <--> \x27t\ninteractive wfs2_wf : sequent { <H> >- wfs2{\x27k; \x27t} in bool }\ninteractive cv_pres : sequent { <H>; x: wfs2{2; \x27e} >- \x27a }\ninteractive cv_long : sequent { <H> >- wfs2x{\x27t} }\ninteractive cv_none : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_sem.ml"
+prla "$R41/theories/vir/virl2_sem.prla" "wfs2_wf=autoT" "cv_pres=(wfs2_wf thenT autoT)" "cv_long=autoT" "cv_none=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm carve; X42=$(git -C "$R41" rev-parse HEAD)
+check42() {
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingRules)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingRules)" in "2	MEASURED"*cv_pres*wfs2_wf) ;; *) return 1;; esac
+}
+if check42 "$H/count.py"; then say "ARM42 carving fixture OK (X41 EMPTY; X42 defs 1, rules 2 (cv_long's wfs2x not read as wfs2))"
+else say "ARM42 carving fixture FAIL"; c42 "$H/count.py" "$X42" L2M.Y5.carvingRules; fail=1; fi
+sed 's/(?<!\[A-Za-z0-9_\x27\])(?:%s)\\{" % \x27|\x27.join(L2M_CARVE), stm/(?:%s)" % \x27|\x27.join(L2M_CARVE), stm/' "$H/count.py" > "$F/mutant42.py"
+if cmp -s "$H/count.py" "$F/mutant42.py"; then say "ARM42 mutant NOT PLANTED"; fail=1
+elif check42 "$F/mutant42.py"; then say "ARM42 mutant SURVIVED (wfs2x read as wfs2)"; fail=1
+else say "ARM42 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

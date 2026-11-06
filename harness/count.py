@@ -1204,6 +1204,7 @@ def mpl_refs(n, text, names):
 # module is `virl2_*`, ⊢₂ lives in `virl2_typing`, the frame rule is `triple_frame` (D6), and partiality's framework file
 # `itt_bar_list` sits beside Y1 (its D1), never in it.
 L2M_FRAME, L2M_TYPING = 'triple_frame', 'virl2_typing'
+L2M_CARVE = ('wfs2', 'isNum2')  # D8 at mojave 9065db501
 
 
 def metaprll2(repo, base, ext):
@@ -1327,6 +1328,15 @@ def metaprll2(repo, base, ext):
              ('L2M.Y3.termControl', tctrl, 'BESIDE:non-typing rules whose statement names a typing term (0 = nothing outside %s consumes it yet)' % L2M_TYPING),
              ('L2M.Y3.limit', 0, 'LIMIT:a typing rule applied by resolution whose name and judgement appear in no closure statement or text is invisible to both axes'),
              ('L2M.Y4.framePremises', stmt.count('-->'), 'MEASURED:premises of %s as stated' % L2M_FRAME if stmt else 'EMPTY')]
+    # GRAMMAR CARVING (STATUS-vir 151, mojave's D8): the cost of carving grammar terms out of raw HOAS BTerm. Its predicates
+    # are what D8 names, read by CONTENT: a rule counts iff its STATEMENT names one (the definitions, their rewrites and wf
+    # rules, preservation, and any motive or hypothesis that carries one). Counted in Y5's C5 too; this line is the beside.
+    cdefs = sum(len(re.findall(r"^define\s+unfold_(?:%s)\b" % '|'.join(L2M_CARVE), show(ext, p), re.M)) for p in l2)
+    has_cv = lambda k: bool(re.search(r"(?<![A-Za-z0-9_'])(?:%s)\{" % '|'.join(L2M_CARVE), stm.get(k, '')))
+    cv = sorted(k for k in stm if has_cv(k))
+    rows += [('L2M.Y5.carvingDefs', cdefs, 'MEASURED:define unfold_ of %s in virl2_*' % '/'.join(L2M_CARVE) if cdefs else 'EMPTY:no carving predicate defined'),
+             ('L2M.Y5.carvingRules', len(cv), ('MEASURED:rules whose statement names %s:' % '/'.join(L2M_CARVE) + (','.join(cv) or '-')) if cdefs else 'EMPTY'),
+             ('L2M.Y5.carvingC5tok', sum(R[k][1] for k in cv if k in R), ('BESIDE:stored-proof tokens of those rules (%d of %d stored)' % (len([k for k in cv if k in R]), len(cv))) if cdefs else 'EMPTY')]
     for m in sorted(set(mod.values())):
         ns = [n for n in R if mod[n] == m]
         rows.append(('L2M.C5tok.' + m, sum(R[n][1] for n in ns), 'BESIDE:%d rules; extras %d tok kept out' % (len(ns), sum(R[n][3] for n in ns))))
