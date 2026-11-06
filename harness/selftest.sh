@@ -686,6 +686,50 @@ if cmp -s "$H/count.py" "$F/mutant40.py"; then say "ARM40 mutant NOT PLANTED"; f
 elif check40 "$F/mutant40.py"; then say "ARM40 mutant SURVIVED (stale extras counted as proof)"; fail=1
 else say "ARM40 mutant KILLED"; fi
 
+# ARM41 (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7): `--arm l4`, C5 of a row as the in-layer PROOF CLOSURE.
+# Fixture K: a depth-2 private helper under par₄_rule (a one-pass closure misses it), a shared helper `go` reached by S and V
+# (counted once per side), a reference by last dotted component (Shared.go), a def reached only by V (withDefs only), one name
+# of an imported layer (l3), a comment inside a counted block, and an unrelated theorem kept out. Expectations are wc -w of the blocks.
+K="$F/l4K"; mkdir -p "$K/l4/VIRL4" "$K/l2/VIRL2" "$K/l3/VIRL3"
+B_SP='theorem safe₄_par : True := by
+  exact helper₄ trivial'
+B_HP='private theorem helper₄ (h : True) : True := h'
+B_PR='theorem par₄_rule : True := safe₄_par'
+B_UN='theorem unrelated : True := trivial'
+B_DF='def Inv₄ : Prop := True'
+B_N1S='theorem N1_S : True := trivial'
+B_F4S='theorem F₄_S : True := by exact (Shared.go)'
+B_GO='theorem go : True := trivial'
+B_N1V='theorem N1_V : Inv₄ := trivial_from_l3'
+B_N4V='theorem N4_V : True := by exact go'
+B_CF='theorem ce_fwd : True := trivial'
+B_CB='theorem ce_bwd : True := ce_fwd'
+B_FR='theorem frame : True := frame_aux'
+B_FA='lemma frame_aux : True := trivial'
+{ printf -- '-- a comment that is never counted\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s  -- stripped words here\n\n%s\n\n' \
+    "$B_SP" "$B_HP" "$B_PR" "$B_UN" "$B_DF" "$B_N1S" "$B_F4S" "$B_GO"
+  printf '%s\n\n%s\n\n%s\n\n%s\n' "$B_N1V" "$B_N4V" "$B_CF" "$B_CB"; } > "$K/l4/VIRL4/R.lean"
+printf '/- block comment -/\n%s\n\n%s\n' "$B_FR" "$B_FA" > "$K/l2/VIRL2/Logic.lean"
+printf 'theorem trivial_from_l3 : True := trivial\n' > "$K/l3/VIRL3/X.lean"
+E41_PAR=$(( $(wc_w "$B_PR") + $(wc_w "$B_SP") + $(wc_w "$B_HP") )); E41_FR=$(( $(wc_w "$B_FR") + $(wc_w "$B_FA") ))
+E41_S=$(( $(wc_w "$B_N1S") + $(wc_w "$B_F4S") + $(wc_w "$B_GO") )); E41_V=$(( $(wc_w "$B_N1V") + $(wc_w "$B_N4V") + $(wc_w "$B_GO") ))
+E41_VD=$(( E41_V + $(wc_w "$B_DF") )); E41_CE=$(( $(wc_w "$B_CF") + $(wc_w "$B_CB") )); E41_PROOT=$(wc_w "$B_PR")
+check41() {
+  o=$(python3 "$1" --arm l4 "$K/l4") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L4.Q3.par.C5tok)" = "$E41_PAR" ] && [ "$(v L4.Q3.frame.C5tok)" = "$E41_FR" ] && [ "$(v L4.Q3.par.root.C5tok)" = "$E41_PROOT" ] \
+  && [ "$(v L4.Q4.S.C5tok)" = "$E41_S" ] && [ "$(v L4.Q4.V.C5tok)" = "$E41_V" ] && [ "$(v L4.Q4.V.withDefs.C5tok)" = "$E41_VD" ] \
+  && [ "$(v L4.Q4.V.crossRefs)" = 1 ] && [ "$(v L4.Q7.C5tok)" = "$E41_CE" ] \
+  && [ "$(v L4.Q3.held)" = $([ "$E41_PAR" -le $((3 * E41_FR)) ] && echo 1 || echo 0) ] \
+  && [ "$(v L4.Q4.direction)" = $([ "$E41_V" -gt "$E41_S" ] && echo 1 || echo 0) ]
+}
+if check41 "$H/count.py"; then say "ARM41 l4 fixture OK (Q3 par $E41_PAR vs frame $E41_FR; Q4 V $E41_V vs S $E41_S, withDefs $E41_VD; Q7 $E41_CE)"
+else say "ARM41 l4 fixture FAIL"; python3 "$H/count.py" --arm l4 "$K/l4"; fail=1; fi
+sed 's/changed = True  # CLOSURE-FIXPOINT$/changed = False  # CLOSURE-FIXPOINT/' "$H/count.py" > "$F/mutant41.py"
+if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
+elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a depth-2 helper went unread: the closure stopped after one pass)"; fail=1
+else say "ARM41 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

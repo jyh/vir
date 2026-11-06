@@ -1265,9 +1265,125 @@ def w8(repo, base, ext, prefix):
             ('W8.newFiles', len([p for p in new if p not in old]), 'BESIDE')]
 
 
+# amend-21 Q3/Q4/Q7 on the Lean L4 arm (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7; selftest ARM41). DIR is the L4
+# project (l4/); its siblings ../l1 ../l2 ../l3 are the imported layers. C5 of a row = the in-layer PROOF CLOSURE: theorem/lemma
+# blocks reachable by name from the roots, to a fixed point, each counted once; names of an imported layer are not followed.
+L4_DECL_RE = re.compile(r'^(?:@\[[^\]]*\]\s*)?(?:(?:private|protected|noncomputable|partial|unsafe)\s+)*'
+                        r'(theorem|lemma|def|structure|inductive|instance|abbrev|class)\s+([^\s({\[:]+)?', re.M)
+L4_STRUCT_RE = re.compile(r'^(?:end|mutual|namespace|section|open|set_option|variable|universe|noncomputable section)\b', re.M)
+L4_TOK_RE = re.compile(r"[\w'.!?]+")
+
+
+def l4_strip(t):
+    return re.sub(r'/-[\s\S]*?-/|--[^\n]*', '', t)
+
+
+def l4_decls(srcdir):
+    """[(name, kind, block, file)] over a layer's sources, comments stripped; a block ends at the next declaration or at a
+    column-0 structural line (end / mutual / namespace / set_option ...)."""
+    out = []
+    for p in files(srcdir, ('.lean',)):
+        t = l4_strip(read(p))
+        ms = list(L4_DECL_RE.finditer(t))
+        for i, m in enumerate(ms):
+            stop = ms[i + 1].start() if i + 1 < len(ms) else len(t)
+            s = L4_STRUCT_RE.search(t, m.end(), stop)
+            out.append((m.group(2) or '', m.group(1), t[m.start():s.start() if s else stop], os.path.basename(p)))
+    return out
+
+
+def l4_closure(decls, roots, kinds, imported):
+    """the closure of `roots` over the blocks whose kind is in `kinds`; returns (indices, crossRefs)."""
+    idx = {}
+    for i, (n, k, _, _) in enumerate(decls):
+        if k in kinds and n:
+            idx.setdefault(n, set()).add(i)
+            idx.setdefault(n.rsplit('.', 1)[-1], set()).add(i)
+    allnames = {n for n, _, _, _ in decls if n} | {n.rsplit('.', 1)[-1] for n, _, _, _ in decls if n}
+    got = set()
+    for r in roots:
+        got |= idx.get(r, set())
+    cross = set()
+    changed = True
+    while changed:
+        changed = False
+        for i in sorted(got):
+            for tok in L4_TOK_RE.findall(decls[i][2]):
+                tok = tok.strip('.')
+                new = (idx.get(tok, set()) | idx.get(tok.rsplit('.', 1)[-1], set())) - got - {i}
+                if new:
+                    got |= new
+                    changed = True  # CLOSURE-FIXPOINT
+    for i in got:
+        for tok in L4_TOK_RE.findall(decls[i][2]):
+            tok = tok.strip('.')
+            short = tok.rsplit('.', 1)[-1]
+            if tok not in allnames and short not in allnames and (tok in imported or short in imported):
+                cross.add(tok)
+    return got, cross
+
+
+def l4_size(blocks_):
+    toks = sum(len(b.split()) for b in blocks_)
+    lines = sum(1 for b in blocks_ for ln in b.splitlines() if ln.strip())
+    return toks, lines
+
+
+L4_PROOF = ('theorem', 'lemma')
+L4_ALL = ('theorem', 'lemma', 'def', 'structure', 'inductive', 'instance', 'abbrev', 'class')
+
+
+def l4_row(tag, decls, roots, imported, srcdir, rowfiles):
+    """one row's PRIMARY (proof closure) and its BESIDE lines (root-only, with definitions, file-level)."""
+    got, cross = l4_closure(decls, roots, L4_PROOF, imported)
+    gotd, _ = l4_closure(decls, roots, L4_ALL, imported)
+    missing = [r for r in roots if not any(decls[i][0] == r or decls[i][0].rsplit('.', 1)[-1] == r for i in got)]
+    st = 'MEASURED' if not missing else 'EMPTY:missing ' + ','.join(missing)
+    t, ln = l4_size([decls[i][2] for i in got])
+    rt, _ = l4_size([decls[i][2] for i in got if decls[i][0] in roots or decls[i][0].rsplit('.', 1)[-1] in roots])
+    dt, _ = l4_size([decls[i][2] for i in gotd])
+    have = [os.path.join(srcdir, f) for f in rowfiles if os.path.exists(os.path.join(srcdir, f))]
+    ft = sum(len(l4_strip(read(p)).split()) for p in have)
+    names = sorted({decls[i][0] for i in got})
+    return t, [(tag + '.C5tok', t, st + ':%d blocks' % len(got)),
+               (tag + '.C5lines', ln, 'BESIDE:non-blank lines of the closure'),
+               (tag + '.root.C5tok', rt, 'BESIDE:(b) the root blocks alone'),
+               (tag + '.withDefs.C5tok', dt, 'BESIDE:(c) closure over every declaration kind, %d blocks' % len(gotd)),
+               (tag + '.file.C5tok', ft, ('BESIDE:(d) ' + '+'.join(os.path.basename(p) for p in have)) if have else 'EMPTY:(d) no file'),
+               (tag + '.crossRefs', len(cross), 'BESIDE:imported-layer names, not followed:' + (','.join(sorted(cross)) or '-')),
+               (tag + '.closure', len(names), 'NAMES:' + (','.join(names) or '-'))], (rt, dt, ft)
+
+
+def leanl4(d):
+    d = os.path.abspath(d)
+    up = os.path.dirname(d)
+    def layer(n):
+        return l4_decls(os.path.join(up, 'l%d' % n, 'VIRL%d' % n))
+    def names(ds):
+        return {x[0] for x in ds if x[0]} | {x[0].rsplit('.', 1)[-1] for x in ds if x[0]}
+    d4, d2 = layer(4), layer(2)
+    imp4 = names(layer(1)) | names(d2) | names(layer(3))
+    imp2 = names(layer(1))
+    src4, src2 = os.path.join(d, 'VIRL4'), os.path.join(up, 'l2', 'VIRL2')
+    rows = []
+    par, r, pb = l4_row('L4.Q3.par', d4, ['par₄_rule'], imp4, src4, ['Rules4.lean', 'Safe.lean']); rows += r
+    fr, r, fb = l4_row('L4.Q3.frame', d2, ['frame'], imp2, src2, ['Logic.lean']); rows += r
+    rows.append(('L4.Q3.held', 1 if fr and par <= 3 * fr else 0, 'MEASURED:par %d vs 3 x frame %d (ratio %s)' % (par, 3 * fr, ('%.2f' % (par / fr)) if fr else '-')))
+    rows.append(('L4.Q3.held.beside', ''.join('1' if b <= 3 * c else '0' for b, c in zip(pb, fb)), 'BESIDE:(b)(c)(d) in order'))
+    v, r, vb = l4_row('L4.Q4.V', d4, ['N1_V', 'N4_V'], imp4, src4, ['Values.lean', 'RouterV.lean']); rows += r
+    s, r, sb = l4_row('L4.Q4.S', d4, ['N1_S', 'F₄_S'], imp4, src4, ['Programs.lean', 'Router4.lean']); rows += r
+    rows.append(('L4.Q4.direction', 1 if v > s else 0, 'MEASURED:V %d vs S %d (ratio %s)' % (v, s, ('%.2f' % (v / s)) if s else '-')))
+    rows.append(('L4.Q4.direction.beside', ''.join('1' if b > c else '0' for b, c in zip(vb, sb)), 'BESIDE:(b)(c)(d) in order'))
+    _, r, _ = l4_row('L4.Q7', d4, ['ce_fwd', 'ce_bwd'], imp4, src4, ['CE.lean']); rows += r
+    sy = os.path.join(src4, 'Syntax.lean')
+    rows.append(('L4.syntaxCopy.C5tok', len(l4_strip(read(sy)).split()) if os.path.exists(sy) else 0,
+                 'BESIDE:Syntax.lean, file-level (addendum 1)' if os.path.exists(sy) else 'EMPTY'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'l4'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1291,6 +1407,8 @@ def main():
         rows = leanl2(a.dir)
     elif a.arm == 'l3':
         rows = leanl3(a.dir)
+    elif a.arm == 'l4':
+        rows = leanl4(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
     elif a.arm == 'indm':
