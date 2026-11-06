@@ -50,3 +50,9 @@ A SEPARATE lake project `l4/` (lib `VIRL4`), requiring `l3` by PATH (which requi
 (packages APFS-cloned from `l3/`, manifest written by edit, never a bare lake update). Every build goes through `l4/logged-build.sh`
 (saltbuild, one log per run, `l4/logs/`), and is judged by its `saltbuild EXIT=` line alone. The tactic rule of 11-06 binds: past
 ~100 tactic applications in one proof, stop and systematize. Time spent building tactics is a separate ledger line.
+
+## ADDENDUM 1 (2026-11-06, the same head, after Syntax/Step4/CE were built and BEFORE any typing or triple file): erratum L4-E1
+Restating ⊢₂ for L4 showed that OBJECT-L4 contradicts itself: H1 (a)'s "pair of results … come back joined" against R-a, with N4 untypable
+as written. vir wrote errata/ERRATA-L4.md L4-E1 (vir 8e0d3ad, branch errata-l4-e1). Its reading changes ONE thing above: `par` is
+`par τ₁ τ₂ e₁ e₂ e`, `let x₁:τ₁, x₂:τ₂ ⇐ par e₁ e₂ in e`, binding the two results (x₁ = #1, x₂ = #0), not a pair-valued expression.
+Syntax.lean and Step4.lean were changed to match (build-009 EXIT=0, CE unchanged; audit-002). Everything else above stands.

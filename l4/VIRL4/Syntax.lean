@@ -64,7 +64,8 @@ inductive Atom₄ where
   | snd (a : Atom₄)
   | inl (τ₂ : Ty₄) (a : Atom₄)
   | inr (τ₁ : Ty₄) (a : Atom₄)
-/-- Expressions: L1's six formers, over Σ₄, PLUS `par` (OBJECT-L4 H1 (a)). -/
+/-- Expressions: L1's six formers, over Σ₄, PLUS `par` (OBJECT-L4 H1 (a), read by erratum L4-E1): `let x₁:τ₁, x₂:τ₂ ⇐ par e₁ e₂ in e`,
+  the two results BOUND one variable each (x₁ = #1, x₂ = #0 in e), never a pair, so no product carries a capability (R-a). -/
 inductive Tm₄ where
   | ret (a : Atom₄)
   | letE (τ : Ty₄) (e₁ e₂ : Tm₄)
@@ -72,10 +73,10 @@ inductive Tm₄ where
   | app (a₁ a₂ : Atom₄)
   | ite (a : Atom₄) (e₁ e₂ : Tm₄)
   | case (a : Atom₄) (e₁ e₂ : Tm₄)
-  | par (e₁ e₂ : Tm₄)
+  | par (τ₁ τ₂ : Ty₄) (e₁ e₂ e : Tm₄)
 end
 
-/-! ## Substitution of a CLOSED value (L1's, restated; `par` binds nothing). -/
+/-! ## Substitution of a CLOSED value (L1's, restated; `par` binds two in its body). -/
 mutual
 def Atom₄.subst : Atom₄ → Nat → Atom₄ → Atom₄
   | .var n, k, v => if n < k then .var n else if n = k then v else .var (n - 1)
@@ -98,7 +99,7 @@ def Tm₄.subst (k : Nat) (v : Atom₄) : Tm₄ → Tm₄
   | .app a₁ a₂ => .app (Atom₄.subst a₁ k v) (Atom₄.subst a₂ k v)
   | .ite a e₁ e₂ => .ite (Atom₄.subst a k v) (Tm₄.subst k v e₁) (Tm₄.subst k v e₂)
   | .case a e₁ e₂ => .case (Atom₄.subst a k v) (Tm₄.subst (k + 1) v e₁) (Tm₄.subst (k + 1) v e₂)
-  | .par e₁ e₂ => .par (Tm₄.subst k v e₁) (Tm₄.subst k v e₂)
+  | .par τ₁ τ₂ e₁ e₂ e => .par τ₁ τ₂ (Tm₄.subst k v e₁) (Tm₄.subst k v e₂) (Tm₄.subst (k + 2) v e)
 end
 
 /-! ## Scoping: every variable is bound; `n` binders in scope. -/
@@ -121,7 +122,7 @@ def Tm₄.wf (n : Nat) : Tm₄ → Prop
   | .app a₁ a₂ => Atom₄.wf n a₁ ∧ Atom₄.wf n a₂
   | .ite a e₁ e₂ => Atom₄.wf n a ∧ Tm₄.wf n e₁ ∧ Tm₄.wf n e₂
   | .case a e₁ e₂ => Atom₄.wf n a ∧ Tm₄.wf (n + 1) e₁ ∧ Tm₄.wf (n + 1) e₂
-  | .par e₁ e₂ => Tm₄.wf n e₁ ∧ Tm₄.wf n e₂
+  | .par _ _ e₁ e₂ e => Tm₄.wf n e₁ ∧ Tm₄.wf n e₂ ∧ Tm₄.wf (n + 2) e
 end
 
 /-! ## ι : L2's syntax into L4's (the embedding CE is stated through). -/

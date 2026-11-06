@@ -1,6 +1,6 @@
 /-
   O95 layer L4, Lean arm (amend-21). OBJECT-L4 H3 (a): ⟶₄, small-step INTERLEAVING, a RELATION, scheduler-free.
-  `par e₁ e₂` steps either side; `par (ret a₁) (ret a₂)` joins to `ret (v₁, v₂)`. `acquire` on a HELD lock has NO step:
+  `par τ₁ τ₂ e₁ e₂ e` steps either side; when both are `ret`, it binds the two values in e (erratum L4-E1, no pair). `acquire` on a HELD lock has NO step:
   such a configuration is BLOCKED, never FAULTED (Faults₄ excludes it; deadlock is outside partial correctness, Q8).
   The pure rules are L1's, RESTATED for Tm₄ (L1's `Step` is over `Tm S` and cannot see `par`): this file's pure half is
   part of the `L4.syntaxCopy` line. The L2 operations go through L2's own `opStep`, unchanged (Q1).
@@ -95,10 +95,10 @@ inductive Step₄ : Config₄ → Config₄ → Prop where
   | caseR {a e₁ e₂ τ v s} : Atom₄.eval a = some (.inr τ v) → Step₄ (.case a e₁ e₂, s) (e₂.subst 0 v, s)
   | op {o as τ e vs v s s'} : Atom₄.evalL as = some vs → opStep₄ o vs s = some (v, s') →
       Step₄ (.letOp o as τ e, s) (e.subst 0 v, s')
-  | parL {e₁ e₁' e₂ s s'} : Step₄ (e₁, s) (e₁', s') → Step₄ (.par e₁ e₂, s) (.par e₁' e₂, s')
-  | parR {e₁ e₂ e₂' s s'} : Step₄ (e₂, s) (e₂', s') → Step₄ (.par e₁ e₂, s) (.par e₁ e₂', s')
-  | parDone {a₁ a₂ v₁ v₂ s} : Atom₄.eval a₁ = some v₁ → Atom₄.eval a₂ = some v₂ →
-      Step₄ (.par (.ret a₁) (.ret a₂), s) (.ret (.pair v₁ v₂), s)
+  | parL {τ₁ τ₂ e₁ e₁' e₂ e s s'} : Step₄ (e₁, s) (e₁', s') → Step₄ (.par τ₁ τ₂ e₁ e₂ e, s) (.par τ₁ τ₂ e₁' e₂ e, s')
+  | parR {τ₁ τ₂ e₁ e₂ e₂' e s s'} : Step₄ (e₂, s) (e₂', s') → Step₄ (.par τ₁ τ₂ e₁ e₂ e, s) (.par τ₁ τ₂ e₁ e₂' e, s')
+  | parDone {τ₁ τ₂ a₁ a₂ v₁ v₂ e s} : Atom₄.eval a₁ = some v₁ → Atom₄.eval a₂ = some v₂ →
+      Step₄ (.par τ₁ τ₂ (.ret a₁) (.ret a₂) e, s) ((e.subst 0 v₂).subst 0 v₁, s)
 
 /-- ⟶₄*. -/
 inductive Steps₄ : Config₄ → Config₄ → Prop where
@@ -113,9 +113,9 @@ def Tm₄.IsTerminal : Tm₄ → Prop
 inductive Waits : Tm₄ → Store₄ → Prop where
   | acq {l p τ e s} : s.locks[l]? = some (.held p) → Waits (.letOp .acquire [.const (.lockv l)] τ e) s
   | letW {τ e₁ e₂ s} : Waits e₁ s → Waits (.letE τ e₁ e₂) s
-  | parBoth {e₁ e₂ s} : Waits e₁ s → Waits e₂ s → Waits (.par e₁ e₂) s
-  | parL {e₁ a s} : Waits e₁ s → Waits (.par e₁ (.ret a)) s
-  | parR {a e₂ s} : Waits e₂ s → Waits (.par (.ret a) e₂) s
+  | parBoth {τ₁ τ₂ e₁ e₂ e s} : Waits e₁ s → Waits e₂ s → Waits (.par τ₁ τ₂ e₁ e₂ e) s
+  | parL {τ₁ τ₂ e₁ a e s} : Waits e₁ s → Waits (.par τ₁ τ₂ e₁ (.ret a) e) s
+  | parR {τ₁ τ₂ a e₂ e s} : Waits e₂ s → Waits (.par τ₁ τ₂ (.ret a) e₂ e) s
 
 /-- BLOCKED: no step, and the reason is a held lock (a deadlock, or a wait no thread will end). -/
 def Blocked₄ (c : Config₄) : Prop := (∀ c', ¬ Step₄ c c') ∧ Waits c.1 c.2
