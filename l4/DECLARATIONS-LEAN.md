@@ -96,3 +96,22 @@ changes. The pieces `Safe.lean` defines, named here before any proof:
   (CODE/PAY written as L3 writes them). The invariant is **`I_b q σ := ∃ g, (∀ s ∈ [0,4), 0 ≤ g (q + s)) ∧ RegionAt q 4 g σ`** for every
   base (only b is ever under a lock). Each side's triple: `{RegionAt p 83 f ∧ ℓb's base is q} F₄[⟨p⟩, ℓb] {v. v = ⟨p⟩ ∧ ∃ t, …}` with
   L3's layout facts (sender, topic < 4) as hypotheses, as R4 takes them. **The relation between t and the emits is N4-V's**, on ⟶₄.
+
+## ADDENDUM 5 (2026-11-06, the 27th vir head, BEFORE `VIRL4/RouterV.lean` exists): N4-V's file and statement
+- **N4-V lives in `VIRL4/RouterV.lean`.** The initial configuration is N4 closed at w₂ = ⟨p₂⟩, w₁ = ⟨p₁⟩, ℓb = ⟨l⟩ (its free
+  variables #0, #1, #2), over a store W₁ ⊎ B ⊎ (W₂ ⊎ F): `RegionAt pᵢ 83 fᵢ Wᵢ`, `RegionAt q 4 g₀ B` with every bucket g₀(q + s) ≥ 0
+  for s ∈ [0, 4), F any frame, all disjoint and the whole store WF, a lock table with `L[l] = free q`, and each frame's sender and topic
+  in [0, 4) (L3's layout facts, as R4 and F₄_S take them).
+- **The emits.** `EmitsT f p t := 24 ≤ f (p + 0) ∧ MgA f p = MAGIC ∧ f (aclA f p) = 1 ∧ 0 < t` — L3's `Emits` with the token t read inside
+  the critical section in place of `0 < f (bktA f p)`; it is exactly `postF₄`'s emit branch (addendum 4).
+- **N4-V, as this arm states it:** at EVERY ⟶₄*-reachable configuration whose two `par` sides are both `ret` (the configuration the join
+  steps from, so every terminating run passes through one, and the last at which the two worlds are still allocated), there are t₁, t₂ with
+  world i holding `postF₄ fᵢ pᵢ tᵢ`, and for every sender s ∈ [0, 4) the number of i ∈ {1, 2} with `EmitsT fᵢ pᵢ tᵢ ∧ SvA fᵢ pᵢ = s` is at
+  most g₀(q + s). That is run_tokens₄ (inputs §3) over every interleaving.
+- **The proof is a configuration invariant** (H5 (a)), by induction on ⟶₄*: each thread at a SUFFIX of `Fn₄` under its EXPECTED
+  ENVIRONMENT (the values its lets bind, t included once read); the bucket region's contents g with g(q + s) + (decrements naming s so far)
+  = g₀(q + s) and g ≥ 0; at most one thread inside its critical section; ℓb held exactly when one is; a thread that read t inside its
+  critical section and has not yet decremented sees g(q + its sender) = t. Machinery named before it is used: `NT₄.cc`, a closing compile
+  (named → `Tm₄` under a total environment of constants), with its substitution and congruence lemmas; it names the stages and changes
+  no term (`NT₄.c` agrees with it on N4).
+- Q6's preservation (STATUS 164b) stays OWED; this addendum does not touch it.
