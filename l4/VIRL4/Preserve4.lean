@@ -219,4 +219,167 @@ theorem substV₄ : ∀ {Γ₁ Γ : Ctx₄} {Δ₁ Δ : List Bool} {Ω e τ τ' 
     exact substV₄ (Γ₁ := τ₂ :: τ₁ :: Γ₁) (Δ₁ := _ :: _ :: D₁) (by simp [hD, hB, hl]) h hv
 end
 
+/-! ## ⟨p⟩ at a TRUE mask position (L2's `RT.substC`): the term now owns p. -/
+
+theorem fits_cap₄ (p : Int) : Fits₄ (capv p) t4cap := .inr rfl
+
+theorem subst_var_self₄ {k : Nat} {v : Atom₄} : (Atom₄.var k).subst k v = v := by simp [Atom₄.subst]
+
+theorem perm_mid2 {p : Int} {Ω Ω₁ Ω₂ Ω₀ : List Int} (hp : Ω.Perm (Ω₁ ++ Ω₂ ++ Ω₀)) :
+    (p :: Ω).Perm (Ω₁ ++ (p :: Ω₂) ++ Ω₀) :=
+  (hp.cons p).trans (by simp only [List.append_assoc, List.cons_append]; exact List.perm_middle.symm)
+
+theorem perm_mid3 {p : Int} {Ω Ω₁ Ω₂ Ω₀ : List Int} (hp : Ω.Perm (Ω₁ ++ Ω₂ ++ Ω₀)) :
+    (p :: Ω).Perm (Ω₁ ++ Ω₂ ++ p :: Ω₀) :=
+  (hp.cons p).trans List.perm_middle.symm
+
+set_option maxHeartbeats 2000000 in
+theorem substC₄ : ∀ {Γ₁ Γ : Ctx₄} {Δ₁ Δ : List Bool} {Ω e τ'} (p : Int), Δ₁.length = Γ₁.length →
+    RT₄ (Γ₁ ++ t4cap :: Γ) (Δ₁ ++ true :: Δ) Ω e τ' → RT₄ (Γ₁ ++ Γ) (Δ₁ ++ Δ) (p :: Ω) (e.subst Γ₁.length (capv p)) τ'
+  | _, _, _, _, _, _, _, _, _, .ret hΔ _ => (mask_empty_true hΔ).elim
+  | Γ₁, _, Δ₁, _, _, .ret (.var n), _, p, hl, .retCap _ hΔ => by
+    have hn := mask_only_true hΔ; subst hn
+    show RT₄ _ _ _ (.ret ((Atom₄.var Δ₁.length).subst Γ₁.length _)) _
+    rw [hl, subst_var_self₄]; exact .retCapC (mask_only_self (hl ▸ hΔ))
+  | _, _, _, _, _, _, _, _, _, .retCapC hΔ => (mask_empty_true hΔ).elim
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letE τ₁ e₁ e₂, _, p, hl, .letE hs hp hc h₁ h₂ => by
+    obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, hA, hB, hs'⟩ := split_mid_true hs
+    cases a with
+    | true =>
+      refine .letE hs' (hp.cons p) hc (substC₄ p (hA.trans hl) h₁) ?_
+      exact substV₄ (Γ₁ := τ₁ :: Γ₁) (Δ₁ := _ :: B₁) (by simp [hB, hl]) h₂ (fits_cap₄ p)
+    | false =>
+      refine .letE hs' ((hp.cons p).trans List.perm_middle.symm) hc (substV₄ (hA.trans hl) h₁ (fits_cap₄ p)) ?_
+      exact substC₄ (Γ₁ := τ₁ :: Γ₁) (Δ₁ := _ :: B₁) p (by simp [hB, hl]) h₂
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp (.o2 .alloc) [a] _ e, _, p, hl, .alloc ha h =>
+    .alloc (substA₄ ha (fits_cap₄ p)) (substC₄ (Γ₁ := t4cap :: Γ₁) (Δ₁ := true :: Δ₁) p (by simp [hl]) h)
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp (.o2 .load) [.var n, a] _ e, _, p, hl, .load hΓ hΔ ha h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT₄ _ _ _ (.letOp (.o2 .load) [(Atom₄.var Γ₁.length).subst Γ₁.length _, _] _ _) _
+      rw [subst_var_self₄]
+      exact .loadC (List.mem_cons_self) (substA₄ ha (fits_cap₄ p))
+        (substC₄ (Γ₁ := t4int :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h)
+    · show RT₄ _ _ _ (.letOp (.o2 .load) [(Atom₄.var n).subst Γ₁.length _, _] _ _) _
+      rw [subst_var_ne₄ hn]
+      refine .load (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop (hl ▸ hn)]; exact hΔ)
+        (substA₄ ha (fits_cap₄ p)) ?_
+      exact substC₄ (Γ₁ := t4int :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp (.o2 .load) [.const (.c2 (.cap q)), a] _ e, _, p, hl, .loadC hq ha h =>
+    .loadC (List.mem_cons_of_mem _ hq) (substA₄ ha (fits_cap₄ p))
+      (substC₄ (Γ₁ := t4int :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h)
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp (.o2 .store) [.var n, a₁, a₂] _ e, _, p, hl, .store hΓ hΔ h₁ h₂ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT₄ _ _ _ (.letOp (.o2 .store) [(Atom₄.var Γ₁.length).subst Γ₁.length _, _, _] _ _) _
+      rw [subst_var_self₄]
+      rw [← hl, set_self] at h
+      refine .storeC (List.mem_cons_self) (substA₄ h₁ (fits_cap₄ p)) (substA₄ h₂ (fits_cap₄ p)) ?_
+      rw [List.erase_cons_head]
+      have := substV₄ (Γ₁ := t4cap :: Γ₁) (Δ₁ := true :: Δ₁) (by simp [hl]) h (fits_cap₄ p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT₄ _ _ _ (.letOp (.o2 .store) [(Atom₄.var n).subst Γ₁.length _, _, _] _ _) _
+      rw [subst_var_ne₄ hn]
+      refine .store (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop hn']; exact hΔ)
+        (substA₄ h₁ (fits_cap₄ p)) (substA₄ h₂ (fits_cap₄ p)) ?_
+      rw [set_mid hn'] at h
+      have := substC₄ (Γ₁ := t4cap :: Γ₁) (Δ₁ := true :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp (.o2 .store) [.const (.c2 (.cap q)), a₁, a₂] _ e, _, p, hl, .storeC hq h₁ h₂ h =>
+    .storeC (List.mem_cons_of_mem _ hq) (substA₄ h₁ (fits_cap₄ p)) (substA₄ h₂ (fits_cap₄ p))
+      (RT₄.perm (erase_cons_perm hq).symm (substC₄ (Γ₁ := t4cap :: Γ₁) (Δ₁ := true :: Δ₁) p (by simp [hl]) h))
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp (.o2 .free) [.var n] _ e, _, p, hl, .free hΓ hΔ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT₄ _ _ _ (.letOp (.o2 .free) [(Atom₄.var Γ₁.length).subst Γ₁.length _] _ _) _
+      rw [subst_var_self₄]
+      rw [← hl, set_self] at h
+      refine .freeC (List.mem_cons_self) ?_
+      rw [List.erase_cons_head]
+      have := substV₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h (fits_cap₄ p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT₄ _ _ _ (.letOp (.o2 .free) [(Atom₄.var n).subst Γ₁.length _] _ _) _
+      rw [subst_var_ne₄ hn]
+      refine .free (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop hn']; exact hΔ) ?_
+      rw [set_mid hn'] at h
+      have := substC₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp (.o2 .free) [.const (.c2 (.cap q))] _ e, _, p, hl, .freeC hq h =>
+    .freeC (List.mem_cons_of_mem _ hq)
+      (RT₄.perm (erase_cons_perm hq).symm (substC₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h))
+  | _, _, _, _, _, _, _, _, _, .app hΔ _ _ => (mask_empty_true hΔ).elim
+  | _, _, _, _, _, .ite a e₁ e₂, _, p, hl, .ite h h₁ h₂ =>
+    .ite (substA₄ h (fits_cap₄ p)) (substC₄ p hl h₁) (substC₄ p hl h₂)
+  | Γ₁, Γ, Δ₁, Δ, _, .case a e₁ e₂, _, p, hl, .case h h₁ h₂ =>
+    .case (substA₄ h (fits_cap₄ p)) (substC₄ (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h₁)
+      (substC₄ (Γ₁ := _ :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h₂)
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .newlock [.var n] _ e, _, p, hl, .newlock hΓ hΔ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT₄ _ _ _ (.letOp .newlock [(Atom₄.var Γ₁.length).subst Γ₁.length _] _ _) _
+      rw [subst_var_self₄]
+      rw [← hl, set_self] at h
+      refine .newlockC (List.mem_cons_self) ?_
+      rw [List.erase_cons_head]
+      have := substV₄ (Γ₁ := t4lock :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h (fits_cap₄ p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT₄ _ _ _ (.letOp .newlock [(Atom₄.var n).subst Γ₁.length _] _ _) _
+      rw [subst_var_ne₄ hn]
+      refine .newlock (by rw [← get_drop hn]; exact hΓ) (by rw [← hl, ← get_drop hn']; exact hΔ) ?_
+      rw [set_mid hn'] at h
+      have := substC₄ (Γ₁ := t4lock :: Γ₁) (Δ₁ := false :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .newlock [.const (.c2 (.cap q))] _ e, _, p, hl, .newlockC hq h =>
+    .newlockC (List.mem_cons_of_mem _ hq)
+      (RT₄.perm (erase_cons_perm hq).symm (substC₄ (Γ₁ := t4lock :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h))
+  | Γ₁, Γ, Δ₁, Δ, _, .letOp .acquire [a] _ e, _, p, hl, .acquire ha h =>
+    .acquire (substA₄ ha (fits_cap₄ p)) (substC₄ (Γ₁ := t4cap :: Γ₁) (Δ₁ := true :: Δ₁) p (by simp [hl]) h)
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .release [a, .var n] _ e, _, p, hl, .release ha hΓ hΔ h => by
+    by_cases hn : n = Γ₁.length
+    · subst hn
+      show RT₄ _ _ _ (.letOp .release [a.subst Γ₁.length _, (Atom₄.var Γ₁.length).subst Γ₁.length _] _ _) _
+      rw [subst_var_self₄]
+      rw [← hl, set_self] at h
+      refine .releaseC (substA₄ ha (fits_cap₄ p)) (List.mem_cons_self) ?_
+      rw [List.erase_cons_head]
+      have := substV₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: Δ₁) (by simp [hl]) h (fits_cap₄ p)
+      simpa [hl] using this
+    · have hn' : n ≠ Δ₁.length := hl ▸ hn
+      show RT₄ _ _ _ (.letOp .release [a.subst Γ₁.length _, (Atom₄.var n).subst Γ₁.length _] _ _) _
+      rw [subst_var_ne₄ hn]
+      refine .release (substA₄ ha (fits_cap₄ p)) (by rw [← get_drop hn]; exact hΓ)
+        (by rw [← hl, ← get_drop hn']; exact hΔ) ?_
+      rw [set_mid hn'] at h
+      have := substC₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: _) p (by simp [List.length_set]; split_ifs <;> simp [hl]) h
+      simp only [List.cons_append] at this
+      rw [set_drop hn', hl] at this; exact this
+  | Γ₁, Γ, Δ₁, Δ, Ω, .letOp .release [a, .const (.c2 (.cap q))] _ e, _, p, hl, .releaseC ha hq h =>
+    .releaseC (substA₄ ha (fits_cap₄ p)) (List.mem_cons_of_mem _ hq)
+      (RT₄.perm (erase_cons_perm hq).symm (substC₄ (Γ₁ := t4unit :: Γ₁) (Δ₁ := false :: Δ₁) p (by simp [hl]) h))
+  | Γ₁, Γ, Δ₁, Δ, Ω, .par τ₁ τ₂ e₁ e₂ e, _, p, hl, .par hs₁ hs₂ hp hc₁ hc₂ h₁ h₂ h => by
+    obtain ⟨A₁, A₂, B₁, B₂, a, rfl, rfl, hA, hB, hs₁'⟩ := split_mid_true hs₁
+    cases a with
+    | true =>
+      obtain ⟨C₁, C₂, D₁, D₂, rfl, rfl, hC, hD, hs₂'⟩ := split_mid hs₂
+      refine .par hs₁' hs₂' (hp.cons p) hc₁ hc₂ (substC₄ p (hA.trans hl) h₁)
+        (substV₄ (hC.trans (hB.trans hl)) h₂ (fits_cap₄ p)) ?_
+      exact substV₄ (Γ₁ := τ₂ :: τ₁ :: Γ₁) (Δ₁ := _ :: _ :: D₁) (by simp [hD, hB, hl]) h (fits_cap₄ p)
+    | false =>
+      obtain ⟨C₁, C₂, D₁, D₂, b, rfl, rfl, hC, hD, hs₂'⟩ := split_mid_true hs₂
+      cases b with
+      | true =>
+        refine .par hs₁' hs₂' (perm_mid2 hp) hc₁ hc₂ (substV₄ (hA.trans hl) h₁ (fits_cap₄ p))
+          (substC₄ p (hC.trans (hB.trans hl)) h₂) ?_
+        exact substV₄ (Γ₁ := τ₂ :: τ₁ :: Γ₁) (Δ₁ := _ :: _ :: D₁) (by simp [hD, hB, hl]) h (fits_cap₄ p)
+      | false =>
+        refine .par hs₁' hs₂' (perm_mid3 hp) hc₁ hc₂ (substV₄ (hA.trans hl) h₁ (fits_cap₄ p))
+          (substV₄ (hC.trans (hB.trans hl)) h₂ (fits_cap₄ p)) ?_
+        exact substC₄ (Γ₁ := τ₂ :: τ₁ :: Γ₁) (Δ₁ := _ :: _ :: D₁) p (by simp [hD, hB, hl]) h
+
 end VIRL4
