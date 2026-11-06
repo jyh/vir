@@ -115,3 +115,17 @@ changes. The pieces `Safe.lean` defines, named here before any proof:
   (named → `Tm₄` under a total environment of constants), with its substitution and congruence lemmas; it names the stages and changes
   no term (`NT₄.c` agrees with it on N4).
 - Q6's preservation (STATUS 164b) stays OWED; this addendum does not touch it.
+
+## ADDENDUM 6 (2026-11-06, the 27th vir head, BEFORE `VIRL4/Preserve4.lean` exists): Q6's preservation (STATUS 164b)
+- **The file is `VIRL4/Preserve4.lean`**, in two parts: (i) RT₄'s substitution lemmas, L2's `RT.substV`/`RT.substC`/`RT.perm`
+  restated for the mutual RTA₄/RTL₄/RT₄ (a λ or fix body is RT₄-typed with Ω = [], so substitution into an atom recurses into a term);
+  (ii) preservation through ⟶₄.
+- **The configuration's typing**, the stronger reading addendum 3 named: `RT₄ [] [] Ω e τ` with the store split σ = σΩ ⊎ σL ⊎ σF,
+  `OwnAll Ω σΩ` (the thread regions, every `par` side's Ω among them), `Shared (fun _ _ => True) L σL` (Safe.lean's shared part with the
+  trivial invariant: each FREE lock owns exactly its region; a HELD lock's region is in Ω, since `acquire` returned its ⟨p⟩), σF any
+  frame, all disjoint, the store WF. Moves: `acquire` p ∈ Ω' = p :: Ω (the region from σL to σΩ); `release` Ω' = Ω.erase p (back);
+  `newlock(⟨p⟩)` Ω' = Ω.erase p and L' = L ++ [free p]; `alloc` Ω' = p :: Ω for the fresh base; `free` Ω' = Ω.erase p; pure steps keep Ω
+  up to permutation; a `par` side's step changes only that side's share.
+- **Q6-P, as this arm states it:** every ⟶₄ step from a typed configuration lands in a typed configuration (Ω' as above), hence, from
+  a ⊢₄-typed closed program on the empty store and lock table, every ⟶₄*-reachable configuration is typed and, by `Q6_no_race`, has
+  no race on any region.
