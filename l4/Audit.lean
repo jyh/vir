@@ -151,3 +151,8 @@ import VIRL4
 #print axioms VIRL4.Q6_reach
 #print axioms VIRL4.Q6_reach_empty
 #print axioms VIRL4.get_app_left
+#print axioms VIRL4.rtA_of
+#print axioms VIRL4.rtL_of
+#print axioms VIRL4.rt_of
+#print axioms VIRL4.Q6_typed_program
+#print axioms VIRL4.N1_no_race

@@ -807,4 +807,49 @@ theorem Q6_reach_empty {e : Tm₄} {τ : Ty₄} (ht : RT₄ [] [] [] e τ) :
       by rw [Store.empty_union, Store.empty_union]; exact wf_empty⟩
   simpa [Store.empty_union] using h
 
+/-! ## A statically typed program is runtime-typed owning nothing (⊢₄ ⇒ RT₄ with Ω = []). -/
+
+mutual
+theorem rtA_of : ∀ {Γ a τ}, HasTypeA₄ Γ a τ → RTA₄ Γ a τ
+  | _, _, _, .var h hc => .var h hc
+  | _, _, _, .int => .int
+  | _, _, _, .bool => .bool
+  | _, _, _, .unit => .unit
+  | _, _, _, .prim h => .prim (rtL_of h)
+  | _, _, _, .lam h₁ h₂ hΔ hl h => .lam h₁ h₂ hΔ hl (rt_of h)
+  | _, _, _, .fix h₁ h₂ hΔ hl h => .fix h₁ h₂ hΔ hl (rt_of h)
+  | _, _, _, .pair h₁ h₂ => .pair (rtA_of h₁) (rtA_of h₂)
+  | _, _, _, .fst h => .fst (rtA_of h)
+  | _, _, _, .snd h => .snd (rtA_of h)
+  | _, _, _, .inl hc h => .inl hc (rtA_of h)
+  | _, _, _, .inr hc h => .inr hc (rtA_of h)
+theorem rtL_of : ∀ {Γ as τs}, HasTypeL₄ Γ as τs → RTL₄ Γ as τs
+  | _, _, _, .nil => .nil
+  | _, _, _, .cons h hs => .cons (rtA_of h) (rtL_of hs)
+theorem rt_of : ∀ {Γ Δ e τ}, HasType₄ Γ Δ e τ → RT₄ Γ Δ [] e τ
+  | _, _, _, _, .ret hΔ h => .ret hΔ (rtA_of h)
+  | _, _, _, _, .retCap hΓ hΔ => .retCap hΓ hΔ
+  | _, _, _, _, .letE hs hc h₁ h₂ => .letE hs (List.Perm.refl _) hc (rt_of h₁) (rt_of h₂)
+  | _, _, _, _, .alloc ha h => .alloc (rtA_of ha) (rt_of h)
+  | _, _, _, _, .load hΓ hΔ ha h => .load hΓ hΔ (rtA_of ha) (rt_of h)
+  | _, _, _, _, .store hΓ hΔ h₁ h₂ h => .store hΓ hΔ (rtA_of h₁) (rtA_of h₂) (rt_of h)
+  | _, _, _, _, .free hΓ hΔ h => .free hΓ hΔ (rt_of h)
+  | _, _, _, _, .app hΔ h₁ h₂ => .app hΔ (rtA_of h₁) (rtA_of h₂)
+  | _, _, _, _, .ite h h₁ h₂ => .ite (rtA_of h) (rt_of h₁) (rt_of h₂)
+  | _, _, _, _, .case h h₁ h₂ => .case (rtA_of h) (rt_of h₁) (rt_of h₂)
+  | _, _, _, _, .newlock hΓ hΔ h => .newlock hΓ hΔ (rt_of h)
+  | _, _, _, _, .acquire ha h => .acquire (rtA_of ha) (rt_of h)
+  | _, _, _, _, .release ha hΓ hΔ h => .release (rtA_of ha) hΓ hΔ (rt_of h)
+  | _, _, _, _, .par hs₁ hs₂ hc₁ hc₂ h₁ h₂ h => .par hs₁ hs₂ (List.Perm.refl _) hc₁ hc₂ (rt_of h₁) (rt_of h₂) (rt_of h)
+end
+
+/-- **Q6 FOR EVERY REACHABLE CONFIGURATION OF A TYPED PROGRAM (addendum 6, the stronger reading of addendum 3):** a closed
+  ⊢₄-typed program, run from the empty store and lock table, has no race on any region at any ⟶₄*-reachable configuration. -/
+theorem Q6_typed_program {e : Tm₄} {τ : Ty₄} (ht : HasType₄ [] [] e τ) :
+    ∀ c, Steps₄ (e, ⟨Store.empty, []⟩) c → ∀ p, ¬ Race c.1 p :=
+  Q6_reach_empty (rt_of ht)
+
+/-- Control (the hypothesis is met by a real program): N1, the two-thread locked counter, never races. -/
+theorem N1_no_race : ∀ c, Steps₄ (N1, ⟨Store.empty, []⟩) c → ∀ p, ¬ Race c.1 p := Q6_typed_program N1_typed
+
 end VIRL4
