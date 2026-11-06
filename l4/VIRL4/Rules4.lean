@@ -540,4 +540,57 @@ theorem op₄_rule {I : Int → Assn} {P₄ : Assn₄} {o : Op} {as : List Atom�
     obtain ⟨Pl, Ql, hot, hpl, hpost⟩ := ho L σ hp
     exact safe₄_op2 hvs hws hot hpl (fun v σq hq => hk (raiseV v) n L σq (hpost v σq hq))
 
+/-! ## The pure steps: `if` on an evaluated boolean, and `let x = ret a`. The store and the lock table are untouched. -/
+
+theorem safe₄_ite {I : Int → Assn} {Q : Atom₄ → Assn₄} {n : Nat} {a : Atom₄} {e₁ e₂ : Tm₄} {L : List LockSt} {σ : Store}
+    {c : Const₄} {b : Bool} (ha : Atom₄.eval a = some (.const c)) (hb : Const₄.toBool c = some b)
+    (hk : ∀ L', Ext L L' → safe₄ I n (if b then e₁ else e₂) L' σ Q) :
+    safe₄ I (n + 1) (.ite a e₁ e₂) L σ Q := by
+  rw [safe₄]
+  refine ⟨fun a' ha' => (by cases ha'), fun L' σS σF hx hg => ⟨fun hf => ?_, fun e' s' hs => ?_⟩⟩
+  · cases b with
+    | true => exact hf.2.1 _ (Step₄.iteT ha hb)
+    | false => exact hf.2.1 _ (Step₄.iteF ha hb)
+  · cases hs with
+    | iteT ha' hb' =>
+      rw [ha] at ha'
+      cases ha'
+      rw [hb] at hb'
+      cases hb'
+      exact ⟨σ, σS, Ext.refl _, hg, rfl, hk L' hx⟩
+    | iteF ha' hb' =>
+      rw [ha] at ha'
+      cases ha'
+      rw [hb] at hb'
+      cases hb'
+      exact ⟨σ, σS, Ext.refl _, hg, rfl, hk L' hx⟩
+
+theorem ite₄_rule {I : Int → Assn} {P : Assn₄} {a : Atom₄} {e₁ e₂ : Tm₄} {Q : Atom₄ → Assn₄} {c : Const₄} {b : Bool}
+    (ha : Atom₄.eval a = some (.const c)) (hb : Const₄.toBool c = some b) (hP : Stable P)
+    (h : Triple₄ I P (if b then e₁ else e₂) Q) : Triple₄ I P (.ite a e₁ e₂) Q := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n => exact safe₄_ite ha hb (fun L' hx => h n L' σ (hP L L' σ hx hp))
+
+theorem safe₄_letRet {I : Int → Assn} {Q : Atom₄ → Assn₄} {n : Nat} {τ : Ty₄} {a v : Atom₄} {e₂ : Tm₄} {L : List LockSt}
+    {σ : Store} (ha : Atom₄.eval a = some v) (hk : ∀ L', Ext L L' → safe₄ I n (e₂.subst 0 v) L' σ Q) :
+    safe₄ I (n + 1) (.letE τ (.ret a) e₂) L σ Q := by
+  rw [safe₄]
+  refine ⟨fun a' ha' => (by cases ha'), fun L' σS σF hx hg => ⟨fun hf => hf.2.1 _ (Step₄.letRet ha), fun e' s' hs => ?_⟩⟩
+  cases hs with
+  | letRet ha' =>
+    rw [ha] at ha'
+    cases ha'
+    exact ⟨σ, σS, Ext.refl _, hg, rfl, hk L' hx⟩
+  | letStep h => cases h
+
+theorem letRet₄_rule {I : Int → Assn} {P : Assn₄} {τ : Ty₄} {a v : Atom₄} {e₂ : Tm₄} {Q : Atom₄ → Assn₄}
+    (ha : Atom₄.eval a = some v) (hP : Stable P) (h : Triple₄ I P (e₂.subst 0 v) Q) :
+    Triple₄ I P (.letE τ (.ret a) e₂) Q := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n => exact safe₄_letRet ha (fun L' hx => h n L' σ (hP L L' σ hx hp))
+
 end VIRL4

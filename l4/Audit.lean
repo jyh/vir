@@ -61,3 +61,10 @@ import VIRL4
 #print axioms VIRL4.F₄_typed
 #print axioms VIRL4.N4_typed
 #print axioms VIRL4.mask_only_zero
+#print axioms VIRL4.load₄_at
+#print axioms VIRL4.store₄_at
+#print axioms VIRL4.safe₄_ite
+#print axioms VIRL4.safe₄_letRet
+#print axioms VIRL4.ite₄_rule
+#print axioms VIRL4.letRet₄_rule
+#print axioms VIRL4.F₄_S

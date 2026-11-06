@@ -114,4 +114,147 @@ theorem N4_typed : HasType₄ [t4cap, t4cap, t4lock] [true, true, false] N4 t4un
     (Δ₀ := [false, false, false]) (Split.right (Split.left (Split.none Split.nil))) (Split.left (Split.none (Split.none Split.nil)))
     (Or.inl rfl) (Or.inl rfl) ?_ ?_ ?_ <;> l4ty'
 
+/-! ## N4-S's machinery: L2's region axioms at L4 with a frame Fr beside the region and a lock-table fact Rest. -/
+
+def StableR (Rest : List LockSt → Prop) : Prop := ∀ L L', Ext L L' → Rest L → Rest L'
+
+theorem stable_and {X : Assn} {Rest : List LockSt → Prop} (hR : StableR Rest) : Stable (fun L σ => X σ ∧ Rest L) :=
+  fun L L' _ hx h => ⟨h.1, hR L L' hx h.2⟩
+
+theorem load₄_at {I : Int → Assn} {Fr : Assn} {Rest : List LockSt → Prop} {p : Int} {n : Nat} {f : Int → Int}
+    {ai : Atom₄} {i : Int} (hai : Atom₄.eval ai = some (c4 i)) (hi : 0 ≤ i ∧ i < n) {τ : Ty₄} {e : Tm₄}
+    {Q : Atom₄ → Assn₄}
+    (hk : Triple₄ I (fun L σ => (RegionAt p n f ∗ Fr) σ ∧ Rest L) (e.subst 0 (c4 (f (p + i)))) Q) :
+    Triple₄ I (fun L σ => (RegionAt p n f ∗ Fr) σ ∧ Rest L) (.letOp (.o2 .load) [capv p, ai] τ e) Q := by
+  refine op₄_rule (vs := [capv p, c4 i]) (ws := [.const (.cap p), .const (.int i)])
+    (by simp [Atom₄.evalL, Atom₄.eval, capv, hai]) rfl
+    (Post := fun v L σ => v = c4 (f (p + i)) ∧ ((RegionAt p n f ∗ Fr) σ ∧ Rest L)) ?_ ?_
+  · rintro L σ ⟨h, hr⟩
+    refine ⟨_, _, op_frame Fr (load_at p n f i hi), h, ?_⟩
+    rintro v σq hq
+    obtain ⟨hv, hq'⟩ := sep_pure_left hq
+    exact ⟨by rw [hv]; rfl, hq', hr⟩
+  · intro v
+    apply triple₄_pre_pure
+    rintro rfl
+    exact hk
+
+theorem store₄_at {I : Int → Assn} {Fr : Assn} {Rest : List LockSt → Prop} {p : Int} {n : Nat} {f : Int → Int}
+    {ai av : Atom₄} {i v : Int} (hai : Atom₄.eval ai = some (c4 i)) (hav : Atom₄.eval av = some (c4 v))
+    (hi : 0 ≤ i ∧ i < n) {τ : Ty₄} {e : Tm₄} {Q : Atom₄ → Assn₄}
+    (hk : Triple₄ I (fun L σ => (RegionAt p n (Function.update f (p + i) v) ∗ Fr) σ ∧ Rest L) (e.subst 0 (capv p)) Q) :
+    Triple₄ I (fun L σ => (RegionAt p n f ∗ Fr) σ ∧ Rest L) (.letOp (.o2 .store) [capv p, ai, av] τ e) Q := by
+  refine op₄_rule (vs := [capv p, c4 i, c4 v]) (ws := [.const (.cap p), .const (.int i), .const (.int v)])
+    (by simp [Atom₄.evalL, Atom₄.eval, capv, hai, hav]) rfl
+    (Post := fun c L σ => c = capv p ∧ ((RegionAt p n (Function.update f (p + i) v) ∗ Fr) σ ∧ Rest L)) ?_ ?_
+  · rintro L σ ⟨h, hr⟩
+    refine ⟨_, _, op_frame Fr (store_at p n f i v hi), h, ?_⟩
+    rintro c σq hq
+    obtain ⟨hc, hq'⟩ := sep_pure_left hq
+    exact ⟨by rw [hc]; rfl, hq', hr⟩
+  · intro c
+    apply triple₄_pre_pure
+    rintro rfl
+    exact hk
+
+theorem sep_emp_right' {P : Assn} {σ : Store} (h : (P ∗ Assn.emp) σ) : P σ := by
+  obtain ⟨σ₁, σ₂, _, rfl, hp, rfl⟩ := h
+  rw [store_empty_union_right]; exact hp
+
+theorem sep_emp_right_intro {P : Assn} {σ : Store} (h : P σ) : (P ∗ Assn.emp) σ :=
+  ⟨σ, Store.empty, disj_symm (disj_empty_left σ), (store_empty_union_right σ).symm, h, rfl⟩
+
+/-- N4-S's world post-state: L3's `postF` without the bucket write, the token t read inside the critical section. -/
+def postF₄ (f : Int → Int) (p t : Int) : Int → Int :=
+  if 24 ≤ f (p + 0) then
+    if MgA f p = MAGIC ∧ f (aclA f p) = 1 ∧ 0 < t then Function.update (Function.update f (p + 1) 0) (p + 2) 24
+    else Function.update f (p + 1) 2
+  else Function.update f (p + 1) 1
+
+/-- ℓb's invariant (errata/L4-E2-N4.md): every bucket is non-negative. -/
+def Ib : Int → Assn := fun q σ => ∃ g : Int → Int, (∀ s, 0 ≤ s → s < 4 → 0 ≤ g (q + s)) ∧ RegionAt q 4 g σ
+
+/-- A thread's F₄ with its world ⟨p⟩ and its lock ⟨l⟩ substituted. -/
+def closeAt₄ (p : Int) (l : Nat) (e : Tm₄) : Tm₄ := (e.subst 0 (capv p)).subst 0 (lockv l)
+
+macro "n4s" : tactic => `(tactic| try simp only [lockv, capv, Tm₄.subst, Atom₄.subst, Atom₄.substL, ↓reduceIte, Nat.reduceAdd,
+  Nat.reduceLT, Nat.reduceSub, Nat.reduceEqDiff, Int.reduceAdd])
+/-- One load from a region at a constant index. -/
+macro "ld4" : tactic => `(tactic| (refine load₄_at rfl ?_ ?_; (first | omega | (simp only [A, K, NW, NS, NTp, SvA, TvA, MgA] at *; omega)); n4s))
+/-- One store into a region at constant index and value. -/
+macro "st4" : tactic => `(tactic| (refine store₄_at rfl rfl ?_ ?_; (first | omega | (simp only [A, K, NW, NS, NTp, SvA, TvA, MgA] at *; omega)); n4s))
+macro "ev4" : tactic => `(tactic| simp [Atom₄.eval, Atom₄.evalL, constsOf₄, Const₄.toL1, Const.toL1, L1.Prim.interp, Const.ofL1,
+  Const₄.toBool, MgA, SvA, TvA, A, NW, NTp])
+
+set_option maxRecDepth 4000 in
+set_option maxHeartbeats 1000000 in
+/-- N4-S, one side: from its world (83 cells at p) and lock l's base q, F₄ keeps ℓb's invariant (it releases the bucket region
+  with every bucket ≥ 0 on both paths) and returns its world with L3's out cells written, for the token t it read. -/
+theorem F₄_S {p q : Int} {l : Nat} {f : Int → Int} (hs0 : 0 ≤ SvA f p) (hs4 : SvA f p < 4) (ht0 : 0 ≤ TvA f p)
+    (ht4 : TvA f p < 4) :
+    Triple₄ Ib (fun L σ => (RegionAt p 83 f ∗ Assn.emp) σ ∧ LB l q L) (closeAt₄ p l F₄)
+      (fun v _ σ => v = capv p ∧ ∃ t, RegionAt p 83 (postF₄ f p t) σ) := by
+  have hLB : StableR (LB l q) := fun _ _ hx h => base_of_ext h hx
+  simp only [closeAt₄, F₄, Fn₄, RD32₄, EXIT₄, EMIT₄, NT₄.c, NA.c₄, NA.c, ιA, ιL, add, sub, mul, le, lt, eq, conj, List.map,
+    List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq, cond_true, cond_false, Nat.reduceAdd,
+    Nat.zero_add, lockv, capv, Tm₄.subst, Atom₄.subst, Atom₄.substL, ↓reduceIte, Nat.reduceLT, Nat.reduceSub, Nat.reduceEqDiff]
+  ld4
+  by_cases hn : 24 ≤ f (p + 0)
+  · refine ite₄_rule (c := .c2 (.bool true)) (b := true) (by ev4; simpa using hn) rfl (stable_and hLB) ?_
+    n4s
+    ld4; ld4; ld4; ld4
+    refine letRet₄_rule (v := c4 (MgA f p)) (by ev4) (stable_and hLB) ?_; n4s
+    ld4; ld4; ld4; ld4
+    refine letRet₄_rule (v := c4 (SvA f p)) (by ev4) (stable_and hLB) ?_; n4s
+    ld4; ld4; ld4; ld4
+    refine letRet₄_rule (v := c4 (TvA f p)) (by ev4) (stable_and hLB) ?_; n4s
+    refine load₄_at (i := 67 + (SvA f p * 4 + TvA f p)) (by ev4) (by simp only [SvA, TvA] at *; omega) ?_; n4s
+    refine acquire₄_rule (p := q) (fun L σ h => h.2) (stable_and hLB) ?_; n4s
+    refine triple₄_conseq (P := fun L σ' => ∃ g : Int → Int, (∀ s, 0 ≤ s → s < 4 → 0 ≤ g (q + s)) ∧
+      ((RegionAt q 4 g ∗ (RegionAt p 83 f ∗ Assn.emp)) σ' ∧ LB l q L)) ?_ ?_
+    · rintro L σ' ⟨σ, σI, hd, rfl, ⟨hw, hb⟩, _, g, hg, hgr⟩
+      exact ⟨g, hg, ⟨σI, σ, disj_symm hd, union_comm_disj hd, hgr, hw⟩, hb⟩
+    apply triple₄_pre_ex
+    intro g
+    apply triple₄_pre_pure
+    intro hg
+    refine load₄_at (i := SvA f p) rfl (by omega) ?_; n4s
+    by_cases he : MgA f p = MAGIC ∧ f (p + (67 + (SvA f p * 4 + TvA f p))) = 1 ∧ 0 < g (q + SvA f p)
+    · refine ite₄_rule (c := .c2 (.bool true)) (b := true) (by ev4; exact he) rfl (stable_and hLB) ?_
+      n4s
+      refine store₄_at (i := SvA f p) (v := g (q + SvA f p) - 1) rfl (by ev4) (by omega) ?_; n4s
+      refine release₄_rule (p := q) (P' := fun L σ => (RegionAt p 83 f ∗ Assn.emp) σ ∧ LB l q L) (fun L σ h => h.2) ?_
+        (stable_and hLB) ?_
+      · rintro L σ ⟨⟨σb, σw, hd, rfl, hbr, hw⟩, hb⟩
+        refine ⟨σw, σb, disj_symm hd, union_comm_disj hd, ⟨4, hbr.isRegion⟩, ⟨_, ?_, hbr⟩, hw, hb⟩
+        intro s hs0' hs4'
+        by_cases hsq : q + s = q + SvA f p
+        · rw [hsq, Function.update_self]; omega
+        · rw [Function.update_of_ne hsq]; exact hg s hs0' hs4'
+      n4s
+      st4; st4
+      refine ret₄_rule rfl (fun L σ h L' _ => ⟨rfl, g (q + SvA f p), ?_⟩)
+      have hw := sep_emp_right' h.1
+      have hn' : 24 ≤ f p := by simpa using hn
+      simpa [postF₄, hn', aclA, he] using hw
+    · refine ite₄_rule (c := .c2 (.bool false)) (b := false) (by ev4; intro h1 h2; by_contra h3; exact he ⟨h1, h2, not_le.1 h3⟩) rfl (stable_and hLB) ?_
+      n4s
+      refine release₄_rule (p := q) (P' := fun L σ => (RegionAt p 83 f ∗ Assn.emp) σ ∧ LB l q L) (fun L σ h => h.2) ?_
+        (stable_and hLB) ?_
+      · rintro L σ ⟨⟨σb, σw, hd, rfl, hbr, hw⟩, hb⟩
+        exact ⟨σw, σb, disj_symm hd, union_comm_disj hd, ⟨4, hbr.isRegion⟩, ⟨g, hg, hbr⟩, hw, hb⟩
+      n4s
+      st4
+      refine ret₄_rule rfl (fun L σ h L' _ => ⟨rfl, g (q + SvA f p), ?_⟩)
+      have hw := sep_emp_right' h.1
+      have hn' : 24 ≤ f p := by simpa using hn
+      simpa [postF₄, hn', aclA, he] using hw
+  · refine ite₄_rule (c := .c2 (.bool false)) (b := false) (by ev4; simpa using hn) rfl (stable_and hLB) ?_
+    n4s
+    st4
+    refine ret₄_rule rfl (fun L σ h L' _ => ⟨rfl, 0, ?_⟩)
+    have hw := sep_emp_right' h.1
+    have hn' : ¬ 24 ≤ f p := by simpa using hn
+    simpa [postF₄, hn'] using hw
+
 end VIRL4
