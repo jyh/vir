@@ -437,4 +437,51 @@ theorem par₄_rule {I : Int → Assn} {P₁ P₂ : Assn₄} {τ₁ τ₂ : Ty�
   exact safe₄_par (fun v₁ v₂ L' σ₁' σ₂' hd hq₁ hq₂ m => hk v₁ v₂ m L' _ ⟨σ₁', σ₂', hd, rfl, hq₁, hq₂⟩)
     n e₁ e₂ L σ₁ σ₂ h12 (h₁ n L σ₁ hp₁) (h₂ n L σ₂ hp₂)
 
+/-! ## L2's operations, lifted: an L2 `OpTriple` (OBJECT-L2 §5's small axioms) is an L4 op rule, the frame being the shared part
+  and every other thread's fragment, the lock table untouched (Q1: L2's `opStep` and `OpTriple` are imported, unchanged). -/
+
+theorem opStep₄_o2 {o : Op} {vs : List Atom₄} {ws : List Atom₂} {s : Store₄} (hws : vs.mapM lowerV = some ws) :
+    opStep₄ (.o2 o) vs s = (opStep o ws s.σ).map fun (v, σ') => (raiseV v, ⟨σ', s.locks⟩) := by
+  simp [opStep₄, hws]
+
+theorem safe₄_op2 {I : Int → Assn} {Q : Atom₄ → Assn₄} {n : Nat} {o : Op} {as : List Atom₄} {τ : Ty₄} {e : Tm₄}
+    {L : List LockSt} {σ : Store} {vs : List Atom₄} {ws : List Atom₂} {P : Assn} {Qo : Atom₂ → Assn}
+    (hvs : Atom₄.evalL as = some vs) (hws : vs.mapM lowerV = some ws) (ho : OpTriple P o ws Qo) (hP : P σ)
+    (hk : ∀ v σq, Qo v σq → safe₄ I n (e.subst 0 (raiseV v)) L σq Q) :
+    safe₄ I (n + 1) (.letOp (.o2 o) as τ e) L σ Q := by
+  rw [safe₄]
+  refine ⟨fun a ha => (by cases ha), fun L' σS σF hx hg => ?_⟩
+  obtain ⟨hA, hB, hC, hD⟩ := hg
+  have hd : Store.Disj σ (σS ⊎ σF) :=
+    (Store.disj_union_right _ _ _).2 ⟨hA, ((Store.disj_union_left _ _ _).1 hB).1⟩
+  have hSF : Store.Disj σS σF := ((Store.disj_union_left _ _ _).1 hB).2
+  have hwf : Store.WF (σ ⊎ (σS ⊎ σF)) := by rw [← Store.union_assoc]; exact hD
+  obtain ⟨v, σq, hop, hdq, hwfq, hQo⟩ := ho σ (σS ⊎ σF) hP hd hwf
+  have hop' : opStep o ws (σ ⊎ σS ⊎ σF) = some (v, σq ⊎ (σS ⊎ σF)) := by rw [Store.union_assoc]; exact hop
+  refine ⟨fun hf => hf.2.1 (e.subst 0 (raiseV v), ⟨σq ⊎ (σS ⊎ σF), L'⟩) (Step₄.op hvs (by rw [opStep₄_o2 hws, hop']; rfl)),
+    fun e' s' hs => ?_⟩
+  cases hs with
+  | op hvs' hop'' =>
+    rw [hvs] at hvs'
+    cases hvs'
+    rw [opStep₄_o2 hws] at hop''
+    simp only [hop', Option.map_some, Option.some.injEq, Prod.mk.injEq] at hop''
+    obtain ⟨rfl, rfl⟩ := hop''
+    obtain ⟨hqS, hqF⟩ := (Store.disj_union_right _ _ _).1 hdq
+    refine ⟨σq, σS, Ext.refl _, ⟨hqS, (Store.disj_union_left _ _ _).2 ⟨hqF, hSF⟩, hC, ?_⟩, ?_,
+      safe₄_ext n _ L L' σq hx (hk v σq hQo)⟩
+    · rw [Store.union_assoc]; exact hwfq
+    · simp only [Store.union_assoc]
+
+/-- The lifted op rule as a triple. -/
+theorem op2₄_rule {I : Int → Assn} {P₄ : Assn₄} {o : Op} {as : List Atom₄} {τ : Ty₄} {e : Tm₄} {R : Atom₄ → Assn₄}
+    {vs : List Atom₄} {ws : List Atom₂} {P : Assn} {Qo : Atom₂ → Assn}
+    (hvs : Atom₄.evalL as = some vs) (hws : vs.mapM lowerV = some ws) (ho : OpTriple P o ws Qo)
+    (hP : ∀ L σ, P₄ L σ → P σ) (hk : ∀ v, ∀ L σ, P₄ L σ → Triple₄ I (fun _ σq => Qo v σq) (e.subst 0 (raiseV v)) R) :
+    Triple₄ I P₄ (.letOp (.o2 o) as τ e) R := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n => exact safe₄_op2 hvs hws ho (hP L σ hp) (fun v σq hq => hk v L σ hp n L σq hq)
+
 end VIRL4
