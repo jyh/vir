@@ -12,3 +12,10 @@ import VIRL4
 #print axioms VIRL4.N1_typed
 #print axioms VIRL4.N3_typed
 #print axioms VIRL4.N2_untyped
+#print axioms VIRL4.Ext.trans
+#print axioms VIRL4.adequate_aux
+#print axioms VIRL4.triple₄_adequate
+#print axioms VIRL4.not_triple₄_of_faults
+#print axioms VIRL4.triple₄_ret_unit
+#print axioms VIRL4.glob_empty
+#print axioms VIRL4.app_unit_no_triple
