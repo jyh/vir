@@ -387,7 +387,7 @@ inductive Th (w : String) (p : Int) (l : Nat) (q : Int) (f : Int → Int) : Tm�
   the acquire, the release, or the decrement of the sender's bucket. -/
 def Eff (S q : Int) (l : Nat) (L L' : List LockSt) (g g' : Int → Int) (h h' d d' : Bool) (tr tr' : Option Int) : Prop :=
   (L' = L ∧ g' = g ∧ h' = h ∧ d' = d ∧ (tr' = tr ∨ (tr = none ∧ h = true ∧ tr' = some (g (q + S))))) ∨
-  (L[l]? = some (.free q) ∧ L' = L.set l (.held q) ∧ g' = g ∧ h = false ∧ h' = true ∧ d' = d ∧ tr' = tr) ∨
+  (L[l]? = some (.free q) ∧ L' = L.set l (.held q) ∧ g' = g ∧ h = false ∧ h' = true ∧ d' = d ∧ tr' = tr ∧ tr = none) ∨
   (L' = L.set l (.free q) ∧ g' = g ∧ h = true ∧ h' = false ∧ d' = d ∧ tr' = tr) ∨
   (∃ t, L' = L ∧ h = true ∧ h' = true ∧ d = false ∧ d' = true ∧ tr = some t ∧ tr' = tr ∧ 0 < t ∧
     g' = Function.update g (q + S) (t - 1))
@@ -537,7 +537,7 @@ theorem th_step {w : String} {p : Int} {l : Nat} {q : Int} {f fc : Int → Int} 
       · simp [opStep₄, hf, capv] at hop
         obtain ⟨rfl, rfl⟩ := hop
         refine ⟨f, true, false, none, σm, σb, g, _, ?_, rfl, hm, hb, hd1, hd2, hwf,
-          Or.inr (Or.inl ⟨hf, rfl, rfl, rfl, rfl, rfl, rfl⟩)⟩
+          Or.inr (Or.inl ⟨hf, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩)⟩
         refine th_upd (by simp [Env, envL, ci]) ?_
         exact Th.cs0 h24
       · simp [opStep₄, hh] at hop
@@ -630,5 +630,272 @@ theorem th_step {w : String} {p : Int} {l : Nat} {q : Int} {f fc : Int → Int} 
     refine th_upd (by simp [Env, envL, ci]) ?_
     exact Th.ex1b hn
   | ex1b => exact (Th_ret_nostep hs).elim
+
+/-! ## A thread at `ret`: its world holds `postF₄` for the token it read, and it decremented exactly when it emits. -/
+
+/-- L3's `Emits` with the token t read inside the critical section in place of `0 < f (bktA f p)` (addendum 5). -/
+abbrev EmitsT (f : Int → Int) (p t : Int) : Prop := 24 ≤ f (p + 0) ∧ MgA f p = MAGIC ∧ f (aclA f p) = 1 ∧ 0 < t
+
+theorem th_ret {w : String} {p : Int} {l : Nat} {q : Int} {f fc : Int → Int} {T : Tm₄} {h d : Bool} {tr : Option Int}
+    {a : Atom₄} (hT : Th w p l q f T fc h d tr) (hr : T = .ret a) :
+    (∃ t, fc = postF₄ f p t ∧ (d = true ↔ EmitsT f p t) ∧ h = false) ∧ (∀ v, Atom₄.eval a = some v → ∃ c, v = .const c) := by
+  cases hT with
+  | em2 h24 t hc =>
+    simp only [NT₄.cc, Tm₄.ret.injEq] at hr; subst hr
+    have h24' : 24 ≤ f p := by simpa using h24
+    exact ⟨⟨t, rfl, by simp [EmitsT, h24', hc.1, hc.2.1, hc.2.2], rfl⟩, fun v hv => eval_cc_const _ hv⟩
+  | ex2b h24 t hc =>
+    simp only [NT₄.cc, Tm₄.ret.injEq] at hr; subst hr
+    refine ⟨⟨t, rfl, ?_, rfl⟩, fun v hv => eval_cc_const _ hv⟩
+    simp only [Bool.false_eq_true, false_iff]
+    exact fun he => hc ⟨he.2.1, he.2.2.1, he.2.2.2⟩
+  | ex1b hn =>
+    simp only [NT₄.cc, Tm₄.ret.injEq] at hr; subst hr
+    refine ⟨⟨0, rfl, ?_, rfl⟩, fun v hv => eval_cc_const _ hv⟩
+    simp only [Bool.false_eq_true, false_iff]
+    exact fun he => hn he.1
+  | pre _ hS => cases hS <;> simp [NT₄.cc, rd0, rd1, rd2, rd3, rd4, sH0, sH1] at hr
+  | _ => simp [NT₄.cc, sF0, sF1, sH2, sH3, sH4, sH5, sH6, EMIT₄, EXIT₄, sEM1] at hr
+
+/-! ## The configuration invariant over both threads (H5 (a)). -/
+
+/-- N4's par body: free the two returned worlds. -/
+def BN : NT₄ := .op "u1" t4unit (.o2 .free) [.v "w1'"] (.op "u2" t4unit (.o2 .free) [.v "w2'"] .retU)
+
+theorem N4n_eq : N4n = .par "w1'" "w2'" t4cap t4cap (Fn₄ "w1") (Fn₄ "w2") BN := rfl
+
+/-- A thread's decrement naming s, as a count. -/
+def cnt (d : Bool) (S s : Int) : Int := if d = true ∧ S = s then 1 else 0
+
+/-- A frame's sender and topic in range (L3's layout facts, as R4 and F₄_S take them). -/
+def InR (f : Int → Int) (p : Int) : Prop := 0 ≤ SvA f p ∧ SvA f p < 4 ∧ 0 ≤ TvA f p ∧ TvA f p < 4
+
+/-- THE INVARIANT: both threads at stages; the store re-split as world 1 · bucket · world 2 · frame; ℓb held exactly when a thread
+  is inside its critical section, never both; every bucket ≥ 0 and bucket + decrements naming s = g₀(q + s); a thread that read t
+  inside its critical section and has not decremented sees its sender's bucket = t. After the join: the body's frees. -/
+inductive R4 (p₁ p₂ q : Int) (l : Nat) (f₁ f₂ g₀ : Int → Int) (ρ₀ : String → Const₄) : Config₄ → Prop where
+  | par {T₁ T₂ : Tm₄} {fc₁ fc₂ g : Int → Int} {h₁ h₂ d₁ d₂ : Bool} {tr₁ tr₂ : Option Int} {σ₁ σ₂ σb σF : Store}
+      {L : List LockSt} :
+      Th "w1" p₁ l q f₁ T₁ fc₁ h₁ d₁ tr₁ → Th "w2" p₂ l q f₂ T₂ fc₂ h₂ d₂ tr₂ →
+      RegionAt p₁ 83 fc₁ σ₁ → RegionAt p₂ 83 fc₂ σ₂ → RegionAt q 4 g σb →
+      Store.Disj σ₁ (σb ⊎ (σ₂ ⊎ σF)) → Store.Disj σb (σ₂ ⊎ σF) → Store.Disj σ₂ σF →
+      Store.WF (σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF))) →
+      L[l]? = some (if h₁ || h₂ then .held q else .free q) → ¬ (h₁ = true ∧ h₂ = true) →
+      (∀ s, 0 ≤ s → s < 4 → 0 ≤ g (q + s) ∧ g (q + s) + cnt d₁ (SvA f₁ p₁) s + cnt d₂ (SvA f₂ p₂) s = g₀ (q + s)) →
+      (∀ t, tr₁ = some t → d₁ = false → h₁ = true → g (q + SvA f₁ p₁) = t) →
+      (∀ t, tr₂ = some t → d₂ = false → h₂ = true → g (q + SvA f₂ p₂) = t) →
+      R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ (.par t4cap t4cap T₁ T₂ (BN.cc ρ₀ ["w2'", "w1'"]), ⟨σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF)), L⟩)
+  | post {ρ : String → Const₄} {s : Store₄} {e : NT₄} :
+      (e = BN ∨ e = .op "u2" t4unit (.o2 .free) [.v "w2'"] .retU ∨ e = .retU) → R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ (e.cc ρ [], s)
+
+theorem set_get {L : List LockSt} {l : Nat} {x y : LockSt} (h : L[l]? = some x) : (L.set l y)[l]? = some y := by
+  have hl := (List.getElem?_eq_some_iff.1 h).1
+  simp [hl]
+
+theorem lock_cases {L : List LockSt} {l : Nat} {q : Int} {b : Bool}
+    (h : L[l]? = some (if b then .held q else .free q)) : L[l]? = some (.free q) ∨ L[l]? = some (.held q) := by
+  cases b <;> simp_all
+
+/-- The decrement keeps the count: sender S's bucket goes from t to t − 1 exactly as its decrements go up by one. -/
+theorem cnt_dec {g : Int → Int} {g₀ : Int → Int} {q S t : Int} {d₂ : Bool} {S₂ : Int} (ht : g (q + S) = t) (h0 : 0 < t)
+    (hc : ∀ s, 0 ≤ s → s < 4 → 0 ≤ g (q + s) ∧ g (q + s) + cnt false S s + cnt d₂ S₂ s = g₀ (q + s)) :
+    ∀ s, 0 ≤ s → s < 4 → 0 ≤ Function.update g (q + S) (t - 1) (q + s) ∧
+      Function.update g (q + S) (t - 1) (q + s) + cnt true S s + cnt d₂ S₂ s = g₀ (q + s) := by
+  intro s hs0 hs4
+  obtain ⟨h1, h2⟩ := hc s hs0 hs4
+  by_cases hs : S = s
+  · subst hs
+    simp only [Function.update_self, cnt] at h2 ⊢
+    simp at h2 ⊢
+    constructor <;> omega
+  · have hne : q + s ≠ q + S := by omega
+    simp only [Function.update_of_ne hne, cnt] at h2 ⊢
+    simp [hs] at h2 ⊢
+    exact ⟨h1, h2⟩
+
+theorem rot {a b c d : Store} (hab : Store.Disj a b) (hac : Store.Disj a c) (hbc : Store.Disj b c) :
+    a ⊎ (b ⊎ (c ⊎ d)) = c ⊎ (b ⊎ (a ⊎ d)) := by
+  rw [swap12 hab, swap12 (c := d) hac, swap12 hbc]
+
+set_option maxHeartbeats 1000000 in
+/-- The invariant is preserved by every ⟶₄ step: either side's (by `th_step`, with the store rotated for the right side), or the join. -/
+theorem R4_step {p₁ p₂ q : Int} {l : Nat} {f₁ f₂ g₀ : Int → Int} {ρ₀ : String → Const₄} (hr₁ : InR f₁ p₁)
+    (hr₂ : InR f₂ p₂) {c c' : Config₄} (hr : R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ c) (hs : Step₄ c c') :
+    R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ c' := by
+  cases hr with
+  | @par T₁ T₂ fc₁ fc₂ g h₁ h₂ d₁ d₂ tr₁ tr₂ σ₁ σ₂ σb σF L hT₁ hT₂ hR1 hR2 hRb D1 D2 D3 hwf hLk hmx hcnt htr1 htr2 =>
+    have hLc := lock_cases hLk
+    cases hs with
+    | @parL _ _ _ T₁' _ _ _ s' h =>
+      have hh₁ : h₁ = true → L[l]? = some (.held q) := fun e => by rw [hLk, e]; simp
+      obtain ⟨fc', h', d', tr', σm', σb', g', L', hT', rfl, hm', hb', hd1', hd2', hwf', heff⟩ :=
+        th_step (Or.inl rfl) hr₁ hT₁ hR1 hRb D1 D2 hwf hLc hh₁ h
+      rcases heff with ⟨rfl, rfl, rfl, rfl, htr⟩ | ⟨hf, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩ |
+        ⟨t, rfl, rfl, rfl, rfl, rfl, rfl, rfl, ht, rfl⟩
+      · refine R4.par hT' hT₂ hm' hR2 hb' hd1' hd2' D3 hwf' hLk hmx hcnt ?_ htr2
+        rcases htr with rfl | ⟨rfl, -, rfl⟩
+        · exact htr1
+        · intro t ht _ _; simp at ht; exact ht
+      · have : h₂ = false := by rw [hf] at hLk; cases h₂ <;> simp_all
+        subst this
+        exact R4.par hT' hT₂ hm' hR2 hb' hd1' hd2' D3 hwf' (by simpa using set_get hf) (by simp) hcnt
+          (fun _ h => by simp at h) htr2
+      · have : h₂ = false := by cases h₂ <;> simp_all
+        subst this
+        exact R4.par hT' hT₂ hm' hR2 hb' hd1' hd2' D3 hwf' (by simpa using set_get hLk) (by simp) hcnt
+          (fun _ _ _ h => by simp at h) htr2
+      · have : h₂ = false := by cases h₂ <;> simp_all
+        subst this
+        exact R4.par hT' hT₂ hm' hR2 hb' hd1' hd2' D3 hwf' hLk (by simp) (cnt_dec (htr1 t rfl rfl rfl) ht hcnt)
+          (fun _ _ h => by simp at h) (fun _ _ _ h => by simp at h)
+    | @parR _ _ _ _ T₂' _ _ s' h =>
+      have hh₂ : h₂ = true → L[l]? = some (.held q) := fun e => by rw [hLk, e]; simp
+      obtain ⟨h1b, h12, h1F⟩ : Store.Disj σ₁ σb ∧ Store.Disj σ₁ σ₂ ∧ Store.Disj σ₁ σF := by
+        simp only [Store.disj_union_right] at D1; exact ⟨D1.1, D1.2.1, D1.2.2⟩
+      obtain ⟨hb2, hbF⟩ : Store.Disj σb σ₂ ∧ Store.Disj σb σF := by
+        simp only [Store.disj_union_right] at D2; exact D2
+      have hrot := rot (d := σF) h1b h12 hb2
+      have E1 : Store.Disj σ₂ (σb ⊎ (σ₁ ⊎ σF)) := by
+        simp only [Store.disj_union_right]; exact ⟨disj_symm hb2, disj_symm h12, D3⟩
+      have E2 : Store.Disj σb (σ₁ ⊎ σF) := by simp only [Store.disj_union_right]; exact ⟨disj_symm h1b, hbF⟩
+      rw [hrot] at h hwf
+      obtain ⟨fc', h', d', tr', σm', σb', g', L', hT', rfl, hm', hb', hd1', hd2', hwf', heff⟩ :=
+        th_step (Or.inr rfl) hr₂ hT₂ hR2 hRb E1 E2 hwf hLc hh₂ h
+      obtain ⟨k2b, k21, k2F⟩ : Store.Disj σm' σb' ∧ Store.Disj σm' σ₁ ∧ Store.Disj σm' σF := by
+        simp only [Store.disj_union_right] at hd1'; exact ⟨hd1'.1, hd1'.2.1, hd1'.2.2⟩
+      obtain ⟨kb1, kbF⟩ : Store.Disj σb' σ₁ ∧ Store.Disj σb' σF := by
+        simp only [Store.disj_union_right] at hd2'; exact hd2'
+      have hback := rot (d := σF) k2b k21 kb1
+      have F1 : Store.Disj σ₁ (σb' ⊎ (σm' ⊎ σF)) := by
+        simp only [Store.disj_union_right]; exact ⟨disj_symm kb1, disj_symm k21, h1F⟩
+      have F2 : Store.Disj σb' (σm' ⊎ σF) := by simp only [Store.disj_union_right]; exact ⟨disj_symm k2b, kbF⟩
+      rw [hback] at hwf' ⊢
+      have hcnt' : ∀ {g'' : Int → Int} {d₂'' : Bool},
+          (∀ s, 0 ≤ s → s < 4 → 0 ≤ g'' (q + s) ∧ g'' (q + s) + cnt d₂'' (SvA f₂ p₂) s + cnt d₁ (SvA f₁ p₁) s = g₀ (q + s)) →
+          (∀ s, 0 ≤ s → s < 4 → 0 ≤ g'' (q + s) ∧ g'' (q + s) + cnt d₁ (SvA f₁ p₁) s + cnt d₂'' (SvA f₂ p₂) s = g₀ (q + s)) :=
+        fun h s a b => ⟨(h s a b).1, by have := (h s a b).2; omega⟩
+      have hcntS : ∀ s, 0 ≤ s → s < 4 → 0 ≤ g (q + s) ∧ g (q + s) + cnt d₂ (SvA f₂ p₂) s + cnt d₁ (SvA f₁ p₁) s = g₀ (q + s) :=
+        fun s a b => ⟨(hcnt s a b).1, by have := (hcnt s a b).2; omega⟩
+      rcases heff with ⟨rfl, rfl, rfl, rfl, htr⟩ | ⟨hf, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩ |
+        ⟨t, rfl, rfl, rfl, rfl, rfl, rfl, rfl, ht, rfl⟩
+      · refine R4.par hT₁ hT' hR1 hm' hb' F1 F2 k2F hwf' hLk hmx hcnt htr1 ?_
+        rcases htr with rfl | ⟨rfl, -, rfl⟩
+        · exact htr2
+        · intro t ht _ _; simp at ht; exact ht
+      · have : h₁ = false := by rw [hf] at hLk; cases h₁ <;> simp_all
+        subst this
+        exact R4.par hT₁ hT' hR1 hm' hb' F1 F2 k2F hwf' (by simpa using set_get hf) (by simp) hcnt
+          (fun _ _ _ h => by simp at h) (fun _ h => by simp at h)
+      · have : h₁ = false := by cases h₁ <;> simp_all
+        subst this
+        exact R4.par hT₁ hT' hR1 hm' hb' F1 F2 k2F hwf' (by simpa using set_get hLk) (by simp) hcnt
+          htr1 (fun _ _ _ h => by simp at h)
+      · have : h₁ = false := by cases h₁ <;> simp_all
+        subst this
+        exact R4.par hT₁ hT' hR1 hm' hb' F1 F2 k2F hwf' hLk (by simp)
+          (hcnt' (cnt_dec (htr2 t rfl rfl rfl) ht hcntS)) (fun _ _ _ h => by simp at h) (fun _ _ h => by simp at h)
+    | @parDone _ _ a₁ a₂ v₁ v₂ _ _ hv₁ hv₂ =>
+      obtain ⟨-, hc₁⟩ := th_ret hT₁ rfl
+      obtain ⟨-, hc₂⟩ := th_ret hT₂ rfl
+      obtain ⟨c₁, rfl⟩ := hc₁ v₁ hv₁
+      obtain ⟨c₂, rfl⟩ := hc₂ v₂ hv₂
+      have e1 := NT₄.cc_subst ρ₀ "w2'" c₂ ["w1'"] (by simp) BN []
+      simp only [List.nil_append, List.length_nil] at e1
+      rw [e1, NT₄.cc_subst0]
+      exact R4.post (Or.inl rfl)
+  | @post ρ s e he =>
+    obtain ⟨T', s'⟩ := c'
+    rcases he with rfl | rfl | rfl
+    · obtain ⟨vs, c, -, -, rfl⟩ := cc_op_step hs
+      exact R4.post (Or.inr (Or.inl rfl))
+    · obtain ⟨vs, c, -, -, rfl⟩ := cc_op_step hs
+      exact R4.post (Or.inr (Or.inr rfl))
+    · simp only [NT₄.cc] at hs; cases hs
+
+theorem R4_steps {p₁ p₂ q : Int} {l : Nat} {f₁ f₂ g₀ : Int → Int} {ρ₀ : String → Const₄} (hr₁ : InR f₁ p₁)
+    (hr₂ : InR f₂ p₂) {c c' : Config₄} (h : Steps₄ c c') (hr : R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ c) :
+    R4 p₁ p₂ q l f₁ f₂ g₀ ρ₀ c' := by
+  induction h with
+  | refl => exact hr
+  | step hs _ ih => exact ih (R4_step hr₁ hr₂ hr hs)
+
+/-! ## The initial configuration: N4 closed at w₂ = ⟨p₂⟩, w₁ = ⟨p₁⟩, ℓb = ⟨l⟩ (its free variables #0, #1, #2). -/
+
+def closeN4 (p₁ p₂ : Int) (l : Nat) : Tm₄ := ((N4.subst 0 (capv p₂)).subst 0 (capv p₁)).subst 0 (lockv l)
+
+def ρN4 (p₁ p₂ : Int) (l : Nat) : String → Const₄ :=
+  Function.update (Function.update (Function.update (fun _ => .c2 .unit) "w2" (.c2 (.cap p₂))) "w1" (.c2 (.cap p₁)))
+    "lb" (.lockv l)
+
+theorem closeN4_eq (p₁ p₂ : Int) (l : Nat) : closeN4 p₁ p₂ l = N4n.cc (ρN4 p₁ p₂ l) [] := by
+  have h0 : N4 = N4n.cc (fun _ => .c2 .unit) ["w2", "w1", "lb"] :=
+    NT₄.c_eq_cc _ N4n _ (by simp [N4n, Fn₄, RD32₄, EXIT₄, EMIT₄, NT₄.fvIn, NA.fvIn, add, sub, mul, le, lt, eq, conj])
+  have e1 := NT₄.cc_subst (fun _ => .c2 .unit) "w2" (.c2 (.cap p₂)) ["w1", "lb"] (by simp) N4n []
+  have e2 := NT₄.cc_subst (Function.update (fun _ => .c2 .unit) "w2" (.c2 (.cap p₂))) "w1" (.c2 (.cap p₁)) ["lb"]
+    (by simp) N4n []
+  have e3 := NT₄.cc_subst (Function.update (Function.update (fun _ => .c2 .unit) "w2" (.c2 (.cap p₂))) "w1" (.c2 (.cap p₁)))
+    "lb" (.lockv l) [] (by simp) N4n []
+  simp only [List.nil_append, List.length_nil] at e1 e2 e3
+  unfold closeN4 ρN4
+  rw [h0]
+  simp only [capv, lockv]
+  rw [e1, e2, e3]
+
+theorem cc_par (ρ : String → Const₄) (Γ : List String) (x₁ x₂ : String) (τ₁ τ₂ : Ty₄) (e₁ e₂ e : NT₄) :
+    (NT₄.par x₁ x₂ τ₁ τ₂ e₁ e₂ e).cc ρ Γ = .par τ₁ τ₂ (e₁.cc ρ Γ) (e₂.cc ρ Γ) (e.cc ρ (x₂ :: x₁ :: Γ)) := rfl
+
+theorem thread0 {w : String} (hw : WName w) (p₁ p₂ : Int) (l : Nat) (q : Int) (f : Int → Int) (pw : Int)
+    (hpw : ρN4 p₁ p₂ l w = .c2 (.cap pw)) :
+    (Fn₄ w).cc (ρN4 p₁ p₂ l) [] = (sF0 w).cc (Env w pw l q f 0) [] := by
+  refine NT₄.cc_congr (S := fun x => x = w ∨ x = "lb") ?_ (Fn₄ w) [] ?_
+  · rintro y (rfl | rfl)
+    · rw [hpw, Env_w hw]
+    · simp [ρN4, Env]
+  · rcases hw with rfl | rfl <;>
+      simp [Fn₄, RD32₄, EXIT₄, EMIT₄, NT₄.fvIn, NA.fvIn, add, sub, mul, le, lt, eq, conj]
+
+theorem R4_init {p₁ p₂ q : Int} {l : Nat} {f₁ f₂ g₀ : Int → Int} {σ₁ σ₂ σb σF : Store} {L : List LockSt}
+    (h1 : RegionAt p₁ 83 f₁ σ₁) (h2 : RegionAt p₂ 83 f₂ σ₂) (hb : RegionAt q 4 g₀ σb)
+    (hg : ∀ s, 0 ≤ s → s < 4 → 0 ≤ g₀ (q + s))
+    (D1 : Store.Disj σ₁ (σb ⊎ (σ₂ ⊎ σF))) (D2 : Store.Disj σb (σ₂ ⊎ σF)) (D3 : Store.Disj σ₂ σF)
+    (hwf : Store.WF (σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF)))) (hL : L[l]? = some (.free q)) :
+    R4 p₁ p₂ q l f₁ f₂ g₀ (ρN4 p₁ p₂ l) (closeN4 p₁ p₂ l, ⟨σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF)), L⟩) := by
+  rw [closeN4_eq, N4n_eq, cc_par, thread0 (Or.inl rfl) p₁ p₂ l q f₁ p₁ (by simp [ρN4]),
+    thread0 (Or.inr rfl) p₁ p₂ l q f₂ p₂ (by simp [ρN4])]
+  exact R4.par Th.f0 Th.f0 h1 h2 hb D1 D2 D3 hwf (by simpa using hL) (by simp)
+    (fun s a b => ⟨hg s a b, by simp [cnt]⟩) (fun _ h => by simp at h) (fun _ h => by simp at h)
+
+/-- **N4-V (run_tokens₄, OBJECT-L4 H5 (a); DECLARATIONS addendum 5).** From N4 closed at its two worlds and ℓb, over a store
+  holding world 1 (83 cells, f₁), the bucket region (g₀, every bucket ≥ 0), world 2 (f₂) and any frame, with ℓb free over the
+  bucket region and each frame's sender and topic in range: at EVERY ⟶₄*-reachable configuration whose two `par` sides are `ret`
+  (the configuration the join steps from), each world holds `postF₄` for the token its thread read, and for every sender s the emits
+  naming s across both threads number at most s's initial tokens g₀(q + s). -/
+theorem N4_V {p₁ p₂ q : Int} {l : Nat} {f₁ f₂ g₀ : Int → Int} {σ₁ σ₂ σb σF : Store} {L : List LockSt}
+    (hr₁ : InR f₁ p₁) (hr₂ : InR f₂ p₂)
+    (h1 : RegionAt p₁ 83 f₁ σ₁) (h2 : RegionAt p₂ 83 f₂ σ₂) (hb : RegionAt q 4 g₀ σb)
+    (hg : ∀ s, 0 ≤ s → s < 4 → 0 ≤ g₀ (q + s))
+    (D1 : Store.Disj σ₁ (σb ⊎ (σ₂ ⊎ σF))) (D2 : Store.Disj σb (σ₂ ⊎ σF)) (D3 : Store.Disj σ₂ σF)
+    (hwf : Store.WF (σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF)))) (hL : L[l]? = some (.free q)) :
+    ∀ c, Steps₄ (closeN4 p₁ p₂ l, ⟨σ₁ ⊎ (σb ⊎ (σ₂ ⊎ σF)), L⟩) c →
+      ∀ a₁ a₂ e, c.1 = .par t4cap t4cap (.ret a₁) (.ret a₂) e →
+      ∃ t₁ t₂ σ₁' σ₂' σb' σF', c.2.σ = σ₁' ⊎ (σb' ⊎ (σ₂' ⊎ σF')) ∧
+        RegionAt p₁ 83 (postF₄ f₁ p₁ t₁) σ₁' ∧ RegionAt p₂ 83 (postF₄ f₂ p₂ t₂) σ₂' ∧
+        ∀ s, 0 ≤ s → s < 4 →
+          (if EmitsT f₁ p₁ t₁ ∧ SvA f₁ p₁ = s then (1 : Int) else 0) +
+            (if EmitsT f₂ p₂ t₂ ∧ SvA f₂ p₂ = s then 1 else 0) ≤ g₀ (q + s) := by
+  intro c hc a₁ a₂ e he
+  have hr := R4_steps hr₁ hr₂ hc (R4_init h1 h2 hb hg D1 D2 D3 hwf hL)
+  cases hr with
+  | @par T₁ T₂ fc₁ fc₂ g h₁ h₂ d₁ d₂ tr₁ tr₂ σ₁' σ₂' σb' σF' L' hT₁ hT₂ hR1 hR2 hRb _ _ _ _ _ _ hcnt _ _ =>
+    simp only [Tm₄.par.injEq] at he
+    obtain ⟨-, -, e1, e2, -⟩ := he
+    obtain ⟨⟨t₁, rfl, hd₁, -⟩, -⟩ := th_ret hT₁ e1
+    obtain ⟨⟨t₂, rfl, hd₂, -⟩, -⟩ := th_ret hT₂ e2
+    refine ⟨t₁, t₂, σ₁', σ₂', σb', σF', rfl, hR1, hR2, fun s a b => ?_⟩
+    obtain ⟨hg0, hsum⟩ := hcnt s a b
+    simp only [cnt, hd₁, hd₂] at hsum
+    omega
+  | @post ρ s e' he' =>
+    rcases he' with rfl | rfl | rfl <;> simp [NT₄.cc, BN] at he
 
 end VIRL4
