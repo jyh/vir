@@ -34,3 +34,11 @@ import VIRL4
 #print axioms VIRL4.shared_take
 #print axioms VIRL4.shared_put
 #print axioms VIRL4.shared_append
+#print axioms VIRL4.acquire₄_rule
+#print axioms VIRL4.release₄_rule
+#print axioms VIRL4.newlock₄_rule
+#print axioms VIRL4.op₄_rule
+#print axioms VIRL4.safe₄_op2
+#print axioms VIRL4.INC_triple
+#print axioms VIRL4.TAIL_triple
+#print axioms VIRL4.N1_S

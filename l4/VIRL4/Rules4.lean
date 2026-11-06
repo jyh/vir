@@ -484,4 +484,60 @@ theorem op2₄_rule {I : Int → Assn} {P₄ : Assn₄} {o : Op} {as : List Atom
   | zero => trivial
   | succ n => exact safe₄_op2 hvs hws ho (hP L σ hp) (fun v σq hq => hk v L σ hp n L σq hq)
 
+/-! ## The lock rules and the lifted op rule as TRIPLES (the index bookkeeping hidden). -/
+
+/-- A lock-table fact that the environment cannot falsify: lock k has base p. -/
+theorem stable_base (k : Nat) (p : Int) : Stable (fun L _ => (L.map LockSt.base)[k]? = some p) :=
+  fun _ _ _ hx h => base_of_ext h hx
+
+theorem acquire₄_rule {I : Int → Assn} {P : Assn₄} {l : Nat} {p : Int} {τ : Ty₄} {e : Tm₄} {R : Atom₄ → Assn₄}
+    (hl : ∀ L σ, P L σ → (L.map LockSt.base)[l]? = some p) (hP : Stable P)
+    (hk : Triple₄ I (fun L σ' => ∃ σ σI, Store.Disj σ σI ∧ σ' = σ ⊎ σI ∧ P L σ ∧ OwnsRegion p σI ∧ I p σI)
+      (e.subst 0 (capv p)) R) :
+    Triple₄ I P (.letOp .acquire [lockv l] τ e) R := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n =>
+    exact safe₄_acquire (hl L σ hp) (fun L' σI hx hd ho hi => hk n L' (σ ⊎ σI) ⟨σ, σI, hd, rfl, hP L L' σ hx hp, ho, hi⟩)
+
+theorem release₄_rule {I : Int → Assn} {P P' : Assn₄} {l : Nat} {p : Int} {τ : Ty₄} {e : Tm₄} {R : Atom₄ → Assn₄}
+    (hl : ∀ L σ, P L σ → (L.map LockSt.base)[l]? = some p)
+    (hP : ∀ L σ, P L σ → ∃ σ₀ σI, Store.Disj σ₀ σI ∧ σ = σ₀ ⊎ σI ∧ OwnsRegion p σI ∧ I p σI ∧ P' L σ₀)
+    (hP' : Stable P') (hk : Triple₄ I P' (e.subst 0 unitv) R) :
+    Triple₄ I P (.letOp .release [lockv l, capv p] τ e) R := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n =>
+    obtain ⟨σ₀, σI, hd, rfl, ho, hi, hp'⟩ := hP L σ hp
+    exact safe₄_release (hl L _ hp) hd ho hi (fun L' hx => hk n L' σ₀ (hP' L L' σ₀ hx hp'))
+
+theorem newlock₄_rule {I : Int → Assn} {P P' : Assn₄} {p : Int} {τ : Ty₄} {e : Tm₄} {R : Atom₄ → Assn₄}
+    (hP : ∀ L σ, P L σ → ∃ σ₀ σI, Store.Disj σ₀ σI ∧ σ = σ₀ ⊎ σI ∧ OwnsRegion p σI ∧ I p σI ∧ P' L σ₀)
+    (hP' : Stable P')
+    (hk : ∀ k, Triple₄ I (fun L σ => P' L σ ∧ (L.map LockSt.base)[k]? = some p) (e.subst 0 (lockv k)) R) :
+    Triple₄ I P (.letOp .newlock [capv p] τ e) R := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n =>
+    obtain ⟨σ₀, σI, hd, rfl, ho, hi, hp'⟩ := hP L σ hp
+    exact safe₄_newlock hd ho hi (fun L' k hx hb => hk k n L' σ₀ ⟨hP' L L' σ₀ hx hp', hb⟩)
+
+/-- The lifted op rule with the precondition's L2 OpTriple chosen PER lock table (so a lock-table fact can ride in its frame). -/
+theorem op₄_rule {I : Int → Assn} {P₄ : Assn₄} {o : Op} {as : List Atom₄} {τ : Ty₄} {e : Tm₄} {R : Atom₄ → Assn₄}
+    {vs : List Atom₄} {ws : List Atom₂} {Post : Atom₄ → Assn₄}
+    (hvs : Atom₄.evalL as = some vs) (hws : vs.mapM lowerV = some ws)
+    (ho : ∀ L σ, P₄ L σ → ∃ (Pl : Assn) (Ql : Atom₂ → Assn), OpTriple Pl o ws Ql ∧ Pl σ ∧
+      ∀ v σq, Ql v σq → Post (raiseV v) L σq)
+    (hk : ∀ v, Triple₄ I (Post v) (e.subst 0 v) R) :
+    Triple₄ I P₄ (.letOp (.o2 o) as τ e) R := by
+  intro n L σ hp
+  cases n with
+  | zero => trivial
+  | succ n =>
+    obtain ⟨Pl, Ql, hot, hpl, hpost⟩ := ho L σ hp
+    exact safe₄_op2 hvs hws hot hpl (fun v σq hq => hk (raiseV v) n L σq (hpost v σq hq))
+
 end VIRL4
