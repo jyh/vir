@@ -382,4 +382,92 @@ theorem substC₄ : ∀ {Γ₁ Γ : Ctx₄} {Δ₁ Δ : List Bool} {Ω e τ'} (p
           (substV₄ (hC.trans (hB.trans hl)) h₂ (fits_cap₄ p)) ?_
         exact substC₄ (Γ₁ := τ₂ :: τ₁ :: Γ₁) (Δ₁ := _ :: _ :: D₁) p (by simp [hD, hB, hl]) h
 
+/-! ## Part (ii), the atoms: values, evaluation soundness, canonical forms. -/
+
+def IsVal₄ : Atom₄ → Prop
+  | .const _ | .lam _ _ | .fix _ _ _ => True
+  | .pair a₁ a₂ => IsVal₄ a₁ ∧ IsVal₄ a₂
+  | .inl _ a | .inr _ a => IsVal₄ a
+  | _ => False
+
+/-- An RTA₄-typed atom carries no capability (⟨p⟩ is typed only by RT₄'s operand forms). -/
+theorem atom_noCap₄ : ∀ {Γ a τ}, RTA₄ Γ a τ → hasCap₄ τ = false
+  | _, _, _, .var _ h => h
+  | _, _, _, .int => rfl
+  | _, _, _, .bool => rfl
+  | _, _, _, .unit => rfl
+  | _, _, _, .lockC => rfl
+  | _, _, _, .prim (p := p) _ => by cases p <;> rfl
+  | _, _, _, .lam h₁ h₂ _ _ _ => by simp [hasCap₄, h₁, h₂]
+  | _, _, _, .fix h₁ h₂ _ _ _ => by simp [hasCap₄, h₁, h₂]
+  | _, _, _, .pair h₁ h₂ => by simp [hasCap₄, atom_noCap₄ h₁, atom_noCap₄ h₂]
+  | _, _, _, .fst h => by have := atom_noCap₄ h; simp [hasCap₄] at this; exact this.1
+  | _, _, _, .snd h => by have := atom_noCap₄ h; simp [hasCap₄] at this; exact this.2
+  | _, _, _, .inl h₂ h => by simp [hasCap₄, atom_noCap₄ h, h₂]
+  | _, _, _, .inr h₁ h => by simp [hasCap₄, atom_noCap₄ h, h₁]
+
+theorem prim_sound {p : L1.Prim} {cs : List L1.Const} {c : L1.Const} (h : L1.Prim.interp p cs = some c) :
+    L1.Const.ty c = L1.Prim.res p := by
+  cases p <;> (rcases cs with _ | ⟨c₁, _ | ⟨c₂, _ | ⟨_, _⟩⟩⟩) <;> (try cases c₁) <;> (try cases c₂) <;>
+    simp_all [L1.Prim.interp, L1.Prim.res] <;> subst_vars <;> rfl
+
+theorem const_ofL1_typed {Γ : Ctx₄} {c : L1.Const} {b : L1.BTy} (h : L1.Const.ty c = b) :
+    RTA₄ Γ (.const (.c2 (Const.ofL1 c))) (.base (BTy₄.ofB2 (BTy.ofL1 b))) := by
+  cases c <;> subst h <;> first | exact .int | exact .bool
+
+mutual
+theorem eval_sound₄ : ∀ (a : Atom₄) {τ v}, RTA₄ [] a τ → Atom₄.eval a = some v → IsVal₄ v ∧ RTA₄ [] v τ
+  | .var _, _, _, .var h _, _ => by simp at h
+  | .const _, _, _, .int, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, .int⟩
+  | .const _, _, _, .bool, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, .bool⟩
+  | .const _, _, _, .unit, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, .unit⟩
+  | .const _, _, _, .lockC, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, .lockC⟩
+  | .prim p as, _, _, .prim _, h => by
+    simp only [Atom₄.eval, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨vs, -, cs, -, c, hc, rfl⟩ := h
+    exact ⟨trivial, const_ofL1_typed (prim_sound hc)⟩
+  | .lam τ e, _, _, ht, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, ht⟩
+  | .fix τ₁ τ₂ e, _, _, ht, h => by simp [Atom₄.eval] at h; subst h; exact ⟨trivial, ht⟩
+  | .pair a₁ a₂, _, _, .pair h₁ h₂, h => by
+    simp only [Atom₄.eval, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨v₁, hv₁, v₂, hv₂, rfl⟩ := h
+    obtain ⟨i₁, t₁⟩ := eval_sound₄ a₁ h₁ hv₁
+    obtain ⟨i₂, t₂⟩ := eval_sound₄ a₂ h₂ hv₂
+    exact ⟨⟨i₁, i₂⟩, .pair t₁ t₂⟩
+  | .fst a, _, _, .fst ht, h => by
+    simp only [Atom₄.eval, Option.bind_eq_some_iff] at h
+    obtain ⟨w, hw, hv⟩ := h
+    obtain ⟨iw, tw⟩ := eval_sound₄ a ht hw
+    cases w <;> simp at hv
+    subst hv
+    cases tw with
+    | pair t₁ _ => exact ⟨iw.1, t₁⟩
+  | .snd a, _, _, .snd ht, h => by
+    simp only [Atom₄.eval, Option.bind_eq_some_iff] at h
+    obtain ⟨w, hw, hv⟩ := h
+    obtain ⟨iw, tw⟩ := eval_sound₄ a ht hw
+    cases w <;> simp at hv
+    subst hv
+    cases tw with
+    | pair _ t₂ => exact ⟨iw.2, t₂⟩
+  | .inl τ a, _, _, .inl hc ht, h => by
+    simp only [Atom₄.eval, Option.map_eq_some_iff] at h
+    obtain ⟨w, hw, rfl⟩ := h
+    obtain ⟨iw, tw⟩ := eval_sound₄ a ht hw
+    exact ⟨iw, .inl hc tw⟩
+  | .inr τ a, _, _, .inr hc ht, h => by
+    simp only [Atom₄.eval, Option.map_eq_some_iff] at h
+    obtain ⟨w, hw, rfl⟩ := h
+    obtain ⟨iw, tw⟩ := eval_sound₄ a ht hw
+    exact ⟨iw, .inr hc tw⟩
+end
+
+theorem canon_int₄ {v : Atom₄} (hv : IsVal₄ v) (h : RTA₄ [] v t4int) : ∃ k, v = c4 k := by
+  cases v <;> simp [IsVal₄] at hv <;> cases h
+  all_goals first | exact ⟨_, rfl⟩ | (rename_i h; simp at h)
+
+theorem canon_lock₄ {v : Atom₄} (hv : IsVal₄ v) (h : RTA₄ [] v t4lock) : ∃ l, v = lockv l := by
+  cases v <;> simp [IsVal₄] at hv <;> cases h
+  all_goals first | exact ⟨_, rfl⟩ | (rename_i h; simp at h)
+
 end VIRL4
