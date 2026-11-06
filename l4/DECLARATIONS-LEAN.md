@@ -71,3 +71,17 @@ changes. The pieces `Safe.lean` defines, named here before any proof:
 - **`safe₄ I n e L σ Q`**: at n + 1, a `ret a` evaluates and satisfies Q at EVERY `Ext`-extension of L; and from every admissible global
   state (an `Ext`-extension of L, a `Shared` part, any disjoint frame, the whole L2 store WF) the configuration does not fault (`Faults₄`)
   and every ⟶₄ step lands in an admissible state with the frame untouched and the thread `safe₄` at n.
+
+## ADDENDUM 3 (2026-11-06, the 26th vir head, BEFORE `VIRL4/NoRace.lean` exists): Q6's typed configuration, and its scope
+- **A typed configuration is `RT₄ [] [] Ω e τ` with the store owning exactly Ω's regions** (L2's `OwnAll`). `RT₄` is L2's runtime
+  typing `RT` restated for `Tm₄`: ⊢₄'s rules plus the runtime operand forms (a capability constant ⟨p⟩ at `load`/`store`/`free`/
+  `newlock`/`release` with p ∈ Ω, `ret ⟨p⟩` owning [p]); `Ω` splits across `let` and THREE WAYS across `par` (e₁ · e₂ · the body), as Δ
+  does. Its atom typing is mutual with it (`RTA₄`: ⊢₄'s atom rules, λ/fix bodies typed by `RT₄` with Ω = [], plus a lock constant
+  ⟨ℓ⟩ : lock), because a lock handle is a non-linear value that substitution can place inside a λ.
+- **The race:** `Race e p` = some `par` reachable through evaluation contexts (a `let` head, either `par` side) whose two sides each have
+  an ENABLED access (a `load`/`store` at the head, through ⟨p⟩). **Q6 as built: `RT₄ [] [] Ω e τ → OwnAll Ω σ → ¬ Race e p`**, by region
+  base. A cell-level race between two DIFFERENT bases is excluded by the store's well-formedness (regions are disjoint) and is not
+  restated. "Outside a held lock" needs no clause: a thread inside a critical section owns the region, so the other side cannot hold ⟨p⟩.
+- **Declared scope, so no reader takes it for more:** this is Q6 FOR A TYPED CONFIGURATION, the prediction's own words. That every
+  ⟶₄*-reachable configuration of a ⊢₄-typed program is RT₄-typed (PRESERVATION through ⟶₄, with acquire adding a base to Ω and release
+  removing one) is the stronger reading and is OWED, a separate row (STATUS-vir 164's second half). It is not claimed by this file.
