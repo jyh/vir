@@ -470,4 +470,314 @@ theorem canon_lock₄ {v : Atom₄} (hv : IsVal₄ v) (h : RTA₄ [] v t4lock) :
   cases v <;> simp [IsVal₄] at hv <;> cases h
   all_goals first | exact ⟨_, rfl⟩ | (rename_i h; simp at h)
 
+/-! ## Part (ii), the configurations: preservation through ⟶₄ (addendum 6). -/
+
+/-- The trivial invariant: the shared part only records which regions the free locks own. -/
+def Itriv : Int → Assn := fun _ _ => True
+
+/-- A thread's typed configuration: its regions σ, the free locks' regions σS, any frame σF. -/
+def TC (L : List LockSt) (σ σS σF : Store) : Prop :=
+  Store.Disj σ (σS ⊎ σF) ∧ Store.Disj σS σF ∧ Shared Itriv L σS ∧ Store.WF (σ ⊎ (σS ⊎ σF))
+
+theorem decide_tcap_false₄ {t : Ty₄} (h : hasCap₄ t = false) : decide (t = t4cap) = false := by
+  by_cases e : t = t4cap
+  · subst e; simp [hasCap₄, t4cap] at h
+  · simp [e]
+
+theorem tc_split {L : List LockSt} {σ₁ σ₂ σS σF : Store} (h12 : Store.Disj σ₁ σ₂) (htc : TC L (σ₁ ⊎ σ₂) σS σF) :
+    TC L σ₁ σS (σ₂ ⊎ σF) ∧ Store.Disj σ₂ σF ∧ (σ₁ ⊎ σ₂) ⊎ (σS ⊎ σF) = σ₁ ⊎ (σS ⊎ (σ₂ ⊎ σF)) := by
+  obtain ⟨hd, hSF, hsh, hwf⟩ := htc
+  obtain ⟨h1, h2⟩ := (Store.disj_union_left _ _ _).1 hd
+  obtain ⟨h1S, h1F⟩ := (Store.disj_union_right _ _ _).1 h1
+  obtain ⟨h2S, h2F⟩ := (Store.disj_union_right _ _ _).1 h2
+  have heq : (σ₁ ⊎ σ₂) ⊎ (σS ⊎ σF) = σ₁ ⊎ (σS ⊎ (σ₂ ⊎ σF)) := by
+    rw [Store.union_assoc, swap12 h2S]
+  refine ⟨⟨(Store.disj_union_right _ _ _).2 ⟨h1S, (Store.disj_union_right _ _ _).2 ⟨h12, h1F⟩⟩,
+    (Store.disj_union_right _ _ _).2 ⟨disj_symm h2S, hSF⟩, hsh, heq ▸ hwf⟩, h2F, heq⟩
+
+theorem tc_join {L : List LockSt} {σ₁ σ₂ σS σF : Store} (htc : TC L σ₁ σS (σ₂ ⊎ σF)) (h2F : Store.Disj σ₂ σF) :
+    Store.Disj σ₁ σ₂ ∧ TC L (σ₁ ⊎ σ₂) σS σF ∧ σ₁ ⊎ (σS ⊎ (σ₂ ⊎ σF)) = (σ₁ ⊎ σ₂) ⊎ (σS ⊎ σF) := by
+  obtain ⟨hd, hSF, hsh, hwf⟩ := htc
+  obtain ⟨h1S, h1r⟩ := (Store.disj_union_right _ _ _).1 hd
+  obtain ⟨h12, h1F⟩ := (Store.disj_union_right _ _ _).1 h1r
+  obtain ⟨hS2, hSF'⟩ := (Store.disj_union_right _ _ _).1 hSF
+  have heq : σ₁ ⊎ (σS ⊎ (σ₂ ⊎ σF)) = (σ₁ ⊎ σ₂) ⊎ (σS ⊎ σF) := by
+    rw [Store.union_assoc, swap12 (disj_symm hS2)]
+  refine ⟨h12, ⟨(Store.disj_union_left _ _ _).2 ⟨(Store.disj_union_right _ _ _).2 ⟨h1S, h1F⟩,
+    (Store.disj_union_right _ _ _).2 ⟨disj_symm hS2, h2F⟩⟩, hSF', hsh, heq ▸ hwf⟩, heq⟩
+
+/-- Binding a `ret`'s value: a non-capability value by `substV₄`, a ⟨p⟩ by `substC₄` (the binder then owns p). -/
+theorem bind_one {Γ : Ctx₄} {Δ : List Bool} {Ω Ωa : List Int} {τ' τ : Ty₄} {e : Tm₄} {a v : Atom₄}
+    (h : RT₄ (τ' :: Γ) (decide (τ' = t4cap) :: Δ) Ω e τ) (ha : RT₄ [] [] Ωa (.ret a) τ') (hv : Atom₄.eval a = some v) :
+    RT₄ Γ Δ (Ωa ++ Ω) (e.subst 0 v) τ := by
+  cases ha with
+  | ret _ hat =>
+    obtain ⟨-, hwt⟩ := eval_sound₄ _ hat hv
+    rw [decide_tcap_false₄ (atom_noCap₄ hat)] at h
+    exact substV₄ (Γ₁ := []) (Δ₁ := []) rfl h (.inl hwt)
+  | retCap hΓ _ => simp at hΓ
+  | retCapC _ =>
+    simp [Atom₄.eval, capv] at hv; subst hv
+    rw [show decide (t4cap = t4cap) = true from decide_eq_true rfl] at h
+    exact substC₄ (Γ₁ := []) (Δ₁ := []) _ rfl h
+
+theorem op4_o2 {o : Op} {vs : List Atom₄} {s : Store₄} {v : Atom₄} {s' : Store₄} (h : opStep₄ (.o2 o) vs s = some (v, s')) :
+    ∃ ws w σ', vs.mapM lowerV = some ws ∧ opStep o ws s.σ = some (w, σ') ∧ v = raiseV w ∧ s' = ⟨σ', s.locks⟩ := by
+  simp only [opStep₄, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨ws, hws, ⟨w, σ'⟩, hop, he⟩ := h
+  simp only [Prod.mk.injEq] at he
+  exact ⟨ws, w, σ', hws, hop, he.1.symm, he.2.symm⟩
+
+theorem evalL_one {a : Atom₄} {vs : List Atom₄} (h : Atom₄.evalL [a] = some vs) :
+    ∃ w, Atom₄.eval a = some w ∧ vs = [w] := by
+  simp only [Atom₄.evalL] at h
+  cases ha : Atom₄.eval a <;> simp_all
+
+theorem evalL_two {a b : Atom₄} {vs : List Atom₄} (h : Atom₄.evalL [a, b] = some vs) :
+    ∃ w₁ w₂, Atom₄.eval a = some w₁ ∧ Atom₄.eval b = some w₂ ∧ vs = [w₁, w₂] := by
+  simp only [Atom₄.evalL] at h
+  cases ha : Atom₄.eval a <;> cases hb : Atom₄.eval b <;> simp_all
+
+theorem evalL_three {a b d : Atom₄} {vs : List Atom₄} (h : Atom₄.evalL [a, b, d] = some vs) :
+    ∃ w₁ w₂ w₃, Atom₄.eval a = some w₁ ∧ Atom₄.eval b = some w₂ ∧ Atom₄.eval d = some w₃ ∧ vs = [w₁, w₂, w₃] := by
+  simp only [Atom₄.evalL] at h
+  cases ha : Atom₄.eval a <;> cases hb : Atom₄.eval b <;> cases hd : Atom₄.eval d <;> simp_all
+
+set_option maxHeartbeats 2000000 in
+/-- **PRESERVATION through ⟶₄ (Q6-P, addendum 6), in frame form.** A step from a typed configuration (the thread owns exactly Ω's
+  regions, the free locks own theirs, any frame) lands in a typed configuration: Ω moves as the step's operation says. -/
+theorem pres₄ : ∀ {c c' : Config₄}, Step₄ c c' → ∀ {Ω τ σ σS σF}, RT₄ [] [] Ω c.1 τ → OwnAll Ω σ →
+    TC c.2.locks σ σS σF → c.2.σ = σ ⊎ (σS ⊎ σF) →
+    ∃ Ω' σ' σS', RT₄ [] [] Ω' c'.1 τ ∧ OwnAll Ω' σ' ∧ TC c'.2.locks σ' σS' σF ∧ c'.2.σ = σ' ⊎ (σS' ⊎ σF) := by
+  intro c c' h
+  induction h with
+  | letRet hv =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | letE hs hp hc h₁ h₂ =>
+      cases hs
+      exact ⟨_, σ, σS, bind_one h₂ h₁ hv, OwnAll.perm hp _ hown, htc, hσ⟩
+  | letStep _ ih =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | letE hs hp hc h₁ h₂ =>
+      cases hs
+      obtain ⟨σ₁, σ₂, h12, rfl, ho₁, ho₂⟩ := (OwnAll.append _ _ _).1 (OwnAll.perm hp _ hown)
+      obtain ⟨htc₁, h2F, heq⟩ := tc_split h12 htc
+      obtain ⟨Ω₁', σ₁', σS', ht₁', ho₁', htc', hσ'⟩ := ih h₁ ho₁ htc₁ (hσ.trans heq)
+      obtain ⟨h12', htcj, heq'⟩ := tc_join htc' h2F
+      exact ⟨Ω₁' ++ _, σ₁' ⊎ σ₂, σS', RT₄.letE .nil (List.Perm.refl _) hc ht₁' h₂,
+        (OwnAll.append _ _ _).2 ⟨σ₁', σ₂, h12', rfl, ho₁', ho₂⟩, htcj, hσ'.trans heq'⟩
+  | appLam hv₁ hv₂ =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | app _ h₁ h₂ =>
+      obtain ⟨-, hwt₁⟩ := eval_sound₄ _ h₁ hv₁
+      obtain ⟨-, hwt₂⟩ := eval_sound₄ _ h₂ hv₂
+      cases hwt₁ with
+      | lam _ _ hm hl hb =>
+        obtain rfl := mask_one hm hl
+        exact ⟨[], σ, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl hb (.inl hwt₂), hown, htc, hσ⟩
+  | appFix hv₁ hv₂ =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | app _ h₁ h₂ =>
+      obtain ⟨-, hwt₁⟩ := eval_sound₄ _ h₁ hv₁
+      obtain ⟨-, hwt₂⟩ := eval_sound₄ _ h₂ hv₂
+      have hfix := hwt₁
+      cases hwt₁ with
+      | fix _ _ hm hl hb =>
+        obtain rfl := mask_two hm hl
+        exact ⟨[], σ, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl
+          (substV₄ (Γ₁ := []) (Δ₁ := []) rfl hb (.inl hwt₂)) (.inl hfix), hown, htc, hσ⟩
+  | iteT _ _ =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | ite _ h₁ _ => exact ⟨Ω, σ, σS, h₁, hown, htc, hσ⟩
+  | iteF _ _ =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | ite _ _ h₂ => exact ⟨Ω, σ, σS, h₂, hown, htc, hσ⟩
+  | caseL hv =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | case ha h₁ _ =>
+      obtain ⟨-, hwt⟩ := eval_sound₄ _ ha hv
+      cases hwt with
+      | inl _ hx => exact ⟨Ω, σ, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl h₁ (.inl hx), hown, htc, hσ⟩
+  | caseR hv =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | case ha _ h₂ =>
+      obtain ⟨-, hwt⟩ := eval_sound₄ _ ha hv
+      cases hwt with
+      | inr _ hx => exact ⟨Ω, σ, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl h₂ (.inl hx), hown, htc, hσ⟩
+  | @op o as τ' e vs v s s' hvs hop =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    obtain ⟨σg, L⟩ := s
+    simp only at hσ htc ⊢
+    subst hσ
+    obtain ⟨hd, hSF, hsh, hwf⟩ := htc
+    cases hrt with
+    | alloc ha ht =>
+      obtain ⟨w, hw, rfl⟩ := evalL_one hvs
+      obtain ⟨iw, tw⟩ := eval_sound₄ _ ha hw
+      obtain ⟨k, rfl⟩ := canon_int₄ iw tw
+      obtain ⟨ws, w', σ'', hws, hop', rfl, rfl⟩ := op4_o2 hop
+      simp [lowerV, c4] at hws; subst hws
+      have hk : 0 < k := by
+        simp only [opStep, Store.alloc] at hop'
+        by_contra hc; rw [if_neg hc] at hop'; simp at hop'
+      obtain ⟨v₁, σn, hop'', hdn, hwfn, p, rfl, hreg⟩ :=
+        alloc_axiom k hk Store.empty (σ ⊎ (σS ⊎ σF)) rfl (disj_empty_left _) (by rw [Store.empty_union]; exact hwf)
+      rw [Store.empty_union] at hop''
+      simp only at hop'
+      rw [hop'] at hop''; cases hop''
+      obtain ⟨hdnq, hdnr⟩ := (Store.disj_union_right _ _ _).1 hdn
+      refine ⟨p :: Ω, σn ⊎ σ, σS, substC₄ (Γ₁ := []) (Δ₁ := []) p rfl ht, ⟨σn, σ, hdnq, rfl, ⟨_, hreg.isRegion⟩, hown⟩,
+        ⟨(Store.disj_union_left _ _ _).2 ⟨hdnr, hd⟩, hSF, hsh, by rw [Store.union_assoc]; exact hwfn⟩, by
+          simp [raiseV, Store.union_assoc]⟩
+    | load hΓ _ _ _ => simp at hΓ
+    | loadC hp ha ht =>
+      obtain ⟨w₀, w, hw₀, hw, rfl⟩ := evalL_two hvs
+      simp [Atom₄.eval, capv] at hw₀; subst hw₀
+      obtain ⟨iw, tw⟩ := eval_sound₄ _ ha hw
+      obtain ⟨i, rfl⟩ := canon_int₄ iw tw
+      obtain ⟨ws, w', σ'', hws, hop', rfl, rfl⟩ := op4_o2 hop
+      simp [lowerV, c4] at hws; subst hws
+      simp only [opStep, Option.map_eq_some_iff] at hop'
+      obtain ⟨u, -, hu⟩ := hop'
+      simp only [Prod.mk.injEq] at hu
+      obtain ⟨rfl, rfl⟩ := hu
+      exact ⟨Ω, σ, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl ht (.inl .int), hown, ⟨hd, hSF, hsh, hwf⟩, rfl⟩
+    | store hΓ _ _ _ _ => simp at hΓ
+    | storeC hp h₁ h₂ ht =>
+      obtain ⟨w₀, w₁, w₂, hw₀, hw₁, hw₂, rfl⟩ := evalL_three hvs
+      simp [Atom₄.eval, capv] at hw₀; subst hw₀
+      obtain ⟨i, rfl⟩ := canon_int₄ (eval_sound₄ _ h₁ hw₁).1 (eval_sound₄ _ h₁ hw₁).2
+      obtain ⟨x, rfl⟩ := canon_int₄ (eval_sound₄ _ h₂ hw₂).1 (eval_sound₄ _ h₂ hw₂).2
+      obtain ⟨σr, σs, hrs, rfl, ⟨n, hreg⟩, hos⟩ := OwnAll.extract hp hown
+      obtain ⟨hdr, hds⟩ := (Store.disj_union_left _ _ _).1 hd
+      have hd' : Store.Disj σr (σs ⊎ (σS ⊎ σF)) := (Store.disj_union_right _ _ _).2 ⟨hrs, hdr⟩
+      rw [Store.union_assoc] at hop hwf
+      obtain ⟨ws, w', σ'', hws, hop', rfl, rfl⟩ := op4_o2 hop
+      simp [lowerV, c4, capv] at hws; subst hws
+      have hlk := hreg.lookup_union (σs ⊎ (σS ⊎ σF))
+      have hi : 0 ≤ i ∧ i < n := by
+        simp only [opStep, Store.store, hlk] at hop'
+        by_contra hc; rw [if_neg hc] at hop'; simp at hop'
+      obtain ⟨c, σn, hop'', hdn, hwfn, rfl, hreg'⟩ := store_region _ n i x hi σr (σs ⊎ (σS ⊎ σF)) hreg hd' hwf
+      simp only at hop'
+      rw [hop'] at hop''; cases hop''
+      obtain ⟨hdns, hdnr⟩ := (Store.disj_union_right _ _ _).1 hdn
+      refine ⟨_ :: _, σn ⊎ σs, σS, substC₄ (Γ₁ := []) (Δ₁ := []) _ rfl ht, ⟨σn, σs, hdns, rfl, ⟨n, hreg'⟩, hos⟩,
+        ⟨(Store.disj_union_left _ _ _).2 ⟨hdnr, hds⟩, hSF, hsh, by rw [Store.union_assoc]; exact hwfn⟩, by
+          simp [raiseV, Store.union_assoc]⟩
+    | free hΓ _ _ => simp at hΓ
+    | freeC hp ht =>
+      obtain ⟨w₀, hw₀, rfl⟩ := evalL_one hvs
+      simp [Atom₄.eval, capv] at hw₀; subst hw₀
+      obtain ⟨σr, σs, hrs, rfl, ⟨n, hreg⟩, hos⟩ := OwnAll.extract hp hown
+      obtain ⟨hdr, hds⟩ := (Store.disj_union_left _ _ _).1 hd
+      have hd' : Store.Disj σr (σs ⊎ (σS ⊎ σF)) := (Store.disj_union_right _ _ _).2 ⟨hrs, hdr⟩
+      rw [Store.union_assoc] at hop hwf
+      obtain ⟨ws, w', σ'', hws, hop', rfl, rfl⟩ := op4_o2 hop
+      simp [lowerV, capv] at hws; subst hws
+      obtain ⟨c, σn, hop'', hdn, hwfn, rfl, rfl⟩ := free_axiom _ n σr (σs ⊎ (σS ⊎ σF)) hreg hd' hwf
+      simp only at hop'
+      rw [hop'] at hop''; cases hop''
+      rw [Store.empty_union] at hwfn
+      exact ⟨_, σs, σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl ht (.inl .unit), hos, ⟨hds, hSF, hsh, hwfn⟩, by
+        simp [raiseV, Store.empty_union]⟩
+    | newlock hΓ _ _ => simp at hΓ
+    | newlockC hp ht =>
+      obtain ⟨w₀, hw₀, rfl⟩ := evalL_one hvs
+      simp [Atom₄.eval, capv] at hw₀; subst hw₀
+      simp only [opStep₄, Option.some.injEq, Prod.mk.injEq] at hop
+      obtain ⟨rfl, rfl⟩ := hop
+      obtain ⟨σr, σs, hrs, rfl, hreg, hos⟩ := OwnAll.extract hp hown
+      obtain ⟨hdr, hds⟩ := (Store.disj_union_left _ _ _).1 hd
+      obtain ⟨hrS, hrF⟩ := (Store.disj_union_right _ _ _).1 hdr
+      obtain ⟨hsS, hsF⟩ := (Store.disj_union_right _ _ _).1 hds
+      refine ⟨_, σs, σr ⊎ σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl ht (.inl .lockC), hos,
+        ⟨(Store.disj_union_right _ _ _).2 ⟨(Store.disj_union_right _ _ _).2 ⟨disj_symm hrs, hsS⟩, hsF⟩,
+          (Store.disj_union_left _ _ _).2 ⟨hrF, hSF⟩, shared_append _ _ _ _ hsh hrS hreg trivial, ?_⟩, ?_⟩
+      · simp only [Store.union_assoc] at hwf ⊢; rw [← swap12 hrs]; exact hwf
+      · simp only [Store.union_assoc]; first | exact swap12 hrs | exact (swap12 hrs).symm
+    | acquire ha ht =>
+      obtain ⟨w, hw, rfl⟩ := evalL_one hvs
+      obtain ⟨l, rfl⟩ := canon_lock₄ (eval_sound₄ _ ha hw).1 (eval_sound₄ _ ha hw).2
+      simp only [opStep₄, lockv] at hop
+      split at hop
+      · rename_i p hl
+        simp only [Option.some.injEq, Prod.mk.injEq] at hop
+        obtain ⟨rfl, rfl⟩ := hop
+        obtain ⟨σI, σS', hIS, rfl, hreg, -, hsh'⟩ := shared_take L l p σS hl hsh
+        obtain ⟨hIS', hSF'⟩ := (Store.disj_union_left _ _ _).1 hSF
+        obtain ⟨hσI, hσS'⟩ := (Store.disj_union_right _ _ _).1 ((Store.disj_union_right _ _ _).1 hd).1
+        have hσF := ((Store.disj_union_right _ _ _).1 hd).2
+        refine ⟨p :: Ω, σI ⊎ σ, σS', substC₄ (Γ₁ := []) (Δ₁ := []) p rfl ht, ⟨σI, σ, disj_symm hσI, rfl, hreg, hown⟩,
+          ⟨(Store.disj_union_left _ _ _).2 ⟨(Store.disj_union_right _ _ _).2 ⟨hIS, hIS'⟩,
+            (Store.disj_union_right _ _ _).2 ⟨hσS', hσF⟩⟩, hSF', hsh', ?_⟩, ?_⟩
+        · simp only [Store.union_assoc] at hwf ⊢; rw [← swap12 hσI]; exact hwf
+        · simp only [Store.union_assoc]; first | exact swap12 hσI | exact (swap12 hσI).symm
+      · simp at hop
+    | release _ hΓ _ _ => simp at hΓ
+    | releaseC ha hp ht =>
+      obtain ⟨w, w₀, hw, hw₀, rfl⟩ := evalL_two hvs
+      simp [Atom₄.eval, capv] at hw₀; subst hw₀
+      obtain ⟨l, rfl⟩ := canon_lock₄ (eval_sound₄ _ ha hw).1 (eval_sound₄ _ ha hw).2
+      simp only [opStep₄, lockv] at hop
+      split at hop
+      · rename_i q hl
+        split at hop
+        · rename_i hpq
+          subst hpq
+          simp only [Option.some.injEq, Prod.mk.injEq] at hop
+          obtain ⟨rfl, rfl⟩ := hop
+          obtain ⟨σr, σs, hrs, rfl, hreg, hos⟩ := OwnAll.extract hp hown
+          obtain ⟨hdr, hds⟩ := (Store.disj_union_left _ _ _).1 hd
+          obtain ⟨hrS, hrF⟩ := (Store.disj_union_right _ _ _).1 hdr
+          obtain ⟨hsS, hsF⟩ := (Store.disj_union_right _ _ _).1 hds
+          refine ⟨_, σs, σr ⊎ σS, substV₄ (Γ₁ := []) (Δ₁ := []) rfl ht (.inl .unit), hos,
+            ⟨(Store.disj_union_right _ _ _).2 ⟨(Store.disj_union_right _ _ _).2 ⟨disj_symm hrs, hsS⟩, hsF⟩,
+              (Store.disj_union_left _ _ _).2 ⟨hrF, hSF⟩, shared_put _ _ _ _ _ hl hsh hrS hreg trivial, ?_⟩, ?_⟩
+          · simp only [Store.union_assoc] at hwf ⊢; rw [← swap12 hrs]; exact hwf
+          · simp only [Store.union_assoc]; first | exact swap12 hrs | exact (swap12 hrs).symm
+        · simp at hop
+      · simp at hop
+  | parL _ ih =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | par hs₁ hs₂ hp hc₁ hc₂ h₁ h₂ h =>
+      cases hs₁; cases hs₂
+      have hp' := hp.trans (List.Perm.of_eq (List.append_assoc _ _ _))
+      obtain ⟨σ₁, σ₂, h12, rfl, ho₁, ho₂⟩ := (OwnAll.append _ _ _).1 (OwnAll.perm hp' _ hown)
+      obtain ⟨htc₁, h2F, heq⟩ := tc_split h12 htc
+      obtain ⟨Ω₁', σ₁', σS', ht₁', ho₁', htc', hσ'⟩ := ih h₁ ho₁ htc₁ (hσ.trans heq)
+      obtain ⟨h12', htcj, heq'⟩ := tc_join htc' h2F
+      exact ⟨Ω₁' ++ (_ ++ _), σ₁' ⊎ σ₂, σS', RT₄.par .nil .nil (List.Perm.of_eq (List.append_assoc _ _ _).symm) hc₁ hc₂ ht₁' h₂ h,
+        (OwnAll.append _ _ _).2 ⟨σ₁', σ₂, h12', rfl, ho₁', ho₂⟩, htcj, hσ'.trans heq'⟩
+  | parR _ ih =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | par hs₁ hs₂ hp hc₁ hc₂ h₁ h₂ h =>
+      cases hs₁; cases hs₂
+      have hp' : Ω.Perm (_ ++ (_ ++ _)) :=
+        hp.trans ((List.perm_append_comm.append_right _).trans (List.Perm.of_eq (List.append_assoc _ _ _)))
+      obtain ⟨σ₂, σ₁, h21, rfl, ho₂, ho₁⟩ := (OwnAll.append _ _ _).1 (OwnAll.perm hp' _ hown)
+      obtain ⟨htc₂, h1F, heq⟩ := tc_split h21 htc
+      obtain ⟨Ω₂', σ₂', σS', ht₂', ho₂', htc', hσ'⟩ := ih h₂ ho₂ htc₂ (hσ.trans heq)
+      obtain ⟨h21', htcj, heq'⟩ := tc_join htc' h1F
+      refine ⟨Ω₂' ++ (_ ++ _), σ₂' ⊎ σ₁, σS', RT₄.par .nil .nil ?_ hc₁ hc₂ h₁ ht₂' h,
+        (OwnAll.append _ _ _).2 ⟨σ₂', σ₁, h21', rfl, ho₂', ho₁⟩, htcj, hσ'.trans heq'⟩
+      exact (List.Perm.of_eq (List.append_assoc _ _ _).symm).trans (List.perm_append_comm.append_right _)
+  | parDone hv₁ hv₂ =>
+    intro Ω τ σ σS σF hrt hown htc hσ
+    cases hrt with
+    | par hs₁ hs₂ hp hc₁ hc₂ h₁ h₂ h =>
+      cases hs₁; cases hs₂
+      have hb := bind_one (bind_one h h₂ hv₂) h₁ hv₁
+      exact ⟨_, σ, σS, hb, OwnAll.perm (hp.trans (List.Perm.of_eq (List.append_assoc _ _ _))) _ hown, htc, hσ⟩
+
 end VIRL4
