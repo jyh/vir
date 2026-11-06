@@ -56,3 +56,18 @@ Restating ⊢₂ for L4 showed that OBJECT-L4 contradicts itself: H1 (a)'s "pair
 as written. vir wrote errata/ERRATA-L4.md L4-E1 (vir 8e0d3ad, branch errata-l4-e1). Its reading changes ONE thing above: `par` is
 `par τ₁ τ₂ e₁ e₂ e`, `let x₁:τ₁, x₂:τ₂ ⇐ par e₁ e₂ in e`, binding the two results (x₁ = #1, x₂ = #0), not a pair-valued expression.
 Syntax.lean and Step4.lean were changed to match (build-009 EXIT=0, CE unchanged; audit-002). Everything else above stands.
+
+## ADDENDUM 2 (2026-11-06, the 26th vir head, BEFORE `VIRL4/Safe.lean` exists): what `I` is keyed by, and the shared resource
+Declared above: *"`I` maps lock ids to their invariants"*. Written out, that keying cannot be stated thread-locally: `newlock`'s id is the
+lock table's LENGTH at the step, and another thread's `newlock` changes it under interleaving, so a `newlock` rule keyed by id would
+need the id before the step that fixes it. ⇒ **`I : Int → Assn` is keyed by the BASE of the region a lock guards** (H2 (a): one region
+per lock; the base is the consumed capability's own, and a lock's base never changes: `acquire`/`release` keep it). Nothing else above
+changes. The pieces `Safe.lean` defines, named here before any proof:
+- **`Shared I L σS`**: the resource of the FREE locks of table `L` — for each free lock with base p, a disjoint fragment owning exactly
+  region p (L2's `OwnsRegion`) and satisfying `I p`; held locks contribute nothing. (Owning the region IN the invariant is what makes a
+  release onto a free lock impossible for a thread that owns the region, which `release_rule` will use.)
+- **`Ext L L'`**: the environment's lock-table moves — bases form a prefix (`newlock` appends; `acquire`/`release` keep every base).
+- **`Assn₄ := List LockSt → Assn`**: assertions see the lock table (a release needs "ℓ's base is p"), and the fragment.
+- **`safe₄ I n e L σ Q`**: at n + 1, a `ret a` evaluates and satisfies Q at EVERY `Ext`-extension of L; and from every admissible global
+  state (an `Ext`-extension of L, a `Shared` part, any disjoint frame, the whole L2 store WF) the configuration does not fault (`Faults₄`)
+  and every ⟶₄ step lands in an admissible state with the frame untouched and the thread `safe₄` at n.
