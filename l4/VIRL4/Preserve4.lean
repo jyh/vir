@@ -780,4 +780,31 @@ theorem pres₄ : ∀ {c c' : Config₄}, Step₄ c c' → ∀ {Ω τ σ σS σF
       have hb := bind_one (bind_one h h₂ hv₂) h₁ hv₁
       exact ⟨_, σ, σS, hb, OwnAll.perm (hp.trans (List.Perm.of_eq (List.append_assoc _ _ _))) _ hown, htc, hσ⟩
 
+theorem pres₄_steps {c c' : Config₄} (h : Steps₄ c c') :
+    ∀ {Ω τ σ σS σF}, RT₄ [] [] Ω c.1 τ → OwnAll Ω σ → TC c.2.locks σ σS σF → c.2.σ = σ ⊎ (σS ⊎ σF) →
+    ∃ Ω' σ' σS', RT₄ [] [] Ω' c'.1 τ ∧ OwnAll Ω' σ' ∧ TC c'.2.locks σ' σS' σF ∧ c'.2.σ = σ' ⊎ (σS' ⊎ σF) := by
+  induction h with
+  | refl c => intro Ω τ σ σS σF ht ho htc hσ; exact ⟨Ω, σ, σS, ht, ho, htc, hσ⟩
+  | step hs _ ih =>
+    intro Ω τ σ σS σF ht ho htc hσ
+    obtain ⟨Ω', σ', σS', ht', ho', htc', hσ'⟩ := pres₄ hs ht ho htc hσ
+    exact ih ht' ho' htc' hσ'
+
+/-- **Q6, PRESERVED (addendum 6):** from a typed configuration, EVERY ⟶₄*-reachable configuration is typed (some Ω' with the
+  thread part owning exactly its regions), hence has no race on any region. -/
+theorem Q6_reach {Ω : List Int} {e : Tm₄} {τ : Ty₄} {σ σS σF : Store} {L : List LockSt}
+    (ht : RT₄ [] [] Ω e τ) (ho : OwnAll Ω σ) (htc : TC L σ σS σF) :
+    ∀ c, Steps₄ (e, ⟨σ ⊎ (σS ⊎ σF), L⟩) c → ∀ p, ¬ Race c.1 p := by
+  intro c hc p
+  obtain ⟨Ω', σ', -, ht', ho', -, -⟩ := pres₄_steps hc ht ho htc rfl
+  exact Q6_no_race ht' ho' p
+
+/-- From the empty store and lock table: a closed RT₄-typed program owning nothing never races, on any interleaving. -/
+theorem Q6_reach_empty {e : Tm₄} {τ : Ty₄} (ht : RT₄ [] [] [] e τ) :
+    ∀ c, Steps₄ (e, ⟨Store.empty, []⟩) c → ∀ p, ¬ Race c.1 p := by
+  have h := Q6_reach (σ := Store.empty) (σS := Store.empty) (σF := Store.empty) (L := []) ht rfl
+    ⟨by rw [Store.empty_union]; exact disj_empty_empty, disj_empty_empty, rfl,
+      by rw [Store.empty_union, Store.empty_union]; exact wf_empty⟩
+  simpa [Store.empty_union] using h
+
 end VIRL4
