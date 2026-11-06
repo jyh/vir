@@ -129,3 +129,25 @@ changes. The pieces `Safe.lean` defines, named here before any proof:
 - **Q6-P, as this arm states it:** every ⟶₄ step from a typed configuration lands in a typed configuration (Ω' as above), hence, from
   a ⊢₄-typed closed program on the empty store and lock table, every ⟶₄*-reachable configuration is typed and, by `Q6_no_race`, has
   no race on any region.
+
+## ADDENDUM 7 (2026-11-06, the 28th vir head, BEFORE `count.py --arm l4` exists and BEFORE any L4 C5 figure is taken): "C5 of a row"
+L3 measured C5 per FILE (RESULTS-8 Z4). At L4 that conflates rows: N1-S shares `Programs.lean` with N1-T and N2/N3, F₄_S shares
+`Router4.lean` with N4-T, and `Rules4.lean` holds every rule beside `par₄_rule`. A ROOT-only count (the one theorem block) misses the
+helpers a proof was split into (`par₄_rule` is a wrapper over `safe₄_par`). So the measure is declared here, from the bytes alone:
+- **The unit is L3's:** whitespace tokens of the block, comments (`--` and `/- -/`) stripped. Non-blank lines are reported beside.
+- **PRIMARY — the proof closure.** Start from the row's root theorem(s); add every `theorem`/`lemma` block of the SAME LAYER's sources
+  (`l4/VIRL4` at L4, `l2/VIRL2` for L2's `frame`) whose name a block already in the set mentions (a reference matches a declaration by
+  its full name or by its last dotted component, so `RT₄.perm` and dot notation both resolve; a name declared twice resolves to both);
+  repeat to a fixed point. C5 is the sum over the set, each block ONCE (for a row of two roots, the closure of the UNION, so a helper the
+  two share is counted once). **Why proofs only:** C5 is "proof-script lines and tokens" (PREDICTIONS.md); a definition block mixes the
+  object as transcribed (⟶₄, ⊢₄, Triple₄) with proof devices (N4-V's `R4`, `Env`, `Th`), and no rule from the bytes separates them
+  without a hand list, which the idiom law refuses.
+- **Not followed:** names of an imported layer (L1–L3 at L4, L1 at L2): they were paid at their own layer. Their count is reported beside.
+- **BESIDE, each on its own line, never scored:** (b) ROOT-only, the root blocks alone; (c) the closure WITH every definition block it
+  reaches (same rule, all declaration kinds), which is where N4-V's invariants are; (d) FILE-level, L3's measure, over the files
+  addenda 4–6 name for the row. If a Q verdict differs between PRIMARY and any of (b)–(d), RESULTS says so beside the verdict.
+- **The roots.** Q3: `par₄_rule` (L4) against `frame` (L2, `l2/VIRL2/Logic.lean`), files (d) `Rules4.lean` + `Safe.lean` against
+  `Logic.lean`. Q4: V = {`N1_V`, `N4_V`} against S = {`N1_S`, `F₄_S`}, files (d) `Values.lean` + `RouterV.lean` against `Programs.lean` +
+  `Router4.lean`. Q7: {`ce_fwd`, `ce_bwd`}, file (d) `CE.lean`. Q1 is W8 (`--arm w8`), not C5, and is untouched by this addendum.
+- **Scored at the unseal only** (pace rule (C)): the harness arm is built and red-first on this branch now; its figures go into
+  RESULTS-10 when the MetaPRL arm's L4 declarations are posted, beside that arm's own.
