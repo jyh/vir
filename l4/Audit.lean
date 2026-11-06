@@ -58,3 +58,6 @@ import VIRL4
 #print axioms VIRL4.Q6_no_race
 #print axioms VIRL4.race_N2
 #print axioms VIRL4.par_typed
+#print axioms VIRL4.F₄_typed
+#print axioms VIRL4.N4_typed
+#print axioms VIRL4.mask_only_zero
