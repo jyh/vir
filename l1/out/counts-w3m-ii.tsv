@@ -1,0 +1,8 @@
+v3l1m	W3M.categories	4	MEASURED:den,step,syntax,typing
+v3l1m	W3M.rulesEdited	6	BESIDE:W3b
+v3l1m	W3M.rulesAdded	66	BESIDE:W3b
+v3l1m	W3M.prlaChanged	14	BESIDE:W3b:stored-proof archives
+v3l1m	W3M.itemsEdited	5	BESIDE:aeval,core_ops,is_val,tc,ty_eq
+v3l1m	W3M.categories.altCentral	4	BESIDE:interp/pty/pty1 read as central:den,step,syntax,typing
+v3l1m	W3M.sigmaEdited	0	BESIDE
+v3l1m	W3M.added	12	BESIDE:a_fst,a_pair,a_snd,fst_op,l1_fst,l1_pair,l1_prod,l1_snd,pair_op,prod_op,snd_op,ty_prod
