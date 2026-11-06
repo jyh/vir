@@ -74,6 +74,26 @@ chk "$V/l2/out/counts-l2.tsv" --arm l2 "$M/l2at/l2"
 # amend-16 Y2 = amend-13 W8: L1's definitions unedited from 37c209e to the Lean L2-closed sha
 chk "$V/l2/out/counts-w8.tsv" --arm w8 --base 37c209e --ext dc95b53 --prefix l1/VIRL1 "$V"
 chk "$V/harness/metaprl-counts-bprime.tsv" --arm metaprlbp "$M/bp"
+# chk2 <committed-file> <shell command printing the file>: for count files that are TWO count.py calls concatenated
+chk2() {
+  local f=$1; shift; n=$((n+1))
+  if [ ! -f "$f" ]; then echo "  MISSING  ${f#$V/}"; fail=1; return; fi
+  if bash -c "$*" | cmp -s - "$f"; then echo "  SAME     ${f#$V/}"
+  else echo "  DIFF     ${f#$V/}"; bash -c "$*" | diff "$f" - | sed 's/^/           /'; fail=1; fi
+}
+# amend-19: the Lean induction rule, read from l1/ AT ITS COUNTS COMMIT (later l1 logs must not move it), plus I1 by W8
+INDSHA=$(git -C "$V" log -1 --format=%H -- l1/out/counts-ind.tsv)
+mkdir -p "$M/indat" && git -C "$V" archive "$INDSHA" l1 | tar -x -C "$M/indat" \
+  || { echo "REPRODUCE MISSING-INPUT l1/ at $INDSHA"; exit 2; }
+echo "  PINNED   l1/ (amend-19) at its counts commit ${INDSHA:0:12}"
+chk2 "$V/l1/out/counts-ind.tsv" "python3 '$C' --arm ind '$M/indat/l1' && python3 '$C' --arm w8 --base d6cb991 --ext 93efc67 --prefix l1/VIRL1 '$V' | sed 's/^w8\tW8\./ind\tIND.I1.W8./'"
+# amend-18: layer L3, the Lean arm (l3/VIRL3), at its counts commit; Z1 = W8 over L2 and over L1, dc95b53 -> that commit
+L3SHA=$(git -C "$V" log -1 --format=%H -- l3/out/counts-l3.tsv)
+mkdir -p "$M/l3at" && git -C "$V" archive "$L3SHA" l3 | tar -x -C "$M/l3at" \
+  || { echo "REPRODUCE MISSING-INPUT l3/ at $L3SHA"; exit 2; }
+echo "  PINNED   l3/ at its counts commit ${L3SHA:0:12}"
+chk "$V/l3/out/counts-l3.tsv" --arm l3 "$M/l3at/l3"
+chk2 "$V/l3/out/counts-z1.tsv" "python3 '$C' --arm w8 --base dc95b53 --ext 037dddc --prefix l2/VIRL2 '$V' && python3 '$C' --arm w8 --base dc95b53 --ext 037dddc --prefix l1/VIRL1 '$V' | sed 's/\tW8\./\tW8.l1./'"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
