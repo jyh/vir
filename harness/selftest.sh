@@ -715,10 +715,31 @@ check42() {
 }
 if check42 "$H/count.py"; then say "ARM42 carving fixture OK (X41 EMPTY; X42 defs 1, rules 2 (cv_long's wfs2x not read as wfs2))"
 else say "ARM42 carving fixture FAIL"; c42 "$H/count.py" "$X42" L2M.Y5.carvingRules; fail=1; fi
-sed 's/(?<!\[A-Za-z0-9_\x27\])(?:%s)\\{" % \x27|\x27.join(L2M_CARVE), stm/(?:%s)" % \x27|\x27.join(L2M_CARVE), stm/' "$H/count.py" > "$F/mutant42.py"
+sed 's/(?<!\[A-Za-z0-9_\x27\])(?:%s)\\{" % \x27|\x27.join(names), stm/(?:%s)" % \x27|\x27.join(names), stm/' "$H/count.py" > "$F/mutant42.py"
 if cmp -s "$H/count.py" "$F/mutant42.py"; then say "ARM42 mutant NOT PLANTED"; fail=1
 elif check42 "$F/mutant42.py"; then say "ARM42 mutant SURVIVED (wfs2x read as wfs2)"; fail=1
 else say "ARM42 mutant KILLED"; fi
+
+# ARM43 (STATUS-vir 155, mojave's D9): the SCOPING carving (scoped2{n; Δ; e}, the object's §4 scoping in the arm's
+# placeholder encoding) on its OWN sub-line, so its cost is never read as grammar cost; a rule naming both predicates is
+# in both lines and counted once more on carvingOverlap. On X42 nothing names scoped2: EMPTY. On X43: one define, a rule
+# naming scoped2 alone, a rule naming scoped2 AND wfs2 (overlap 1), and one naming only scoped2x (NOT counted).
+printf 'define unfold_scoped2 : scoped2{\x27n; \x27d; \x27e} <--> \x27e\ninteractive sc_wf : sequent { <H> >- scoped2{\x27n; \x27d; \x27e} in bool }\ninteractive sc_both : sequent { <H>; x: wfs2{2; \x27e}; y: scoped2{\x27n; \x27d; \x27e} >- \x27a }\ninteractive sc_long : sequent { <H> >- scoped2x{\x27t} }\n' > "$R41/theories/vir/virl2_scope.ml"
+prla "$R41/theories/vir/virl2_scope.prla" "sc_wf=autoT" "sc_both=(sc_wf thenT autoT)" "sc_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm scope; X43=$(git -C "$R41" rev-parse HEAD)
+check43() {
+  case "$(c42 "$1" "$X42" L2M.Y5.scopingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingRules)" in "2	MEASURED"*sc_both*sc_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingRules)" in "3	MEASURED"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingOverlap)" in "1	"*sc_both*) ;; *) return 1;; esac
+}
+if check43 "$H/count.py"; then say "ARM43 scoping fixture OK (X42 EMPTY; X43 defs 1, rules 2 (sc_long's scoped2x not read), grammar rules 3, overlap 1)"
+else say "ARM43 scoping fixture FAIL"; c42 "$H/count.py" "$X43" L2M.Y5.scopingRules; fail=1; fi
+sed 's/L2M_SCOPE = (\x27scoped2\x27, \x27scoped\x27)/L2M_SCOPE = (\x27scoped2x\x27,)/' "$H/count.py" > "$F/mutant43.py"
+if cmp -s "$H/count.py" "$F/mutant43.py"; then say "ARM43 mutant NOT PLANTED"; fail=1
+elif check43 "$F/mutant43.py"; then say "ARM43 mutant SURVIVED (scoping read from the wrong name)"; fail=1
+else say "ARM43 mutant KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
