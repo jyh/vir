@@ -303,4 +303,138 @@ theorem safe₄_newlock {I : Int → Assn} {Q : Atom₄ → Assn₄} {n : Nat} {
     · rw [← Store.union_assoc]; exact hD
     · simp only [Store.union_assoc]
 
+/-! ## ret, let, par. -/
+
+theorem not_term {e : Tm₄} (h : ∀ a, e ≠ .ret a) : ¬ e.IsTerminal := by
+  cases e <;> simp_all [Tm₄.IsTerminal]
+
+theorem progress_of_not_faults {c : Config₄} (hnf : ¬ Faults₄ c) (ht : ¬ c.1.IsTerminal) :
+    (∃ c', Step₄ c c') ∨ Waits c.1 c.2 := by
+  by_contra h
+  push_neg at h
+  exact hnf ⟨ht, fun c' hs => h.1 c' hs, h.2⟩
+
+theorem safe₄_ret {I : Int → Assn} {Q : Atom₄ → Assn₄} {a v : Atom₄} (hv : Atom₄.eval a = some v) {L : List LockSt}
+    {σ : Store} (hQ : ∀ L', Ext L L' → Q v L' σ) : ∀ n, safe₄ I n (.ret a) L σ Q
+  | 0 => trivial
+  | n + 1 => by
+    rw [safe₄]
+    refine ⟨fun a' ha => ?_, fun L' σS σF _ _ => ⟨fun hf => hf.1 trivial, fun e' s' hs => by cases hs⟩⟩
+    cases ha
+    exact ⟨v, hv, hQ⟩
+
+theorem safe₄_let {I : Int → Assn} {R Q₁ : Atom₄ → Assn₄} {τ : Ty₄} {e₂ : Tm₄}
+    (hk : ∀ v L' σ', Q₁ v L' σ' → ∀ m, safe₄ I m (e₂.subst 0 v) L' σ' R) :
+    ∀ (n : Nat) (e₁ : Tm₄) (L : List LockSt) (σ : Store), safe₄ I n e₁ L σ Q₁ → safe₄ I n (.letE τ e₁ e₂) L σ R
+  | 0, _, _, _, _ => trivial
+  | n + 1, e₁, L, σ, ⟨ht, hst⟩ => by
+    rw [safe₄]
+    refine ⟨fun a ha => (by cases ha), fun L' σS σF hx hg => ?_⟩
+    obtain ⟨hnf, hsteps⟩ := hst L' σS σF hx hg
+    refine ⟨fun hf => ?_, fun e' s' hs => ?_⟩
+    · by_cases h1 : ∃ a, e₁ = .ret a
+      · obtain ⟨a, rfl⟩ := h1
+        obtain ⟨v, hv, _⟩ := ht a rfl
+        exact hf.2.1 _ (Step₄.letRet hv)
+      · push_neg at h1
+        rcases progress_of_not_faults hnf (not_term h1) with ⟨⟨e₁', s₁'⟩, hs⟩ | hw
+        · exact hf.2.1 _ (Step₄.letStep hs)
+        · exact hf.2.2 (Waits.letW hw)
+    · cases hs with
+      | letRet hv =>
+        obtain ⟨v', hv', hQ⟩ := ht _ rfl
+        rw [hv] at hv'
+        cases hv'
+        exact ⟨σ, σS, Ext.refl _, hg, rfl, hk _ L' σ (hQ L' hx) n⟩
+      | letStep h =>
+        obtain ⟨σ', σS', hx', hg', hσ, hsafe⟩ := hsteps _ _ h
+        exact ⟨σ', σS', hx', hg', hσ, safe₄_let hk n _ _ σ' hsafe⟩
+
+/-- THE PARALLEL RULE, in safety form: two threads safe on disjoint fragments make their `par` safe on the union; each thread sees
+  the other's fragment as part of its frame. -/
+theorem safe₄_par {I : Int → Assn} {R Q₁ Q₂ : Atom₄ → Assn₄} {τ₁ τ₂ : Ty₄} {e : Tm₄}
+    (hk : ∀ v₁ v₂ L' σ₁' σ₂', Store.Disj σ₁' σ₂' → Q₁ v₁ L' σ₁' → Q₂ v₂ L' σ₂' →
+      ∀ m, safe₄ I m ((e.subst 0 v₂).subst 0 v₁) L' (σ₁' ⊎ σ₂') R) :
+    ∀ (n : Nat) (e₁ e₂ : Tm₄) (L : List LockSt) (σ₁ σ₂ : Store), Store.Disj σ₁ σ₂ →
+      safe₄ I n e₁ L σ₁ Q₁ → safe₄ I n e₂ L σ₂ Q₂ → safe₄ I n (.par τ₁ τ₂ e₁ e₂ e) L (σ₁ ⊎ σ₂) R
+  | 0, _, _, _, _, _, _, _, _ => trivial
+  | n + 1, e₁, e₂, L, σ₁, σ₂, h12, hs₁, hs₂ => by
+    have hs₁' := hs₁
+    have hs₂' := hs₂
+    obtain ⟨ht₁, hst₁⟩ := hs₁
+    obtain ⟨ht₂, hst₂⟩ := hs₂
+    rw [safe₄]
+    refine ⟨fun a ha => (by cases ha), fun L' σS σF hx hg => ?_⟩
+    obtain ⟨hg₁, h2F, heq₁⟩ := glob_frame_in h12 hg
+    have hg' : Glob I (σ₂ ⊎ σ₁) σS σF L' := by rw [← union_comm_disj h12]; exact hg
+    obtain ⟨hg₂, h1F, heq₂⟩ := glob_frame_in (disj_symm h12) hg'
+    have heq₂' : σ₁ ⊎ σ₂ ⊎ σS ⊎ σF = σ₂ ⊎ σS ⊎ (σ₁ ⊎ σF) := by rw [union_comm_disj h12]; exact heq₂
+    obtain ⟨hnf₁, hsteps₁⟩ := hst₁ L' σS (σ₂ ⊎ σF) hx hg₁
+    obtain ⟨hnf₂, hsteps₂⟩ := hst₂ L' σS (σ₁ ⊎ σF) hx hg₂
+    rw [← heq₁] at hnf₁ hsteps₁
+    rw [← heq₂'] at hnf₂ hsteps₂
+    refine ⟨fun hf => ?_, fun e' s' hs => ?_⟩
+    · by_cases h1 : ∃ a₁, e₁ = .ret a₁
+      · obtain ⟨a₁, rfl⟩ := h1
+        obtain ⟨v₁, hv₁, _⟩ := ht₁ a₁ rfl
+        by_cases h2 : ∃ a₂, e₂ = .ret a₂
+        · obtain ⟨a₂, rfl⟩ := h2
+          obtain ⟨v₂, hv₂, _⟩ := ht₂ a₂ rfl
+          exact hf.2.1 _ (Step₄.parDone hv₁ hv₂)
+        · push_neg at h2
+          rcases progress_of_not_faults hnf₂ (not_term h2) with ⟨⟨e₂', s₂'⟩, hs⟩ | hw
+          · exact hf.2.1 _ (Step₄.parR hs)
+          · exact hf.2.2 (Waits.parR hw)
+      · push_neg at h1
+        rcases progress_of_not_faults hnf₁ (not_term h1) with ⟨⟨e₁', s₁'⟩, hs⟩ | hw₁
+        · exact hf.2.1 _ (Step₄.parL hs)
+        · by_cases h2 : ∃ a₂, e₂ = .ret a₂
+          · obtain ⟨a₂, rfl⟩ := h2
+            exact hf.2.2 (Waits.parL hw₁)
+          · push_neg at h2
+            rcases progress_of_not_faults hnf₂ (not_term h2) with ⟨⟨e₂', s₂'⟩, hs⟩ | hw₂
+            · exact hf.2.1 _ (Step₄.parR hs)
+            · exact hf.2.2 (Waits.parBoth hw₁ hw₂)
+    · cases hs with
+      | parL h =>
+        obtain ⟨σ₁', σS', hx', hgo, hσ, hsafe⟩ := hsteps₁ _ _ h
+        obtain ⟨h12', hgn, heqn⟩ := glob_frame_out h2F hgo
+        exact ⟨σ₁' ⊎ σ₂, σS', hx', hgn, hσ.trans heqn, safe₄_par hk n _ _ _ σ₁' σ₂ h12' hsafe
+          (safe₄_mono n (n + 1) e₂ _ σ₂ (by omega) (safe₄_ext (n + 1) e₂ L _ σ₂ (hx.trans hx') hs₂'))⟩
+      | parR h =>
+        obtain ⟨σ₂', σS', hx', hgo, hσ, hsafe⟩ := hsteps₂ _ _ h
+        obtain ⟨h21', hgn, heqn⟩ := glob_frame_out h1F hgo
+        refine ⟨σ₁ ⊎ σ₂', σS', hx', ?_, ?_, safe₄_par hk n _ _ _ σ₁ σ₂' (disj_symm h21')
+          (safe₄_mono n (n + 1) e₁ _ σ₁ (by omega) (safe₄_ext (n + 1) e₁ L _ σ₁ (hx.trans hx') hs₁')) hsafe⟩
+        · rw [union_comm_disj (disj_symm h21')]; exact hgn
+        · rw [hσ, heqn, union_comm_disj h21']
+      | parDone hv₁ hv₂ =>
+        obtain ⟨v₁', hv₁', hQ₁⟩ := ht₁ _ rfl
+        obtain ⟨v₂', hv₂', hQ₂⟩ := ht₂ _ rfl
+        rw [hv₁] at hv₁'
+        cases hv₁'
+        rw [hv₂] at hv₂'
+        cases hv₂'
+        exact ⟨σ₁ ⊎ σ₂, σS, Ext.refl _, hg, rfl, hk _ _ L' σ₁ σ₂ h12 (hQ₁ L' hx) (hQ₂ L' hx) n⟩
+
+/-! ## The rules as triples. -/
+
+theorem ret₄_rule {I : Int → Assn} {P : Assn₄} {a v : Atom₄} {Q : Atom₄ → Assn₄} (hv : Atom₄.eval a = some v)
+    (hP : ∀ L σ, P L σ → ∀ L', Ext L L' → Q v L' σ) : Triple₄ I P (.ret a) Q :=
+  fun n L σ hp => safe₄_ret hv (hP L σ hp) n
+
+theorem let₄_rule {I : Int → Assn} {P : Assn₄} {τ : Ty₄} {e₁ e₂ : Tm₄} {Q₁ R : Atom₄ → Assn₄}
+    (h₁ : Triple₄ I P e₁ Q₁) (h₂ : ∀ v, Triple₄ I (Q₁ v) (e₂.subst 0 v) R) : Triple₄ I P (.letE τ e₁ e₂) R :=
+  fun n L σ hp => safe₄_let (fun v L' σ' hq m => h₂ v m L' σ' hq) n e₁ L σ (h₁ n L σ hp)
+
+/-- THE PARALLEL RULE (OBJECT-L4 H1 (a), read by erratum L4-E1): {P₁} e₁ {Q₁} ∧ {P₂} e₂ {Q₂} ⇒ {P₁ ∗ P₂} par e₁ e₂ {…}, the two
+  results bound in the continuation, which starts from Q₁ v₁ ∗ Q₂ v₂. -/
+theorem par₄_rule {I : Int → Assn} {P₁ P₂ : Assn₄} {τ₁ τ₂ : Ty₄} {e₁ e₂ e : Tm₄} {Q₁ Q₂ R : Atom₄ → Assn₄}
+    (h₁ : Triple₄ I P₁ e₁ Q₁) (h₂ : Triple₄ I P₂ e₂ Q₂)
+    (hk : ∀ v₁ v₂, Triple₄ I (sep₄ (Q₁ v₁) (Q₂ v₂)) ((e.subst 0 v₂).subst 0 v₁) R) :
+    Triple₄ I (sep₄ P₁ P₂) (.par τ₁ τ₂ e₁ e₂ e) R := by
+  rintro n L σ ⟨σ₁, σ₂, h12, rfl, hp₁, hp₂⟩
+  exact safe₄_par (fun v₁ v₂ L' σ₁' σ₂' hd hq₁ hq₂ m => hk v₁ v₂ m L' _ ⟨σ₁', σ₂', hd, rfl, hq₁, hq₂⟩)
+    n e₁ e₂ L σ₁ σ₂ h12 (h₁ n L σ₁ hp₁) (h₂ n L σ₂ hp₂)
+
 end VIRL4
