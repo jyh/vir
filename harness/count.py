@@ -1295,13 +1295,22 @@ def metaprll2(repo, base, ext):
                 k = b[:-5] + ':' + n
                 R[k] = v; mod[k] = b[:-5]; byname.setdefault(n, set()).add(k)
     names = set(byname)
+    # the reference graph, read ONCE (STATUS-vir 153: per-rule regex over every name took ~55 min on 934 rules). A name made
+    # only of identifier characters is found as a whole token, which is what mpl_refs' boundary regex means; any other name
+    # keeps the regex.
+    plain = {m for m in names if re.fullmatch(r"[A-Za-z0-9_']+", m)}
+    odd = names - plain
+    refs = {}
+    for x in R:
+        n, text = x.split(':', 1)[1], ' '.join(R[x][4])
+        refs[x] = ((set(re.findall(r"[A-Za-z0-9_']+", text)) & plain) | mpl_refs(n, text, odd)) - {n}  # REFS2
     def clos(k0):
         seen, todo = set(), [k0] if k0 in R else []
         while todo:
             x = todo.pop()
             if x not in seen:
                 seen.add(x)
-                for n in mpl_refs(x.split(':', 1)[1], ' '.join(R[x][4]), names):
+                for n in refs[x]:
                     todo += list(byname[n])
         return seen
     typing = {k for k in R if mod[k] == L2M_TYPING}

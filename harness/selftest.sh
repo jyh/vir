@@ -695,7 +695,7 @@ check41() {
 }
 if check41 "$H/count.py"; then say "ARM41 metaprll2 fixture OK (Y1 0 / generic fw 3 (one extends Virl2 and names no VIR term) / vir-term 2 (one by its .mli), figure 2; trusted base 4 prims in 3 files by the extends closure, one unchanged since base; Y2 0 0 new 1; Y3 closure 2 typing 0 control 2 terms 0/1; Y4 $Y4N)"
 else say "ARM41 metaprll2 fixture FAIL"; python3 "$H/count.py" --arm metaprll2 --base "$B41" --ext "$X41" "$R41"; fail=1; fi
-sed 's/return {m for m in names if m != n and re.search(r"(?<!\[A-Za-z0-9_\x27\])%s(?!\[A-Za-z0-9_\x27\])" % re.escape(m), text)}  # REFS/return {m for m in names if m != n and m in text}  # REFS/' "$H/count.py" > "$F/mutant41.py"
+sed 's/(set(re.findall(r"\[A-Za-z0-9_\x27\]+", text)) \& plain)/{m for m in plain if m in text}/' "$H/count.py" > "$F/mutant41.py"  # the REFS2 token path: a name read inside a longer name
 if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
 elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a name read inside a longer name)"; fail=1
 else say "ARM41 mutant KILLED"; fi
