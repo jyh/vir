@@ -1,9 +1,20 @@
 # RESULTS-8 — layer L3, the router as an L2 program (O95; OBJECT-L3 at vir 18df3a4; amend-18; erratum L3-E1)
 
-**DRAFT on the local branch l3-lean; the Lean column only, SEALED** until the MetaPRL arm posts its L3 declarations (the Lean
-arm's are vir 9de7857, `l3/DECLARATIONS-LEAN.md`, sha256/16 bf6646d9fec4a931). Every Lean figure is a row of
-`l3/out/counts-l3.tsv` (`harness/count.py --arm l3 l3`) or `l3/out/counts-z1.tsv` (`--arm w8 --base dc95b53`), or is labelled
-as something else. Lean L2-closed sha: dc95b53. The MetaPRL column is scored when that arm builds L3.
+**The Lean column; UNSEALED 2026-11-05** on the MetaPRL arm's L3 declarations (the Captain's pace ruling (C), 11-05). Every Lean
+figure is a row of `l3/out/counts-l3.tsv` (`harness/count.py --arm l3 l3`) or `l3/out/counts-z1.tsv` (`--arm w8 --base dc95b53`),
+or is labelled as something else. Lean L2-closed sha: dc95b53. The MetaPRL column is scored when that arm builds L3.
+
+## The declarations (amend-18), both written before the arm's first L3 file, neither arm reading the other's
+| arm | file | commit (time) | sha256/16 |
+|---|---|---|---|
+| Lean | `l3/DECLARATIONS-LEAN.md` | vir 9de7857 (2026-11-03), SEALED until the MetaPRL post | bf6646d9fec4a931 |
+| MetaPRL | `theories/vir/DECLARATIONS-L3-METAPRL.md` in mojave's metaprl clone, copied byte for byte to `l3/DECLARATIONS-METAPRL-ae4c349b2.md` | ae4c349b2 (2026-11-05 16:13 PST) on mojave/vir-l2, parent 265c1b8e1, 0 `virl3_` files at it | ae80ac5b7c42aef0 |
+
+Both hashes were re-read at the unseal (the Lean file at 9de7857 and at the branch tip, the MetaPRL file at ae4c349b2). The
+MetaPRL arm's post of its declarations said it had not read anything under `l3/`, any Lean L3 file or branch, or the Lean
+declarations; it had read ERRATA-L3 at fcaae75, whose L3-E1 names the Lean arm's R3False file and two lemma names (declared by
+that arm). The Lean branch was not pushed until after that post. The MetaPRL declarations defer one item: the L2-closed sha, to
+be posted with counts before its first `virl3_` file.
 
 ## The rows (inputs/L3-programs.md R1–R8), Lean
 | row | theorem(s) | file |
