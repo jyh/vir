@@ -46,3 +46,5 @@ import VIRL4
 #print axioms VIRL4.triple₄_invariant
 #print axioms VIRL4.N3_run
 #print axioms VIRL4.N3_no_triple
+#print axioms VIRL4.D_triple_false
+#print axioms VIRL4.D_blocks
