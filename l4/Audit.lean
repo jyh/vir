@@ -52,3 +52,9 @@ import VIRL4
 #print axioms VIRL4.R1_step
 #print axioms VIRL4.R1_steps
 #print axioms VIRL4.N1_V
+#print axioms VIRL4.acc_owned
+#print axioms VIRL4.no_race
+#print axioms VIRL4.ownAll_nodup
+#print axioms VIRL4.Q6_no_race
+#print axioms VIRL4.race_N2
+#print axioms VIRL4.par_typed

@@ -7,3 +7,4 @@ import VIRL4.Safe
 import VIRL4.Rules4
 import VIRL4.Deadlock
 import VIRL4.Values
+import VIRL4.NoRace
