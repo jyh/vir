@@ -248,4 +248,387 @@ theorem op4_inv {P : Assn} {o : Op} {vs : List Atom₄} {ws : List Atom₂} {Q :
   simp only [opStep₄, hvs, Option.bind_some, h1, Option.map_some, Option.some.injEq, Prod.mk.injEq] at h
   exact ⟨v₂, σq, h.1.symm, h.2.symm, h2, h3, h4⟩
 
+/-! ## The global store, one region in focus. -/
+
+theorem swap12 {a b c : Store} (h : Store.Disj a b) : a ⊎ (b ⊎ c) = b ⊎ (a ⊎ c) := by
+  rw [← Store.union_assoc, union_comm_disj h, Store.union_assoc]
+
+theorem wload {p : Int} {n : Nat} {fc : Int → Int} {σm σx : Store} {L : List LockSt} {k : Int} {c : Const₄} {s' : Store₄}
+    (hm : RegionAt p n fc σm) (hd : Store.Disj σm σx) (hwf : Store.WF (σm ⊎ σx)) (hk : 0 ≤ k ∧ k < n)
+    (h : opStep₄ (.o2 .load) [capv p, c4 k] ⟨σm ⊎ σx, L⟩ = some (.const c, s')) :
+    c = .c2 (.int (fc (p + k))) ∧ ∃ σq, s' = ⟨σq ⊎ σx, L⟩ ∧ RegionAt p n fc σq ∧ Store.Disj σq σx ∧ Store.WF (σq ⊎ σx) := by
+  obtain ⟨v₂, σq, hv, hs, hdq, hwq, hc, hQ⟩ :=
+    op4_inv (load_at p n fc k hk) hm hd hwf (ws := [.const (.cap p), .const (.int k)]) rfl h
+  subst hc
+  simp only [raiseV, Atom₄.const.injEq] at hv
+  exact ⟨hv, σq, hs, hQ, hdq, hwq⟩
+
+theorem wstore {p : Int} {n : Nat} {fc : Int → Int} {σm σx : Store} {L : List LockSt} {k v : Int} {c : Const₄}
+    {s' : Store₄} (hm : RegionAt p n fc σm) (hd : Store.Disj σm σx) (hwf : Store.WF (σm ⊎ σx)) (hk : 0 ≤ k ∧ k < n)
+    (h : opStep₄ (.o2 .store) [capv p, c4 k, c4 v] ⟨σm ⊎ σx, L⟩ = some (.const c, s')) :
+    c = .c2 (.cap p) ∧ ∃ σq, s' = ⟨σq ⊎ σx, L⟩ ∧ RegionAt p n (Function.update fc (p + k) v) σq ∧ Store.Disj σq σx ∧
+      Store.WF (σq ⊎ σx) := by
+  obtain ⟨v₂, σq, hv, hs, hdq, hwq, hc, hQ⟩ :=
+    op4_inv (store_at p n fc k v hk) hm hd hwf (ws := [.const (.cap p), .const (.int k), .const (.int v)]) rfl h
+  subst hc
+  simp only [raiseV, Atom₄.const.injEq] at hv
+  exact ⟨hv, σq, hs, hQ, hdq, hwq⟩
+
+/-! ## A thread's expected environment: the values its lets bind (t once read). -/
+
+def ci (n : Int) : Const₄ := .c2 (.int n)
+
+def envL (p q : Int) (f : Int → Int) (t : Int) (x : String) : Option Const₄ :=
+  if x = "n" then some (ci (f (p + 0))) else
+  if x = "magic0" then some (ci (f (p + 3))) else if x = "magic1" then some (ci (f (p + 4))) else
+  if x = "magic2" then some (ci (f (p + 5))) else if x = "magic3" then some (ci (f (p + 6))) else
+  if x = "magic" then some (ci (MgA f p)) else
+  if x = "sender0" then some (ci (f (p + 7))) else if x = "sender1" then some (ci (f (p + 8))) else
+  if x = "sender2" then some (ci (f (p + 9))) else if x = "sender3" then some (ci (f (p + 10))) else
+  if x = "sender" then some (ci (SvA f p)) else
+  if x = "topic0" then some (ci (f (p + 11))) else if x = "topic1" then some (ci (f (p + 12))) else
+  if x = "topic2" then some (ci (f (p + 13))) else if x = "topic3" then some (ci (f (p + 14))) else
+  if x = "topic" then some (ci (TvA f p)) else
+  if x = "a" then some (ci (f (aclA f p))) else
+  if x = "b" then some (.c2 (.cap q)) else if x = "t" then some (ci t) else if x = "b1" then some (.c2 (.cap q)) else
+  if x = "r" then some (.c2 .unit) else if x = "w'" then some (.c2 (.cap p)) else if x = "w''" then some (.c2 (.cap p)) else
+  none
+
+def Env (w : String) (p : Int) (l : Nat) (q : Int) (f : Int → Int) (t : Int) (x : String) : Const₄ :=
+  if x = "lb" then .lockv l else (envL p q f t x).getD (if x = w then .c2 (.cap p) else .c2 .unit)
+
+/-- The two world names. -/
+def WName (w : String) : Prop := w = "w1" ∨ w = "w2"
+
+theorem Env_w {w : String} {p : Int} {l : Nat} {q : Int} {f : Int → Int} {t : Int} (hw : WName w) :
+    Env w p l q f t w = .c2 (.cap p) := by
+  rcases hw with rfl | rfl <;> simp [Env, envL]
+
+theorem Env_upd_t {w : String} {p : Int} {l : Nat} {q : Int} {f : Int → Int} (hw : WName w) (t₀ t : Int) :
+    Function.update (Env w p l q f t₀) "t" (.c2 (.int t)) = Env w p l q f t := by
+  funext x
+  by_cases hx : x = "t"
+  · subst hx; simp [Env, envL, ci]
+  · rw [Function.update_of_ne hx]
+    rcases hw with rfl | rfl <;> simp [Env, envL, hx]
+
+/-! ## The stages: suffixes of `Fn₄ w`. -/
+
+def rd4 (_w : String) (_o : Int) (x : String) (k : NT₄) : NT₄ :=
+  .letE x t4int (.ret (add (.v (x ++ "0")) (add (mul (.i 256) (.v (x ++ "1")))
+    (add (mul (.i 65536) (.v (x ++ "2"))) (mul (.i 16777216) (.v (x ++ "3"))))))) k
+def rd3 (w : String) (o : Int) (x : String) (k : NT₄) : NT₄ := .op (x ++ "3") t4int (.o2 .load) [.v w, .i (6 + o)] (rd4 w o x k)
+def rd2 (w : String) (o : Int) (x : String) (k : NT₄) : NT₄ := .op (x ++ "2") t4int (.o2 .load) [.v w, .i (5 + o)] (rd3 w o x k)
+def rd1 (w : String) (o : Int) (x : String) (k : NT₄) : NT₄ := .op (x ++ "1") t4int (.o2 .load) [.v w, .i (4 + o)] (rd2 w o x k)
+def rd0 (w : String) (o : Int) (x : String) (k : NT₄) : NT₄ := .op (x ++ "0") t4int (.o2 .load) [.v w, .i (3 + o)] (rd1 w o x k)
+
+theorem RD32₄_eq (w : String) (o : Int) (x : String) (k : NT₄) : RD32₄ w o x k = rd0 w o x k := rfl
+
+def sH6 (w : String) : NT₄ := .op "r" t4unit .release [.v "lb", .v "b"] (EXIT₄ w 2)
+def sEM1 : NT₄ := .op "w''" t4cap (.o2 .store) [.v "w'", .i 2, .i 24] (.ret (.v "w''"))
+def sH5 (w : String) : NT₄ := .op "r" t4unit .release [.v "lb", .v "b1"] (EMIT₄ w)
+def sH4 (w : String) : NT₄ := .op "b1" t4cap (.o2 .store) [.v "b", .v "sender", sub (.v "t") (.i 1)] (sH5 w)
+def sH3 (w : String) : NT₄ :=
+  .ite (conj (eq (.v "magic") (.i MAGIC)) (conj (eq (.v "a") (.i 1)) (lt (.i 0) (.v "t")))) (sH4 w) (sH6 w)
+def sH2 (w : String) : NT₄ := .op "t" t4int (.o2 .load) [.v "b", .v "sender"] (sH3 w)
+def sH1 (w : String) : NT₄ := .op "b" t4cap .acquire [.v "lb"] (sH2 w)
+def sH0 (w : String) : NT₄ :=
+  .op "a" t4int (.o2 .load) [.v w, add (.i A) (add (mul (.v "sender") (.i NTp)) (.v "topic"))] (sH1 w)
+def sG2 (w : String) : NT₄ := rd0 w 8 "topic" (sH0 w)
+def sG1 (w : String) : NT₄ := rd0 w 4 "sender" (sG2 w)
+def sG0 (w : String) : NT₄ := rd0 w 0 "magic" (sG1 w)
+def sF1 (w : String) : NT₄ := .ite (le (.i 24) (.v "n")) (sG0 w) (EXIT₄ w 1)
+def sF0 (w : String) : NT₄ := .op "n" t4int (.o2 .load) [.v w, .i 0] (sF1 w)
+
+theorem Fn₄_eq (w : String) : Fn₄ w = sF0 w := rfl
+
+/-- The three RD32 blocks. -/
+inductive RDK (w : String) : Int → String → NT₄ → Prop
+  | m : RDK w 0 "magic" (sG1 w)
+  | s : RDK w 4 "sender" (sG2 w)
+  | t : RDK w 8 "topic" (sH0 w)
+
+/-- The stages past the length test and before the acquire. -/
+inductive PreS (w : String) : NT₄ → Prop
+  | r0 {o x k} : RDK w o x k → PreS w (rd0 w o x k)
+  | r1 {o x k} : RDK w o x k → PreS w (rd1 w o x k)
+  | r2 {o x k} : RDK w o x k → PreS w (rd2 w o x k)
+  | r3 {o x k} : RDK w o x k → PreS w (rd3 w o x k)
+  | r4 {o x k} : RDK w o x k → PreS w (rd4 w o x k)
+  | h0 : PreS w (sH0 w)
+  | h1 : PreS w (sH1 w)
+
+/-- The emit test inside the critical section, on the token t read there. -/
+def Cond (f : Int → Int) (p t : Int) : Prop := MgA f p = MAGIC ∧ f (aclA f p) = 1 ∧ 0 < t
+
+/-- A thread of N4 at a stage: its term, its world's contents fc, whether it holds ℓb, whether it has decremented its sender's
+  bucket, and the token it read inside its critical section. -/
+inductive Th (w : String) (p : Int) (l : Nat) (q : Int) (f : Int → Int) : Tm₄ → (Int → Int) → Bool → Bool → Option Int → Prop
+  | f0 : Th w p l q f ((sF0 w).cc (Env w p l q f 0) []) f false false none
+  | f1 : Th w p l q f ((sF1 w).cc (Env w p l q f 0) []) f false false none
+  | pre {S} (h24 : 24 ≤ f (p + 0)) (hS : PreS w S) : Th w p l q f (S.cc (Env w p l q f 0) []) f false false none
+  | cs0 (h24 : 24 ≤ f (p + 0)) : Th w p l q f ((sH2 w).cc (Env w p l q f 0) []) f true false none
+  | cs1 (h24 : 24 ≤ f (p + 0)) (t : Int) : Th w p l q f ((sH3 w).cc (Env w p l q f t) []) f true false (some t)
+  | cs2 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : Cond f p t) : Th w p l q f ((sH4 w).cc (Env w p l q f t) []) f true false (some t)
+  | cs3 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : Cond f p t) : Th w p l q f ((sH5 w).cc (Env w p l q f t) []) f true true (some t)
+  | cs4 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : ¬ Cond f p t) : Th w p l q f ((sH6 w).cc (Env w p l q f t) []) f true false (some t)
+  | em0 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : Cond f p t) : Th w p l q f ((EMIT₄ w).cc (Env w p l q f t) []) f false true (some t)
+  | em1 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : Cond f p t) :
+      Th w p l q f (sEM1.cc (Env w p l q f t) []) (Function.update f (p + 1) 0) false true (some t)
+  | em2 (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : Cond f p t) :
+      Th w p l q f ((NT₄.ret (.v "w''")).cc (Env w p l q f t) []) (postF₄ f p t) false true (some t)
+  | ex2a (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : ¬ Cond f p t) : Th w p l q f ((EXIT₄ w 2).cc (Env w p l q f t) []) f false false (some t)
+  | ex2b (h24 : 24 ≤ f (p + 0)) (t : Int) (hc : ¬ Cond f p t) :
+      Th w p l q f ((NT₄.ret (.v "w'")).cc (Env w p l q f t) []) (postF₄ f p t) false false (some t)
+  | ex1a (hn : ¬ 24 ≤ f (p + 0)) : Th w p l q f ((EXIT₄ w 1).cc (Env w p l q f 0) []) f false false none
+  | ex1b (hn : ¬ 24 ≤ f (p + 0)) : Th w p l q f ((NT₄.ret (.v "w'")).cc (Env w p l q f 0) []) (postF₄ f p 0) false false none
+
+/-- What one step of a thread did to the shared state: nothing shared (a world op, a pure step, or the read of the token),
+  the acquire, the release, or the decrement of the sender's bucket. -/
+def Eff (S q : Int) (l : Nat) (L L' : List LockSt) (g g' : Int → Int) (h h' d d' : Bool) (tr tr' : Option Int) : Prop :=
+  (L' = L ∧ g' = g ∧ h' = h ∧ d' = d ∧ (tr' = tr ∨ (tr = none ∧ h = true ∧ tr' = some (g (q + S))))) ∨
+  (L[l]? = some (.free q) ∧ L' = L.set l (.held q) ∧ g' = g ∧ h = false ∧ h' = true ∧ d' = d ∧ tr' = tr) ∨
+  (L' = L.set l (.free q) ∧ g' = g ∧ h = true ∧ h' = false ∧ d' = d ∧ tr' = tr) ∨
+  (∃ t, L' = L ∧ h = true ∧ h' = true ∧ d = false ∧ d' = true ∧ tr = some t ∧ tr' = tr ∧ 0 < t ∧
+    g' = Function.update g (q + S) (t - 1))
+
+theorem cc_v (ρ : String → Const₄) (x : String) : NA.cc ρ [] (.v x) = .const (ρ x) := by simp [NA.cc]
+theorem cc_i (ρ : String → Const₄) (n : Int) : NA.cc ρ [] (.i n) = .const (.c2 (.int n)) := rfl
+theorem cc_p (ρ : String → Const₄) (o : L1.Prim) (a b : NA) : NA.cc ρ [] (.p o a b) = .prim o [NA.cc ρ [] a, NA.cc ρ [] b] := rfl
+
+theorem upd_self {w : String} {p : Int} {l : Nat} {q : Int} {f : Int → Int} {t : Int} {x : String} {c : Const₄}
+    (h : c = Env w p l q f t x) : Function.update (Env w p l q f t) x c = Env w p l q f t :=
+  Function.update_eq_self_iff.2 h
+
+theorem Th_ret_nostep {ρ : String → Const₄} {a : NA} {s : Store₄}
+    {c' : Config₄} (h : Step₄ ((NT₄.ret a).cc ρ [], s) c') : False := by
+  simp only [NT₄.cc] at h; cases h
+
+theorem th_upd {w : String} {p : Int} {l : Nat} {q : Int} {f : Int → Int} {t : Int} {x : String} {c : Const₄} {e : NT₄}
+    {fc : Int → Int} {h d : Bool} {tr : Option Int} (hc : c = Env w p l q f t x)
+    (hT : Th w p l q f (e.cc (Env w p l q f t) []) fc h d tr) :
+    Th w p l q f (e.cc (Function.update (Env w p l q f t) x c) []) fc h d tr := by
+  rw [Function.update_eq_self_iff.2 hc]; exact hT
+
+-- Structure of a step's atoms, then their values under the expected environment.
+set_option hygiene false in
+macro "evS" : tactic => `(tactic| (
+  simp only [List.map, cc_v, cc_i, cc_p, add, sub, mul, le, lt, eq, conj, Env_w hw] at hev
+  simp [Env, envL, ci, Atom₄.evalL, Atom₄.eval, constsOf₄, Const₄.toL1, Const.toL1, L1.Prim.interp, Const.ofL1,
+    Const₄.toBool] at hev))
+
+-- A load from the thread's own world at a constant index.
+set_option hygiene false in
+macro "wl" : tactic => `(tactic| (
+  obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+  evS
+  subst hev
+  obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ := wload hm hd1 hwf ⟨by omega, by omega⟩ hop
+  refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+  refine th_upd (by simp [Env, envL, ci]) ?_))
+
+-- An RD32 sum.
+set_option hygiene false in
+macro "rs" : tactic => `(tactic| (
+  obtain ⟨c, hev, rfl, rfl⟩ := cc_letRet_step hs
+  evS
+  subst hev
+  refine ⟨_, _, _, _, σm, σb, g, L, ?_, rfl, hm, hb, hd1, hd2, hwf, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+  refine th_upd (by simp [Env, envL, ci, MgA, SvA, TvA]) ?_))
+
+-- A store into the thread's own world at constant index and value.
+set_option hygiene false in
+macro "ws" : tactic => `(tactic| (
+  obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+  evS
+  subst hev
+  obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ := wstore hm hd1 hwf ⟨by omega, by omega⟩ hop
+  refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+  refine th_upd (by simp [Env, envL, ci]) ?_))
+
+theorem disj_mb {σm σb σx : Store} (hd1 : Store.Disj σm (σb ⊎ σx)) : Store.Disj σm σb :=
+  ((Store.disj_union_right _ _ _).1 hd1).1
+
+theorem disj_b_mx {σm σb σx : Store} (hd1 : Store.Disj σm (σb ⊎ σx)) (hd2 : Store.Disj σb σx) :
+    Store.Disj σb (σm ⊎ σx) :=
+  (Store.disj_union_right _ _ _).2 ⟨disj_symm (disj_mb hd1), hd2⟩
+
+theorem disj_mx {σm σb σx : Store} (hd1 : Store.Disj σm (σb ⊎ σx)) : Store.Disj σm σx :=
+  ((Store.disj_union_right _ _ _).1 hd1).2
+
+theorem back_m_bx {σm σq σx : Store} (hdq : Store.Disj σq (σm ⊎ σx)) (hmx : Store.Disj σm σx) :
+    Store.Disj σm (σq ⊎ σx) ∧ Store.Disj σq σx := by
+  obtain ⟨h1, h2⟩ := (Store.disj_union_right _ _ _).1 hdq
+  exact ⟨(Store.disj_union_right _ _ _).2 ⟨disj_symm h1, hmx⟩, h2⟩
+
+theorem bload {q : Int} {g : Int → Int} {σm σb σx : Store} {L : List LockSt} {k : Int} {c : Const₄} {s' : Store₄}
+    (hb : RegionAt q 4 g σb) (hd1 : Store.Disj σm (σb ⊎ σx)) (hd2 : Store.Disj σb σx) (hwf : Store.WF (σm ⊎ (σb ⊎ σx)))
+    (hk : 0 ≤ k ∧ k < 4) (h : opStep₄ (.o2 .load) [capv q, c4 k] ⟨σm ⊎ (σb ⊎ σx), L⟩ = some (.const c, s')) :
+    c = .c2 (.int (g (q + k))) ∧ ∃ σq, s' = ⟨σm ⊎ (σq ⊎ σx), L⟩ ∧ RegionAt q 4 g σq ∧ Store.Disj σm (σq ⊎ σx) ∧
+      Store.Disj σq σx ∧ Store.WF (σm ⊎ (σq ⊎ σx)) := by
+  rw [swap12 (disj_mb hd1)] at h hwf
+  obtain ⟨hc, σq, rfl, hq, hdq, hwq⟩ := wload hb (disj_b_mx hd1 hd2) hwf (by exact_mod_cast hk) h
+  obtain ⟨d1, d2⟩ := back_m_bx hdq (disj_mx hd1)
+  have hsw := swap12 (c := σx) (disj_symm ((Store.disj_union_right _ _ _).1 hdq).1)
+  refine ⟨hc, σq, by rw [← hsw], hq, d1, d2, by rw [hsw]; exact hwq⟩
+
+theorem bstore {q : Int} {g : Int → Int} {σm σb σx : Store} {L : List LockSt} {k v : Int} {c : Const₄} {s' : Store₄}
+    (hb : RegionAt q 4 g σb) (hd1 : Store.Disj σm (σb ⊎ σx)) (hd2 : Store.Disj σb σx) (hwf : Store.WF (σm ⊎ (σb ⊎ σx)))
+    (hk : 0 ≤ k ∧ k < 4) (h : opStep₄ (.o2 .store) [capv q, c4 k, c4 v] ⟨σm ⊎ (σb ⊎ σx), L⟩ = some (.const c, s')) :
+    c = .c2 (.cap q) ∧ ∃ σq, s' = ⟨σm ⊎ (σq ⊎ σx), L⟩ ∧ RegionAt q 4 (Function.update g (q + k) v) σq ∧
+      Store.Disj σm (σq ⊎ σx) ∧ Store.Disj σq σx ∧ Store.WF (σm ⊎ (σq ⊎ σx)) := by
+  rw [swap12 (disj_mb hd1)] at h hwf
+  obtain ⟨hc, σq, rfl, hq, hdq, hwq⟩ := wstore hb (disj_b_mx hd1 hd2) hwf (by exact_mod_cast hk) h
+  obtain ⟨d1, d2⟩ := back_m_bx hdq (disj_mx hd1)
+  have hsw := swap12 (c := σx) (disj_symm ((Store.disj_union_right _ _ _).1 hdq).1)
+  refine ⟨hc, σq, by rw [← hsw], hq, d1, d2, by rw [hsw]; exact hwq⟩
+
+set_option maxHeartbeats 1000000 in
+/-- ONE THREAD'S STEP, by stage: from any global store holding its world, the bucket region and any rest, the step lands in the next
+  stage with the store re-split the same way, and does to the shared state exactly one of the four things `Eff` names. -/
+theorem th_step {w : String} {p : Int} {l : Nat} {q : Int} {f fc : Int → Int} {T : Tm₄} {hold dec : Bool} {tr : Option Int}
+    {σm σb σx : Store} {g : Int → Int} {L : List LockSt} {T' : Tm₄} {s' : Store₄}
+    (hw : WName w) (hS : 0 ≤ SvA f p ∧ SvA f p < 4 ∧ 0 ≤ TvA f p ∧ TvA f p < 4)
+    (hT : Th w p l q f T fc hold dec tr)
+    (hm : RegionAt p 83 fc σm) (hb : RegionAt q 4 g σb) (hd1 : Store.Disj σm (σb ⊎ σx)) (hd2 : Store.Disj σb σx)
+    (hwf : Store.WF (σm ⊎ (σb ⊎ σx)))
+    (hL : L[l]? = some (.free q) ∨ L[l]? = some (.held q)) (hhold : hold = true → L[l]? = some (.held q))
+    (hs : Step₄ (T, ⟨σm ⊎ (σb ⊎ σx), L⟩) (T', s')) :
+    ∃ fc' hold' dec' tr' σm' σb' g' L', Th w p l q f T' fc' hold' dec' tr' ∧ s' = ⟨σm' ⊎ (σb' ⊎ σx), L'⟩ ∧
+      RegionAt p 83 fc' σm' ∧ RegionAt q 4 g' σb' ∧ Store.Disj σm' (σb' ⊎ σx) ∧ Store.Disj σb' σx ∧
+      Store.WF (σm' ⊎ (σb' ⊎ σx)) ∧ Eff (SvA f p) q l L L' g g' hold hold' dec dec' tr tr' := by
+  obtain ⟨hs0, hs4, ht0, ht4⟩ := hS
+  cases hT with
+  | f0 => wl; exact Th.f1
+  | f1 =>
+    obtain ⟨c, b, hev, hbool, rfl, rfl⟩ := cc_ite_step hs
+    evS
+    subst hev
+    simp [Const₄.toBool] at hbool
+    cases b <;> simp only [Bool.false_eq_true, ↓reduceIte] <;>
+      refine ⟨_, _, _, _, σm, σb, g, L, ?_, rfl, hm, hb, hd1, hd2, hwf, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+    · exact Th.ex1a (by simpa using hbool)
+    · exact Th.pre (by simpa using hbool) (PreS.r0 RDK.m)
+  | pre h24 hS =>
+    cases hS with
+    | r0 hk => cases hk <;> (wl; exact Th.pre h24 (PreS.r1 (by constructor)))
+    | r1 hk => cases hk <;> (wl; exact Th.pre h24 (PreS.r2 (by constructor)))
+    | r2 hk => cases hk <;> (wl; exact Th.pre h24 (PreS.r3 (by constructor)))
+    | r3 hk => cases hk <;> (wl; exact Th.pre h24 (PreS.r4 (by constructor)))
+    | r4 hk =>
+      cases hk
+      · rs; exact Th.pre h24 (PreS.r0 RDK.s)
+      · rs; exact Th.pre h24 (PreS.r0 RDK.t)
+      · rs; exact Th.pre h24 PreS.h0
+    | h0 =>
+      obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+      evS
+      subst hev
+      obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ :=
+        wload hm hd1 hwf ⟨by simp only [A, NW, NTp]; omega, by simp only [A, NW, NTp]; push_cast; omega⟩ hop
+      refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+      refine th_upd (by simp [Env, envL, ci, aclA, A, NW, NTp]) ?_
+      exact Th.pre h24 PreS.h1
+    | h1 =>
+      obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+      evS
+      subst hev
+      rcases hL with hf | hh
+      · simp [opStep₄, hf, capv] at hop
+        obtain ⟨rfl, rfl⟩ := hop
+        refine ⟨f, true, false, none, σm, σb, g, _, ?_, rfl, hm, hb, hd1, hd2, hwf,
+          Or.inr (Or.inl ⟨hf, rfl, rfl, rfl, rfl, rfl, rfl⟩)⟩
+        refine th_upd (by simp [Env, envL, ci]) ?_
+        exact Th.cs0 h24
+      · simp [opStep₄, hh] at hop
+  | cs0 h24 =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    obtain ⟨rfl, σq, rfl, hq, d1, d2, hwq⟩ := bload hb hd1 hd2 hwf ⟨hs0, hs4⟩ hop
+    refine ⟨f, true, false, some (g (q + SvA f p)), σm, σq, g, L, ?_, rfl, hm, hq, d1, d2, hwq,
+      Or.inl ⟨rfl, rfl, rfl, rfl, Or.inr ⟨rfl, rfl, rfl⟩⟩⟩
+    rw [Env_upd_t hw]
+    exact Th.cs1 h24 _
+  | cs1 h24 t =>
+    obtain ⟨c, b, hev, hbool, rfl, rfl⟩ := cc_ite_step hs
+    evS
+    subst hev
+    simp [Const₄.toBool] at hbool
+    cases b <;> simp only [Bool.false_eq_true, ↓reduceIte] <;>
+      refine ⟨_, _, _, _, σm, σb, g, L, ?_, rfl, hm, hb, hd1, hd2, hwf, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+    · exact Th.cs4 h24 t (by simpa [Cond] using hbool)
+    · exact Th.cs2 h24 t (by simpa [Cond] using hbool)
+  | cs2 h24 t hc =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    obtain ⟨rfl, σq, rfl, hq, d1, d2, hwq⟩ := bstore hb hd1 hd2 hwf ⟨hs0, hs4⟩ hop
+    refine ⟨f, true, true, some t, σm, σq, _, L, ?_, rfl, hm, hq, d1, d2, hwq,
+      Or.inr (Or.inr (Or.inr ⟨t, rfl, rfl, rfl, rfl, rfl, rfl, rfl, hc.2.2, rfl⟩))⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.cs3 h24 t hc
+  | cs3 h24 t hc =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    simp [opStep₄, hhold rfl, unitv] at hop
+    obtain ⟨rfl, rfl⟩ := hop
+    refine ⟨f, false, true, some t, σm, σb, g, _, ?_, rfl, hm, hb, hd1, hd2, hwf,
+      Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩))⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.em0 h24 t hc
+  | cs4 h24 t hc =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    simp [opStep₄, hhold rfl, unitv] at hop
+    obtain ⟨rfl, rfl⟩ := hop
+    refine ⟨f, false, false, some t, σm, σb, g, _, ?_, rfl, hm, hb, hd1, hd2, hwf,
+      Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩))⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.ex2a h24 t hc
+  | em0 h24 t hc => ws; exact Th.em1 h24 t hc
+  | em1 h24 t hc =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ := wstore hm hd1 hwf ⟨by omega, by omega⟩ hop
+    have hpf : Function.update (Function.update f (p + 1) 0) (p + 2) 24 = postF₄ f p t := by
+      unfold Cond at hc
+      have h24' : 24 ≤ f p := by simpa using h24
+      simp [postF₄, h24', hc]
+    rw [hpf] at hq
+    refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.em2 h24 t hc
+  | em2 => exact (Th_ret_nostep hs).elim
+  | ex2a h24 t hc =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ := wstore hm hd1 hwf ⟨by omega, by omega⟩ hop
+    have hpf : Function.update f (p + 1) 2 = postF₄ f p t := by
+      unfold Cond at hc
+      have h24' : 24 ≤ f p := by simpa using h24
+      simp [postF₄, h24', hc]
+    rw [hpf] at hq
+    refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.ex2b h24 t hc
+  | ex2b => exact (Th_ret_nostep hs).elim
+  | ex1a hn =>
+    obtain ⟨vs, c, hev, hop, rfl⟩ := cc_op_step hs
+    evS
+    subst hev
+    obtain ⟨rfl, σq, rfl, hq, hdq, hwq⟩ := wstore hm hd1 hwf ⟨by omega, by omega⟩ hop
+    have hpf : Function.update f (p + 1) 1 = postF₄ f p 0 := by
+      have hn' : ¬ 24 ≤ f p := by simpa using hn
+      simp [postF₄, hn']
+    rw [hpf] at hq
+    refine ⟨_, _, _, _, σq, σb, g, L, ?_, rfl, hq, hb, hdq, hd2, hwq, Or.inl ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩⟩
+    refine th_upd (by simp [Env, envL, ci]) ?_
+    exact Th.ex1b hn
+  | ex1b => exact (Th_ret_nostep hs).elim
+
 end VIRL4
