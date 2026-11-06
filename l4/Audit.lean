@@ -48,3 +48,7 @@ import VIRL4
 #print axioms VIRL4.N3_no_triple
 #print axioms VIRL4.D_triple_false
 #print axioms VIRL4.D_blocks
+#print axioms VIRL4.thread_step
+#print axioms VIRL4.R1_step
+#print axioms VIRL4.R1_steps
+#print axioms VIRL4.N1_V
