@@ -85,3 +85,14 @@ changes. The pieces `Safe.lean` defines, named here before any proof:
 - **Declared scope, so no reader takes it for more:** this is Q6 FOR A TYPED CONFIGURATION, the prediction's own words. That every
   ⟶₄*-reachable configuration of a ⊢₄-typed program is RT₄-typed (PRESERVATION through ⟶₄, with acquire adding a base to Ω and release
   removing one) is the stronger reading and is OWED, a separate row (STATUS-vir 164's second half). It is not claimed by this file.
+
+## ADDENDUM 4 (2026-11-06, the 26th vir head, after N4-T and BEFORE any N4-S proof): N4's file, and N4-S's statement
+- **N4's rows live in `VIRL4/Router4.lean`**, not `Programs.lean` as planned above: F₄ and N4 are written with names (`NT₄`, L3's `NA`
+  reused through ι) and compiled to `Tm₄`, as L3 wrote F. N4-T is there (F₄_typed, N4_typed).
+- **N4-S, as this arm states it** (inputs §3: "each keeps ℓb's invariant and gives its own world L3's postcondition"). L3's post-state
+  `postF` decrements the bucket INSIDE the world (cell K + sender); at L4 the buckets are the separate region b behind ℓb, so the world's
+  post-state cannot mention the bucket and whether F₄ emits depends on the token t read inside the critical section. ⇒ **the world post is
+  `∃ t, RegionAt p 83 (postF₄ f p t)`**, where `postF₄` is `postF` with the bucket write removed and `0 < t` in place of `0 < f(bkt)`
+  (CODE/PAY written as L3 writes them). The invariant is **`I_b q σ := ∃ g, (∀ s ∈ [0,4), 0 ≤ g (q + s)) ∧ RegionAt q 4 g σ`** for every
+  base (only b is ever under a lock). Each side's triple: `{RegionAt p 83 f ∧ ℓb's base is q} F₄[⟨p⟩, ℓb] {v. v = ⟨p⟩ ∧ ∃ t, …}` with
+  L3's layout facts (sender, topic < 4) as hypotheses, as R4 takes them. **The relation between t and the emits is N4-V's**, on ⟶₄.
