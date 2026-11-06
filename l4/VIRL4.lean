@@ -4,3 +4,4 @@ import VIRL4.CE
 import VIRL4.Typing4
 import VIRL4.Programs
 import VIRL4.Safe
+import VIRL4.Rules4
