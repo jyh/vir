@@ -1497,7 +1497,7 @@ def slangm(repo, base, ext):
     bo = sorted(hits - termpos)
     rows.append(('SLM.SL3.binderOnly', len(bo), 'BESIDE:hits whose every occurrence is a bound name (x. / x: / x, y.), never a term; SL3 is still read by hand:' + (','.join(bo) or '-')))
     # the rules of the new modules: stored proofs (.prla) by MODULE:NAME, statements (.ml) by name
-    R, st, stage = {}, {}, {}
+    R, st, stage, stmod = {}, {}, {}, {}
     for p in new:
         if p.endswith('.prla'):
             for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
@@ -1507,6 +1507,7 @@ def slangm(repo, base, ext):
                 m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
                 if m:
                     st[m.group(1)] = blk
+                    stmod[m.group(1)] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else '-'
     # SL4: the recogniser set and its live control, derived from amend-19's rule at base
     cp = 'theories/vir/%s.ml' % SLM_CONTROL[0]
     ctl = ''
@@ -1553,9 +1554,36 @@ def slangm(repo, base, ext):
              ('SLM.SL8.l1.rules', len([n for n in R if stage[n] == 'l1']), 'MEASURED'), ('SLM.SL8.l1.steps', steps('l1'), 'MEASURED'),
              ('SLM.unstaged.rules', len([n for n in R if stage[n] == '-']), 'BESIDE:' + (','.join(sorted(n for n in R if stage[n] == '-')) or '-')),
              ('SLM.extras.C5tok', sum(R[n][3] for n in R), 'BESIDE:stale subtrees, NOT the proof'),
-             ('SLM.SL6.directions', 0, 'Q:the arm\'s post, six directions (type/atom/expression x both)'),
              ('SLM.SL7.setType', 0, 'Q:reported only if the arm states the rule over set types'),
              ('SLM.D4.tacticLine', 0, 'Q:the arm\'s ledger line for tactic building, NEVER folded into C5')]
+    # SL6 (STATUS-vir 181, ARM48): VIR_SLANG_SL6 = six rule names, slots type-fwd, type-bwd, atom-fwd, atom-bwd, expr-fwd,
+    # expr-bwd. A slot counts only with a STORED derivation in an L1-stage module AND a statement naming L1SLang and the slot's
+    # recogniser. The sort arguments (the arm's map, D-S2) are printed BESIDE for the hand read; direction is read by hand too.
+    sl6 = env('VIR_SLANG_SL6')
+    if not sl6:
+        rows.append(('SLM.SL6.directions', 0, 'Q:VIR_SLANG_SL6 unset (the arm names six rules: type/atom/expression x both)'))
+    elif len(sl6) != 6:
+        rows.append(('SLM.SL6.directions', len(sl6), 'INVALID:VIR_SLANG_SL6 must name exactly six rules, got %d' % len(sl6)))
+    else:
+        slot_rx = [r'\bis_tyterm\{'] * 2 + [r'\bwfs\{'] * 4
+        proved, recog, both, miss, seen6 = 0, 0, 0, [], []
+        for n, rx in zip(sl6, slot_rx):
+            stt = strip_ml_comments(st.get(n, ''))
+            ok_p = ok_r = False
+            if stmod.get(n) == 'l1':  # the STATEMENT's module; `stage` is keyed by stored proofs, so it cannot carry this test
+                if R.get(n, (0,))[0] > 0:  # SLM-SL6-STORED
+                    ok_p = True
+            if 'L1SLang{' in stt:
+                if rx and re.search(rx, stt):  # SLM-SL6-RECOG
+                    ok_r = True
+            proved += ok_p; recog += ok_r; both += ok_p and ok_r
+            if not ok_p:
+                miss.append(n)
+            args = re.findall(r'L1SLang\{[^{}]*\}', stt)[:1] + re.findall(r'(?:is_tyterm|wfs)\{[^{}]*', stt)[:1]
+            seen6.append('%s:%s' % (n, '/'.join(args) or '-'))
+        rows += [('SLM.SL6.directions', both, 'MEASURED:slots with a stored proof AND the slot\'s recogniser beside L1SLang; direction and sorts read by hand'),
+                 ('SLM.SL6.proved', proved, 'MEASURED:stored derivation >= 1 step in an L1-stage module' + ('; missing:' + ','.join(miss) if miss else '')),
+                 ('SLM.SL6.recogMatch', recog, 'BESIDE:' + ','.join(seen6))]
     return rows
 
 

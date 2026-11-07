@@ -893,6 +893,41 @@ if cmp -s "$H/count.py" "$F/mutant47b.py"; then say "ARM47 mutant-b NOT PLANTED"
 elif check47 "$F/mutant47b.py"; then say "ARM47 mutant-b SURVIVED (a :: read as a binder colon, or the comma list missed)"; fail=1
 else say "ARM47 mutant-b KILLED"; fi
 
+# ARM48 (STATUS-vir 181): SL6 from the ARTIFACT. VIR_SLANG_SL6 names six rules in the order type-fwd, type-bwd, atom-fwd,
+# atom-bwd, expr-fwd, expr-bwd. A slot counts toward SLM.SL6.directions only if its rule is an `interactive` in an L1-stage module
+# with a STORED derivation (>= 1 step) AND its statement names L1SLang and the slot's recogniser (is_tyterm for type, wfs for
+# atom and expression). Sort numbers are the arm's map (D-S2), so they are printed BESIDE for the hand read, never typed here.
+# X48 = X46 + six such rules, all stored: 6. X48b: expr-bwd has no stored proof and atom-bwd names is_tyterm: 4 (proved 5, recog 5).
+git -C "$R46" checkout -q "$X46"
+printf 'interactive sl6_tf : sequent { <H>; t: L1SLang{0} >- is_tyterm{\x27t} = btrue in bool }\ninteractive sl6_tb : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27t in L1SLang{0} }\ninteractive sl6_af : sequent { <H>; t: L1SLang{2} >- wfs{0; \x27t} = btrue in bool }\ninteractive sl6_ab : sequent { <H>; wfs{0; \x27t} = btrue in bool >- \x27t in L1SLang{2} }\ninteractive sl6_ef : sequent { <H>; t: L1SLang{3} >- wfs{2; \x27t} = btrue in bool }\ninteractive sl6_eb : sequent { <H>; wfs{2; \x27t} = btrue in bool >- \x27t in L1SLang{3} }\n' >> "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT" "sl6_tf=autoT" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT" "sl6_eb=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x48; X48=$(git -C "$R46" rev-parse HEAD)
+sed 's/^interactive sl6_ab : sequent { <H>; wfs{0; /interactive sl6_ab : sequent { <H>; is_tyterm{/' "$R46/theories/vir/virl1_slang.ml" > "$F/s48.ml"; mv "$F/s48.ml" "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT" "sl6_tf=autoT" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x48b; X48b=$(git -C "$R46" rev-parse HEAD)
+SL6N=sl6_tf,sl6_tb,sl6_af,sl6_ab,sl6_ef,sl6_eb
+c48() { VIR_SLANG_SL6="$SL6N" c46 "$@"; }
+check48() {
+  case "$(c48 "$1" "$X48" SLM.SL6.directions)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48" SLM.SL6.proved)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48" SLM.SL6.recogMatch)" in "6	BESIDE"*"sl6_af:L1SLang{2}/wfs{0"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.directions)" in "4	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.proved)" in "5	MEASURED"*"missing:sl6_eb"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.recogMatch)" in "5	BESIDE"*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_SL6=sl6_tf c46 "$1" "$X48" SLM.SL6.directions)" in "1	INVALID"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X48" SLM.SL6.directions)" in "0	Q"*) ;; *) return 1;; esac
+}
+if check48 "$H/count.py"; then say "ARM48 SL6 fixture OK (X48 6/6; X48b 4 = proved 5 with sl6_eb missing, recog 5; one name => INVALID; unset => Q)"
+else say "ARM48 SL6 fixture FAIL"; for x in "$X48" "$X48b"; do VIR_SLANG_SL6="$SL6N" VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$x" "$R46" | grep -F SL6; done; fail=1; fi
+sed 's/if R.get(n, (0,))\[0\] > 0:  # SLM-SL6-STORED/if True:  # SLM-SL6-STORED/' "$H/count.py" > "$F/mutant48.py"
+if cmp -s "$H/count.py" "$F/mutant48.py"; then say "ARM48 mutant NOT PLANTED"; fail=1
+elif check48 "$F/mutant48.py"; then say "ARM48 mutant SURVIVED (a statement with no stored proof read as proved)"; fail=1
+else say "ARM48 mutant KILLED"; fi
+sed 's/if rx and re.search(rx, stt):  # SLM-SL6-RECOG/if True:  # SLM-SL6-RECOG/' "$H/count.py" > "$F/mutant48b.py"
+if cmp -s "$H/count.py" "$F/mutant48b.py"; then say "ARM48 mutant-b NOT PLANTED"; fail=1
+elif check48 "$F/mutant48b.py"; then say "ARM48 mutant-b SURVIVED (the slot's recogniser never checked)"; fail=1
+else say "ARM48 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
