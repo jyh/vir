@@ -562,6 +562,40 @@ if cmp -s "$H/count.py" "$F/mutant36.py"; then say "ARM36 mutant NOT PLANTED"; f
 elif check36 "$F/mutant36.py"; then say "ARM36 mutant SURVIVED (a fuel premise in y5_open went unread)"; fail=1
 else say "ARM36 mutant KILLED"; fi
 
+# (38) amend-18 Z rows on the Lean L3 arm (count.py --arm l3): rows present by name; Z2 casts over VIRL3; Z3 `Triple` in
+# Inequality.lean; Z5 step tokens (Step₂ Steps₂ stepFn₂ run₂) inside R4's block; Z6 `frame` applications and locality-lemma
+# citations inside R5_frame's proof; Z7 `fix` in the terms; Z8 proof lines of R7 and R8. Fixture G is clean (Z5 0 · Z6 1/0 ·
+# Z3 0); fixture H plants a run₂ in R4's FILE-FINAL block, a load_at in R5_frame and a Triple in Inequality.lean (Z5 1 · Z6 1/1 ·
+# Z3 1). Mutant: Z5 reads the statement only => H reads 0.
+for x in G H; do mkdir -p "$F/l3$x/VIRL3"; done
+printf 'theorem R2 : den = den := by\n  rfl\n' > "$F/l3G/VIRL3/Inequality.lean"
+printf 'theorem R5_frame (R : Assn) : Triple (P ∗ R) e Q :=\n  frame R (R4 h)\n\ntheorem R4 {p} : Triple P e Q := by\n  refine letOp_rule rfl (load_at _ 87 _ _ ?_) ?_\n' > "$F/l3G/VIRL3/RouterTriple.lean"
+printf 'theorem R2 : den = den := by\n  have : Triple P e Q := sorry\n  rfl\n' > "$F/l3H/VIRL3/Inequality.lean"
+printf 'theorem R5_frame (R : Assn) : Triple (P ∗ R) e Q :=\n  frame R (load_at R4)\n\ntheorem R4 {p} : Triple P e Q := by\n  have := run₂_steps 80 c\n  exact h' > "$F/l3H/VIRL3/RouterTriple.lean"
+check38() { local g h; g=$(python3 "$1" --arm l3 "$F/l3G"); h=$(python3 "$1" --arm l3 "$F/l3H")
+  [ "$(g6 "$g" L3.Z5.stepInR4)" = 0 ] && [ "$(g6 "$g" L3.Z6.frameApps)" = 1 ] && [ "$(g6 "$g" L3.Z6.localityCited)" = 0 ] &&
+  [ "$(g6 "$g" L3.Z3.tripleInR2File)" = 0 ] && [ "$(g6 "$h" L3.Z5.stepInR4)" = 1 ] && [ "$(g6 "$h" L3.Z6.localityCited)" = 1 ] &&
+  [ "$(g6 "$h" L3.Z3.tripleInR2File)" = 1 ]; }
+if check38 "$H/count.py"; then say "ARM38 l3 Z fixture OK (G: 0 1 0 0; H: 1 1 1 1)"
+else say "ARM38 l3 Z fixture FAIL"; python3 "$H/count.py" --arm l3 "$F/l3G"; python3 "$H/count.py" --arm l3 "$F/l3H"; fail=1; fi
+sed "s/len(STEP_RE.findall(proof_of(thm.get('R4', ''))))/len(STEP_RE.findall(p_statement(thm.get('R4', ''))))/" "$H/count.py" > "$F/mutant38.py"
+if cmp -s "$H/count.py" "$F/mutant38.py"; then say "ARM38 mutant NOT PLANTED"; fail=1
+elif check38 "$F/mutant38.py"; then say "ARM38 mutant SURVIVED (a step token in R4's proof went unread)"; fail=1
+else say "ARM38 mutant KILLED"; fi
+
+# (37) the L3 transcription check (harness/transcribe_l3.py; l3/DECLARATIONS-LEAN.md): the TEXT of inputs/L3-programs.md,
+# parsed and macro-expanded by the script, against the Lean arm's printed F / U / U_tx (l3/logs/transcribe-001.log).
+# Real: SAME ×3, rc 0. Mutant: RD32's first load reads offset 4+o for 3+o => every term DIFF, rc 1. Skipped (said so) where the Lean log
+# is absent (a checkout without the L3 Lean arm).
+TL="$H/../l3/logs/transcribe-001.log"
+if [ -f "$TL" ]; then
+  if python3 "$H/transcribe_l3.py" "$H/../inputs/L3-programs.md" "$TL" > "$F/t37.txt" 2>&1; then say "ARM37 transcribe L3 OK (F U U_tx SAME)"
+  else say "ARM37 transcribe L3 FAIL"; cat "$F/t37.txt"; fail=1; fi
+  sed "s/ld(x + '0', 3 + o,/ld(x + '0', 4 + o,/" "$H/transcribe_l3.py" > "$F/mutant37.py"
+  if cmp -s "$H/transcribe_l3.py" "$F/mutant37.py"; then say "ARM37 mutant NOT PLANTED"; fail=1
+  elif python3 "$F/mutant37.py" "$H/../inputs/L3-programs.md" "$TL" > /dev/null 2>&1; then say "ARM37 mutant SURVIVED"; fail=1
+  else say "ARM37 mutant KILLED"; fi
+else say "ARM37 SKIPPED (no l3/logs/transcribe-001.log in this checkout)"; fi
 # (39) amend-19 on the Lean arm (count.py --arm ind DIR): I3 proof lines of the rule's theorems (ind_ty ind_atom ind_atoms ind_tm
 # three_sorted_induction, the statement excluded) and AUXILIARY lemmas (any other theorem in Induction.lean); I6 the W3 premises
 # (X1… binders); I2 theorems in the newest ind-audit log outside the standard three. Fixture I: the five, 3 proof lines in all,

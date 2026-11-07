@@ -1,0 +1,16 @@
+saltqueue: ticket P2 seat=root pid=61978
+'VIRL3.F_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.U_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.U_tx_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R3_false_order' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R3_false_alias' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R5_contents' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R5_frame' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R6_call' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL3.R7' depends on axioms: [propext]
+'VIRL3.R8' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0
