@@ -6,6 +6,9 @@ the L1 rule exist.** Every L1 figure below is OWED. The frame fixes how each row
 the L1 figures. One reading rule (SL3 on bound names, below) was written AFTER act 1's read, which is what raised it. That is
 declared, and it is the only rule here written after any SLang figure existed.
 
+**FILLED 2026-11-07 by the 37th vir head at f1c3d89e9**, the sha the arm named for SL6's landing. The rules below were all fixed
+before that sha; the final column is read under them unchanged. Every scored row HOLDS.
+
 The Lean arm takes no act (amend-20). Its comparator is amend-19 I3's 509 tokens (RESULTS-9).
 
 ## The run
@@ -16,21 +19,29 @@ the bus. A figure from any other sha is void.
 
 ## Rows
 
-| row | falsifier (amend-20 / amend-22, quoted in short) | harness row(s) | reading at 41de5e05d (act 1, framework only) | at the L1 sha |
+| row | falsifier (amend-20 / amend-22, quoted in short) | harness row(s) | reading at 41de5e05d (act 1, framework only) | FINAL, at f1c3d89e9 (SL6 landed; the arm's named sha) |
 |---|---|---|---|---|
-| SL1 | ≥ 1 pre-existing definition, rule or `.prla` changes | SLM.SL1.rulesEdited / defsEdited / prlaChanged; otherChanged BESIDE | 0 / 0 / 0; MetaprlInfo (one line, module list) BESIDE | OWED |
-| SL2 | a prim is added; grounded under REPLAY | SLM.SL2.newPrims; SL2.grounded is Q (the arm's status_all) | 0 new prims; the arm posted 24/24 FRESH, 24 GROUNDED | OWED |
-| SL3 | the framework module(s) name an L1 operator or a `virl1_`/`virl2_` term | SLM.SL3.hits (scored); SLM.SL3.binderOnly BESIDE; hand read | hits 1 = `kids`, a bound name only (binderOnly 1); by hand: no L1 term applied, no nat sort literal ⇒ HOLDS at this sha | OWED (re-read any edit to vir_slang) |
-| SL4 | the L1 rule's derivation goes through a recogniser (`wfs`, `is_tyterm`, `isNum`) | SLM.SL4.recogHits over the closure from ROOT; SL4.control beside | Q (no root yet); control 3 | OWED |
-| SL5(a) | L1 stage C5 > 25,332 tok | SLM.SL5.L1.C5tok | 0 (no L1 stage) | OWED |
-| SL5(b) | framework + L1 C5 > 69,794 tok | SLM.SL5.total.C5tok | framework 649 so far | OWED |
-| SL6 | a direction (type · atom · expression × both) not proved | Q: the arm's six rule names, each read in its `.prla` | not reached | OWED |
-| SL7 | reported only | Q | not stated | OWED |
-| SL8 | reported | SLM.SL8.{fw,l1,sl6}.{rules,steps} | fw 24 rules / 24 steps | OWED |
-| D1 | = SL5(a) | SL5.L1.C5tok | — | OWED |
-| D2 | L1 stage ≤ 5,090 tok | SL5.L1.C5tok | — | OWED |
-| D3 | attribution follows SL4 × D1 | — | — | OWED |
-| D4 | the tactic line, BESIDE, never in C5 | Q: the arm's ledger line (l2/slang/TACTIC-LEDGER.md) | tooling T1 (vir_walk) is UNSTAGED: 3 rules, out of every stage | OWED |
+| SL1 | ≥ 1 pre-existing definition, rule or `.prla` changes | SLM.SL1.rulesEdited / defsEdited / prlaChanged; otherChanged BESIDE | 0 / 0 / 0; MetaprlInfo (one line, module list) BESIDE | 0 / 0 / 0 ⇒ **HOLDS**; otherChanged 2 BESIDE: MetaprlInfo + virl1_induct.mli (D-S10, declarations only; .ml/.prla byte-unchanged vs 73bd3ac0d) |
+| SL2 | a prim is added; grounded under REPLAY | SLM.SL2.newPrims; SL2.grounded is Q (the arm's status_all) | 0 new prims; the arm posted 24/24 FRESH, 24 GROUNDED | 0 new prims ⇒ **HOLDS**; status_all FRESH per stage from the arm's commits: fw 47/47 (f131274f9; vir_slang byte-unchanged since), l1 28/28 (1272ee7fb; unchanged since), sl6 34/34 (f1c3d89e9, check_all 34 grounded) |
+| SL3 | the framework module(s) name an L1 operator or a `virl1_`/`virl2_` term | SLM.SL3.hits (scored); SLM.SL3.binderOnly BESIDE; hand read | hits 1 = `kids`, a bound name only (binderOnly 1); by hand: no L1 term applied, no nat sort literal ⇒ HOLDS at this sha | hits 1 = `kids`, binderOnly 1; vir_slang byte-unchanged since f131274f9, whose by-hand read (no L1 term, no nat sort literal) carries ⇒ **HOLDS** |
+| SL4 | the L1 rule's derivation goes through a recogniser (`wfs`, `is_tyterm`, `isNum`) | SLM.SL4.recogHits over the closure from ROOT; SL4.control beside | Q (no root yet); control 3 | ROOT l1s_induction: recogHits **0**, control 3 (isNum, is_tyterm, wfs), closure 23 rules, rootStatement 0 ⇒ **HOLDS**; closure and vir_l1slang unchanged since 1272ee7fb, and vir_l1sl6 is downstream of it (extends Vir_l1slang), so no SL6 rule can enter it |
+| SL5(a) | L1 stage C5 > 25,332 tok | SLM.SL5.L1.C5tok | 0 (no L1 stage) | **5,728** ≤ 25,332 ⇒ **HOLDS** (11.25× Lean's 509) |
+| SL5(b) | framework + L1 C5 > 69,794 tok | SLM.SL5.total.C5tok | framework 649 so far | fw 1,895 + L1 5,728 = **7,623** ≤ 69,794 ⇒ **HOLDS** (14.97×) |
+| SL6 | a direction (type · atom · expression × both) not proved | Q: the arm's six rule names, each read in its `.prla` | not reached | **6/6 proved** (stored derivations; mojave's two false-statement mutants red backwards, 32/34). VIR_SLANG_SL6 in slot order: sl6_type_fwd · sl6_type_bwd · sl6_atom_fwd · sl6_atom_bwd · sl6_expr_fwd · sl6_expr_bwd. Hand read (vir_l1sl6.ml ll.84–94, 216–229): (0, is_tyterm) · (2, wfs{0}) · (3, wfs{2}), matching the sort map (vir_l1slang.ml l.5) and wfs's codes (virl1_induct.ml l.54: 0 atom, 2 expression); ⇒ is `t ∈ L1SLang{k} ⊢ t ∈ L1Lang{sig1} ∧ R t = btrue`, ⇐ its converse ⇒ **HOLDS** |
+| SL7 | reported only | Q | not stated | not stated (no set-type layer) — nothing to report |
+| SL8 | reported | SLM.SL8.{fw,l1,sl6}.{rules,steps} | fw 24 rules / 24 steps | fw 47/47 · l1 28/28 · sl6 34 rules / 73 steps, sl6 C5 107,361 tok (reported, never in SL5) · unstaged 3 · extras 24,516 BESIDE (stale subtrees, not the proof) |
+| D1 | = SL5(a) | SL5.L1.C5tok | — | 5,728 ≤ 25,332 ⇒ **HOLDS** |
+| D2 | L1 stage ≤ 5,090 tok | SL5.L1.C5tok | — | 5,728 > 5,090 ⇒ **HOLDS** (margin 638 tok, 12.5 %) |
+| D3 | attribution follows SL4 × D1 | — | — | SL4 and D1 both HOLD ⇒ the saving is attributed to the removed recognisers |
+| D4 | the tactic line, BESIDE, never in C5 | Q: the arm's ledger line (l2/slang/TACTIC-LEDGER.md) | tooling T1 (vir_walk) is UNSTAGED: 3 rules, out of every stage | the arm's line: all SL6 tactic building generated (l2/sl6/gen_r.py, gen_e.py, lib.py, gen_b.py, gen_n.py); drive sl6.mp 1,066,418 bytes, generated; stage wall time ≤ 52 min (14:08–15:00 PST, not split script/tool). BESIDE, no direction, never in C5 |
+
+## The joint reading (amend-22 §4), scored at f1c3d89e9
+D1 and D2 both HOLD: 5,090 < 5,728 ≤ 25,332. That is the stated prediction: **both causes are real, and the encoding is the larger.**
+SL4 holds, so D3 attributes the saving to the removed recognisers. D2's margin is small (638 tokens over the floor), and SL5 counts
+stored proofs only: the arm's proof search lives in generated ML tactics, on D4's line. SL6's own C5 (107,361) is ~19× the L1 rule's
+and is a check on the stage, priced apart from it by the SL6 reading rule below; it is reported and enters no bound.
+The run: `VIR_SLANG_ROOT=l1s_induction VIR_SLANG_SL6=<the six names> count.py --arm slangm --base 73bd3ac0d --ext f1c3d89e9 <clone>`,
+count.py from vir 803a9ef; stages MEASURED exactly {vir_slang} / {vir_l1slang} / {vir_l1sl6}.
 
 ## Reading rules fixed here
 - **SL3 on bound names (written after act 1, declared).** amend-20's SL3 says the module *names* no L1 operator or `virl1_`/`virl2_`
