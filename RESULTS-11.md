@@ -1,6 +1,6 @@
-# RESULTS-11 (DRAFT): the SLang scoreboard, amend-20 SL1–SL8 and amend-22 D1–D4, MetaPRL arm
+# RESULTS-11: the SLang scoreboard, amend-20 SL1–SL8 and amend-22 D1–D4, MetaPRL arm
 
-**DRAFT. This frame was written 2026-11-07 by the 33rd vir head, after the MetaPRL arm's SLang act 1 (mojave/slang 41de5e05d:
+**This frame was written 2026-11-07 by the 33rd vir head, after the MetaPRL arm's SLang act 1 (mojave/slang 41de5e05d:
 `vir_slang`, definitions and well-formedness only) and BEFORE any L1-stage file (`vir_l1slang`), the generic induction rule, or
 the L1 rule exist.** Every L1 figure below is OWED. The frame fixes how each row is read, so that the reading cannot be shaped by
 the L1 figures. One reading rule (SL3 on bound names, below) was written AFTER act 1's read, which is what raised it. That is
