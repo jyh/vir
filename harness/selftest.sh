@@ -741,6 +741,27 @@ if cmp -s "$H/count.py" "$F/mutant43.py"; then say "ARM43 mutant NOT PLANTED"; f
 elif check43 "$F/mutant43.py"; then say "ARM43 mutant SURVIVED (scoping read from the wrong name)"; fail=1
 else say "ARM43 mutant KILLED"; fi
 
+# ARM44 (STATUS-vir 170, mojave's D10): the INDEX-FAULT departure (is_ifault given the let congruence, ruled (a)
+# @98,653,117) on its OWN sub-line, so its cost is counted in Y5's C5 and read beside it. On X43 nothing names is_ifault:
+# EMPTY. On X44: one define, a rule naming is_ifault (the regression lemma), a wf rule naming it, a rule naming only
+# ifault_op (a DIFFERENT predicate, NOT counted) and one naming is_ifaultx (a longer name, NOT counted).
+printf 'define unfold_is_ifault : is_ifault{\x27c} <--> \x27c\ninteractive if_let : sequent { <H> >- is_ifault{\x27c} = btrue in bool }\ninteractive if_wf : sequent { <H> >- is_ifault{\x27c} in bool }\ninteractive if_op : sequent { <H> >- ifault_op{\x27o; \x27v; \x27s} in bool }\ninteractive if_long : sequent { <H> >- is_ifaultx{\x27c} }\n' > "$R41/theories/vir/virl2_triple.ml"
+prla "$R41/theories/vir/virl2_triple.prla" "if_let=autoT" "if_wf=autoT" "if_op=autoT" "if_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault; X44=$(git -C "$R41" rev-parse HEAD)
+check44() {
+  case "$(c42 "$1" "$X43" L2M.Y5.ifaultDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultRules)" in "2	MEASURED"*if_let*if_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"2 of 2"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.scopingRules)" in "2	MEASURED"*) ;; *) return 1;; esac
+}
+if check44 "$H/count.py"; then say "ARM44 index-fault fixture OK (X43 EMPTY; X44 defs 1, rules 2 (if_op and is_ifaultx not read), scoping unchanged)"
+else say "ARM44 index-fault fixture FAIL"; c42 "$H/count.py" "$X44" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27,)/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault_op\x27)/' "$H/count.py" > "$F/mutant44.py"
+if cmp -s "$H/count.py" "$F/mutant44.py"; then say "ARM44 mutant NOT PLANTED"; fail=1
+elif check44 "$F/mutant44.py"; then say "ARM44 mutant SURVIVED (ifault_op read as the departure)"; fail=1
+else say "ARM44 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

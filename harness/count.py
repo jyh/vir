@@ -1206,6 +1206,7 @@ def mpl_refs(n, text, names):
 L2M_FRAME, L2M_TYPING = 'triple_frame', 'virl2_typing'
 L2M_CARVE = ('wfs2', 'isNum2')  # D8 at mojave 9065db501
 L2M_SCOPE = ('scoped2', 'scoped')  # D9 (mojave @97,494,337): the name as committed is re-read at D9's sha
+L2M_IFAULT = ('is_ifault',)  # D10 (mojave @98,646,216, ruled (a) @98,653,117): the let congruence; ifault_op is unchanged and NOT read
 
 
 def metaprll2(repo, base, ext):
@@ -1352,8 +1353,11 @@ def metaprll2(repo, base, ext):
                     (pre + 'C5tok', sum(R[k][1] for k in rs if k in R), ('BESIDE:stored-proof tokens of those rules (%d of %d stored)' % (len([k for k in rs if k in R]), len(rs))) if defs else 'EMPTY')]
     cv, crow = carve(L2M_CARVE, 'L2M.Y5.carving', 'carving')
     sv, srow = carve(L2M_SCOPE, 'L2M.Y5.scoping', 'scoping')
+    # INDEX FAULT (STATUS-vir 170, mojave's D10): is_ifault as departed toward OBJECT-L2 §2 (a let stuck at its head's index
+    # fault is an index fault). Its own sub-line, the same reading; counted in Y5's C5 too, since it is part of triple_i.
+    _, irow = carve(L2M_IFAULT, 'L2M.Y5.ifault', 'index-fault')
     ov = sorted(set(cv) & set(sv))
-    rows += crow + srow + [('L2M.Y5.carvingOverlap', len(ov), 'BESIDE:rules in BOTH lines (a sum of the two lines counts them twice):' + (','.join(ov) or '-'))]
+    rows += crow + srow + irow + [('L2M.Y5.carvingOverlap', len(ov), 'BESIDE:rules in BOTH lines (a sum of the two lines counts them twice):' + (','.join(ov) or '-'))]
     for m in sorted(set(mod.values())):
         ns = [n for n in R if mod[n] == m]
         rows.append(('L2M.C5tok.' + m, sum(R[n][1] for n in ns), 'BESIDE:%d rules; extras %d tok kept out' % (len(ns), sum(R[n][3] for n in ns))))
