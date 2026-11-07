@@ -780,6 +780,57 @@ if cmp -s "$H/count.py" "$F/mutant45.py"; then say "ARM45 mutant NOT PLANTED"; f
 elif check45 "$F/mutant45.py"; then say "ARM45 mutant SURVIVED (ifault2 not read as D10)"; fail=1
 else say "ARM45 mutant KILLED"; fi
 
+# ARM46 (STATUS-vir 147, amend-20 SL1-SL8 + amend-22 D1-D4): the SLang arm, built BEFORE the MetaPRL arm's SLang sha.
+# Base B46: an L1 signature (lam_op in core_ops, arrow_op in sig1), amend-19's l1_induction with two recognisers in its
+# premises (is_tyterm, wfs: the derived recogniser set, so the SL4 control is live) and one pre-existing rule old_r.
+# X46 (clean): a generic itt_slang (SLang, slang_ind, slang_wf) and an L1 instance virl1_slang (ssig1, L1SLang,
+# l1s_induction citing slang_ind and l1s_aux). X46b (dirty): itt_slang names lam_op (SL3 1); l1s_induction's proof cites
+# l1s_rec, whose statement has is_tyterm (SL4 1 through the closure, none in the root); old_r edited (SL1 rules 1).
+R46="$F/r46"; mkdir -p "$R46/theories/vir"; git -C "$R46" init -q; git -C "$R46" config user.email t@t; git -C "$R46" config user.name t
+printf 'define unfold_lam_op : lam_op <--> operator[(l1_lam):op]\ndefine unfold_arrow_op : arrow_op <--> operator[(l1_arrow):op]\ndefine unfold_core_ops : core_ops <-->\n   lam_op :: nil\ndefine unfold_sig1 : sig1 <-->\n   arrow_op :: nil\n' > "$R46/theories/vir/virl1_sig.ml"
+printf 'define unfold_is_tyterm : is_tyterm{\x27t} <--> \x27t\ninteractive l1_induction :\n   [T2] sequent { <H>; t1: L1Lang{sig1}; is_tyterm{\x27t1} = btrue in bool; wfs{\x27t1} = btrue in bool >- \x27Pt[\x27t1] }\ninteractive old_r : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_induct.ml"
+prla "$R46/theories/vir/virl1_induct.prla" "l1_induction=autoT" "old_r=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm base; B46=$(git -C "$R46" rev-parse HEAD)
+printf 'define unfold_SLang : SLang{\x27ss; \x27s} <--> \x27ss\ninteractive slang_ind : sequent { <H> >- SLang{\x27ss; \x27s} }\ninteractive slang_wf : sequent { <H> >- SLang{\x27ss; \x27s} Type }\n' > "$R46/theories/vir/itt_slang.ml"
+prla "$R46/theories/vir/itt_slang.prla" "slang_ind=(autoT thenT dT 0)" "slang_wf=autoT"
+printf 'define unfold_ssig1 : ssig1 <--> lam_op\ndefine unfold_L1SLang : L1SLang{\x27s} <--> SLang{ssig1; \x27s}\ninteractive l1s_induction : sequent { <H>; t: L1SLang{\x27s} >- \x27P[\x27t] }\ninteractive l1s_aux : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm slang; X46=$(git -C "$R46" rev-parse HEAD)
+printf 'interactive slang_bad : sequent { <H> >- lam_op in Term }\n' >> "$R46/theories/vir/itt_slang.ml"
+printf 'interactive l1s_rec : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27a }\n' >> "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT l1s_rec)" "l1s_aux=autoT" "l1s_rec=autoT"
+sed 's/^interactive old_r : sequent { <H> >- \x27a }/interactive old_r : sequent { <H> >- \x27b }/' "$R46/theories/vir/virl1_induct.ml" > "$F/oi.ml"; mv "$F/oi.ml" "$R46/theories/vir/virl1_induct.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm dirty; X46b=$(git -C "$R46" rev-parse HEAD)
+c46() { VIR_SLANG_ROOT=l1s_induction python3 "$1" --arm slangm --base "$B46" --ext "$2" "$R46" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+check46() {
+  case "$(c46 "$1" "$X46" SLM.SL1.rulesEdited)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL2.newPrims)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.fw)" in "1	MEASURED"*itt_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.l1)" in "1	MEASURED"*virl1_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL3.hits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.control)" in "2	MEASURED"*is_tyterm*wfs*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.recogHits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.L1.C5tok)" in "6	MEASURED"*25332*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.total.C5tok)" in "11	MEASURED"*69794*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL8.fw.rules)" in "2	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL1.rulesEdited)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.recogHits)" in "1	MEASURED"*is_tyterm*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.rootStatement)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT=nosuch python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in EMPTY*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT= python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in Q*) ;; *) return 1;; esac
+}
+if check46 "$H/count.py"; then say "ARM46 slangm fixture OK (X46 SL1 0, SL3 0, SL4 0 with control 2, L1 6 tok, total 11; X46b SL1 1, SL3 1 lam_op, SL4 1 through the closure; no root => Q)"
+else say "ARM46 slangm fixture FAIL"; VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$X46b" "$R46"; fail=1; fi
+sed 's/todo += list(mpl_refs(x, RT\[x\], names))  # SLM-CLOSURE/pass  # SLM-CLOSURE/' "$H/count.py" > "$F/mutant46.py"
+if cmp -s "$H/count.py" "$F/mutant46.py"; then say "ARM46 mutant NOT PLANTED"; fail=1
+elif check46 "$F/mutant46.py"; then say "ARM46 mutant SURVIVED (SL4 read the root alone)"; fail=1
+else say "ARM46 mutant KILLED"; fi
+sed 's/^SLM_RECOG_RE = .*/SLM_RECOG_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant46b.py"
+if cmp -s "$H/count.py" "$F/mutant46b.py"; then say "ARM46 mutant-b NOT PLANTED"; fail=1
+elif check46 "$F/mutant46b.py"; then say "ARM46 mutant-b SURVIVED (an empty recogniser set read as SL4 HOLDS)"; fail=1
+else say "ARM46 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

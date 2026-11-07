@@ -1366,6 +1366,142 @@ def metaprll2(repo, base, ext):
     return rows
 
 
+# The SLang arm (STATUS-vir 147; amend-20 SL1-SL8, amend-22 D1-D4). DIR is a clone of the MetaPRL arm's tree, --base the sha
+# it names as its pre-SLang tip, --ext the sha it names when SLang lands. Stages are read from the ARTIFACT: the FRAMEWORK
+# stage is every new module that defines `SLang`, the L1 stage every new module that defines `L1SLang` or `ssig1`
+# (VIR_SLANG_FW / VIR_SLANG_L1, comma-separated module names, override when the arm declares other names). SL4's root is the
+# arm's L1 rule, named by VIR_SLANG_ROOT (unset => Q). The recogniser set is DERIVED from amend-19's l1_induction statement
+# at base (every `X{..} = btrue in bool` premise), which is also SL4's live control. The bounds are derived from
+# l1/out/counts-indm.tsv (S/2 and U+S) and counts-ind.tsv (10 x Lean), never typed.
+SLM_FW_DEFS, SLM_L1_DEFS = ('SLang',), ('L1SLang', 'ssig1')
+SLM_CONTROL = ('virl1_induct', 'l1_induction')
+SLM_RECOG_RE = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)\{[^{}]*\}\s*=\s*btrue\s+in\s+bool")
+
+
+def slangm(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True, errors='replace')  # the tree holds latin-1 files
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('SLM.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '-r', '--name-only', sha, 'theories/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    show = lambda sha, p: strip_ml_comments(g('show', sha + ':' + p).stdout)
+    mod = lambda p: os.path.basename(p).rsplit('.', 1)[0]
+    new = sorted(le - lb)
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    changed = [p for p in g('diff', '--name-only', base, ext, '--', 'theories').stdout.split() if p in lb]
+    redit = dedit = 0
+    for p in changed:  # only a changed file can carry an edited item
+        if p.endswith('.ml') and p in le:
+            b, a = items(base, p), items(ext, p)
+            for k in b:
+                if k not in a or b[k] != a[k]:
+                    if k[0] in 'ip':
+                        redit += 1
+                    else:
+                        dedit += 1
+    prla = [p for p in changed if p.endswith('.prla')]
+    other = [p for p in changed if not p.endswith(('.ml', '.prla'))]
+    newml = [p for p in new if p.endswith('.ml')]
+    nprim = sum(len(PRIM_RE.findall(show(ext, p))) for p in newml)
+    defs = lambda p: set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, p), re.M))
+    env = lambda k: [x for x in os.environ.get(k, '').split(',') if x]
+    fwm = env('VIR_SLANG_FW') or [mod(p) for p in newml if defs(p) & set(SLM_FW_DEFS)]
+    l1m = env('VIR_SLANG_L1') or [mod(p) for p in newml if defs(p) & set(SLM_L1_DEFS) and mod(p) not in fwm]
+    src = 'DECLARED' if env('VIR_SLANG_FW') or env('VIR_SLANG_L1') else 'MEASURED'
+    path = lambda m, e: next((p for p in le if mod(p) == m and p.endswith(e)), None)
+    rows = [('SLM.newFiles', len(new), 'BESIDE:' + (','.join(os.path.basename(p) for p in new) or '-')),
+            ('SLM.stage.fw', len(fwm), src + ':' + (','.join(fwm) or '-')),
+            ('SLM.stage.l1', len(l1m), src + ':' + (','.join(l1m) or '-')),
+            ('SLM.SL1.rulesEdited', redit, 'MEASURED:pre-existing theories/**/*.ml rules (interactive/prim) edited or removed, comments stripped'),
+            ('SLM.SL1.defsEdited', dedit, 'MEASURED'),
+            ('SLM.SL1.prlaChanged', len(prla), 'MEASURED:' + (','.join(os.path.basename(p) for p in prla) or '-')),
+            ('SLM.SL1.otherChanged', len(other), 'BESIDE:' + (','.join(other) or '-')),
+            ('SLM.SL2.newPrims', nprim, 'MEASURED:prim/prim_rw in new .ml'),
+            ('SLM.SL2.grounded', 0, 'Q:the arm\'s REPLAY post (status_all, fresh session)')]
+    # SL3: the framework modules' own text (.ml and .mli, comments stripped) against L1's operators and every term a
+    # virl1_*/virl2_* module defines or declares (the L2 Y1 content test), plus the module prefixes themselves.
+    sh = ind_shapes(g('show', base + ':theories/vir/virl1_sig.ml').stdout) if 'theories/vir/virl1_sig.ml' in lb else {}
+    vterms = set(sh)
+    for p in le:
+        if re.match(r'virl[12]_', os.path.basename(p)) and p.endswith('.ml'):
+            vterms |= defs(p)
+    vre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms | {'virl1_', 'virl2_', 'Virl1_', 'Virl2_'}))))
+    hits = set()
+    for m in fwm:
+        for e in ('.ml', '.mli'):
+            q = path(m, e)
+            if q:
+                hits |= {'%s:%s' % (m, h) for h in vre.findall(show(ext, q))}
+    rows.append(('SLM.SL3.hits', len(hits), 'MEASURED:' + (','.join(sorted(hits)) or '-')))
+    # the rules of the new modules: stored proofs (.prla) by MODULE:NAME, statements (.ml) by name
+    R, st, stage = {}, {}, {}
+    for p in new:
+        if p.endswith('.prla'):
+            for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
+                R[n] = v; stage[n] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else '-'
+        elif p.endswith('.ml'):
+            for blk in MPL_ITEM_RE.split(show(ext, p)):
+                m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
+                if m:
+                    st[m.group(1)] = blk
+    # SL4: the recogniser set and its live control, derived from amend-19's rule at base
+    cp = 'theories/vir/%s.ml' % SLM_CONTROL[0]
+    ctl = ''
+    if cp in lb:
+        for blk in MPL_ITEM_RE.split(show(base, cp)):
+            if re.match(r'interactive\s+%s\b' % re.escape(SLM_CONTROL[1]), blk):
+                ctl = blk
+    recog = sorted(set(SLM_RECOG_RE.findall(ctl)))
+    rows.append(('SLM.SL4.control', len(recog), 'MEASURED:recognisers in %s\'s premises at base:' % SLM_CONTROL[1] + (','.join(recog) or '-')))
+    root = os.environ.get('VIR_SLANG_ROOT', '')
+    if not root:
+        rows += [('SLM.SL4.recogHits', 0, 'Q:VIR_SLANG_ROOT unset (the arm names its L1 rule)')]
+    elif not recog:
+        rows += [('SLM.SL4.recogHits', 0, 'INVALID:the control derived no recogniser, so an absence proves nothing')]
+    else:
+        RT = {n: st.get(n, '') + ' ' + ' '.join(R[n][4] if n in R else []) for n in set(R) | set(st)}
+        names = set(RT)
+        seen, todo = set(), [root] if root in names else []
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x)
+                todo += list(mpl_refs(x, RT[x], names))  # SLM-CLOSURE
+        rre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, recog)))
+        rh = sorted({'%s:%s' % (n, h) for n in seen for h in rre.findall(RT[n])})
+        rows += [('SLM.SL4.closure', len(seen), ('MEASURED:' if root in names else 'EMPTY:no rule ') + root),
+                 ('SLM.SL4.recogHits', len(rh), ('MEASURED:' if root in names else 'EMPTY:no such rule, so an absence proves nothing:') + (','.join(rh) or '-')),
+                 ('SLM.SL4.rootStatement', len(set(rre.findall(st.get(root, '')))), 'BESIDE:recognisers in the root\'s own premises')]
+    # SL5 / SL8 / D1-D2, the bounds derived from the amend-19 and Lean records
+    here = os.path.dirname(os.path.abspath(__file__))
+    def rec(f, key):
+        f = os.path.join(here, '..', 'l1', 'out', f)
+        return next((int(r[2]) for r in (l.split('\t') for l in (read(f).splitlines() if os.path.isfile(f) else [])) if len(r) > 2 and r[1] == key), 0)
+    U, S, L = rec('counts-indm.tsv', 'INDM.I5.U.C5tok'), rec('counts-indm.tsv', 'INDM.I5.S.C5tok'), rec('counts-ind.tsv', 'IND.I3.proofTokens')
+    tok = lambda sg: sum(R[n][1] for n in R if stage[n] == sg)
+    steps = lambda sg: sum(R[n][0] for n in R if stage[n] == sg)
+    fwt, l1t = tok('fw'), tok('l1')
+    rows += [('SLM.SL5.L1.C5tok', l1t, 'MEASURED:bound S/2 = %d (amend-19 S %d); D2 floor 10 x Lean = %d' % (S // 2, S, 10 * L)),
+             ('SLM.SL5.fw.C5tok', fwt, 'MEASURED'),
+             ('SLM.SL5.total.C5tok', fwt + l1t, 'MEASURED:bound U+S = %d' % (U + S)),
+             ('SLM.SL5.L1.ratioX100', l1t * 100 // L if L else 0, ('MEASURED:vs Lean %d' % L) if L else 'EMPTY:no Lean counts'),
+             ('SLM.SL5.total.ratioX100', (fwt + l1t) * 100 // L if L else 0, ('MEASURED:vs Lean %d' % L) if L else 'EMPTY:no Lean counts'),
+             ('SLM.SL8.fw.rules', len([n for n in R if stage[n] == 'fw']), 'MEASURED'), ('SLM.SL8.fw.steps', steps('fw'), 'MEASURED'),
+             ('SLM.SL8.l1.rules', len([n for n in R if stage[n] == 'l1']), 'MEASURED'), ('SLM.SL8.l1.steps', steps('l1'), 'MEASURED'),
+             ('SLM.unstaged.rules', len([n for n in R if stage[n] == '-']), 'BESIDE:' + (','.join(sorted(n for n in R if stage[n] == '-')) or '-')),
+             ('SLM.extras.C5tok', sum(R[n][3] for n in R), 'BESIDE:stale subtrees, NOT the proof'),
+             ('SLM.SL6.directions', 0, 'Q:the arm\'s post, six directions (type/atom/expression x both)'),
+             ('SLM.SL7.setType', 0, 'Q:reported only if the arm states the rule over set types'),
+             ('SLM.D4.tacticLine', 0, 'Q:the arm\'s ledger line for tactic building, NEVER folded into C5')]
+    return rows
+
+
 def w8(repo, base, ext, prefix):
     ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
                                                  capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
@@ -1393,7 +1529,7 @@ def w8(repo, base, ext, prefix):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'ind', 'indm', 'metaprll2'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'ind', 'indm', 'metaprll2', 'slangm'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1419,6 +1555,8 @@ def main():
         rows = leanind(a.dir)
     elif a.arm == 'metaprll2':
         rows = metaprll2(a.dir, a.base, a.ext)
+    elif a.arm == 'slangm':
+        rows = slangm(a.dir, a.base, a.ext)
     elif a.arm == 'indm':
         rows = indm(a.dir, a.base, a.ext)
     elif a.arm == 'v3l1m':
