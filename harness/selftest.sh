@@ -686,6 +686,185 @@ if cmp -s "$H/count.py" "$F/mutant40.py"; then say "ARM40 mutant NOT PLANTED"; f
 elif check40 "$F/mutant40.py"; then say "ARM40 mutant SURVIVED (stale extras counted as proof)"; fail=1
 else say "ARM40 mutant KILLED"; fi
 
+# (41) the MetaPRL L2 column (--arm metaprll2): a git fixture whose counts are fixed by its construction.
+# base: virl1_a.ml (rule r1) + itt_bar.ml. ext: virl1_a.ml + a comment only; NEW virl1_new.ml (an L1 addendum, beside);
+# virl2_typing (ty_r) · virl2_triple (triple_frame using helper_h and naming ty_rx, a DIFFERENT rule; helper_h) ·
+# virl2_tot (tot_r using ty_r: the live control) · virl2_store.ml with a COMMENTED prim (not counted) · NEW itt_bar_list.ml
+# with 2 prims (framework, beside Y1).
+R41="$F/l2m"; mkdir -p "$R41/theories/vir"; git -C "$R41" init -q; git -C "$R41" config user.email t@t; git -C "$R41" config user.name t
+printf 'interactive r1 :\n   sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_a.ml"; printf 'prim old_bar : sequent { <H> >- \x27a } = it\n' > "$R41/theories/vir/itt_bar.ml"
+git -C "$R41" add -A; git -C "$R41" commit -qm base; B41=$(git -C "$R41" rev-parse HEAD)
+printf '(* comment *)\n' >> "$R41/theories/vir/virl1_a.ml"; printf 'interactive n1 : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_new.ml"
+printf 'prim p1 : sequent { <H> >- \x27a } = it\nprim_rw p2 : \x27a <--> \x27a\n' > "$R41/theories/vir/itt_bar_list.ml"
+printf 'extends Itt_bar_list\nextends Virl2_store\nprim pv : sequent { <H> >- adm{Store} } = it\n' > "$R41/theories/vir/itt_bar_res.ml"
+printf 'extends Itt_bar_list\nextends Virl2_store\nprim pg : sequent { <H> >- adm{list{int}} } = it\n' > "$R41/theories/vir/itt_bar_gen.ml"
+printf 'extends Itt_bar_list\nprim pm : sequent { <H> >- adm{list{int}} } = it\n' > "$R41/theories/vir/itt_bar_mli.ml"
+printf 'extends Itt_bar_list\nrule pm : sequent { <H> >- adm{Store} }\n' > "$R41/theories/vir/itt_bar_mli.mli"
+printf 'extends Itt_bar_res\nextends Itt_bar\ndefine unfold_Store : Store <--> list{int}\n(* prim hidden : sequent { <H> >- \x27a } = it *)\ninteractive st_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_store.ml"
+printf 'define unfold_tcx : tcx{\x27a} <--> \x27a\ninteractive ty_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\ninteractive ty_use : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_typing.ml"
+Y4N=2; printf 'interactive triple_frame :\n   [wf] sequent { <H> >- \x27a } -->\n   sequent { <H> >- \x27b } -->\n   sequent { <H> >- \x27c }\ninteractive helper_h : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_triple.ml"
+printf 'interactive tot_r : sequent { <H> >- tcx{\x27a} }\n' > "$R41/theories/vir/virl2_tot.ml"
+prla() { # $1 file, then name=text pairs
+  f=$1; shift
+  { printf '#PRL version 1.0.28 ASCII term\n'
+    printf 'NSummary!rule\trule\trule Summary\nNSummary!ext_rule\text_rule\text_rule Summary\nNSummary!interactive\tinteractive\tinteractive Summary\n'
+    printf 'NSummary!status_incomplete\tsi\tstatus_incomplete Summary\nNSummary!ext_unjustified\teu\text_unjustified Summary\nNPerv!xnil\txnil\txnil Perv\n'
+    printf 'O\tost\tsi\nT\ttst\tost\nB\tbst\ttst\nO\tou\teu\nT\ttu\tou\nB\tbu\ttu\nO\ton\txnil\nT\ttn\ton\nB\tbn\ttn\nO\toi\tinteractive\n'
+    i=0; for kv in "$@"; do n=${kv%%=*}; t=${kv#*=}; i=$((i+1))
+      printf 'P\tpt%d\tString "%s"\nO\tot%d\text_rule pt%d\nT\ttt%d\tot%d bst bu bn bn\nB\tbt%d\ttt%d\nT\tti%d\toi bt%d\nB\tbi%d\tti%d\n' $i "$t" $i $i $i $i $i $i $i $i $i $i
+      printf 'P\tpn%d\tString %s\nO\tor%d\trule pn%d\nT\ttr%d\tor%d bi%d bn\n' $i "$n" $i $i $i $i $i; done; } > "$f"; }
+prla "$R41/theories/vir/virl2_typing.prla" "ty_r=autoT" "ty_rx=autoT" "ty_use=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_triple.prla" "triple_frame=(helper_h thenT ty_rx_note autoT)" "helper_h=autoT"
+prla "$R41/theories/vir/virl2_tot.prla" "tot_r=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_store.prla" "st_r=autoT" "ty_rx=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ext; X41=$(git -C "$R41" rev-parse HEAD)
+check41() {
+  o=$(python3 "$1" --arm metaprll2 --base "$B41" --ext "$X41" "$R41") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L2M.files)" = 4 ] && [ "$(v L2M.Y1.prims)" = 0 ] && [ "$(v L2M.Y1.frameworkPrims)" = 3 ] && [ "$(v L2M.Y1.virDependentPrims)" = 2 ] && [ "$(v L2M.Y1.primFigure)" = 2 ] && [ "$(v L2M.trustedBase.prims)" = 4 ] && [ "$(v L2M.trustedBase.files)" = 3 ] \
+  && [ "$(v L2M.Y2.defsEdited)" = 0 ] && [ "$(v L2M.Y2.rulesEdited)" = 0 ] && [ "$(v L2M.Y2.newL1Files)" = 1 ] \
+  && [ "$(v L2M.Y3.frameClosure)" = 2 ] && [ "$(v L2M.Y3.frameTyping)" = 0 ] && [ "$(v L2M.Y3.control)" = 2 ] \
+  && [ "$(v L2M.Y3.frameTypingTerms)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L2M.Y3.frameTyping"' | grep -q MEASURED && [ "$(v L2M.Y3.termControl)" = 1 ] \
+  && [ "$(v L2M.Y4.framePremises)" = "$Y4N" ] && [ "$(v L2M.rules)" = 8 ]
+}
+if check41 "$H/count.py"; then say "ARM41 metaprll2 fixture OK (Y1 0 / generic fw 3 (one extends Virl2 and names no VIR term) / vir-term 2 (one by its .mli), figure 2; trusted base 4 prims in 3 files by the extends closure, one unchanged since base; Y2 0 0 new 1; Y3 closure 2 typing 0 control 2 terms 0/1; Y4 $Y4N)"
+else say "ARM41 metaprll2 fixture FAIL"; python3 "$H/count.py" --arm metaprll2 --base "$B41" --ext "$X41" "$R41"; fail=1; fi
+sed 's/(set(re.findall(r"\[A-Za-z0-9_\x27\]+", text)) \& plain)/{m for m in plain if m in text}/' "$H/count.py" > "$F/mutant41.py"  # the REFS2 token path: a name read inside a longer name
+if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
+elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a name read inside a longer name)"; fail=1
+else say "ARM41 mutant KILLED"; fi
+
+# ARM42 (STATUS-vir 151): grammar carving by CONTENT. On X41 no carving predicate is defined: EMPTY, never a 0 that reads
+# as a pass. On X42: one define, two rules whose statement names wfs2{ (a wf rule, a hypothesis), one naming only wfs2x{ (a
+# longer name, NOT counted) and one naming none.
+c42() { python3 "$1" --arm metaprll2 --base "$B41" --ext "$2" "$R41" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+printf 'define unfold_wfs2 : wfs2{\x27k; \x27t} <--> \x27t\ndefine unfold_wfs2x : wfs2x{\x27t} <--> \x27t\ninteractive wfs2_wf : sequent { <H> >- wfs2{\x27k; \x27t} in bool }\ninteractive cv_pres : sequent { <H>; x: wfs2{2; \x27e} >- \x27a }\ninteractive cv_long : sequent { <H> >- wfs2x{\x27t} }\ninteractive cv_none : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_sem.ml"
+prla "$R41/theories/vir/virl2_sem.prla" "wfs2_wf=autoT" "cv_pres=(wfs2_wf thenT autoT)" "cv_long=autoT" "cv_none=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm carve; X42=$(git -C "$R41" rev-parse HEAD)
+check42() {
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingRules)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingRules)" in "2	MEASURED"*cv_pres*wfs2_wf) ;; *) return 1;; esac
+}
+if check42 "$H/count.py"; then say "ARM42 carving fixture OK (X41 EMPTY; X42 defs 1, rules 2 (cv_long's wfs2x not read as wfs2))"
+else say "ARM42 carving fixture FAIL"; c42 "$H/count.py" "$X42" L2M.Y5.carvingRules; fail=1; fi
+sed 's/(?<!\[A-Za-z0-9_\x27\])(?:%s)\\{" % \x27|\x27.join(names), stm/(?:%s)" % \x27|\x27.join(names), stm/' "$H/count.py" > "$F/mutant42.py"
+if cmp -s "$H/count.py" "$F/mutant42.py"; then say "ARM42 mutant NOT PLANTED"; fail=1
+elif check42 "$F/mutant42.py"; then say "ARM42 mutant SURVIVED (wfs2x read as wfs2)"; fail=1
+else say "ARM42 mutant KILLED"; fi
+
+# ARM43 (STATUS-vir 155, mojave's D9): the SCOPING carving (scoped2{n; Δ; e}, the object's §4 scoping in the arm's
+# placeholder encoding) on its OWN sub-line, so its cost is never read as grammar cost; a rule naming both predicates is
+# in both lines and counted once more on carvingOverlap. On X42 nothing names scoped2: EMPTY. On X43: one define, a rule
+# naming scoped2 alone, a rule naming scoped2 AND wfs2 (overlap 1), and one naming only scoped2x (NOT counted).
+printf 'define unfold_scoped2 : scoped2{\x27n; \x27d; \x27e} <--> \x27e\ninteractive sc_wf : sequent { <H> >- scoped2{\x27n; \x27d; \x27e} in bool }\ninteractive sc_both : sequent { <H>; x: wfs2{2; \x27e}; y: scoped2{\x27n; \x27d; \x27e} >- \x27a }\ninteractive sc_long : sequent { <H> >- scoped2x{\x27t} }\n' > "$R41/theories/vir/virl2_scope.ml"
+prla "$R41/theories/vir/virl2_scope.prla" "sc_wf=autoT" "sc_both=(sc_wf thenT autoT)" "sc_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm scope; X43=$(git -C "$R41" rev-parse HEAD)
+check43() {
+  case "$(c42 "$1" "$X42" L2M.Y5.scopingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingRules)" in "2	MEASURED"*sc_both*sc_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingRules)" in "3	MEASURED"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingOverlap)" in "1	"*sc_both*) ;; *) return 1;; esac
+}
+if check43 "$H/count.py"; then say "ARM43 scoping fixture OK (X42 EMPTY; X43 defs 1, rules 2 (sc_long's scoped2x not read), grammar rules 3, overlap 1)"
+else say "ARM43 scoping fixture FAIL"; c42 "$H/count.py" "$X43" L2M.Y5.scopingRules; fail=1; fi
+sed 's/L2M_SCOPE = (\x27scoped2\x27, \x27scoped\x27)/L2M_SCOPE = (\x27scoped2x\x27,)/' "$H/count.py" > "$F/mutant43.py"
+if cmp -s "$H/count.py" "$F/mutant43.py"; then say "ARM43 mutant NOT PLANTED"; fail=1
+elif check43 "$F/mutant43.py"; then say "ARM43 mutant SURVIVED (scoping read from the wrong name)"; fail=1
+else say "ARM43 mutant KILLED"; fi
+
+# ARM44 (STATUS-vir 170, mojave's D10): the INDEX-FAULT departure (is_ifault given the let congruence, ruled (a)
+# @98,653,117) on its OWN sub-line, so its cost is counted in Y5's C5 and read beside it. On X43 nothing names is_ifault:
+# EMPTY. On X44: one define, a rule naming is_ifault (the regression lemma), a wf rule naming it, a rule naming only
+# ifault_op (a DIFFERENT predicate, NOT counted) and one naming is_ifaultx (a longer name, NOT counted).
+printf 'define unfold_is_ifault : is_ifault{\x27c} <--> \x27c\ninteractive if_let : sequent { <H> >- is_ifault{\x27c} = btrue in bool }\ninteractive if_wf : sequent { <H> >- is_ifault{\x27c} in bool }\ninteractive if_op : sequent { <H> >- ifault_op{\x27o; \x27v; \x27s} in bool }\ninteractive if_long : sequent { <H> >- is_ifaultx{\x27c} }\n' > "$R41/theories/vir/virl2_triple.ml"
+prla "$R41/theories/vir/virl2_triple.prla" "if_let=autoT" "if_wf=autoT" "if_op=autoT" "if_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault; X44=$(git -C "$R41" rev-parse HEAD)
+check44() {
+  case "$(c42 "$1" "$X43" L2M.Y5.ifaultDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultRules)" in "2	MEASURED"*if_let*if_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"2 of 2"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.scopingRules)" in "2	MEASURED"*) ;; *) return 1;; esac
+}
+if check44 "$H/count.py"; then say "ARM44 index-fault fixture OK (X43 EMPTY; X44 defs 1, rules 2 (if_op and is_ifaultx not read), scoping unchanged)"
+else say "ARM44 index-fault fixture FAIL"; c42 "$H/count.py" "$X44" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27, \x27ifault_op\x27)/' "$H/count.py" > "$F/mutant44.py"
+if cmp -s "$H/count.py" "$F/mutant44.py"; then say "ARM44 mutant NOT PLANTED"; fail=1
+elif check44 "$F/mutant44.py"; then say "ARM44 mutant SURVIVED (ifault_op read as the departure)"; fail=1
+else say "ARM44 mutant KILLED"; fi
+
+# ARM45 (STATUS-vir 170, mojave 517d086da): D10 as committed puts the let congruence in a SUPPORT term, ifault2, and
+# is_ifault is its spread; ifault2_wf (a bterm induction) is the bulk of D10's cost. A rule naming ONLY ifault2 is D10's
+# cost too, so it is read on the index-fault sub-line. On X45: X44 plus one define of ifault2 and one rule naming only it.
+printf 'define unfold_ifault2 : ifault2{\x27c} <--> \x27c\ninteractive if2_wf : sequent { <H> >- ifault2{\x27c} in bool }\n' > "$R41/theories/vir/virl2_ifault.ml"
+prla "$R41/theories/vir/virl2_ifault.prla" "if2_wf=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault2; X45=$(git -C "$R41" rev-parse HEAD)
+check45() {
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultDefs)" in 2*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultRules)" in "3	MEASURED"*if2_wf*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"3 of 3"*) ;; *) return 1;; esac
+}
+if check45 "$H/count.py"; then say "ARM45 ifault2 fixture OK (X45 defs 2, rules 3: the support term's rule read on the D10 line)"
+else say "ARM45 ifault2 fixture FAIL"; c42 "$H/count.py" "$X45" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27,)/' "$H/count.py" > "$F/mutant45.py"
+if cmp -s "$H/count.py" "$F/mutant45.py"; then say "ARM45 mutant NOT PLANTED"; fail=1
+elif check45 "$F/mutant45.py"; then say "ARM45 mutant SURVIVED (ifault2 not read as D10)"; fail=1
+else say "ARM45 mutant KILLED"; fi
+
+# ARM46 (STATUS-vir 147, amend-20 SL1-SL8 + amend-22 D1-D4): the SLang arm, built BEFORE the MetaPRL arm's SLang sha.
+# Base B46: an L1 signature (lam_op in core_ops, arrow_op in sig1), amend-19's l1_induction with two recognisers in its
+# premises (is_tyterm, wfs: the derived recogniser set, so the SL4 control is live) and one pre-existing rule old_r.
+# X46 (clean): a generic itt_slang (SLang, slang_ind, slang_wf) and an L1 instance virl1_slang (ssig1, L1SLang,
+# l1s_induction citing slang_ind and l1s_aux). X46b (dirty): itt_slang names lam_op (SL3 1); l1s_induction's proof cites
+# l1s_rec, whose statement has is_tyterm (SL4 1 through the closure, none in the root); old_r edited (SL1 rules 1).
+R46="$F/r46"; mkdir -p "$R46/theories/vir"; git -C "$R46" init -q; git -C "$R46" config user.email t@t; git -C "$R46" config user.name t
+printf 'define unfold_lam_op : lam_op <--> operator[(l1_lam):op]\ndefine unfold_arrow_op : arrow_op <--> operator[(l1_arrow):op]\ndefine unfold_core_ops : core_ops <-->\n   lam_op :: nil\ndefine unfold_sig1 : sig1 <-->\n   arrow_op :: nil\n' > "$R46/theories/vir/virl1_sig.ml"
+printf 'define unfold_is_tyterm : is_tyterm{\x27t} <--> \x27t\ninteractive l1_induction :\n   [T2] sequent { <H>; t1: L1Lang{sig1}; is_tyterm{\x27t1} = btrue in bool; wfs{\x27t1} = btrue in bool >- \x27Pt[\x27t1] }\ninteractive old_r : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_induct.ml"
+prla "$R46/theories/vir/virl1_induct.prla" "l1_induction=autoT" "old_r=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm base; B46=$(git -C "$R46" rev-parse HEAD)
+printf 'define unfold_SLang : SLang{\x27ss; \x27s} <--> \x27ss\ninteractive slang_ind : sequent { <H> >- SLang{\x27ss; \x27s} }\ninteractive slang_wf : sequent { <H> >- SLang{\x27ss; \x27s} Type }\n' > "$R46/theories/vir/itt_slang.ml"
+prla "$R46/theories/vir/itt_slang.prla" "slang_ind=(autoT thenT dT 0)" "slang_wf=autoT"
+printf 'define unfold_ssig1 : ssig1 <--> lam_op\ndefine unfold_L1SLang : L1SLang{\x27s} <--> SLang{ssig1; \x27s}\ninteractive l1s_induction : sequent { <H>; t: L1SLang{\x27s} >- \x27P[\x27t] }\ninteractive l1s_aux : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm slang; X46=$(git -C "$R46" rev-parse HEAD)
+printf 'interactive slang_bad : sequent { <H> >- lam_op in Term }\n' >> "$R46/theories/vir/itt_slang.ml"
+printf 'interactive l1s_rec : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27a }\n' >> "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT l1s_rec)" "l1s_aux=autoT" "l1s_rec=autoT"
+sed 's/^interactive old_r : sequent { <H> >- \x27a }/interactive old_r : sequent { <H> >- \x27b }/' "$R46/theories/vir/virl1_induct.ml" > "$F/oi.ml"; mv "$F/oi.ml" "$R46/theories/vir/virl1_induct.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm dirty; X46b=$(git -C "$R46" rev-parse HEAD)
+c46() { VIR_SLANG_ROOT=l1s_induction python3 "$1" --arm slangm --base "$B46" --ext "$2" "$R46" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+check46() {
+  case "$(c46 "$1" "$X46" SLM.SL1.rulesEdited)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL2.newPrims)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.fw)" in "1	MEASURED"*itt_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.l1)" in "1	MEASURED"*virl1_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL3.hits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.control)" in "2	MEASURED"*is_tyterm*wfs*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.recogHits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.L1.C5tok)" in "6	MEASURED"*25332*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.total.C5tok)" in "11	MEASURED"*69794*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL8.fw.rules)" in "2	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL1.rulesEdited)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.recogHits)" in "1	MEASURED"*is_tyterm*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.rootStatement)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT=nosuch python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in EMPTY*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT= python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in Q*) ;; *) return 1;; esac
+}
+if check46 "$H/count.py"; then say "ARM46 slangm fixture OK (X46 SL1 0, SL3 0, SL4 0 with control 2, L1 6 tok, total 11; X46b SL1 1, SL3 1 lam_op, SL4 1 through the closure; no root => Q)"
+else say "ARM46 slangm fixture FAIL"; VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$X46b" "$R46"; fail=1; fi
+sed 's/todo += list(mpl_refs(x, RT\[x\], names))  # SLM-CLOSURE/pass  # SLM-CLOSURE/' "$H/count.py" > "$F/mutant46.py"
+if cmp -s "$H/count.py" "$F/mutant46.py"; then say "ARM46 mutant NOT PLANTED"; fail=1
+elif check46 "$F/mutant46.py"; then say "ARM46 mutant SURVIVED (SL4 read the root alone)"; fail=1
+else say "ARM46 mutant KILLED"; fi
+sed 's/^SLM_RECOG_RE = .*/SLM_RECOG_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant46b.py"
+if cmp -s "$H/count.py" "$F/mutant46b.py"; then say "ARM46 mutant-b NOT PLANTED"; fail=1
+elif check46 "$F/mutant46b.py"; then say "ARM46 mutant-b SURVIVED (an empty recogniser set read as SL4 HOLDS)"; fail=1
+else say "ARM46 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
