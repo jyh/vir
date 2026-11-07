@@ -1,0 +1,50 @@
+metaprll2	L2M.files	19	MEASURED:virl2_*.ml at ext
+metaprll2	L2M.trustedBase.files	6	MEASURED:non-virl theories/vir modules in the extends closure of virl2_*
+metaprll2	L2M.trustedBase.prims	34	MEASURED:itt_bar=26,itt_bar_bset=1,itt_bar_bterm=1,itt_bar_list=2,itt_bar_res=1,itt_bar_strict=3:LIMIT theories/itt release prims not included (L1M.pinReflection)
+metaprll2	L2M.Y1.prims	0	MEASURED:prim/prim_rw in virl2_*, comments stripped
+metaprll2	L2M.Y1.frameworkPrims	3	BESIDE:generic prims in itt_bar* added or changed since base:itt_bar_list.ml,itt_bar_res.ml
+metaprll2	L2M.Y1.virDependentPrims	0	MEASURED:framework prims whose text names a virl1_/virl2_ term:-
+metaprll2	L2M.Y1.primFigure	0	MEASURED:Y1 figure = virl2_* prims + VIR-dependent framework prims
+metaprll2	L2M.Y2.defsEdited	0	MEASURED:virl1_* at base vs ext
+metaprll2	L2M.Y2.rulesEdited	0	BESIDE
+metaprll2	L2M.Y2.newL1Files	1	BESIDE:virl1_induct.ml
+metaprll2	L2M.rules	1362	MEASURED:rules with a stored proof in virl2_*.prla
+metaprll2	L2M.Y3.frameClosure	35	MEASURED:triple_frame and every rule its derivation names, transitively
+metaprll2	L2M.Y3.frameTyping	0	MEASURED:virl2_typing rules in the closure:-
+metaprll2	L2M.Y3.control	46	BESIDE:rules whose closure, less themselves, names a typing rule (the name reader can see one)
+metaprll2	L2M.Y3.frameTypingTerms	0	MEASURED:closure rules whose STATEMENT names a virl2_typing term
+metaprll2	L2M.Y3.termControl	246	BESIDE:non-typing rules whose statement names a typing term (0 = nothing outside virl2_typing consumes it yet)
+metaprll2	L2M.Y3.limit	0	LIMIT:a typing rule applied by resolution whose name and judgement appear in no closure statement or text is invisible to both axes
+metaprll2	L2M.Y4.framePremises	5	MEASURED:premises of triple_frame as stated
+metaprll2	L2M.Y5.carvingDefs	2	MEASURED:define unfold_ of wfs2/isNum2 in virl2_*
+metaprll2	L2M.Y5.carvingRules	74	MEASURED:rules whose statement names wfs2/isNum2:virl2_sem:aeval2_valok,virl2_sem:app_kids_wfs,virl2_sem:atom_nmf,virl2_sem:atom_nocap,virl2_sem:eff_kids_wfs,virl2_sem:fix_kids_wfs,virl2_sem:if_kids_wfs,virl2_sem:ihd,virl2_sem:isNum2_aux,virl2_sem:isNum2_b0,virl2_sem:isNum2_b1,virl2_sem:isNum2_bind,virl2_sem:isNum2_bind_aux,virl2_sem:isNum2_is_num,virl2_sem:isNum2_mk,virl2_sem:isNum2_neg,virl2_sem:isNum2_nlt,virl2_sem:isNum2_numz,virl2_sem:isNum2_nvar,virl2_sem:isNum2_occ2,virl2_sem:isNum2_substl_aux,virl2_sem:isNum2_var,virl2_sem:isNum2_venc,virl2_sem:isNum2_vencn,virl2_sem:isNum2_wf,virl2_sem:itl,virl2_sem:lam_kids_wfs,virl2_sem:let_kids_wfs,virl2_sem:let_swap_wfs,virl2_sem:letret_c_body,virl2_sem:letret_kids_wfs,virl2_sem:letret_nc_body,virl2_sem:letret_nc_inv,virl2_sem:letret_nc_val,virl2_sem:lf_name,virl2_sem:lihd,virl2_sem:litl,virl2_sem:ll_name,virl2_sem:namP_inst0,virl2_sem:namP_inst1,virl2_sem:namP_inst2,virl2_sem:num_litfix,virl2_sem:num_nmok,virl2_sem:occ2_inst1,virl2_sem:occ2_inst2,virl2_sem:occ2_mono,virl2_sem:occ2_numinst,virl2_sem:occ2_subst_cvar,virl2_sem:p2eff_opkid,virl2_sem:store_body,virl2_sem:tc2r_names,virl2_sem:tc2r_names_all,virl2_sem:tc2r_uses,virl2_sem:typed_names,virl2_sem:usP_inst0,virl2_sem:usP_inst1,virl2_sem:valok_atom,virl2_sem:wfs0_expr_inr,virl2_sem:wfs0_nlc,virl2_sem:wfs2_acvar,virl2_sem:wfs2_aunit,virl2_sem:wfs2_aux,virl2_sem:wfs2_bind,virl2_sem:wfs2_bind_aux,virl2_sem:wfs2_capv,virl2_sem:wfs2_litfix,virl2_sem:wfs2_mk,virl2_sem:wfs2_nmok,virl2_sem:wfs2_subst,virl2_sem:wfs2_substl_aux,virl2_sem:wfs2_var,virl2_sem:wfs2_vbool,virl2_sem:wfs2_venc,virl2_sem:wfs2_wf
+metaprll2	L2M.Y5.carvingC5tok	269666	BESIDE:stored-proof tokens of those rules (74 of 74 stored)
+metaprll2	L2M.Y5.scopingDefs	1	MEASURED:define unfold_ of scoped2/scoped in virl2_*
+metaprll2	L2M.Y5.scopingRules	1	MEASURED:rules whose statement names scoped2/scoped:virl2_sem:scoped_wf
+metaprll2	L2M.Y5.scopingC5tok	18	BESIDE:stored-proof tokens of those rules (1 of 1 stored)
+metaprll2	L2M.Y5.ifaultDefs	2	MEASURED:define unfold_ of is_ifault/ifault2 in virl2_*
+metaprll2	L2M.Y5.ifaultRules	3	MEASURED:rules whose statement names is_ifault/ifault2:virl2_triple:ifault2_wf,virl2_triple:is_ifault0_wf,virl2_triple:is_ifault_let
+metaprll2	L2M.Y5.ifaultC5tok	3618	BESIDE:stored-proof tokens of those rules (3 of 3 stored)
+metaprll2	L2M.Y5.carvingOverlap	0	BESIDE:rules in BOTH lines (a sum of the two lines counts them twice):-
+metaprll2	L2M.C5tok.virl2_adeq	72247	BESIDE:37 rules; extras 123 tok kept out
+metaprll2	L2M.C5tok.virl2_adq1	62000	BESIDE:39 rules; extras 8567 tok kept out
+metaprll2	L2M.C5tok.virl2_assert	1143	BESIDE:14 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_cons	15281	BESIDE:9 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_cons1	75200	BESIDE:54 rules; extras 73 tok kept out
+metaprll2	L2M.C5tok.virl2_den	73440	BESIDE:61 rules; extras 6855 tok kept out
+metaprll2	L2M.C5tok.virl2_rules	81522	BESIDE:78 rules; extras 89 tok kept out
+metaprll2	L2M.C5tok.virl2_sem	3720543	BESIDE:542 rules; extras 1506147 tok kept out
+metaprll2	L2M.C5tok.virl2_semc	1111	BESIDE:9 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_semr	2030684	BESIDE:153 rules; extras 112091 tok kept out
+metaprll2	L2M.C5tok.virl2_sems	163474	BESIDE:94 rules; extras 152568 tok kept out
+metaprll2	L2M.C5tok.virl2_semt	32007	BESIDE:48 rules; extras 30043 tok kept out
+metaprll2	L2M.C5tok.virl2_sig	4180	BESIDE:16 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_step	14988	BESIDE:29 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_stok	27486	BESIDE:42 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_store	1806	BESIDE:20 rules; extras 0 tok kept out
+metaprll2	L2M.C5tok.virl2_tot	7972	BESIDE:22 rules; extras 2517 tok kept out
+metaprll2	L2M.C5tok.virl2_triple	19434	BESIDE:15 rules; extras 1223 tok kept out
+metaprll2	L2M.C5tok.virl2_typing	31985	BESIDE:80 rules; extras 0 tok kept out
+metaprll2	L2M.Y5	0	Q:owed until the arm's semantic typing lands
+metaprll2	L2M.Y6	0	Q:owed (M1-M5)
+metaprll2	L2M.Y8	0	Q:owed (read at L2 CLOSED)
