@@ -757,10 +757,28 @@ check44() {
 }
 if check44 "$H/count.py"; then say "ARM44 index-fault fixture OK (X43 EMPTY; X44 defs 1, rules 2 (if_op and is_ifaultx not read), scoping unchanged)"
 else say "ARM44 index-fault fixture FAIL"; c42 "$H/count.py" "$X44" L2M.Y5.ifaultRules; fail=1; fi
-sed 's/L2M_IFAULT = (\x27is_ifault\x27,)/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault_op\x27)/' "$H/count.py" > "$F/mutant44.py"
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27, \x27ifault_op\x27)/' "$H/count.py" > "$F/mutant44.py"
 if cmp -s "$H/count.py" "$F/mutant44.py"; then say "ARM44 mutant NOT PLANTED"; fail=1
 elif check44 "$F/mutant44.py"; then say "ARM44 mutant SURVIVED (ifault_op read as the departure)"; fail=1
 else say "ARM44 mutant KILLED"; fi
+
+# ARM45 (STATUS-vir 170, mojave 517d086da): D10 as committed puts the let congruence in a SUPPORT term, ifault2, and
+# is_ifault is its spread; ifault2_wf (a bterm induction) is the bulk of D10's cost. A rule naming ONLY ifault2 is D10's
+# cost too, so it is read on the index-fault sub-line. On X45: X44 plus one define of ifault2 and one rule naming only it.
+printf 'define unfold_ifault2 : ifault2{\x27c} <--> \x27c\ninteractive if2_wf : sequent { <H> >- ifault2{\x27c} in bool }\n' > "$R41/theories/vir/virl2_ifault.ml"
+prla "$R41/theories/vir/virl2_ifault.prla" "if2_wf=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault2; X45=$(git -C "$R41" rev-parse HEAD)
+check45() {
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultDefs)" in 2*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultRules)" in "3	MEASURED"*if2_wf*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"3 of 3"*) ;; *) return 1;; esac
+}
+if check45 "$H/count.py"; then say "ARM45 ifault2 fixture OK (X45 defs 2, rules 3: the support term's rule read on the D10 line)"
+else say "ARM45 ifault2 fixture FAIL"; c42 "$H/count.py" "$X45" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27,)/' "$H/count.py" > "$F/mutant45.py"
+if cmp -s "$H/count.py" "$F/mutant45.py"; then say "ARM45 mutant NOT PLANTED"; fail=1
+elif check45 "$F/mutant45.py"; then say "ARM45 mutant SURVIVED (ifault2 not read as D10)"; fail=1
+else say "ARM45 mutant KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"

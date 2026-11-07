@@ -1206,7 +1206,7 @@ def mpl_refs(n, text, names):
 L2M_FRAME, L2M_TYPING = 'triple_frame', 'virl2_typing'
 L2M_CARVE = ('wfs2', 'isNum2')  # D8 at mojave 9065db501
 L2M_SCOPE = ('scoped2', 'scoped')  # D9 (mojave @97,494,337): the name as committed is re-read at D9's sha
-L2M_IFAULT = ('is_ifault',)  # D10 (mojave @98,646,216, ruled (a) @98,653,117): the let congruence; ifault_op is unchanged and NOT read
+L2M_IFAULT = ('is_ifault', 'ifault2')  # D10 (mojave @98,646,216, ruled (a) @98,653,117): the let congruence; ifault_op is unchanged and NOT read; ifault2 is D10's support term at mojave 517d086da (ARM45)
 
 
 def metaprll2(repo, base, ext):
