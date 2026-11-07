@@ -26,7 +26,7 @@ the bus. A figure from any other sha is void.
 | SL5(b) | framework + L1 C5 > 69,794 tok | SLM.SL5.total.C5tok | framework 649 so far | OWED |
 | SL6 | a direction (type · atom · expression × both) not proved | Q: the arm's six rule names, each read in its `.prla` | not reached | OWED |
 | SL7 | reported only | Q | not stated | OWED |
-| SL8 | reported | SLM.SL8.{fw,l1}.{rules,steps} | fw 24 rules / 24 steps | OWED |
+| SL8 | reported | SLM.SL8.{fw,l1,sl6}.{rules,steps} | fw 24 rules / 24 steps | OWED |
 | D1 | = SL5(a) | SL5.L1.C5tok | — | OWED |
 | D2 | L1 stage ≤ 5,090 tok | SL5.L1.C5tok | — | OWED |
 | D3 | attribution follows SL4 × D1 | — | — | OWED |
@@ -43,6 +43,11 @@ the bus. A figure from any other sha is void.
 - **SL5 counts stored proofs only.** ML tactic code is D4's line. The tooling's 3 unstaged rules stay out by stage.
 - **Departures D-S1..D-S4 ride BESIDE**, each quoted with the amend-20 sentence it departs from. None changes a falsifier.
 - **SL4's absence** is quoted with the control (3 recognisers derived from l1_induction) beside it.
+- **SL6's own stage (written 2026-11-07 after the L1 stage landed at 1272ee7fb and BEFORE any SL6 rule, declared).** The arm put
+  SL6 in a new module (vir_l1sl6) so vir_l1slang stays byte-identical. SL5(a) prices "the per-form rule and everything L1-specific
+  under it", and SL6 checks that stage from outside it. So a NEW module that is neither fw nor l1 and holds a `VIR_SLANG_SL6`
+  statement is stage `sl6`: its rules count for SL6's slots and get their own SL8 line (`SLM.SL8.sl6.*`), and they never enter
+  SL5(a) or (b) (ARM49).
 
 ## Departures (the arm's, declared before the proofs they touch)
 D-S1 explicit variable sort `SLang{ssig; vs; s}` · D-S2 sorts are nat · D-S3 children as a sort-indexed tuple (SKids, kidl) ·

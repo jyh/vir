@@ -928,6 +928,37 @@ if cmp -s "$H/count.py" "$F/mutant48b.py"; then say "ARM48 mutant-b NOT PLANTED"
 elif check48 "$F/mutant48b.py"; then say "ARM48 mutant-b SURVIVED (the slot's recogniser never checked)"; fail=1
 else say "ARM48 mutant-b KILLED"; fi
 
+# ARM49 (STATUS-vir 182): the SL6 STAGE. mojave puts SL6 in a NEW module (vir_l1sl6) so vir_l1slang stays byte-identical. amend-20
+# SL5(a) prices "the per-form rule and everything L1-specific under it"; SL6 checks that stage and is not under the rule, so its
+# rules must count for SL6's slots and get their own SL8 line, NEVER enter SL5. Stage sl6 = a NEW module, neither fw nor l1, holding
+# the statement of a VIR_SLANG_SL6 rule. X49 = X46 + virl1_sl6.ml/.prla with the six rules: SL6 6/6, stage.sl6 1, SL8.sl6.rules 6,
+# SL5.L1.C5tok EQUAL to X46's. Without VIR_SLANG_SL6 the module is unstaged (stage.sl6 0) and SL5 is still X46's.
+git -C "$R46" checkout -q "$X46"
+printf 'interactive sl6_tf : sequent { <H>; t: L1SLang{0} >- is_tyterm{\x27t} = btrue in bool }\ninteractive sl6_tb : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27t in L1SLang{0} }\ninteractive sl6_af : sequent { <H>; t: L1SLang{2} >- wfs{0; \x27t} = btrue in bool }\ninteractive sl6_ab : sequent { <H>; wfs{0; \x27t} = btrue in bool >- \x27t in L1SLang{2} }\ninteractive sl6_ef : sequent { <H>; t: L1SLang{3} >- wfs{2; \x27t} = btrue in bool }\ninteractive sl6_eb : sequent { <H>; wfs{2; \x27t} = btrue in bool >- \x27t in L1SLang{3} }\n' > "$R46/theories/vir/virl1_sl6.ml"
+prla "$R46/theories/vir/virl1_sl6.prla" "sl6_tf=(autoT thenT dT 0)" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT" "sl6_eb=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x49; X49=$(git -C "$R46" rev-parse HEAD)
+L46=$(c46 "$H/count.py" "$X46" SLM.SL5.L1.C5tok | cut -f1)
+check49() {
+  case "$L46" in ''|0) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL6.directions)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.stage.sl6)" in "1	MEASURED"*virl1_sl6*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL8.sl6.rules)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL5.L1.C5tok)" in "$L46	"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.unstaged.rules)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X49" SLM.stage.sl6)" in "0	"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X49" SLM.SL5.L1.C5tok)" in "$L46	"*) ;; *) return 1;; esac
+}
+if check49 "$H/count.py"; then say "ARM49 SL6 stage fixture OK (X49: SL6 6/6 from a new module, stage.sl6 1, SL8.sl6 6 rules, SL5.L1 = X46's $L46; unset => unstaged)"
+else say "ARM49 SL6 stage fixture FAIL"; VIR_SLANG_SL6="$SL6N" VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$X49" "$R46" | grep -E 'SL6|stage|SL5|SL8|unstaged'; fail=1; fi
+sed "s/stmod.get(n) in ('l1', 'sl6'):  # SLM-SL6-STAGE/stmod.get(n) == 'l1':  # SLM-SL6-STAGE/" "$H/count.py" > "$F/mutant49.py"
+if cmp -s "$H/count.py" "$F/mutant49.py"; then say "ARM49 mutant NOT PLANTED"; fail=1
+elif check49 "$F/mutant49.py"; then say "ARM49 mutant SURVIVED (an SL6 module's rules not counted for SL6)"; fail=1
+else say "ARM49 mutant KILLED"; fi
+sed "s/'sl6' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP/'l1' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP/" "$H/count.py" > "$F/mutant49b.py"
+if cmp -s "$H/count.py" "$F/mutant49b.py"; then say "ARM49 mutant-b NOT PLANTED"; fail=1
+elif check49 "$F/mutant49b.py"; then say "ARM49 mutant-b SURVIVED (SL6's rules folded into the L1 stage and SL5)"; fail=1
+else say "ARM49 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
