@@ -1422,6 +1422,9 @@ def metaprll2(repo, base, ext):
 SLM_FW_DEFS, SLM_L1_DEFS = ('SLang',), ('L1SLang', 'ssig1')
 SLM_CONTROL = ('virl1_induct', 'l1_induction')
 SLM_RECOG_RE = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)\{[^{}]*\}\s*=\s*btrue\s+in\s+bool")
+# SL3.binderOnly: a name followed by '.' or ':' (not '::'), possibly after a comma list of further names, is BOUND there
+# (x. body · {x: T | P} · x: T * U · l, r. body), so it cannot be the L1 term of the same spelling.
+SLM_BINDER_RE = re.compile(r"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_']*)*\s*(?:\.|:(?!:))")
 
 
 def slangm(repo, base, ext):
@@ -1479,12 +1482,20 @@ def slangm(repo, base, ext):
             vterms |= defs(p)
     vre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms | {'virl1_', 'virl2_', 'Virl1_', 'Virl2_'}))))
     hits = set()
+    termpos = set()  # hits with at least one occurrence NOT in binder position (BESIDE; SL3.hits stays the scored row)
     for m in fwm:
         for e in ('.ml', '.mli'):
             q = path(m, e)
             if q:
-                hits |= {'%s:%s' % (m, h) for h in vre.findall(show(ext, q))}
+                txt = show(ext, q)
+                for mo in vre.finditer(txt):
+                    h = '%s:%s' % (m, mo.group(1))
+                    hits.add(h)
+                    if not SLM_BINDER_RE.match(txt, mo.end()):  # SLM-BINDER
+                        termpos.add(h)
     rows.append(('SLM.SL3.hits', len(hits), 'MEASURED:' + (','.join(sorted(hits)) or '-')))
+    bo = sorted(hits - termpos)
+    rows.append(('SLM.SL3.binderOnly', len(bo), 'BESIDE:hits whose every occurrence is a bound name (x. / x: / x, y.), never a term; SL3 is still read by hand:' + (','.join(bo) or '-')))
     # the rules of the new modules: stored proofs (.prla) by MODULE:NAME, statements (.ml) by name
     R, st, stage = {}, {}, {}
     for p in new:

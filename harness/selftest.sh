@@ -865,6 +865,34 @@ if cmp -s "$H/count.py" "$F/mutant46b.py"; then say "ARM46 mutant-b NOT PLANTED"
 elif check46 "$F/mutant46b.py"; then say "ARM46 mutant-b SURVIVED (an empty recogniser set read as SL4 HOLDS)"; fail=1
 else say "ARM46 mutant-b KILLED"; fi
 
+# ARM47 (STATUS-vir 174): SL3.binderOnly, BESIDE. At SLang act 1 (mojave 41de5e05d) SL3 read 1 on `kids`, which vir_slang uses only
+# as a BOUND name; the reader is unchanged and this row says which hits are bound names only. X47 = X46 + itt_slang binding lam_op
+# (`spread{'x; lam_op, r. 'r}`, the comma-list form): hits 1, binderOnly 1. X47b = X47 + `lam_op :: nil` (a TERM, and a `::` that
+# must not read as a binder colon): hits 1, binderOnly 0. X46b (lam_op as a term only): binderOnly 0.
+git -C "$R46" checkout -q "$X46"
+printf 'define unfold_SPick : SPick{\x27x} <--> spread{\x27x; lam_op, r. \x27r}\n' >> "$R46/theories/vir/itt_slang.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm x47; X47=$(git -C "$R46" rev-parse HEAD)
+printf 'define unfold_SL : SL <--> lam_op :: nil\n' >> "$R46/theories/vir/itt_slang.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm x47b; X47b=$(git -C "$R46" rev-parse HEAD)
+check47() {
+  case "$(c46 "$1" "$X47" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47" SLM.SL3.binderOnly)" in "1	BESIDE"*itt_slang:lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47b" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47b" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+}
+if check47 "$H/count.py"; then say "ARM47 SL3.binderOnly fixture OK (X47 hits 1 binderOnly 1; X47b hits 1 binderOnly 0 with ::; X46b 0)"
+else say "ARM47 SL3.binderOnly fixture FAIL"; for x in "$X47" "$X47b"; do VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$x" "$R46" | grep -F SL3; done; fail=1; fi
+sed 's/if not SLM_BINDER_RE.match(txt, mo.end()):  # SLM-BINDER/if False:  # SLM-BINDER/' "$H/count.py" > "$F/mutant47.py"
+if cmp -s "$H/count.py" "$F/mutant47.py"; then say "ARM47 mutant NOT PLANTED"; fail=1
+elif check47 "$F/mutant47.py"; then say "ARM47 mutant SURVIVED (every hit read as a bound name)"; fail=1
+else say "ARM47 mutant KILLED"; fi
+sed 's/^SLM_BINDER_RE = .*/SLM_BINDER_RE = re.compile(r"\\s*(?:\\.|:)")/' "$H/count.py" > "$F/mutant47b.py"
+if cmp -s "$H/count.py" "$F/mutant47b.py"; then say "ARM47 mutant-b NOT PLANTED"; fail=1
+elif check47 "$F/mutant47b.py"; then say "ARM47 mutant-b SURVIVED (a :: read as a binder colon, or the comma list missed)"; fail=1
+else say "ARM47 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
