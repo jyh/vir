@@ -1422,6 +1422,9 @@ def metaprll2(repo, base, ext):
 SLM_FW_DEFS, SLM_L1_DEFS = ('SLang',), ('L1SLang', 'ssig1')
 SLM_CONTROL = ('virl1_induct', 'l1_induction')
 SLM_RECOG_RE = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)\{[^{}]*\}\s*=\s*btrue\s+in\s+bool")
+# SL3.binderOnly: a name followed by '.' or ':' (not '::'), possibly after a comma list of further names, is BOUND there
+# (x. body · {x: T | P} · x: T * U · l, r. body), so it cannot be the L1 term of the same spelling.
+SLM_BINDER_RE = re.compile(r"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_']*)*\s*(?:\.|:(?!:))")
 
 
 def slangm(repo, base, ext):
@@ -1460,10 +1463,18 @@ def slangm(repo, base, ext):
     fwm = env('VIR_SLANG_FW') or [mod(p) for p in newml if defs(p) & set(SLM_FW_DEFS)]
     l1m = env('VIR_SLANG_L1') or [mod(p) for p in newml if defs(p) & set(SLM_L1_DEFS) and mod(p) not in fwm]
     src = 'DECLARED' if env('VIR_SLANG_FW') or env('VIR_SLANG_L1') else 'MEASURED'
+    # the SL6 stage (STATUS-vir 182, ARM49): a NEW module, neither fw nor l1, holding the statement of a VIR_SLANG_SL6 rule. Its
+    # rules count for SL6's slots and get their own SL8 line; they never enter SL5 (amend-20 SL5(a) prices the per-form rule and
+    # what is under it, and SL6 is a check ON that stage). Declared before the arm's SL6 landed (mojave 14:13, vir_l1sl6).
+    sl6 = env('VIR_SLANG_SL6')
+    def sl6names(p):
+        return {m.group(1) for blk in MPL_ITEM_RE.split(show(ext, p)) for m in [re.match(r'interactive(?:_rw)?\s+(\S+)', blk)] if m}
+    sl6m = [mod(p) for p in newml if mod(p) not in fwm and mod(p) not in l1m and sl6names(p) & set(sl6)]
     path = lambda m, e: next((p for p in le if mod(p) == m and p.endswith(e)), None)
     rows = [('SLM.newFiles', len(new), 'BESIDE:' + (','.join(os.path.basename(p) for p in new) or '-')),
             ('SLM.stage.fw', len(fwm), src + ':' + (','.join(fwm) or '-')),
             ('SLM.stage.l1', len(l1m), src + ':' + (','.join(l1m) or '-')),
+            ('SLM.stage.sl6', len(sl6m), 'MEASURED:new modules holding a VIR_SLANG_SL6 statement, outside fw and l1:' + (','.join(sl6m) or '-')),
             ('SLM.SL1.rulesEdited', redit, 'MEASURED:pre-existing theories/**/*.ml rules (interactive/prim) edited or removed, comments stripped'),
             ('SLM.SL1.defsEdited', dedit, 'MEASURED'),
             ('SLM.SL1.prlaChanged', len(prla), 'MEASURED:' + (','.join(os.path.basename(p) for p in prla) or '-')),
@@ -1479,23 +1490,32 @@ def slangm(repo, base, ext):
             vterms |= defs(p)
     vre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms | {'virl1_', 'virl2_', 'Virl1_', 'Virl2_'}))))
     hits = set()
+    termpos = set()  # hits with at least one occurrence NOT in binder position (BESIDE; SL3.hits stays the scored row)
     for m in fwm:
         for e in ('.ml', '.mli'):
             q = path(m, e)
             if q:
-                hits |= {'%s:%s' % (m, h) for h in vre.findall(show(ext, q))}
+                txt = show(ext, q)
+                for mo in vre.finditer(txt):
+                    h = '%s:%s' % (m, mo.group(1))
+                    hits.add(h)
+                    if not SLM_BINDER_RE.match(txt, mo.end()):  # SLM-BINDER
+                        termpos.add(h)
     rows.append(('SLM.SL3.hits', len(hits), 'MEASURED:' + (','.join(sorted(hits)) or '-')))
+    bo = sorted(hits - termpos)
+    rows.append(('SLM.SL3.binderOnly', len(bo), 'BESIDE:hits whose every occurrence is a bound name (x. / x: / x, y.), never a term; SL3 is still read by hand:' + (','.join(bo) or '-')))
     # the rules of the new modules: stored proofs (.prla) by MODULE:NAME, statements (.ml) by name
-    R, st, stage = {}, {}, {}
+    R, st, stage, stmod = {}, {}, {}, {}
     for p in new:
         if p.endswith('.prla'):
             for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
-                R[n] = v; stage[n] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else '-'
+                R[n] = v; stage[n] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else 'sl6' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP
         elif p.endswith('.ml'):
             for blk in MPL_ITEM_RE.split(show(ext, p)):
                 m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
                 if m:
                     st[m.group(1)] = blk
+                    stmod[m.group(1)] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else 'sl6' if mod(p) in sl6m else '-'
     # SL4: the recogniser set and its live control, derived from amend-19's rule at base
     cp = 'theories/vir/%s.ml' % SLM_CONTROL[0]
     ctl = ''
@@ -1540,11 +1560,39 @@ def slangm(repo, base, ext):
              ('SLM.SL5.total.ratioX100', (fwt + l1t) * 100 // L if L else 0, ('MEASURED:vs Lean %d' % L) if L else 'EMPTY:no Lean counts'),
              ('SLM.SL8.fw.rules', len([n for n in R if stage[n] == 'fw']), 'MEASURED'), ('SLM.SL8.fw.steps', steps('fw'), 'MEASURED'),
              ('SLM.SL8.l1.rules', len([n for n in R if stage[n] == 'l1']), 'MEASURED'), ('SLM.SL8.l1.steps', steps('l1'), 'MEASURED'),
+             ('SLM.SL8.sl6.rules', len([n for n in R if stage[n] == 'sl6']), 'MEASURED:reported, never in SL5'),
+             ('SLM.SL8.sl6.steps', steps('sl6'), 'MEASURED'), ('SLM.SL8.sl6.C5tok', tok('sl6'), 'MEASURED:reported, never in SL5'),
              ('SLM.unstaged.rules', len([n for n in R if stage[n] == '-']), 'BESIDE:' + (','.join(sorted(n for n in R if stage[n] == '-')) or '-')),
              ('SLM.extras.C5tok', sum(R[n][3] for n in R), 'BESIDE:stale subtrees, NOT the proof'),
-             ('SLM.SL6.directions', 0, 'Q:the arm\'s post, six directions (type/atom/expression x both)'),
              ('SLM.SL7.setType', 0, 'Q:reported only if the arm states the rule over set types'),
              ('SLM.D4.tacticLine', 0, 'Q:the arm\'s ledger line for tactic building, NEVER folded into C5')]
+    # SL6 (STATUS-vir 181, ARM48): VIR_SLANG_SL6 = six rule names, slots type-fwd, type-bwd, atom-fwd, atom-bwd, expr-fwd,
+    # expr-bwd. A slot counts only with a STORED derivation in an L1-stage module AND a statement naming L1SLang and the slot's
+    # recogniser. The sort arguments (the arm's map, D-S2) are printed BESIDE for the hand read; direction is read by hand too.
+    if not sl6:
+        rows.append(('SLM.SL6.directions', 0, 'Q:VIR_SLANG_SL6 unset (the arm names six rules: type/atom/expression x both)'))
+    elif len(sl6) != 6:
+        rows.append(('SLM.SL6.directions', len(sl6), 'INVALID:VIR_SLANG_SL6 must name exactly six rules, got %d' % len(sl6)))
+    else:
+        slot_rx = [r'\bis_tyterm\{'] * 2 + [r'\bwfs\{'] * 4
+        proved, recog, both, miss, seen6 = 0, 0, 0, [], []
+        for n, rx in zip(sl6, slot_rx):
+            stt = strip_ml_comments(st.get(n, ''))
+            ok_p = ok_r = False
+            if stmod.get(n) in ('l1', 'sl6'):  # SLM-SL6-STAGE (the STATEMENT's module; `stage` is keyed by stored proofs)
+                if R.get(n, (0,))[0] > 0:  # SLM-SL6-STORED
+                    ok_p = True
+            if 'L1SLang{' in stt:
+                if rx and re.search(rx, stt):  # SLM-SL6-RECOG
+                    ok_r = True
+            proved += ok_p; recog += ok_r; both += ok_p and ok_r
+            if not ok_p:
+                miss.append(n)
+            args = re.findall(r'L1SLang\{[^{}]*\}', stt)[:1] + re.findall(r'(?:is_tyterm|wfs)\{[^{}]*', stt)[:1]
+            seen6.append('%s:%s' % (n, '/'.join(args) or '-'))
+        rows += [('SLM.SL6.directions', both, 'MEASURED:slots with a stored proof AND the slot\'s recogniser beside L1SLang; direction and sorts read by hand'),
+                 ('SLM.SL6.proved', proved, 'MEASURED:stored derivation >= 1 step in an L1-stage or SL6-stage module' + ('; missing:' + ','.join(miss) if miss else '')),
+                 ('SLM.SL6.recogMatch', recog, 'BESIDE:' + ','.join(seen6))]
     return rows
 
 
