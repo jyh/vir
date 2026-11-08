@@ -40,8 +40,10 @@ row is scored; vir has seen the DRY totals, so this fixes no figure's direction.
   reads 0 on all 265 refs of the arm's clone, with control `router_fuse` 1. RESULTS-5's MetaPRL column already read "not yet built".
 - **Z9's MetaPRL cell is therefore NOT SCORABLE as written: reported so, neither HOLDS nor FALSIFIED.** vir does not choose a
   substitute reference after seeing the totals. Reported BESIDE, with no verdict: the L3 total with and without R8, and the arm's
-  shallow program-1 proof (`vir.ml`, the RESULTS-1/2 MetaPRL columns), which is a different language from virp and so is not the
-  like of Lean's 1,617. `virp-s1` is not counted, because it carries no router proof. FINDINGS V-F6.
+  shallow program-1 proof (`vir.ml`, the RESULTS-1 MetaPRL column; quoted as `metaprl C5tok` 280 from
+  harness/metaprl-counts-2026-11-01.tsv, whitespace tokens, 10 refines, the unit of `L3M.*.C5tok`), which is a different language
+  from virp and so is not the like of Lean's 1,617. The 1,236 in RESULTS-2's Q5 is PROGRAM 2 in the LEXICAL unit (its whitespace
+  figure is 688; program 1's lexical figure is 487; RESULTS-3 addendum 6), so it is not a second figure for this proof. `virp-s1` is not counted, because it carries no router proof. FINDINGS V-F6.
 
 | id | prediction (amend-18) | MetaPRL | state |
 |---|---|---|---|
