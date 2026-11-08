@@ -959,6 +959,52 @@ if cmp -s "$H/count.py" "$F/mutant49b.py"; then say "ARM49 mutant-b NOT PLANTED"
 elif check49 "$F/mutant49b.py"; then say "ARM49 mutant-b SURVIVED (SL6's rules folded into the L1 stage and SL5)"; fail=1
 else say "ARM49 mutant-b KILLED"; fi
 
+# ARM50 (STATUS-vir 185): the MetaPRL L3 column (amend-18 Z1-Z9). A row's C5 is its IN-LAYER closure: the posted roots, every
+# virl3_* rule a closure text names as a whole identifier, and every virl3_* `{| reduce |}` rule when a text invokes reduceC.
+# Fixture: base = virl1/virl2 modules; ext adds virl3_prog (a `fix` only inside a comment) and virl3_typ, and touches a virl2 file
+# by a COMMENT only (files 1, items 0). R8's posted root has no derivation (a RED row, never a silent 0).
+R50="$F/r50"; mkdir -p "$R50/theories/vir"; git -C "$R50" init -q; git -C "$R50" config user.email t@t; git -C "$R50" config user.name t
+printf 'define unfold_one : one <--> 1\n' > "$R50/theories/vir/virl1_x.ml"
+printf 'define unfold_l2step : l2step{\x27a} <--> \x27a\ninteractive step_r : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_step.ml"
+printf 'interactive triple_frame : sequent { <H> >- \x27a }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_triple.ml"
+printf 'interactive let_rule : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_rules.ml"
+git -C "$R50" add -A; git -C "$R50" commit -qm base; B50=$(git -C "$R50" rev-parse HEAD)
+printf '(* touched *)\n' >> "$R50/theories/vir/virl2_rules.ml"
+printf 'extends Virl2_rules\n(* a fix in a comment is not a fix *)\ndefine unfold_l3_F : l3_F <--> bind{w. e_ret{\x27w}}\n' > "$R50/theories/vir/virl3_prog.ml"
+printf 'extends Virl3_prog\ninteractive_rw h1 {| reduce |} : a <--> b\ninteractive_rw h2 : a <--> b\ninteractive_rw hz {| reduce |} : a <--> b\ninteractive_rw r1 : a <--> b\ninteractive_rw r7 : a <--> b\ninteractive r2 : sequent { <H> >- \x27a }\ninteractive r3 : sequent { <H> >- \x27a }\ninteractive r4 : sequent { <H> >- \x27a }\ninteractive r5 : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl3_typ.ml"
+T1="rw (reduceC thenC h2) 0"; TH1="rw (unfold_occ thenC reduceC) 0"; TH2="rw unfold_pty 0"; THZ="rw unfold_x 0"; T7="rw (sweepDnC unfold_l3_F7) 0"
+T2="(let_rule thenT triple_frame thenT autoT)"; T3="(r2 thenT a b c d e f g h i j k l m n o p q r s t u v w x y z thenT autoT)"
+T4="(step_r thenT step_r_note thenT unfold_l2step thenT autoT)"; T5="(triple_frame thenT store_local thenT autoT)"
+prla "$R50/theories/vir/virl3_typ.prla" "h1=$TH1" "h2=$TH2" "hz=$THZ" "r1=$T1" "r7=$T7" "r2=$T2" "r3=$T3" "r4=$T4" "r5=$T5"
+git -C "$R50" add -A; git -C "$R50" commit -qm ext; X50=$(git -C "$R50" rev-parse HEAD)
+w() { printf '%s\n' "$1" | wc -w | tr -d ' '; }
+# R1's closure = r1 + h2 (named) + h1 + hz (the reduce resource: r1 and h1 both invoke reduceC)
+C1=$(( $(w "$T1") + $(w "$TH1") + $(w "$TH2") + $(w "$THZ") )); C3=$(( $(w "$T3") + $(w "$T2") ))
+ALL=$(( $(w "$T1") + $(w "$TH1") + $(w "$TH2") + $(w "$THZ") + $(w "$T7") + $(w "$T2") + $(w "$T3") + $(w "$T4") + $(w "$T5") ))
+check50() {
+  o=$(VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$1" --arm metaprll3 --base "$B50" --ext "$X50" "$R50") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L3M.files)" = 2 ] && [ "$(v L3M.prims)" = 0 ] && [ "$(v L3M.declares)" = 0 ] \
+  && [ "$(v L3M.Z1.defsEdited)" = 0 ] && [ "$(v L3M.Z1.rulesEdited)" = 0 ] && [ "$(v L3M.Z1.filesChanged)" = 1 ] \
+  && [ "$(v L3M.rules)" = 9 ] && [ "$(v L3M.rows.rooted)" = 6 ] && [ "$(v L3M.R8.missing)" = 1 ] \
+  && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R8.missing"' | grep -q RED \
+  && [ "$(v L3M.R1.C5tok)" = "$C1" ] && [ "$(v L3M.R1.rootTok)" = "$(w "$T1")" ] && [ "$(v L3M.R7.C5tok)" = "$(w "$T7")" ] \
+  && [ "$(v L3M.Z3.tripleCites)" = 2 ] && [ "$(v L3M.Z4.R3C5)" = "$C3" ] && [ "$(v L3M.Z5.stepInR4)" = 2 ] \
+  && [ "$(v L3M.Z6.frameApps)" = 1 ] && [ "$(v L3M.Z6.localityCited)" = 1 ] && [ "$(v L3M.Z7.fixInTerms)" = 0 ] \
+  && [ "$(v L3M.Z8.R7Steps)" = 1 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z8.R8Steps"' | grep -q '^.*	Q:' \
+  && [ "$(v L3M.Z9.l3C5tok)" = "$ALL" ]
+}
+if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 2; Z4 R3 $C3; Z5 2 (step_r_note is not step_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
+else say "ARM50 metaprll3 fixture FAIL"; VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$H/count.py" --arm metaprll3 --base "$B50" --ext "$X50" "$R50"; fail=1; fi
+sed 's/                todo += sorted(reduce_rw)/                pass/' "$H/count.py" > "$F/mutant50.py"  # the reduce resource dropped: a name closure alone
+if cmp -s "$H/count.py" "$F/mutant50.py"; then say "ARM50 mutant NOT PLANTED"; fail=1
+elif check50 "$F/mutant50.py"; then say "ARM50 mutant SURVIVED (the reduce-resource helpers not in a row's closure)"; fail=1
+else say "ARM50 mutant KILLED"; fi
+sed 's/sum(len(ident(k) \& names) for k in C\[r\])/sum(sum(text(k).count(n) for n in names) for k in C[r])/' "$H/count.py" > "$F/mutant50b.py"  # a cite read inside a longer name
+if cmp -s "$H/count.py" "$F/mutant50b.py"; then say "ARM50 mutant-b NOT PLANTED"; fail=1
+elif check50 "$F/mutant50b.py"; then say "ARM50 mutant-b SURVIVED (a cite read inside a longer name)"; fail=1
+else say "ARM50 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
