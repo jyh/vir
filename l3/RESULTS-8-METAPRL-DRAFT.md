@@ -36,14 +36,16 @@ found at the R3 dry read at 10b8ddbab, by running Z5's reader on R3. No primary 
 | Z1 | no virl1_/virl2_ definition edited, L2-closed → L3-closed | OWED (DRY at 5e5048dad: defs 0 · rules 0 · files 0) | — |
 | Z2 | MetaPRL C2 beside Lean's 0, no direction | OWED (Q until the arm names its replay files) | — |
 | Z3 | R2 cites no triple | OWED (DRY at d0a445140: 0 by statement; 10 by module, BESIDE) | — |
-| Z4 | R3 the largest L3 proof by C5 | OWED (DRY at 10b8ddbab: R3 304,503 against the largest other row so far, R1 9,911; R4–R6 and R8 not yet landed) | — |
-| Z5 | R4 names no virl2_step rule | OWED | — |
-| Z6 | R5: triple_frame once, no locality lemma | OWED | — |
+| Z4 | R3 the largest L3 proof by C5 | OWED (DRY at 8e6b250c2: R3 304,503 against R5 166,062 and R4 163,558, both closures carrying R3's path lemmas; R6 and R8 not yet landed) | — |
+| Z5 | R4 names no virl2_step rule | OWED (DRY at 8e6b250c2: primary `stepInR4` 7, `stepStated` 13, `rootStep` 0, so the root's own text names none and its closure does; as DRY-read the FALSIFIED clause "no step rule in its proof tree" is met, by way of R3's path lemmas and the bridge `l3_trun_den`. The hand read at L3 CLOSED decides) | — |
+| Z6 | R5: triple_frame once, no locality lemma | OWED (DRY at 8e6b250c2: `frameApps` 1, `localityCited` 0 on a population of 0, `unionStated` 1 = `triple_intro`, the triple's own introduction rule, which is not a locality lemma of an operation; as DRY-read Z6 holds) | — |
 | Z7 | no `fix` in a term; R6 C5 reported | OWED (DRY: fix 0 in virl3_prog) | — |
 | Z8 | R7, R8 ≤ 15 proof lines | OWED (DRY: R7 1 step, 1,447 tok); R8's cell is scored INFORMED (see BLINDNESS below) | — |
-| Z9 | L3 proof C5 > own virp router C5 | OWED (DRY total 13,474 at d0a445140; reference Q) | — |
+| Z9 | L3 proof C5 > own virp router C5 | OWED (DRY total 358,921 at 8e6b250c2, every virl3_* derivation; reference Q) | — |
 
-Rows R1–R8 with their roots: R1 = r1_F, r1_U · R2 = r2 (virl3_eq; DRY C5 8,591, intro 9,133) · R7 = r7_F7 (virl3_typ, <--> form, E4 declared beside) · the others OWED.
+Rows R1–R8 with their roots: R1 = r1_F, r1_U · R2 = r2 (virl3_eq; DRY C5 8,591, intro 9,979) · R3 = r3 (DRY C5 304,503) · R4 = r4 (virl3_tri; DRY C5 163,558, root 5,721 tok, 1 step) · R5 = r5_agree, r5_frame (DRY C5 166,062, roots 2,504 tok, 2 steps) · R7 = r7_F7 (virl3_typ, <--> form, E4 declared beside) · the others OWED.
+
+Byte checks at 8e6b250c2 (10b8ddbab an ancestor): `virl3_eq.ml`, `virl3_eq.prla` and `virl3_typ.ml` unchanged from 10b8ddbab, and `virl3_eq.ml` still hashes to the posted 9980407f1fdd38be; R7 frozenSame 1, closureEdited 0; Z1 0/0/0. The arm's "blind" for R4–R6 is its own report (Q).
 
 ## BLINDNESS (the arm's own declaration, 2026-11-08 ~01:09–01:10 PST; written before any of R3–R6 or R8 is scored)
 
