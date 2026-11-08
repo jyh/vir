@@ -966,7 +966,7 @@ else say "ARM49 mutant-b KILLED"; fi
 R50="$F/r50"; mkdir -p "$R50/theories/vir"; git -C "$R50" init -q; git -C "$R50" config user.email t@t; git -C "$R50" config user.name t
 printf 'define unfold_one : one <--> 1\n' > "$R50/theories/vir/virl1_x.ml"
 printf 'define unfold_l2step : l2step{\x27a} <--> \x27a\ninteractive step_r : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_step.ml"
-printf 'interactive triple_frame : sequent { <H> >- \x27a }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_triple.ml"
+printf 'interactive triple_frame : sequent { <H> >- triple{\x27P; \x27e; \x27Q} }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_triple.ml"
 printf 'interactive let_rule : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_rules.ml"
 git -C "$R50" add -A; git -C "$R50" commit -qm base; B50=$(git -C "$R50" rev-parse HEAD)
 printf '(* touched *)\n' >> "$R50/theories/vir/virl2_rules.ml"
@@ -989,12 +989,12 @@ check50() {
   && [ "$(v L3M.rules)" = 9 ] && [ "$(v L3M.rows.rooted)" = 6 ] && [ "$(v L3M.R8.missing)" = 1 ] \
   && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R8.missing"' | grep -q RED \
   && [ "$(v L3M.R1.C5tok)" = "$C1" ] && [ "$(v L3M.R1.rootTok)" = "$(w "$T1")" ] && [ "$(v L3M.R7.C5tok)" = "$(w "$T7")" ] \
-  && [ "$(v L3M.Z3.tripleCites)" = 2 ] && [ "$(v L3M.Z4.R3C5)" = "$C3" ] && [ "$(v L3M.Z5.stepInR4)" = 2 ] \
+  && [ "$(v L3M.Z3.tripleCites)" = 1 ] && [ "$(v L3M.Z3.moduleCites)" = 2 ] && [ "$(v L3M.Z4.R3C5)" = "$C3" ] && [ "$(v L3M.Z5.stepInR4)" = 2 ] \
   && [ "$(v L3M.Z6.frameApps)" = 1 ] && [ "$(v L3M.Z6.localityCited)" = 1 ] && [ "$(v L3M.Z7.fixInTerms)" = 0 ] \
   && [ "$(v L3M.Z8.R7Steps)" = 1 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z8.R8Steps"' | grep -q '^.*	Q:' \
   && [ "$(v L3M.Z9.l3C5tok)" = "$ALL" ]
 }
-if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 2; Z4 R3 $C3; Z5 2 (step_r_note is not step_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
+if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 1 by statement (2 by module); Z4 R3 $C3; Z5 2 (step_r_note is not step_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
 else say "ARM50 metaprll3 fixture FAIL"; VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$H/count.py" --arm metaprll3 --base "$B50" --ext "$X50" "$R50"; fail=1; fi
 sed 's/                todo += sorted(reduce_rw)/                pass/' "$H/count.py" > "$F/mutant50.py"  # the reduce resource dropped: a name closure alone
 if cmp -s "$H/count.py" "$F/mutant50.py"; then say "ARM50 mutant NOT PLANTED"; fail=1
@@ -1004,6 +1004,38 @@ sed 's/sum(len(ident(k) \& names) for k in C\[r\])/sum(sum(text(k).count(n) for 
 if cmp -s "$H/count.py" "$F/mutant50b.py"; then say "ARM50 mutant-b NOT PLANTED"; fail=1
 elif check50 "$F/mutant50b.py"; then say "ARM50 mutant-b SURVIVED (a cite read inside a longer name)"; fail=1
 else say "ARM50 mutant-b KILLED"; fi
+
+# ARM51 (STATUS-vir 187, declared 2026-11-07 by the 40th head AFTER R1, R2 and R7 exist on the arm, BEFORE R3-R6/R8): two
+# corrections found at the R2 dry read. (a) Z3 "cites a triple" is read by the cited rule's STATEMENT (it mentions triple{ or
+# triple_i{), never by its module: virl2_rules holds iteration and wf lemmas too (iter2_succ, retv0_wf), and the module
+# reading read R2 FALSIFIED on four non-triple cites. The module reading stays BESIDE. (b) A rule declared {| intro |} is used
+# by autoT/dT through the intro resource and named by nothing, so a name closure misses it: L3M.<row>.C5tokIntro is the
+# closure plus every virl3_* intro rule when a closure text invokes autoT/dT (BESIDE, an upper bound; the primary is unchanged).
+R51="$F/r51"; mkdir -p "$R51/theories/vir"; git -C "$R51" init -q; git -C "$R51" config user.email t@t; git -C "$R51" config user.name t
+printf 'interactive tri_let : sequent { <H> >- triple_i{\x27P; \x27e; \x27Q} }\ninteractive iter_succ : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl2_rules.ml"
+printf 'interactive bt0 : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl2_triple.ml"
+git -C "$R51" add -A; git -C "$R51" commit -qm base; B51=$(git -C "$R51" rev-parse HEAD)
+printf 'interactive w0 {| intro [] |} : sequent { <H> >- \x27a }\ninteractive w1 {| intro [] |} : sequent { <H> >- \x27b }\ninteractive r2 : sequent { <H> >- \x27a }\ninteractive r3 : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl3_eq.ml"
+TW0="rw unfold_a 0"; TW1="rw (unfold_b thenC unfold_c) 0"; TR2="(iter_succ thenT bt0 thenT autoT)"; TR3="(tri_let thenT iter_succ thenT w0)"
+prla "$R51/theories/vir/virl3_eq.prla" "w0=$TW0" "w1=$TW1" "r2=$TR2" "r3=$TR3"
+git -C "$R51" add -A; git -C "$R51" commit -qm ext; X51=$(git -C "$R51" rev-parse HEAD)
+check51() {
+  o=$(VIR_L3M_ROOTS='R2=r2;R3=r3' python3 "$1" --arm metaprll3 --base "$B51" --ext "$X51" "$R51") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L3M.Z3.tripleCites)" = 0 ] && [ "$(v L3M.Z3.moduleCites)" = 2 ] \
+  && [ "$(v L3M.R2.C5tok)" = "$(w "$TR2")" ] && [ "$(v L3M.R2.C5tokIntro)" = $(( $(w "$TR2") + $(w "$TW0") + $(w "$TW1") )) ] \
+  && [ "$(v L3M.R3.C5tok)" = $(( $(w "$TR3") + $(w "$TW0") )) ] && [ "$(v L3M.R3.C5tokIntro)" = $(( $(w "$TR3") + $(w "$TW0") )) ]
+}
+if check51 "$H/count.py"; then say "ARM51 metaprll3 Z3-by-statement + intro resource OK (Z3 0 by statement, 2 by module; R2 intro closure adds w0+w1; R3 names w0, no autoT)"
+else say "ARM51 metaprll3 Z3-by-statement / intro FAIL"; VIR_L3M_ROOTS='R2=r2;R3=r3' python3 "$H/count.py" --arm metaprll3 --base "$B51" --ext "$X51" "$R51"; fail=1; fi
+sed 's/                todo += sorted(intro_rw)/                pass/' "$H/count.py" > "$F/mutant51.py"  # the intro resource dropped
+if cmp -s "$H/count.py" "$F/mutant51.py"; then say "ARM51 mutant NOT PLANTED"; fail=1
+elif check51 "$F/mutant51.py"; then say "ARM51 mutant SURVIVED (intro rules not in the intro closure)"; fail=1
+else say "ARM51 mutant KILLED"; fi
+sed 's/names = tri_stated/names = tri_mod/' "$H/count.py" > "$F/mutant51b.py"  # Z3 by module again
+if cmp -s "$H/count.py" "$F/mutant51b.py"; then say "ARM51 mutant-b NOT PLANTED"; fail=1
+elif check51 "$F/mutant51b.py"; then say "ARM51 mutant-b SURVIVED (Z3 read by module)"; fail=1
+else say "ARM51 mutant-b KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"

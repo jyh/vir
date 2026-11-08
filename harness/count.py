@@ -1426,6 +1426,14 @@ def metaprll2(repo, base, ext):
 L3M_STEP, L3M_FRAME = 'virl2_step', 'triple_frame'
 L3M_TRIPLE = ('virl2_triple', 'virl2_rules')
 L3M_RES_RE = re.compile(r'(?<![A-Za-z0-9_])reduce[CT](?![A-Za-z0-9_])')
+# Addendum (STATUS-vir 187, the 40th head, 2026-11-07: AFTER R1/R2/R7 exist on the arm, BEFORE R3-R6/R8; found at the R2 dry
+# read at d0a445140). (a) Z3's "cites a triple" is a cited L2 rule whose STATEMENT mentions triple{ or triple_i{ -- the Lean
+# reading counts `Triple` itself, never a module. The module reading (a rule of virl2_triple/virl2_rules) stays BESIDE:
+# those modules also hold iteration and wf lemmas (iter2_succ, retv0_wf, bterm0_bterm), and it read R2 at 10 on four
+# non-triple names. (b) A `{| intro |}` rule is applied by autoT/dT through the intro resource and named by no text:
+# L3M.<row>.C5tokIntro = the closure plus every virl3_* intro rule when a closure text invokes autoT/dT (BESIDE, an upper bound).
+L3M_INTRO_RE = re.compile(r'(?<![A-Za-z0-9_])(?:autoT|dT)(?![A-Za-z0-9_])')
+L3M_TRI_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])triple(?:_i)?\{')
 
 
 def metaprll3(repo, base, ext):
@@ -1465,7 +1473,7 @@ def metaprll3(repo, base, ext):
              ('L3M.Z1.rulesEdited', redit, 'MEASURED:virl1_*/virl2_* interactive/prim items, base vs ext'),
              ('L3M.Z1.filesChanged', len(fch), 'BESIDE:virl1_*/virl2_* files whose bytes differ (.ml/.mli/.prla, added or removed):' + (','.join(fch) or '-'))]
     # the L3 derivations, keyed MODULE:NAME
-    R, byname, reduce_rw = {}, {}, set()
+    R, byname, reduce_rw, intro_rw = {}, {}, set(), set()
     for p in sorted(le):
         if bn(p).startswith('virl3_') and p.endswith('.prla'):
             for n, v in prla_rules(raw(ext, p)).items():
@@ -1474,16 +1482,19 @@ def metaprll3(repo, base, ext):
     for p, t in l3txt.items():
         for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\breduce\b[^|]*\|\}', t, re.M):
             reduce_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
+        for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\bintro\b[^|]*\|\}', t, re.M):
+            intro_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
     # rule (and unfold_) names of the imported L2 modules, by module, from their .ml
-    l2names = {}
+    l2names, tri_stated = {}, set()
     for p in le:
         if bn(p).startswith('virl2_') and p.endswith('.ml'):
+            tri_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_TRI_STMT_RE.search(blk)}
             t = show(ext, p)
             l2names[bn(p)[:-3]] = set(re.findall(r'^\s*(?:interactive|prim)(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)', t, re.M)) \
                 | set('unfold_' + n for n in re.findall(r'^\s*define\s+unfold_([A-Za-z_][A-Za-z0-9_\']*)', t, re.M))
     text = lambda k: ' '.join(R[k][4])
     ident = lambda k: set(re.findall(r"[A-Za-z0-9_']+", text(k)))
-    def clos(roots):
+    def clos(roots, intro=False):
         seen, todo = set(), [k for n in roots for k in byname.get(n, ())]
         while todo:
             x = todo.pop()
@@ -1493,6 +1504,8 @@ def metaprll3(repo, base, ext):
             todo += [k for n in ident(x) - {x.split(':', 1)[1]} for k in byname.get(n, ())]
             if L3M_RES_RE.search(text(x)):
                 todo += sorted(reduce_rw)
+            if intro and L3M_INTRO_RE.search(text(x)):
+                todo += sorted(intro_rw)
         return seen
     rr = {}
     for part in [s for s in os.environ.get('VIR_L3M_ROOTS', '').split(';') if '=' in s]:
@@ -1509,12 +1522,19 @@ def metaprll3(repo, base, ext):
             continue
         c = clos(rr[r]); C[r] = c
         rows += [('L3M.%s.C5tok' % r, sum(R[k][1] for k in c), 'MEASURED:in-layer closure, %d rules (%d by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled' % (len(c), len(c & reduce_rw))),
+                 ('L3M.%s.C5tokIntro' % r, sum(R[k][1] for k in clos(rr[r], True)), 'BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (%d intro rules in the layer; an upper bound)' % len(intro_rw)),
                  ('L3M.%s.rootTok' % r, sum(R[k][1] for n in rr[r] for k in byname[n]), 'BESIDE:roots only'),
                  ('L3M.%s.rootSteps' % r, sum(R[k][0] for n in rr[r] for k in byname[n]), 'BESIDE:refine steps of the roots\' own derivations')]
     cites = lambda r, names: sum(len(ident(k) & names) for k in C[r]) if r in C else None
     q = lambda r: 'Q:no posted roots for %s' % r
-    z = cites('R2', set().union(*[l2names.get(m, set()) for m in L3M_TRIPLE]))
-    rows.append(('L3M.Z3.tripleCites', z or 0, ('MEASURED:%s rules named in R2\'s closure' % '/'.join(L3M_TRIPLE)) if z is not None else q('R2')))
+    tri_mod = set().union(*[l2names.get(m, set()) for m in L3M_TRIPLE])
+    names = tri_stated
+    z = cites('R2', names)
+    zn = sorted({n for k in C.get('R2', ()) for n in ident(k) & names})
+    rows.append(('L3M.Z3.tripleCites', z or 0, ('MEASURED:virl2_* rules whose statement mentions triple{/triple_i{, named in R2\'s closure:' + (','.join(zn) or '-')) if z is not None else q('R2')))
+    zm = cites('R2', tri_mod)
+    zmn = sorted({n for k in C.get('R2', ()) for n in ident(k) & tri_mod})
+    rows.append(('L3M.Z3.moduleCites', zm or 0, ('BESIDE:%s rules named in R2\'s closure, any statement (the reading before addendum 187):' % '/'.join(L3M_TRIPLE) + (','.join(zmn) or '-')) if zm is not None else q('R2')))
     if 'R3' in C:
         other = max([(sum(R[k][1] for k in C[r]), r) for r in C if r != 'R3'] or [(0, '-')])
         rows += [('L3M.Z4.R3C5', sum(R[k][1] for k in C['R3']), 'MEASURED:R3 closure tokens'), ('L3M.Z4.maxOtherC5', other[0], 'MEASURED:' + other[1])]
