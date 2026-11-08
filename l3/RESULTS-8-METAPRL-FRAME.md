@@ -1,4 +1,6 @@
-# RESULTS-8, MetaPRL column — FRAME (DRAFT, not scored)
+# RESULTS-8, MetaPRL column — FRAME
+
+**This file is the frame the column was scored against, kept as it stood. The SCORE is in RESULTS-8.md (2026-11-08, mojave 2d63bef28).** Rows reading OWED or DRY below are the state when the frame was written.
 
 Written 2026-11-07 by the 39th vir head. At that point the MetaPRL arm had landed R1 and R7 only, at mojave 5e5048dad
 (local mojave/vir-l3, cut from its L2-closed sha c80941362). Every figure below is OWED. The one exception is the dry read,
