@@ -1426,6 +1426,13 @@ def metaprll2(repo, base, ext):
 L3M_STEP, L3M_FRAME = 'virl2_step', 'triple_frame'
 L3M_TRIPLE = ('virl2_triple', 'virl2_rules')
 L3M_RES_RE = re.compile(r'(?<![A-Za-z0-9_])reduce[CT](?![A-Za-z0-9_])')
+# Addendum (STATUS-vir 194, the 42nd head, 2026-11-08: AFTER R1/R2/R3/R7 exist on the arm, BEFORE R4 does; written after reading
+# lines 1-20 of the arm's R4 plan). amend-18 Z5: "no step rule in its proof tree". Z5's primary counts step rules (step2_*) and
+# the step's unfolds. A value encoder of the same module (unfold_capv) is not a step rule; the old reading stays BESIDE as
+# allNames. step2_* are reduce rules, fired by resource and named by no text, so stepStated (rules in the closure stated over
+# the step) is reported BESIDE: it is the only reading that sees a step taken that way.
+L3M_STEP_RULE_RE = re.compile(r'^(?:step2_\w+|unfold_(?:l2step|l2iter|l2run|reach|effop))$')
+L3M_STEP_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])(l2step|l2iter|reach)\{')
 # Addendum (STATUS-vir 187, the 40th head, 2026-11-07: AFTER R1/R2/R7 exist on the arm, BEFORE R3-R6/R8; found at the R2 dry
 # read at d0a445140). (a) Z3's "cites a triple" is a cited L2 rule whose STATEMENT mentions triple{ or triple_i{ -- the Lean
 # reading counts `Triple` itself, never a module. The module reading (a rule of virl2_triple/virl2_rules) stays BESIDE:
@@ -1485,10 +1492,13 @@ def metaprll3(repo, base, ext):
         for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\bintro\b[^|]*\|\}', t, re.M):
             intro_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
     # rule (and unfold_) names of the imported L2 modules, by module, from their .ml
-    l2names, tri_stated = {}, set()
+    l2names, tri_stated, step_stated, l3_step_stated = {}, set(), set(), set()
     for p in le:
+        if bn(p).startswith('virl3_') and p.endswith('.ml'):
+            l3_step_stated |= {bn(p)[:-3] + ':' + k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
         if bn(p).startswith('virl2_') and p.endswith('.ml'):
             tri_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_TRI_STMT_RE.search(blk)}
+            step_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
             t = show(ext, p)
             l2names[bn(p)[:-3]] = set(re.findall(r'^\s*(?:interactive|prim)(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)', t, re.M)) \
                 | set('unfold_' + n for n in re.findall(r'^\s*define\s+unfold_([A-Za-z_][A-Za-z0-9_\']*)', t, re.M))
@@ -1572,8 +1582,15 @@ def metaprll3(repo, base, ext):
         rows += [('L3M.Z4.R3C5', sum(R[k][1] for k in C['R3']), 'MEASURED:R3 closure tokens'), ('L3M.Z4.maxOtherC5', other[0], 'MEASURED:' + other[1])]
     else:
         rows.append(('L3M.Z4.R3C5', 0, q('R3')))
-    z = cites('R4', l2names.get(L3M_STEP, set()))
-    rows.append(('L3M.Z5.stepInR4', z or 0, ('MEASURED:%s rules/unfolds named in R4\'s closure' % L3M_STEP) if z is not None else q('R4')))
+    step_all = l2names.get(L3M_STEP, set())
+    step_rules = {n for n in step_all if L3M_STEP_RULE_RE.match(n)}
+    z = cites('R4', step_rules)
+    rows.append(('L3M.Z5.stepInR4', z or 0, ('MEASURED:step rules (step2_*) and step unfolds (l2step, l2iter, l2run, reach, effop) named in R4\'s closure:LIMIT step2_* are reduce rules, fired by resource and named by no text, so read L3M.Z5.stepStated beside this') if z is not None else q('R4')))
+    if 'R4' in C:
+        st = sorted({k.split(':', 1)[1] for k in C['R4'] if k in l3_step_stated} | {n for k in C['R4'] for n in ident(k) & step_stated})
+        rows += [('L3M.Z5.allNames', cites('R4', step_all), 'BESIDE:every rule and unfold of %s named in R4\'s closure, value encoders included (the reading before addendum 194)' % L3M_STEP),
+                 ('L3M.Z5.stepStated', len(st), 'BESIDE:rules in R4\'s closure stated over l2step{/l2iter{/reach{ (in-layer, or a virl2_* rule cited):' + (','.join(st) or '-')),
+                 ('L3M.Z5.rootStep', sum(len(ident(k) & step_rules) for n in rr['R4'] for k in byname[n]), 'BESIDE:step rules and unfolds named in R4\'s own root derivation (the like of Lean\'s proof-text count)')]
     if 'R5' in C:
         t5 = ' '.join(text(k) for k in C['R5'])
         loc = sorted({n for m in l2names.values() for n in m if 'local' in n} & set(re.findall(r"[A-Za-z0-9_']+", t5)))

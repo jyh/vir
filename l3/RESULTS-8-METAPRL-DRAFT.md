@@ -17,12 +17,23 @@ and BEFORE R3–R6 and R8. It was found at the R2 dry read at d0a445140, and no 
 - `L3M.<row>.C5tokIntro` is reported BESIDE as an upper bound: the closure plus every virl3_* `{| intro |}` rule when a closure
   text invokes autoT/dT. Those rules are applied by resource and named by no text.
 
+ADDENDUM (selftest ARM53, the 42nd head, 2026-11-08). This was written AFTER R1, R2, R3 and R7 existed on the arm and BEFORE R4
+existed, and AFTER vir read lines 1–20 of the arm's R4 plan (a plan, no proof), which says R4 reuses R3's path lemmas. It was
+found at the R3 dry read at 10b8ddbab, by running Z5's reader on R3. No primary C5 moved.
+- Z5's old reader counted every name of `virl2_step` in the closure. On R3 it read 66, and two kinds of error sat in that
+  figure. It counted value encoders (`unfold_capv`, `unfold_a_unit`), which are not step rules. And no `step2_*` appears in any
+  text: they are reduce rules, fired by resource through the arm's own `l3_dstep3`, so a name reading cannot see them.
+- `L3M.Z5.stepInR4`, the primary, now counts step rules (`step2_*`) and the step's unfolds (l2step, l2iter, l2run, reach, effop).
+  BESIDE: `allNames` (the old reading), `stepStated` (rules in the closure stated over `l2step{`, `l2iter{` or `reach{`, the one
+  reading that sees a step taken by resource) and `rootStep` (the root's own text, the like of Lean's proof-text count).
+  Z5's FALSIFIED clause is read on the primary and `stepStated` together, by hand, with the named rules printed.
+
 | id | prediction (amend-18) | MetaPRL | state |
 |---|---|---|---|
 | Z1 | no virl1_/virl2_ definition edited, L2-closed → L3-closed | OWED (DRY at 5e5048dad: defs 0 · rules 0 · files 0) | — |
 | Z2 | MetaPRL C2 beside Lean's 0, no direction | OWED (Q until the arm names its replay files) | — |
 | Z3 | R2 cites no triple | OWED (DRY at d0a445140: 0 by statement; 10 by module, BESIDE) | — |
-| Z4 | R3 the largest L3 proof by C5 | OWED | — |
+| Z4 | R3 the largest L3 proof by C5 | OWED (DRY at 10b8ddbab: R3 304,503 against the largest other row so far, R1 9,911; R4–R6 and R8 not yet landed) | — |
 | Z5 | R4 names no virl2_step rule | OWED | — |
 | Z6 | R5: triple_frame once, no locality lemma | OWED | — |
 | Z7 | no `fix` in a term; R6 C5 reported | OWED (DRY: fix 0 in virl3_prog) | — |
@@ -54,3 +65,16 @@ How each row is read at scoring:
   listed, 01:07:06). The arm re-hashes at its export commit and posts any difference. These are the arm's own readings, not an
   independent record, and the row carries that limit beside its figure. `virl3_eq.ml` can be checked against the export.
 - **R4, R5, R6: BLIND.** The arm reports that their Lean files were not opened.
+
+### The two byte checks, DRY at mojave 10b8ddbab (2026-11-08, the 42nd vir head; re-run at L3 CLOSED)
+
+- **R7:** `L3M.R7.frozenSame` 1 and `frozenClosureEdited` 0 against 5e5048dad. The condition holds at this sha.
+- **R3:** the committed `theories/vir/virl3_eq.ml` at 10b8ddbab hashes to the posted 9980407f1fdd38be. vir also re-hashed all 25
+  posted inputs on disk, with the expected values parsed from the bytes of the arm's post: 25 equal, 0 differ, 0 missing.
+  24 of the 25 mtimes are as posted. `virl3_eq.ml` reads 03:42:20, not the posted 00:36:56; the arm's R3 post reports a mutant
+  build followed by a byte-identical restore, which accounts for that, and the bytes are what the check reads. So R3 is read
+  as **not affected**. The limit stays beside the figure: the time of the read is the arm's report (Q), and a hash shows the
+  inputs did not change after the arm posted them, not when the proof was found.
+- **Statement:** `r3` is stated under `store_ok{s}` and `l3_lay{s; p; f}`: region p live at 87 cells holding f(0..86), bytes
+  3..66 in [0,256), sender and topic below 4. That is L3-E1's reading (OBJECT-L3 §3.3's layout), so Z4 is scored against
+  the statement the erratum names.

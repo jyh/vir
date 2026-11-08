@@ -965,7 +965,7 @@ else say "ARM49 mutant-b KILLED"; fi
 # by a COMMENT only (files 1, items 0). R8's posted root has no derivation (a RED row, never a silent 0).
 R50="$F/r50"; mkdir -p "$R50/theories/vir"; git -C "$R50" init -q; git -C "$R50" config user.email t@t; git -C "$R50" config user.name t
 printf 'define unfold_one : one <--> 1\n' > "$R50/theories/vir/virl1_x.ml"
-printf 'define unfold_l2step : l2step{\x27a} <--> \x27a\ninteractive step_r : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_step.ml"
+printf 'define unfold_l2step : l2step{\x27a} <--> \x27a\ninteractive step2_r : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_step.ml"
 printf 'interactive triple_frame : sequent { <H> >- triple{\x27P; \x27e; \x27Q} }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_triple.ml"
 printf 'interactive let_rule : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_rules.ml"
 git -C "$R50" add -A; git -C "$R50" commit -qm base; B50=$(git -C "$R50" rev-parse HEAD)
@@ -974,7 +974,7 @@ printf 'extends Virl2_rules\n(* a fix in a comment is not a fix *)\ndefine unfol
 printf 'extends Virl3_prog\ninteractive_rw h1 {| reduce |} : a <--> b\ninteractive_rw h2 : a <--> b\ninteractive_rw hz {| reduce |} : a <--> b\ninteractive_rw r1 : a <--> b\ninteractive_rw r7 : a <--> b\ninteractive r2 : sequent { <H> >- \x27a }\ninteractive r3 : sequent { <H> >- \x27a }\ninteractive r4 : sequent { <H> >- \x27a }\ninteractive r5 : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl3_typ.ml"
 T1="rw (reduceC thenC h2) 0"; TH1="rw (unfold_occ thenC reduceC) 0"; TH2="rw unfold_pty 0"; THZ="rw unfold_x 0"; T7="rw (sweepDnC unfold_l3_F7) 0"
 T2="(let_rule thenT triple_frame thenT autoT)"; T3="(r2 thenT a b c d e f g h i j k l m n o p q r s t u v w x y z thenT autoT)"
-T4="(step_r thenT step_r_note thenT unfold_l2step thenT autoT)"; T5="(triple_frame thenT store_local thenT autoT)"
+T4="(step2_r thenT step2_r_note thenT unfold_l2step thenT autoT)"; T5="(triple_frame thenT store_local thenT autoT)"
 prla "$R50/theories/vir/virl3_typ.prla" "h1=$TH1" "h2=$TH2" "hz=$THZ" "r1=$T1" "r7=$T7" "r2=$T2" "r3=$T3" "r4=$T4" "r5=$T5"
 git -C "$R50" add -A; git -C "$R50" commit -qm ext; X50=$(git -C "$R50" rev-parse HEAD)
 w() { printf '%s\n' "$1" | wc -w | tr -d ' '; }
@@ -994,7 +994,7 @@ check50() {
   && [ "$(v L3M.Z8.R7Steps)" = 1 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z8.R8Steps"' | grep -q '^.*	Q:' \
   && [ "$(v L3M.Z9.l3C5tok)" = "$ALL" ]
 }
-if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 1 by statement (2 by module); Z4 R3 $C3; Z5 2 (step_r_note is not step_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
+if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 1 by statement (2 by module); Z4 R3 $C3; Z5 2 (step2_r_note is not step2_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
 else say "ARM50 metaprll3 fixture FAIL"; VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$H/count.py" --arm metaprll3 --base "$B50" --ext "$X50" "$R50"; fail=1; fi
 sed 's/                todo += sorted(reduce_rw)/                pass/' "$H/count.py" > "$F/mutant50.py"  # the reduce resource dropped: a name closure alone
 if cmp -s "$H/count.py" "$F/mutant50.py"; then say "ARM50 mutant NOT PLANTED"; fail=1
@@ -1075,6 +1075,40 @@ sed 's/if fs != items(ext, p + \x27.ml\x27).get(\x27i:\x27 + name):/if False:/' 
 if cmp -s "$H/count.py" "$F/mutant52b.py"; then say "ARM52 mutant-b NOT PLANTED"; fail=1
 elif check52 "$F/mutant52b.py"; then say "ARM52 mutant-b SURVIVED (a root's statement edit reads frozen)"; fail=1
 else say "ARM52 mutant-b KILLED"; fi
+
+# ARM53 (STATUS-vir 194, the 42nd head, 2026-11-08: AFTER R1/R2/R3/R7 exist on the arm and BEFORE R4 does; written after reading
+# lines 1-20 of the arm's R4 plan, which says R4 reuses R3's path lemmas). amend-18 Z5 says "no step rule in its proof tree".
+# At the R3 export the old reader (every name of virl2_step) read R3's closure at 66, on unfold_effop and its helpers AND on
+# value encoders (unfold_capv, unfold_a_unit), while no step2_* appears in any text: those are reduce rules, fired by resource
+# through the arm's own rule l3_dstep3. So: the primary counts step rules and step unfolds only; the old reading is BESIDE
+# (allNames); BESIDE stepStated names the rules in the closure stated over l2step{/l2iter{/reach{, the one reading that sees a
+# step taken by resource; BESIDE rootStep is the root's own text, the like of Lean's proof-text count.
+R53="$F/r53"; mkdir -p "$R53/theories/vir"; git -C "$R53" init -q; git -C "$R53" config user.email t@t; git -C "$R53" config user.name t
+printf 'define unfold_capv : capv{\x27p} <--> foo{\x27p}\ndefine unfold_effop : effop{\x27o} <--> bar{\x27o}\ninteractive_rw step2_ret {| reduce |} : l2step{(e_ret{\x27a}, \x27s)} <--> inr{it}\n' > "$R53/theories/vir/virl2_step.ml"
+printf 'interactive rs : sequent { <H> >- reach{\x27a; \x27b} }\n' > "$R53/theories/vir/virl2_den.ml"
+git -C "$R53" add -A; git -C "$R53" commit -qm base; B53=$(git -C "$R53" rev-parse HEAD)
+: > "$R53/theories/vir/virl3_eq.ml"
+for n in r4v r4e r4d r4h r4r r4s h1; do printf 'interactive %s : sequent { <H> >- \x27a }\n' "$n" >> "$R53/theories/vir/virl3_eq.ml"; done
+printf 'interactive l3_dstep : sequent { <H> >- l2step{\x27c} = \x27d in \x27T }\n' >> "$R53/theories/vir/virl3_eq.ml"
+prla "$R53/theories/vir/virl3_eq.prla" "r4v=rw unfold_capv 0" "r4e=rw unfold_effop 0" "r4d=(l3_dstep thenT idT)" "r4h=(h1 thenT idT)" "r4r=(rs thenT idT)" "r4s=rw step2_ret 0" "h1=rw unfold_effop 0" "l3_dstep=rw unfold_x 0"
+git -C "$R53" add -A; git -C "$R53" commit -qm ext; X53=$(git -C "$R53" rev-parse HEAD)
+r53() { VIR_L3M_ROOTS="R4=$2" python3 "$1" --arm metaprll3 --base "$B53" --ext "$X53" "$R53"; }
+v53() { awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+e53() { # $1 count.py, $2 root, then stepInR4 allNames stepStated rootStep
+  o=$(r53 "$1" "$2") || return 1
+  [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepInR4)" = "$3" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.allNames)" = "$4" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepStated)" = "$5" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.rootStep)" = "$6" ]
+}
+check53() { e53 "$1" r4v 0 1 0 0 && e53 "$1" r4e 1 1 0 1 && e53 "$1" r4d 0 0 1 0 && e53 "$1" r4h 1 1 0 0 && e53 "$1" r4r 0 0 1 0 && e53 "$1" r4s 1 1 1 1; }
+if check53 "$H/count.py"; then say "ARM53 metaprll3 Z5 reader OK (value encoder 0/1; effop unfold 1, in root 1; step by resource 0 named, 1 stated; helper 1, root 0; L2 rule over reach stated 1; step2_ named 1)"
+else say "ARM53 metaprll3 Z5 reader FAIL"; r53 "$H/count.py" r4v | awk -F'\t' '$2 ~ /Z5/'; fail=1; fi
+sed 's/if L3M_STEP_RULE_RE.match(n)}/if True}/' "$H/count.py" > "$F/mutant53.py"  # a value encoder reads as a step rule
+if cmp -s "$H/count.py" "$F/mutant53.py"; then say "ARM53 mutant NOT PLANTED"; fail=1
+elif check53 "$F/mutant53.py"; then say "ARM53 mutant SURVIVED (a value encoder reads as a step rule)"; fail=1
+else say "ARM53 mutant KILLED"; fi
+sed 's/(l2step|l2iter|reach)/(nostepword)/' "$H/count.py" > "$F/mutant53b.py"  # a step taken by resource is invisible
+if cmp -s "$H/count.py" "$F/mutant53b.py"; then say "ARM53 mutant-b NOT PLANTED"; fail=1
+elif check53 "$F/mutant53b.py"; then say "ARM53 mutant-b SURVIVED (a step taken by resource is invisible)"; fail=1
+else say "ARM53 mutant-b KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
