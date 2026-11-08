@@ -1240,6 +1240,575 @@ def indm(repo, base, ext):
     return rows
 
 
+def mpl_refs(n, text, names):
+    """The rule names a derivation's text names, as whole identifiers (ARM41: `ty_rx_note` does not name `ty_r`)."""
+    return {m for m in names if m != n and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(m), text)}  # REFS
+
+
+# The MetaPRL L2 column (ARM41; STATUS-vir rows 122/134). DIR is a clone of the arm's tree, --base its L1-closed sha
+# (ec912bd80), --ext the sha it names when it posts L2 CLOSED. Its DECLARATIONS-L2-METAPRL D0 fixes the reading: every L2
+# module is `virl2_*`, ⊢₂ lives in `virl2_typing`, the frame rule is `triple_frame` (D6), and partiality's framework file
+# `itt_bar_list` sits beside Y1 (its D1), never in it.
+L2M_FRAME, L2M_TYPING = 'triple_frame', 'virl2_typing'
+L2M_CARVE = ('wfs2', 'isNum2')  # D8 at mojave 9065db501
+L2M_SCOPE = ('scoped2', 'scoped')  # D9 (mojave @97,494,337): the name as committed is re-read at D9's sha
+L2M_IFAULT = ('is_ifault', 'ifault2')  # D10 (mojave @98,646,216, ruled (a) @98,653,117): the let congruence; ifault_op is unchanged and NOT read; ifault2 is D10's support term at mojave 517d086da (ARM45)
+
+
+def metaprll2(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('L2M.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    show = lambda sha, p: strip_ml_comments(g('show', sha + ':' + p).stdout)
+    l2 = sorted(p for p in le if os.path.basename(p).startswith('virl2_') and p.endswith('.ml'))
+    prims = sum(len(PRIM_RE.findall(show(ext, p))) for p in l2)
+    fw = [p for p in sorted(le) if os.path.basename(p).startswith('itt_bar') and p.endswith('.ml')
+          and (p not in lb or show(base, p) != show(ext, p))]
+    # Y1's FIGURE counts a framework prim as VIR-SPECIFIC when its OWN TEXT names a term that a virl1_*/virl2_* module defines or
+    # declares (the CONTENT test, mojave 2026-11-04 00:50 fork (B), adopted by vir). It replaced an `extends Virl2_` test, which
+    # read the name a file IMPORTS rather than what the prim is OVER (a label, not the instrument). Generic prims stay BESIDE.
+    vterms = set()
+    for p in le:
+        b = os.path.basename(p)
+        if (b.startswith('virl1_') or b.startswith('virl2_')) and b.endswith('.ml'):
+            vterms |= set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, p), re.M))
+    vre = re.compile(r"(?<![A-Za-z0-9_'])(?:%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms)))) if vterms else None
+    fwp = vdp = 0; vnames = []
+    MLI_RULE = re.compile(r'^[ \t]*(?=(?:rule|prim|rewrite|val|topval|declare|define|extends|open|doc|dform)\b)', re.M)
+    for p in fw:
+        # the prim's OWN TEXT is its .ml block AND its .mli declaration (`rule <name>`); sixth pass 2026-11-04: an .mli
+        # still naming Store while the .ml was restated, invisible to an .ml-only reader
+        mli = {}
+        if p[:-3] + '.mli' in le:
+            for b2 in MLI_RULE.split(show(ext, p[:-3] + '.mli')):
+                m2 = re.match(r'\s*(?:rule|prim)\s+(\S+)', b2)
+                if m2:
+                    mli[m2.group(1)] = b2
+        for blk in MPL_ITEM_RE.split(show(ext, p)):
+            if PRIM_RE.match(blk):
+                blk = blk + '\n' + mli.get(re.match(r'\s*prim(?:_rw)?\s+(\S+)', blk).group(1), '')
+                if vre and vre.search(blk):
+                    vdp += 1; vnames.append(re.match(r'\s*prim(?:_rw)?\s+(\S+)', blk).group(1))
+                else:
+                    fwp += 1
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    redit = dedit = 0
+    for p in sorted(lb & le):
+        if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'):
+            b, a = items(base, p), items(ext, p)
+            for k in b:
+                if k not in a or b[k] != a[k]:
+                    if k[0] in 'ip':
+                        redit += 1
+                    else:
+                        dedit += 1
+    newl1 = sorted(os.path.basename(p) for p in le - lb if os.path.basename(p).startswith('virl1_') and p.endswith('.ml'))
+    # TRUSTED BASE (STATUS-vir 145): the prims L2 RESTS ON are those of every non-virl theories/vir module in the `extends`
+    # closure of the virl2_* modules (.ml and .mli), CHANGED OR NOT since base. A file unchanged since L1 but newly in L2's
+    # ancestry (Itt_bar_bset via CONS clause 3 (ii)) is invisible to the added-or-changed row above.
+    def ext_of(p):
+        t = show(ext, p) + '\n' + (show(ext, p[:-3] + '.mli') if p[:-3] + '.mli' in le else '')
+        return ['theories/vir/' + m[0].lower() + m[1:] + '.ml' for m in re.findall(r'^extends\s+([A-Z][A-Za-z0-9_]*)', t, re.M)]
+    seen, todo = set(), list(l2)
+    while todo:
+        x = todo.pop()
+        if x in seen or x not in le:
+            continue
+        seen.add(x); todo += ext_of(x)
+    tb = sorted(p for p in seen if not re.match(r'virl[12]_', os.path.basename(p)))
+    tbp = [(os.path.basename(p)[:-3], len(PRIM_RE.findall(show(ext, p)))) for p in tb]
+    rows = [('L2M.files', len(l2), 'MEASURED:virl2_*.ml at ext'),
+            ('L2M.trustedBase.files', len(tb), 'MEASURED:non-virl theories/vir modules in the extends closure of virl2_*'),
+            ('L2M.trustedBase.prims', sum(n for _, n in tbp), 'MEASURED:' + (','.join('%s=%d' % x for x in tbp) or '-') + ':LIMIT theories/itt release prims not included (L1M.pinReflection)'),
+            ('L2M.Y1.prims', prims, 'MEASURED:prim/prim_rw in virl2_*, comments stripped'),
+            ('L2M.Y1.frameworkPrims', fwp, 'BESIDE:generic prims in itt_bar* added or changed since base:' + (','.join(os.path.basename(p) for p in fw) or '-')),
+            ('L2M.Y1.virDependentPrims', vdp, 'MEASURED:framework prims whose text names a virl1_/virl2_ term:' + (','.join(vnames) or '-')),
+            ('L2M.Y1.primFigure', prims + vdp, 'MEASURED:Y1 figure = virl2_* prims + VIR-dependent framework prims'),
+            ('L2M.Y2.defsEdited', dedit, 'MEASURED:virl1_* at base vs ext'), ('L2M.Y2.rulesEdited', redit, 'BESIDE'),
+            ('L2M.Y2.newL1Files', len(newl1), 'BESIDE:' + (','.join(newl1) or '-'))]
+    # keyed MODULE:NAME — a rule name may recur across modules (two of virl2_rules' do), and a bare-name key drops one
+    R, mod, byname = {}, {}, {}
+    for p in sorted(le):
+        b = os.path.basename(p)
+        if b.startswith('virl2_') and b.endswith('.prla'):
+            for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
+                k = b[:-5] + ':' + n
+                R[k] = v; mod[k] = b[:-5]; byname.setdefault(n, set()).add(k)
+    names = set(byname)
+    # the reference graph, read ONCE (STATUS-vir 153: per-rule regex over every name took ~55 min on 934 rules). A name made
+    # only of identifier characters is found as a whole token, which is what mpl_refs' boundary regex means; any other name
+    # keeps the regex.
+    plain = {m for m in names if re.fullmatch(r"[A-Za-z0-9_']+", m)}
+    odd = names - plain
+    refs = {}
+    for x in R:
+        n, text = x.split(':', 1)[1], ' '.join(R[x][4])
+        refs[x] = ((set(re.findall(r"[A-Za-z0-9_']+", text)) & plain) | mpl_refs(n, text, odd)) - {n}  # REFS2
+    def clos(k0):
+        seen, todo = set(), [k0] if k0 in R else []
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x)
+                for n in refs[x]:
+                    todo += list(byname[n])
+        return seen
+    typing = {k for k in R if mod[k] == L2M_TYPING}
+    fk = sorted(byname.get(L2M_FRAME, ()))
+    fc = clos(fk[0]) if fk else set()
+    ctrl = len([n for n in R if (clos(n) - {n}) & typing])
+    # the STATEMENT axis: a rule applied by resolution (autoT, dT) is never NAMED, so the name closure cannot see it; its
+    # goal must still mention the judgement. Typing terms = what virl2_typing defines or declares.
+    stm = {}
+    for p in l2:
+        for blk in MPL_ITEM_RE.split(show(ext, p)):
+            m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
+            if m:
+                stm[os.path.basename(p)[:-3] + ':' + m.group(1)] = blk
+    tt = set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, 'theories/vir/%s.ml' % L2M_TYPING), re.M))
+    has_tt = lambda n: bool(tt) and bool(re.search(r"(?<![A-Za-z0-9_'])(?:%s)\{" % '|'.join(map(re.escape, sorted(tt))), stm.get(n, '')))
+    tctrl = len([k for k in stm if not k.startswith(L2M_TYPING + ':') and has_tt(k)])
+    stmt = stm.get(fk[0], '') if fk else ''
+    rows += [('L2M.rules', len(R), 'MEASURED:rules with a stored proof in virl2_*.prla'),
+             ('L2M.Y3.frameClosure', len(fc), ('MEASURED:%s and every rule its derivation names, transitively' % L2M_FRAME + (':AMBIGUOUS %d' % len(fk) if len(fk) > 1 else '')) if fc else 'EMPTY:no %s' % L2M_FRAME),
+             ('L2M.Y3.frameTyping', len(fc & typing), ('MEASURED:' if ctrl else 'VOID:name control 0, a 0 here is not a pass:') + '%s rules in the closure:' % L2M_TYPING + (','.join(sorted(fc & typing)) or '-')),
+             ('L2M.Y3.control', ctrl, 'BESIDE:rules whose closure, less themselves, names a typing rule (the name reader can see one)'),
+             ('L2M.Y3.frameTypingTerms', len([k for k in fc if has_tt(k)]), ('MEASURED:' if tctrl else 'VOID:term control 0:') + 'closure rules whose STATEMENT names a %s term' % L2M_TYPING),
+             ('L2M.Y3.termControl', tctrl, 'BESIDE:non-typing rules whose statement names a typing term (0 = nothing outside %s consumes it yet)' % L2M_TYPING),
+             ('L2M.Y3.limit', 0, 'LIMIT:a typing rule applied by resolution whose name and judgement appear in no closure statement or text is invisible to both axes'),
+             ('L2M.Y4.framePremises', stmt.count('-->'), 'MEASURED:premises of %s as stated' % L2M_FRAME if stmt else 'EMPTY')]
+    # GRAMMAR CARVING (STATUS-vir 151, mojave's D8): the cost of carving grammar terms out of raw HOAS BTerm. Its predicates
+    # are what D8 names, read by CONTENT: a rule counts iff its STATEMENT names one (the definitions, their rewrites and wf
+    # rules, preservation, and any motive or hypothesis that carries one). Counted in Y5's C5 too; this line is the beside.
+    # SCOPING (STATUS-vir 155, mojave's D9) is the same reading over L2M_SCOPE, on its OWN sub-line so the scoping cost is
+    # never read as grammar cost; a rule naming both is in both lines and named once more on carvingOverlap.
+    def carve(names, pre, what):
+        defs = sum(len(re.findall(r"^define\s+unfold_(?:%s)\b" % '|'.join(names), show(ext, p), re.M)) for p in l2)
+        hit = lambda k: bool(re.search(r"(?<![A-Za-z0-9_'])(?:%s)\{" % '|'.join(names), stm.get(k, '')))
+        rs = sorted(k for k in stm if hit(k))
+        return rs, [(pre + 'Defs', defs, 'MEASURED:define unfold_ of %s in virl2_*' % '/'.join(names) if defs else 'EMPTY:no %s predicate defined' % what),
+                    (pre + 'Rules', len(rs), ('MEASURED:rules whose statement names %s:' % '/'.join(names) + (','.join(rs) or '-')) if defs else 'EMPTY'),
+                    (pre + 'C5tok', sum(R[k][1] for k in rs if k in R), ('BESIDE:stored-proof tokens of those rules (%d of %d stored)' % (len([k for k in rs if k in R]), len(rs))) if defs else 'EMPTY')]
+    cv, crow = carve(L2M_CARVE, 'L2M.Y5.carving', 'carving')
+    sv, srow = carve(L2M_SCOPE, 'L2M.Y5.scoping', 'scoping')
+    # INDEX FAULT (STATUS-vir 170, mojave's D10): is_ifault as departed toward OBJECT-L2 §2 (a let stuck at its head's index
+    # fault is an index fault). Its own sub-line, the same reading; counted in Y5's C5 too, since it is part of triple_i.
+    _, irow = carve(L2M_IFAULT, 'L2M.Y5.ifault', 'index-fault')
+    ov = sorted(set(cv) & set(sv))
+    rows += crow + srow + irow + [('L2M.Y5.carvingOverlap', len(ov), 'BESIDE:rules in BOTH lines (a sum of the two lines counts them twice):' + (','.join(ov) or '-'))]
+    for m in sorted(set(mod.values())):
+        ns = [n for n in R if mod[n] == m]
+        rows.append(('L2M.C5tok.' + m, sum(R[n][1] for n in ns), 'BESIDE:%d rules; extras %d tok kept out' % (len(ns), sum(R[n][3] for n in ns))))
+    rows += [('L2M.Y5', 0, 'Q:owed until the arm\'s semantic typing lands'), ('L2M.Y6', 0, 'Q:owed (M1-M5)'),
+             ('L2M.Y8', 0, 'Q:owed (read at L2 CLOSED)')]
+    return rows
+
+
+# The MetaPRL L3 column (amend-18 Z1-Z9; STATUS-vir 185). DIR is a clone of the arm's tree, --base its L2-closed sha (E3: the
+# sha it named before its first virl3_* file), --ext the L3 sha it names. Its DECLARATIONS-L3-METAPRL fix the reading: every L3
+# module is `virl3_*` (E1), no virl1_/virl2_ file is edited (Z1), the programs are `define`s in virl3_prog (E2), R2/R3 in
+# virl3_eq, R4/R5/R8 in virl3_tri, R6 in virl3_run (planned; a split module is still virl3_*). A ROW's ROOTS are the rule names
+# the arm posts for it, passed as VIR_L3M_ROOTS='R1=r1_F,r1_U;R7=r7_F7;...' (unset or a row absent => that row reads Q).
+# UNITS, declared 2026-11-07 by the 39th vir head before R2-R6 and R8 exist on this arm (R1 and R7 landed at 5e5048dad):
+#   a row's C5 = whitespace tokens of the stored derivation text (prla_rules, extras kept out) over its IN-LAYER CLOSURE: the
+#   roots, every virl3_* rule a closure text names as a whole identifier, and every virl3_* rule declared `{| reduce |}` when a
+#   closure text invokes the reduce resource (reduceC/reduceT) -- a resource use names no rule, so a name closure alone would
+#   miss it. Other resources are not modelled (LIMIT, printed). Imported layers are not followed; their cites are counted.
+#   Z8's proof lines = refine STEPS of the root's own stored derivation (ext_rule nodes: MetaPRL's refine unit), tokens beside.
+L3M_STEP, L3M_FRAME = 'virl2_step', 'triple_frame'
+L3M_TRIPLE = ('virl2_triple', 'virl2_rules')
+L3M_RES_RE = re.compile(r'(?<![A-Za-z0-9_])reduce[CT](?![A-Za-z0-9_])')
+# Addendum (STATUS-vir 194, the 42nd head, 2026-11-08: AFTER R1/R2/R3/R7 exist on the arm, BEFORE R4 does; written after reading
+# lines 1-20 of the arm's R4 plan). amend-18 Z5: "no step rule in its proof tree". Z5's primary counts step rules (step2_*) and
+# the step's unfolds. A value encoder of the same module (unfold_capv) is not a step rule; the old reading stays BESIDE as
+# allNames. step2_* are reduce rules, fired by resource and named by no text, so stepStated (rules in the closure stated over
+# the step) is reported BESIDE: it is the only reading that sees a step taken that way.
+L3M_STEP_RULE_RE = re.compile(r'^(?:step2_\w+|unfold_(?:l2step|l2iter|l2run|reach|effop))$')
+L3M_STEP_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])(l2step|l2iter|reach)\{')
+# Addendum (STATUS-vir 195, the 42nd head, 2026-11-08, before R5 exists on the arm): Z6's localityCited can match only virl2_*
+# names containing "local", and at 10b8ddbab there are none. localityPop prints that population; unionStated (BESIDE) names the
+# virl2_* rules in R5's closure stated over st_union{, the frame's vocabulary, for the hand read.
+L3M_UNION_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])st_union\{')
+# Addendum (STATUS-vir 187, the 40th head, 2026-11-07: AFTER R1/R2/R7 exist on the arm, BEFORE R3-R6/R8; found at the R2 dry
+# read at d0a445140). (a) Z3's "cites a triple" is a cited L2 rule whose STATEMENT mentions triple{ or triple_i{ -- the Lean
+# reading counts `Triple` itself, never a module. The module reading (a rule of virl2_triple/virl2_rules) stays BESIDE:
+# those modules also hold iteration and wf lemmas (iter2_succ, retv0_wf, bterm0_bterm), and it read R2 at 10 on four
+# non-triple names. (b) A `{| intro |}` rule is applied by autoT/dT through the intro resource and named by no text:
+# L3M.<row>.C5tokIntro = the closure plus every virl3_* intro rule when a closure text invokes autoT/dT (BESIDE, an upper bound).
+L3M_INTRO_RE = re.compile(r'(?<![A-Za-z0-9_])(?:autoT|dT)(?![A-Za-z0-9_])')
+L3M_TRI_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])triple(?:_i)?\{')
+
+
+def metaprll3(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0 or g('cat-file', '-e', base + '^{commit}').returncode != 0:
+        return [('L3M.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    raw = lambda sha, p: g('show', sha + ':' + p).stdout
+    show = lambda sha, p: strip_ml_comments(raw(sha, p))
+    bn = os.path.basename
+    l3 = sorted(p for p in le if bn(p).startswith('virl3_') and p.endswith('.ml'))
+    l3txt = {p: show(ext, p) for p in l3}
+    rows = [('L3M.files', len(l3), 'MEASURED:virl3_*.ml at ext:' + (','.join(bn(p)[:-3] for p in l3) or '-')),
+            ('L3M.prims', sum(len(PRIM_RE.findall(t)) for t in l3txt.values()), 'MEASURED:prim/prim_rw in virl3_*, comments stripped'),
+            ('L3M.declares', sum(len(re.findall(r'^\s*declare\s', t, re.M)) for t in l3txt.values()), 'MEASURED:new operators in virl3_* (E1: L3 adds none)')]
+    # Z1: virl1_*/virl2_* items, base vs ext (the L2M.Y2 reading), and the FILES beside (.ml/.mli/.prla bytes; a removal counts)
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    low = lambda p: re.match(r'virl[12]_', bn(p))
+    redit = dedit = 0
+    for p in sorted(x for x in lb if low(x) and x.endswith('.ml')):
+        b, a = items(base, p), items(ext, p) if p in le else {}
+        for k in b:
+            if k not in a or b[k] != a[k]:
+                if k[0] in 'ip':
+                    redit += 1
+                else:
+                    dedit += 1
+    fch = sorted(bn(p) for p in lb | le if low(p) and (p not in lb or p not in le or raw(base, p) != raw(ext, p)))
+    rows += [('L3M.Z1.defsEdited', dedit, 'MEASURED:virl1_*/virl2_* define/declare items, base vs ext'),
+             ('L3M.Z1.rulesEdited', redit, 'MEASURED:virl1_*/virl2_* interactive/prim items, base vs ext'),
+             ('L3M.Z1.filesChanged', len(fch), 'BESIDE:virl1_*/virl2_* files whose bytes differ (.ml/.mli/.prla, added or removed):' + (','.join(fch) or '-'))]
+    # the L3 derivations, keyed MODULE:NAME
+    R, byname, reduce_rw, intro_rw = {}, {}, set(), set()
+    for p in sorted(le):
+        if bn(p).startswith('virl3_') and p.endswith('.prla'):
+            for n, v in prla_rules(raw(ext, p)).items():
+                k = bn(p)[:-5] + ':' + n
+                R[k] = v; byname.setdefault(n, set()).add(k)
+    for p, t in l3txt.items():
+        for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\breduce\b[^|]*\|\}', t, re.M):
+            reduce_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
+        for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\bintro\b[^|]*\|\}', t, re.M):
+            intro_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
+    # rule (and unfold_) names of the imported L2 modules, by module, from their .ml
+    l2names, tri_stated, step_stated, l3_step_stated, union_stated = {}, set(), set(), set(), set()
+    for p in le:
+        if bn(p).startswith('virl3_') and p.endswith('.ml'):
+            l3_step_stated |= {bn(p)[:-3] + ':' + k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
+        if bn(p).startswith('virl2_') and p.endswith('.ml'):
+            tri_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_TRI_STMT_RE.search(blk)}
+            step_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
+            union_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_UNION_STMT_RE.search(blk)}
+            t = show(ext, p)
+            l2names[bn(p)[:-3]] = set(re.findall(r'^\s*(?:interactive|prim)(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)', t, re.M)) \
+                | set('unfold_' + n for n in re.findall(r'^\s*define\s+unfold_([A-Za-z_][A-Za-z0-9_\']*)', t, re.M))
+    text = lambda k: ' '.join(R[k][4])
+    ident = lambda k: set(re.findall(r"[A-Za-z0-9_']+", text(k)))
+    def clos(roots, intro=False):
+        seen, todo = set(), [k for n in roots for k in byname.get(n, ())]
+        while todo:
+            x = todo.pop()
+            if x in seen:
+                continue
+            seen.add(x)
+            todo += [k for n in ident(x) - {x.split(':', 1)[1]} for k in byname.get(n, ())]
+            if L3M_RES_RE.search(text(x)):
+                todo += sorted(reduce_rw)
+            if intro and L3M_INTRO_RE.search(text(x)):
+                todo += sorted(intro_rw)
+        return seen
+    rr = {}
+    for part in [s for s in os.environ.get('VIR_L3M_ROOTS', '').split(';') if '=' in s]:
+        r, ns = part.split('=', 1)
+        rr[r.strip()] = [n.strip() for n in ns.split(',') if n.strip()]
+    rows.append(('L3M.rules', len(R), 'MEASURED:stored derivations in virl3_*.prla'))
+    rows.append(('L3M.rows.rooted', len([r for r in rr if all(n in byname for n in rr[r])]),
+                 'MEASURED:rows whose every posted root has a stored derivation:' + (','.join('%s=%s' % (r, '+'.join(rr[r])) for r in sorted(rr)) or '-')))
+    C = {}
+    for r in sorted(rr):
+        miss = [n for n in rr[r] if n not in byname]
+        if miss:
+            rows.append(('L3M.%s.missing' % r, len(miss), 'RED:posted root(s) with no stored derivation:' + ','.join(miss)))
+            continue
+        c = clos(rr[r]); C[r] = c
+        rows += [('L3M.%s.C5tok' % r, sum(R[k][1] for k in c), 'MEASURED:in-layer closure, %d rules (%d by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled' % (len(c), len(c & reduce_rw))),
+                 ('L3M.%s.C5tokIntro' % r, sum(R[k][1] for k in clos(rr[r], True)), 'BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (%d intro rules in the layer; an upper bound)' % len(intro_rw)),
+                 ('L3M.%s.rootTok' % r, sum(R[k][1] for n in rr[r] for k in byname[n]), 'BESIDE:roots only'),
+                 ('L3M.%s.rootSteps' % r, sum(R[k][0] for n in rr[r] for k in byname[n]), 'BESIDE:refine steps of the roots\' own derivations')]
+    # Frozen rows (STATUS-vir 189, the 41st head, 2026-11-08): VIR_L3M_FROZEN='R7=<sha>;...' asserts a row's roots were not
+    # touched after <sha> (the arm's declared read of Lean files, RESULTS-8 MetaPRL frame, BLINDNESS). frozenSame = 1 iff every
+    # root's .ml statement and stored derivation at ext equal those at <sha>. A closure rule absent at <sha> is not an edit: a
+    # reduce/intro use admits later rules, and those are read in the row's C5.
+    for part in [s for s in os.environ.get('VIR_L3M_FROZEN', '').split(';') if '=' in s]:
+        r, sha = [x.strip() for x in part.split('=', 1)]
+        if r not in C or g('cat-file', '-e', sha + '^{commit}').returncode != 0:
+            rows.append(('L3M.%s.frozenSame' % r, 0, 'RED:no scored root for %s, or %s is not a commit of this tree' % (r, sha[:12])))
+            continue
+        lf, fr, bad = ls(sha), {}, []
+        def frozen(k):
+            m = k.split(':', 1)[0]
+            if m not in fr:
+                pth = 'theories/vir/' + m + '.prla'
+                fr[m] = prla_rules(raw(sha, pth)) if pth in lf else {}
+            return fr[m]
+        for n in rr[r]:
+            for k in byname[n]:
+                m, name = k.split(':', 1)
+                p = 'theories/vir/' + m
+                fp = frozen(k)
+                fs = items(sha, p + '.ml').get('i:' + name) if p + '.ml' in lf else None
+                if name not in fp or fs is None:
+                    bad.append(name + ':absent at the frozen sha')
+                    continue
+                if fp[name][4] != R[k][4]:
+                    bad.append(name + ':stored derivation differs')
+                if fs != items(ext, p + '.ml').get('i:' + name):
+                    bad.append(name + ':statement differs')
+        ce = sorted(k.split(':', 1)[1] for k in C[r] if k.split(':', 1)[1] in frozen(k) and frozen(k)[k.split(':', 1)[1]][4] != R[k][4])
+        rows += [('L3M.%s.frozenSame' % r, 0 if bad else 1, ('RED:' + '; '.join(bad)) if bad else 'MEASURED:every root\'s statement and stored derivation identical at ext and %s:LIMIT the roots only, see frozenClosureEdited' % sha[:12]),
+                 ('L3M.%s.frozenClosureEdited' % r, len(ce), 'BESIDE:closure rules present at %s whose stored derivation differs at ext:' % sha[:12] + (','.join(ce) or '-'))]
+    cites = lambda r, names: sum(len(ident(k) & names) for k in C[r]) if r in C else None
+    q = lambda r: 'Q:no posted roots for %s' % r
+    tri_mod = set().union(*[l2names.get(m, set()) for m in L3M_TRIPLE])
+    names = tri_stated
+    z = cites('R2', names)
+    zn = sorted({n for k in C.get('R2', ()) for n in ident(k) & names})
+    rows.append(('L3M.Z3.tripleCites', z or 0, ('MEASURED:virl2_* rules whose statement mentions triple{/triple_i{, named in R2\'s closure:' + (','.join(zn) or '-')) if z is not None else q('R2')))
+    zm = cites('R2', tri_mod)
+    zmn = sorted({n for k in C.get('R2', ()) for n in ident(k) & tri_mod})
+    rows.append(('L3M.Z3.moduleCites', zm or 0, ('BESIDE:%s rules named in R2\'s closure, any statement (the reading before addendum 187):' % '/'.join(L3M_TRIPLE) + (','.join(zmn) or '-')) if zm is not None else q('R2')))
+    if 'R3' in C:
+        other = max([(sum(R[k][1] for k in C[r]), r) for r in C if r != 'R3'] or [(0, '-')])
+        rows += [('L3M.Z4.R3C5', sum(R[k][1] for k in C['R3']), 'MEASURED:R3 closure tokens'), ('L3M.Z4.maxOtherC5', other[0], 'MEASURED:' + other[1])]
+    else:
+        rows.append(('L3M.Z4.R3C5', 0, q('R3')))
+    step_all = l2names.get(L3M_STEP, set())
+    step_rules = {n for n in step_all if L3M_STEP_RULE_RE.match(n)}
+    z = cites('R4', step_rules)
+    rows.append(('L3M.Z5.stepInR4', z or 0, ('MEASURED:step rules (step2_*) and step unfolds (l2step, l2iter, l2run, reach, effop) named in R4\'s closure:LIMIT step2_* are reduce rules, fired by resource and named by no text, so read L3M.Z5.stepStated beside this') if z is not None else q('R4')))
+    if 'R4' in C:
+        st = sorted({k.split(':', 1)[1] for k in C['R4'] if k in l3_step_stated} | {n for k in C['R4'] for n in ident(k) & step_stated})
+        rows += [('L3M.Z5.allNames', cites('R4', step_all), 'BESIDE:every rule and unfold of %s named in R4\'s closure, value encoders included (the reading before addendum 194)' % L3M_STEP),
+                 ('L3M.Z5.stepStated', len(st), 'BESIDE:rules in R4\'s closure stated over l2step{/l2iter{/reach{ (in-layer, or a virl2_* rule cited):' + (','.join(st) or '-')),
+                 ('L3M.Z5.rootStep', sum(len(ident(k) & step_rules) for n in rr['R4'] for k in byname[n]), 'BESIDE:step rules and unfolds named in R4\'s own root derivation (the like of Lean\'s proof-text count)')]
+        z5sites = sorted({'%s:%s' % (k.split(':', 1)[1], n) for k in C['R4'] for n in ident(k) & step_rules})
+        rows.append(('L3M.Z5.stepNames', len({s.split(':', 1)[1] for s in z5sites}), 'BESIDE:distinct step rules and unfolds in R4\'s closure, each after the closure rule that names it, for the hand read against Z5:' + (','.join(z5sites) or '-')))
+    if 'R5' in C:
+        t5 = ' '.join(text(k) for k in C['R5'])
+        loc = sorted({n for m in l2names.values() for n in m if 'local' in n} & set(re.findall(r"[A-Za-z0-9_']+", t5)))
+        rows += [('L3M.Z6.frameApps', len(re.findall(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % L3M_FRAME, t5)), 'MEASURED:%s in R5\'s closure' % L3M_FRAME),
+                 ('L3M.Z6.localityCited', len(loc), 'MEASURED:virl2_* *local* names in R5\'s closure:' + (','.join(loc) or '-'))]
+        pop = len({n for m in l2names.values() for n in m if 'local' in n})
+        us = sorted({n for k in C['R5'] for n in ident(k) & union_stated})
+        rows += [('L3M.Z6.localityPop', pop, 'BESIDE:virl2_* names containing "local", the whole population localityCited can match:LIMIT at 0 that row cannot fire, so read unionStated by hand'),
+                 ('L3M.Z6.unionStated', len(us), 'BESIDE:virl2_* rules in R5\'s closure stated over st_union{, for the hand read against Z6:' + (','.join(us) or '-'))]
+    else:
+        rows.append(('L3M.Z6.frameApps', 0, q('R5')))
+    prog = [t for p, t in l3txt.items() if bn(p).startswith('virl3_prog')]
+    rows.append(('L3M.Z7.fixInTerms', sum(len(re.findall(r"(?<![A-Za-z0-9_'])fix(?![A-Za-z0-9_'])", t)) for t in prog),
+                 'MEASURED:virl3_prog*' if prog else 'EMPTY:no virl3_prog module'))
+    for r in ('R7', 'R8'):
+        if r in rr and r in C:
+            rows.append(('L3M.Z8.%sSteps' % r, sum(R[k][0] for n in rr[r] for k in byname[n]), 'MEASURED:refine steps of the root derivation(s); tokens in L3M.%s.rootTok' % r))
+        else:
+            rows.append(('L3M.Z8.%sSteps' % r, 0, q(r)))
+    rows.append(('L3M.Z9.l3C5tok', sum(v[1] for v in R.values()), 'MEASURED:every virl3_* derivation:Q reference = the arm\'s own virp program-1 router C5, named at scoring'))
+    for m in sorted({k.split(':')[0] for k in R}):
+        ks = [k for k in R if k.startswith(m + ':')]
+        rows.append(('L3M.C5tok.' + m, sum(R[k][1] for k in ks), 'BESIDE:%d rules; extras %d tok kept out' % (len(ks), sum(R[k][3] for k in ks))))
+    rows.append(('L3M.Z2.C2', 0, 'Q:MetaPRL C2 (wf/equality children) is read from the arm\'s replay files, reported beside Lean\'s with no direction when named'))
+    return rows
+
+
+# The SLang arm (STATUS-vir 147; amend-20 SL1-SL8, amend-22 D1-D4). DIR is a clone of the MetaPRL arm's tree, --base the sha
+# it names as its pre-SLang tip, --ext the sha it names when SLang lands. Stages are read from the ARTIFACT: the FRAMEWORK
+# stage is every new module that defines `SLang`, the L1 stage every new module that defines `L1SLang` or `ssig1`
+# (VIR_SLANG_FW / VIR_SLANG_L1, comma-separated module names, override when the arm declares other names). SL4's root is the
+# arm's L1 rule, named by VIR_SLANG_ROOT (unset => Q). The recogniser set is DERIVED from amend-19's l1_induction statement
+# at base (every `X{..} = btrue in bool` premise), which is also SL4's live control. The bounds are derived from
+# l1/out/counts-indm.tsv (S/2 and U+S) and counts-ind.tsv (10 x Lean), never typed.
+SLM_FW_DEFS, SLM_L1_DEFS = ('SLang',), ('L1SLang', 'ssig1')
+SLM_CONTROL = ('virl1_induct', 'l1_induction')
+SLM_RECOG_RE = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)\{[^{}]*\}\s*=\s*btrue\s+in\s+bool")
+# SL3.binderOnly: a name followed by '.' or ':' (not '::'), possibly after a comma list of further names, is BOUND there
+# (x. body · {x: T | P} · x: T * U · l, r. body), so it cannot be the L1 term of the same spelling.
+SLM_BINDER_RE = re.compile(r"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_']*)*\s*(?:\.|:(?!:))")
+
+
+def slangm(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True, errors='replace')  # the tree holds latin-1 files
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('SLM.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '-r', '--name-only', sha, 'theories/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    show = lambda sha, p: strip_ml_comments(g('show', sha + ':' + p).stdout)
+    mod = lambda p: os.path.basename(p).rsplit('.', 1)[0]
+    new = sorted(le - lb)
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                out[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return out
+    changed = [p for p in g('diff', '--name-only', base, ext, '--', 'theories').stdout.split() if p in lb]
+    redit = dedit = 0
+    for p in changed:  # only a changed file can carry an edited item
+        if p.endswith('.ml') and p in le:
+            b, a = items(base, p), items(ext, p)
+            for k in b:
+                if k not in a or b[k] != a[k]:
+                    if k[0] in 'ip':
+                        redit += 1
+                    else:
+                        dedit += 1
+    prla = [p for p in changed if p.endswith('.prla')]
+    other = [p for p in changed if not p.endswith(('.ml', '.prla'))]
+    newml = [p for p in new if p.endswith('.ml')]
+    nprim = sum(len(PRIM_RE.findall(show(ext, p))) for p in newml)
+    defs = lambda p: set(re.findall(r"^(?:define\s+unfold_|declare\s+)([A-Za-z_][A-Za-z0-9_]*)", show(ext, p), re.M))
+    env = lambda k: [x for x in os.environ.get(k, '').split(',') if x]
+    fwm = env('VIR_SLANG_FW') or [mod(p) for p in newml if defs(p) & set(SLM_FW_DEFS)]
+    l1m = env('VIR_SLANG_L1') or [mod(p) for p in newml if defs(p) & set(SLM_L1_DEFS) and mod(p) not in fwm]
+    src = 'DECLARED' if env('VIR_SLANG_FW') or env('VIR_SLANG_L1') else 'MEASURED'
+    # the SL6 stage (STATUS-vir 182, ARM49): a NEW module, neither fw nor l1, holding the statement of a VIR_SLANG_SL6 rule. Its
+    # rules count for SL6's slots and get their own SL8 line; they never enter SL5 (amend-20 SL5(a) prices the per-form rule and
+    # what is under it, and SL6 is a check ON that stage). Declared before the arm's SL6 landed (mojave 14:13, vir_l1sl6).
+    sl6 = env('VIR_SLANG_SL6')
+    def sl6names(p):
+        return {m.group(1) for blk in MPL_ITEM_RE.split(show(ext, p)) for m in [re.match(r'interactive(?:_rw)?\s+(\S+)', blk)] if m}
+    sl6m = [mod(p) for p in newml if mod(p) not in fwm and mod(p) not in l1m and sl6names(p) & set(sl6)]
+    path = lambda m, e: next((p for p in le if mod(p) == m and p.endswith(e)), None)
+    rows = [('SLM.newFiles', len(new), 'BESIDE:' + (','.join(os.path.basename(p) for p in new) or '-')),
+            ('SLM.stage.fw', len(fwm), src + ':' + (','.join(fwm) or '-')),
+            ('SLM.stage.l1', len(l1m), src + ':' + (','.join(l1m) or '-')),
+            ('SLM.stage.sl6', len(sl6m), 'MEASURED:new modules holding a VIR_SLANG_SL6 statement, outside fw and l1:' + (','.join(sl6m) or '-')),
+            ('SLM.SL1.rulesEdited', redit, 'MEASURED:pre-existing theories/**/*.ml rules (interactive/prim) edited or removed, comments stripped'),
+            ('SLM.SL1.defsEdited', dedit, 'MEASURED'),
+            ('SLM.SL1.prlaChanged', len(prla), 'MEASURED:' + (','.join(os.path.basename(p) for p in prla) or '-')),
+            ('SLM.SL1.otherChanged', len(other), 'BESIDE:' + (','.join(other) or '-')),
+            ('SLM.SL2.newPrims', nprim, 'MEASURED:prim/prim_rw in new .ml'),
+            ('SLM.SL2.grounded', 0, 'Q:the arm\'s REPLAY post (status_all, fresh session)')]
+    # SL3: the framework modules' own text (.ml and .mli, comments stripped) against L1's operators and every term a
+    # virl1_*/virl2_* module defines or declares (the L2 Y1 content test), plus the module prefixes themselves.
+    sh = ind_shapes(g('show', base + ':theories/vir/virl1_sig.ml').stdout) if 'theories/vir/virl1_sig.ml' in lb else {}
+    vterms = set(sh)
+    for p in le:
+        if re.match(r'virl[12]_', os.path.basename(p)) and p.endswith('.ml'):
+            vterms |= defs(p)
+    vre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, sorted(vterms | {'virl1_', 'virl2_', 'Virl1_', 'Virl2_'}))))
+    hits = set()
+    termpos = set()  # hits with at least one occurrence NOT in binder position (BESIDE; SL3.hits stays the scored row)
+    for m in fwm:
+        for e in ('.ml', '.mli'):
+            q = path(m, e)
+            if q:
+                txt = show(ext, q)
+                for mo in vre.finditer(txt):
+                    h = '%s:%s' % (m, mo.group(1))
+                    hits.add(h)
+                    if not SLM_BINDER_RE.match(txt, mo.end()):  # SLM-BINDER
+                        termpos.add(h)
+    rows.append(('SLM.SL3.hits', len(hits), 'MEASURED:' + (','.join(sorted(hits)) or '-')))
+    bo = sorted(hits - termpos)
+    rows.append(('SLM.SL3.binderOnly', len(bo), 'BESIDE:hits whose every occurrence is a bound name (x. / x: / x, y.), never a term; SL3 is still read by hand:' + (','.join(bo) or '-')))
+    # the rules of the new modules: stored proofs (.prla) by MODULE:NAME, statements (.ml) by name
+    R, st, stage, stmod = {}, {}, {}, {}
+    for p in new:
+        if p.endswith('.prla'):
+            for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
+                R[n] = v; stage[n] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else 'sl6' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP
+        elif p.endswith('.ml'):
+            for blk in MPL_ITEM_RE.split(show(ext, p)):
+                m = re.match(r'interactive(?:_rw)?\s+(\S+)', blk)
+                if m:
+                    st[m.group(1)] = blk
+                    stmod[m.group(1)] = 'fw' if mod(p) in fwm else 'l1' if mod(p) in l1m else 'sl6' if mod(p) in sl6m else '-'
+    # SL4: the recogniser set and its live control, derived from amend-19's rule at base
+    cp = 'theories/vir/%s.ml' % SLM_CONTROL[0]
+    ctl = ''
+    if cp in lb:
+        for blk in MPL_ITEM_RE.split(show(base, cp)):
+            if re.match(r'interactive\s+%s\b' % re.escape(SLM_CONTROL[1]), blk):
+                ctl = blk
+    recog = sorted(set(SLM_RECOG_RE.findall(ctl)))
+    rows.append(('SLM.SL4.control', len(recog), 'MEASURED:recognisers in %s\'s premises at base:' % SLM_CONTROL[1] + (','.join(recog) or '-')))
+    root = os.environ.get('VIR_SLANG_ROOT', '')
+    if not root:
+        rows += [('SLM.SL4.recogHits', 0, 'Q:VIR_SLANG_ROOT unset (the arm names its L1 rule)')]
+    elif not recog:
+        rows += [('SLM.SL4.recogHits', 0, 'INVALID:the control derived no recogniser, so an absence proves nothing')]
+    else:
+        RT = {n: st.get(n, '') + ' ' + ' '.join(R[n][4] if n in R else []) for n in set(R) | set(st)}
+        names = set(RT)
+        seen, todo = set(), [root] if root in names else []
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x)
+                todo += list(mpl_refs(x, RT[x], names))  # SLM-CLOSURE
+        rre = re.compile(r"(?<![A-Za-z0-9_'])(%s)(?![A-Za-z0-9_'])" % '|'.join(map(re.escape, recog)))
+        rh = sorted({'%s:%s' % (n, h) for n in seen for h in rre.findall(RT[n])})
+        rows += [('SLM.SL4.closure', len(seen), ('MEASURED:' if root in names else 'EMPTY:no rule ') + root),
+                 ('SLM.SL4.recogHits', len(rh), ('MEASURED:' if root in names else 'EMPTY:no such rule, so an absence proves nothing:') + (','.join(rh) or '-')),
+                 ('SLM.SL4.rootStatement', len(set(rre.findall(st.get(root, '')))), 'BESIDE:recognisers in the root\'s own premises')]
+    # SL5 / SL8 / D1-D2, the bounds derived from the amend-19 and Lean records
+    here = os.path.dirname(os.path.abspath(__file__))
+    def rec(f, key):
+        f = os.path.join(here, '..', 'l1', 'out', f)
+        return next((int(r[2]) for r in (l.split('\t') for l in (read(f).splitlines() if os.path.isfile(f) else [])) if len(r) > 2 and r[1] == key), 0)
+    U, S, L = rec('counts-indm.tsv', 'INDM.I5.U.C5tok'), rec('counts-indm.tsv', 'INDM.I5.S.C5tok'), rec('counts-ind.tsv', 'IND.I3.proofTokens')
+    tok = lambda sg: sum(R[n][1] for n in R if stage[n] == sg)
+    steps = lambda sg: sum(R[n][0] for n in R if stage[n] == sg)
+    fwt, l1t = tok('fw'), tok('l1')
+    rows += [('SLM.SL5.L1.C5tok', l1t, 'MEASURED:bound S/2 = %d (amend-19 S %d); D2 floor 10 x Lean = %d' % (S // 2, S, 10 * L)),
+             ('SLM.SL5.fw.C5tok', fwt, 'MEASURED'),
+             ('SLM.SL5.total.C5tok', fwt + l1t, 'MEASURED:bound U+S = %d' % (U + S)),
+             ('SLM.SL5.L1.ratioX100', l1t * 100 // L if L else 0, ('MEASURED:vs Lean %d' % L) if L else 'EMPTY:no Lean counts'),
+             ('SLM.SL5.total.ratioX100', (fwt + l1t) * 100 // L if L else 0, ('MEASURED:vs Lean %d' % L) if L else 'EMPTY:no Lean counts'),
+             ('SLM.SL8.fw.rules', len([n for n in R if stage[n] == 'fw']), 'MEASURED'), ('SLM.SL8.fw.steps', steps('fw'), 'MEASURED'),
+             ('SLM.SL8.l1.rules', len([n for n in R if stage[n] == 'l1']), 'MEASURED'), ('SLM.SL8.l1.steps', steps('l1'), 'MEASURED'),
+             ('SLM.SL8.sl6.rules', len([n for n in R if stage[n] == 'sl6']), 'MEASURED:reported, never in SL5'),
+             ('SLM.SL8.sl6.steps', steps('sl6'), 'MEASURED'), ('SLM.SL8.sl6.C5tok', tok('sl6'), 'MEASURED:reported, never in SL5'),
+             ('SLM.unstaged.rules', len([n for n in R if stage[n] == '-']), 'BESIDE:' + (','.join(sorted(n for n in R if stage[n] == '-')) or '-')),
+             ('SLM.extras.C5tok', sum(R[n][3] for n in R), 'BESIDE:stale subtrees, NOT the proof'),
+             ('SLM.SL7.setType', 0, 'Q:reported only if the arm states the rule over set types'),
+             ('SLM.D4.tacticLine', 0, 'Q:the arm\'s ledger line for tactic building, NEVER folded into C5')]
+    # SL6 (STATUS-vir 181, ARM48): VIR_SLANG_SL6 = six rule names, slots type-fwd, type-bwd, atom-fwd, atom-bwd, expr-fwd,
+    # expr-bwd. A slot counts only with a STORED derivation in an L1-stage module AND a statement naming L1SLang and the slot's
+    # recogniser. The sort arguments (the arm's map, D-S2) are printed BESIDE for the hand read; direction is read by hand too.
+    if not sl6:
+        rows.append(('SLM.SL6.directions', 0, 'Q:VIR_SLANG_SL6 unset (the arm names six rules: type/atom/expression x both)'))
+    elif len(sl6) != 6:
+        rows.append(('SLM.SL6.directions', len(sl6), 'INVALID:VIR_SLANG_SL6 must name exactly six rules, got %d' % len(sl6)))
+    else:
+        slot_rx = [r'\bis_tyterm\{'] * 2 + [r'\bwfs\{'] * 4
+        proved, recog, both, miss, seen6 = 0, 0, 0, [], []
+        for n, rx in zip(sl6, slot_rx):
+            stt = strip_ml_comments(st.get(n, ''))
+            ok_p = ok_r = False
+            if stmod.get(n) in ('l1', 'sl6'):  # SLM-SL6-STAGE (the STATEMENT's module; `stage` is keyed by stored proofs)
+                if R.get(n, (0,))[0] > 0:  # SLM-SL6-STORED
+                    ok_p = True
+            if 'L1SLang{' in stt:
+                if rx and re.search(rx, stt):  # SLM-SL6-RECOG
+                    ok_r = True
+            proved += ok_p; recog += ok_r; both += ok_p and ok_r
+            if not ok_p:
+                miss.append(n)
+            args = re.findall(r'L1SLang\{[^{}]*\}', stt)[:1] + re.findall(r'(?:is_tyterm|wfs)\{[^{}]*', stt)[:1]
+            seen6.append('%s:%s' % (n, '/'.join(args) or '-'))
+        rows += [('SLM.SL6.directions', both, 'MEASURED:slots with a stored proof AND the slot\'s recogniser beside L1SLang; direction and sorts read by hand'),
+                 ('SLM.SL6.proved', proved, 'MEASURED:stored derivation >= 1 step in an L1-stage or SL6-stage module' + ('; missing:' + ','.join(miss) if miss else '')),
+                 ('SLM.SL6.recogMatch', recog, 'BESIDE:' + ','.join(seen6))]
+    return rows
+
+
 def w8(repo, base, ext, prefix):
     ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
                                                  capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
@@ -1265,7 +1834,7 @@ def w8(repo, base, ext, prefix):
             ('W8.newFiles', len([p for p in new if p not in old]), 'BESIDE')]
 
 
-# amend-21 Q3/Q4/Q7 on the Lean L4 arm (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7; selftest ARM41). DIR is the L4
+# amend-21 Q3/Q4/Q7 on the Lean L4 arm (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7; selftest ARM56). DIR is the L4
 # project (l4/); its siblings ../l1 ../l2 ../l3 are the imported layers. C5 of a row = the in-layer PROOF CLOSURE: theorem/lemma
 # blocks reachable by name from the roots, to a fixed point, each counted once; names of an imported layer are not followed.
 L4_DECL_RE = re.compile(r'^(?:@\[[^\]]*\]\s*)?(?:(?:private|protected|noncomputable|partial|unsafe)\s+)*'
@@ -1383,7 +1952,7 @@ def leanl4(d):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'l4'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'l4'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1411,6 +1980,12 @@ def main():
         rows = leanl4(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
+    elif a.arm == 'metaprll2':
+        rows = metaprll2(a.dir, a.base, a.ext)
+    elif a.arm == 'metaprll3':
+        rows = metaprll3(a.dir, a.base, a.ext)
+    elif a.arm == 'slangm':
+        rows = slangm(a.dir, a.base, a.ext)
     elif a.arm == 'indm':
         rows = indm(a.dir, a.base, a.ext)
     elif a.arm == 'v3l1m':

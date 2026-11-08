@@ -686,7 +686,471 @@ if cmp -s "$H/count.py" "$F/mutant40.py"; then say "ARM40 mutant NOT PLANTED"; f
 elif check40 "$F/mutant40.py"; then say "ARM40 mutant SURVIVED (stale extras counted as proof)"; fail=1
 else say "ARM40 mutant KILLED"; fi
 
-# ARM41 (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7): `--arm l4`, C5 of a row as the in-layer PROOF CLOSURE.
+# (41) the MetaPRL L2 column (--arm metaprll2): a git fixture whose counts are fixed by its construction.
+# base: virl1_a.ml (rule r1) + itt_bar.ml. ext: virl1_a.ml + a comment only; NEW virl1_new.ml (an L1 addendum, beside);
+# virl2_typing (ty_r) · virl2_triple (triple_frame using helper_h and naming ty_rx, a DIFFERENT rule; helper_h) ·
+# virl2_tot (tot_r using ty_r: the live control) · virl2_store.ml with a COMMENTED prim (not counted) · NEW itt_bar_list.ml
+# with 2 prims (framework, beside Y1).
+R41="$F/l2m"; mkdir -p "$R41/theories/vir"; git -C "$R41" init -q; git -C "$R41" config user.email t@t; git -C "$R41" config user.name t
+printf 'interactive r1 :\n   sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_a.ml"; printf 'prim old_bar : sequent { <H> >- \x27a } = it\n' > "$R41/theories/vir/itt_bar.ml"
+git -C "$R41" add -A; git -C "$R41" commit -qm base; B41=$(git -C "$R41" rev-parse HEAD)
+printf '(* comment *)\n' >> "$R41/theories/vir/virl1_a.ml"; printf 'interactive n1 : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl1_new.ml"
+printf 'prim p1 : sequent { <H> >- \x27a } = it\nprim_rw p2 : \x27a <--> \x27a\n' > "$R41/theories/vir/itt_bar_list.ml"
+printf 'extends Itt_bar_list\nextends Virl2_store\nprim pv : sequent { <H> >- adm{Store} } = it\n' > "$R41/theories/vir/itt_bar_res.ml"
+printf 'extends Itt_bar_list\nextends Virl2_store\nprim pg : sequent { <H> >- adm{list{int}} } = it\n' > "$R41/theories/vir/itt_bar_gen.ml"
+printf 'extends Itt_bar_list\nprim pm : sequent { <H> >- adm{list{int}} } = it\n' > "$R41/theories/vir/itt_bar_mli.ml"
+printf 'extends Itt_bar_list\nrule pm : sequent { <H> >- adm{Store} }\n' > "$R41/theories/vir/itt_bar_mli.mli"
+printf 'extends Itt_bar_res\nextends Itt_bar\ndefine unfold_Store : Store <--> list{int}\n(* prim hidden : sequent { <H> >- \x27a } = it *)\ninteractive st_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_store.ml"
+printf 'define unfold_tcx : tcx{\x27a} <--> \x27a\ninteractive ty_r : sequent { <H> >- \x27a }\ninteractive ty_rx : sequent { <H> >- \x27a }\ninteractive ty_use : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_typing.ml"
+Y4N=2; printf 'interactive triple_frame :\n   [wf] sequent { <H> >- \x27a } -->\n   sequent { <H> >- \x27b } -->\n   sequent { <H> >- \x27c }\ninteractive helper_h : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_triple.ml"
+printf 'interactive tot_r : sequent { <H> >- tcx{\x27a} }\n' > "$R41/theories/vir/virl2_tot.ml"
+prla() { # $1 file, then name=text pairs
+  f=$1; shift
+  { printf '#PRL version 1.0.28 ASCII term\n'
+    printf 'NSummary!rule\trule\trule Summary\nNSummary!ext_rule\text_rule\text_rule Summary\nNSummary!interactive\tinteractive\tinteractive Summary\n'
+    printf 'NSummary!status_incomplete\tsi\tstatus_incomplete Summary\nNSummary!ext_unjustified\teu\text_unjustified Summary\nNPerv!xnil\txnil\txnil Perv\n'
+    printf 'O\tost\tsi\nT\ttst\tost\nB\tbst\ttst\nO\tou\teu\nT\ttu\tou\nB\tbu\ttu\nO\ton\txnil\nT\ttn\ton\nB\tbn\ttn\nO\toi\tinteractive\n'
+    i=0; for kv in "$@"; do n=${kv%%=*}; t=${kv#*=}; i=$((i+1))
+      printf 'P\tpt%d\tString "%s"\nO\tot%d\text_rule pt%d\nT\ttt%d\tot%d bst bu bn bn\nB\tbt%d\ttt%d\nT\tti%d\toi bt%d\nB\tbi%d\tti%d\n' $i "$t" $i $i $i $i $i $i $i $i $i $i
+      printf 'P\tpn%d\tString %s\nO\tor%d\trule pn%d\nT\ttr%d\tor%d bi%d bn\n' $i "$n" $i $i $i $i $i; done; } > "$f"; }
+prla "$R41/theories/vir/virl2_typing.prla" "ty_r=autoT" "ty_rx=autoT" "ty_use=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_triple.prla" "triple_frame=(helper_h thenT ty_rx_note autoT)" "helper_h=autoT"
+prla "$R41/theories/vir/virl2_tot.prla" "tot_r=(ty_r thenT autoT)"
+prla "$R41/theories/vir/virl2_store.prla" "st_r=autoT" "ty_rx=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ext; X41=$(git -C "$R41" rev-parse HEAD)
+check41() {
+  o=$(python3 "$1" --arm metaprll2 --base "$B41" --ext "$X41" "$R41") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L2M.files)" = 4 ] && [ "$(v L2M.Y1.prims)" = 0 ] && [ "$(v L2M.Y1.frameworkPrims)" = 3 ] && [ "$(v L2M.Y1.virDependentPrims)" = 2 ] && [ "$(v L2M.Y1.primFigure)" = 2 ] && [ "$(v L2M.trustedBase.prims)" = 4 ] && [ "$(v L2M.trustedBase.files)" = 3 ] \
+  && [ "$(v L2M.Y2.defsEdited)" = 0 ] && [ "$(v L2M.Y2.rulesEdited)" = 0 ] && [ "$(v L2M.Y2.newL1Files)" = 1 ] \
+  && [ "$(v L2M.Y3.frameClosure)" = 2 ] && [ "$(v L2M.Y3.frameTyping)" = 0 ] && [ "$(v L2M.Y3.control)" = 2 ] \
+  && [ "$(v L2M.Y3.frameTypingTerms)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L2M.Y3.frameTyping"' | grep -q MEASURED && [ "$(v L2M.Y3.termControl)" = 1 ] \
+  && [ "$(v L2M.Y4.framePremises)" = "$Y4N" ] && [ "$(v L2M.rules)" = 8 ]
+}
+if check41 "$H/count.py"; then say "ARM41 metaprll2 fixture OK (Y1 0 / generic fw 3 (one extends Virl2 and names no VIR term) / vir-term 2 (one by its .mli), figure 2; trusted base 4 prims in 3 files by the extends closure, one unchanged since base; Y2 0 0 new 1; Y3 closure 2 typing 0 control 2 terms 0/1; Y4 $Y4N)"
+else say "ARM41 metaprll2 fixture FAIL"; python3 "$H/count.py" --arm metaprll2 --base "$B41" --ext "$X41" "$R41"; fail=1; fi
+sed 's/(set(re.findall(r"\[A-Za-z0-9_\x27\]+", text)) \& plain)/{m for m in plain if m in text}/' "$H/count.py" > "$F/mutant41.py"  # the REFS2 token path: a name read inside a longer name
+if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
+elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a name read inside a longer name)"; fail=1
+else say "ARM41 mutant KILLED"; fi
+
+# ARM42 (STATUS-vir 151): grammar carving by CONTENT. On X41 no carving predicate is defined: EMPTY, never a 0 that reads
+# as a pass. On X42: one define, two rules whose statement names wfs2{ (a wf rule, a hypothesis), one naming only wfs2x{ (a
+# longer name, NOT counted) and one naming none.
+c42() { python3 "$1" --arm metaprll2 --base "$B41" --ext "$2" "$R41" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+printf 'define unfold_wfs2 : wfs2{\x27k; \x27t} <--> \x27t\ndefine unfold_wfs2x : wfs2x{\x27t} <--> \x27t\ninteractive wfs2_wf : sequent { <H> >- wfs2{\x27k; \x27t} in bool }\ninteractive cv_pres : sequent { <H>; x: wfs2{2; \x27e} >- \x27a }\ninteractive cv_long : sequent { <H> >- wfs2x{\x27t} }\ninteractive cv_none : sequent { <H> >- \x27a }\n' > "$R41/theories/vir/virl2_sem.ml"
+prla "$R41/theories/vir/virl2_sem.prla" "wfs2_wf=autoT" "cv_pres=(wfs2_wf thenT autoT)" "cv_long=autoT" "cv_none=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm carve; X42=$(git -C "$R41" rev-parse HEAD)
+check42() {
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X41" L2M.Y5.carvingRules)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X42" L2M.Y5.carvingRules)" in "2	MEASURED"*cv_pres*wfs2_wf) ;; *) return 1;; esac
+}
+if check42 "$H/count.py"; then say "ARM42 carving fixture OK (X41 EMPTY; X42 defs 1, rules 2 (cv_long's wfs2x not read as wfs2))"
+else say "ARM42 carving fixture FAIL"; c42 "$H/count.py" "$X42" L2M.Y5.carvingRules; fail=1; fi
+sed 's/(?<!\[A-Za-z0-9_\x27\])(?:%s)\\{" % \x27|\x27.join(names), stm/(?:%s)" % \x27|\x27.join(names), stm/' "$H/count.py" > "$F/mutant42.py"
+if cmp -s "$H/count.py" "$F/mutant42.py"; then say "ARM42 mutant NOT PLANTED"; fail=1
+elif check42 "$F/mutant42.py"; then say "ARM42 mutant SURVIVED (wfs2x read as wfs2)"; fail=1
+else say "ARM42 mutant KILLED"; fi
+
+# ARM43 (STATUS-vir 155, mojave's D9): the SCOPING carving (scoped2{n; Δ; e}, the object's §4 scoping in the arm's
+# placeholder encoding) on its OWN sub-line, so its cost is never read as grammar cost; a rule naming both predicates is
+# in both lines and counted once more on carvingOverlap. On X42 nothing names scoped2: EMPTY. On X43: one define, a rule
+# naming scoped2 alone, a rule naming scoped2 AND wfs2 (overlap 1), and one naming only scoped2x (NOT counted).
+printf 'define unfold_scoped2 : scoped2{\x27n; \x27d; \x27e} <--> \x27e\ninteractive sc_wf : sequent { <H> >- scoped2{\x27n; \x27d; \x27e} in bool }\ninteractive sc_both : sequent { <H>; x: wfs2{2; \x27e}; y: scoped2{\x27n; \x27d; \x27e} >- \x27a }\ninteractive sc_long : sequent { <H> >- scoped2x{\x27t} }\n' > "$R41/theories/vir/virl2_scope.ml"
+prla "$R41/theories/vir/virl2_scope.prla" "sc_wf=autoT" "sc_both=(sc_wf thenT autoT)" "sc_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm scope; X43=$(git -C "$R41" rev-parse HEAD)
+check43() {
+  case "$(c42 "$1" "$X42" L2M.Y5.scopingDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.scopingRules)" in "2	MEASURED"*sc_both*sc_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingRules)" in "3	MEASURED"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X43" L2M.Y5.carvingOverlap)" in "1	"*sc_both*) ;; *) return 1;; esac
+}
+if check43 "$H/count.py"; then say "ARM43 scoping fixture OK (X42 EMPTY; X43 defs 1, rules 2 (sc_long's scoped2x not read), grammar rules 3, overlap 1)"
+else say "ARM43 scoping fixture FAIL"; c42 "$H/count.py" "$X43" L2M.Y5.scopingRules; fail=1; fi
+sed 's/L2M_SCOPE = (\x27scoped2\x27, \x27scoped\x27)/L2M_SCOPE = (\x27scoped2x\x27,)/' "$H/count.py" > "$F/mutant43.py"
+if cmp -s "$H/count.py" "$F/mutant43.py"; then say "ARM43 mutant NOT PLANTED"; fail=1
+elif check43 "$F/mutant43.py"; then say "ARM43 mutant SURVIVED (scoping read from the wrong name)"; fail=1
+else say "ARM43 mutant KILLED"; fi
+
+# ARM44 (STATUS-vir 170, mojave's D10): the INDEX-FAULT departure (is_ifault given the let congruence, ruled (a)
+# @98,653,117) on its OWN sub-line, so its cost is counted in Y5's C5 and read beside it. On X43 nothing names is_ifault:
+# EMPTY. On X44: one define, a rule naming is_ifault (the regression lemma), a wf rule naming it, a rule naming only
+# ifault_op (a DIFFERENT predicate, NOT counted) and one naming is_ifaultx (a longer name, NOT counted).
+printf 'define unfold_is_ifault : is_ifault{\x27c} <--> \x27c\ninteractive if_let : sequent { <H> >- is_ifault{\x27c} = btrue in bool }\ninteractive if_wf : sequent { <H> >- is_ifault{\x27c} in bool }\ninteractive if_op : sequent { <H> >- ifault_op{\x27o; \x27v; \x27s} in bool }\ninteractive if_long : sequent { <H> >- is_ifaultx{\x27c} }\n' > "$R41/theories/vir/virl2_triple.ml"
+prla "$R41/theories/vir/virl2_triple.prla" "if_let=autoT" "if_wf=autoT" "if_op=autoT" "if_long=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault; X44=$(git -C "$R41" rev-parse HEAD)
+check44() {
+  case "$(c42 "$1" "$X43" L2M.Y5.ifaultDefs)" in 0*EMPTY*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultDefs)" in 1*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultRules)" in "2	MEASURED"*if_let*if_wf) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"2 of 2"*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X44" L2M.Y5.scopingRules)" in "2	MEASURED"*) ;; *) return 1;; esac
+}
+if check44 "$H/count.py"; then say "ARM44 index-fault fixture OK (X43 EMPTY; X44 defs 1, rules 2 (if_op and is_ifaultx not read), scoping unchanged)"
+else say "ARM44 index-fault fixture FAIL"; c42 "$H/count.py" "$X44" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27, \x27ifault_op\x27)/' "$H/count.py" > "$F/mutant44.py"
+if cmp -s "$H/count.py" "$F/mutant44.py"; then say "ARM44 mutant NOT PLANTED"; fail=1
+elif check44 "$F/mutant44.py"; then say "ARM44 mutant SURVIVED (ifault_op read as the departure)"; fail=1
+else say "ARM44 mutant KILLED"; fi
+
+# ARM45 (STATUS-vir 170, mojave 517d086da): D10 as committed puts the let congruence in a SUPPORT term, ifault2, and
+# is_ifault is its spread; ifault2_wf (a bterm induction) is the bulk of D10's cost. A rule naming ONLY ifault2 is D10's
+# cost too, so it is read on the index-fault sub-line. On X45: X44 plus one define of ifault2 and one rule naming only it.
+printf 'define unfold_ifault2 : ifault2{\x27c} <--> \x27c\ninteractive if2_wf : sequent { <H> >- ifault2{\x27c} in bool }\n' > "$R41/theories/vir/virl2_ifault.ml"
+prla "$R41/theories/vir/virl2_ifault.prla" "if2_wf=autoT"
+git -C "$R41" add -A; git -C "$R41" commit -qm ifault2; X45=$(git -C "$R41" rev-parse HEAD)
+check45() {
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultDefs)" in 2*MEASURED*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultRules)" in "3	MEASURED"*if2_wf*) ;; *) return 1;; esac
+  case "$(c42 "$1" "$X45" L2M.Y5.ifaultC5tok)" in [0-9]*BESIDE*"3 of 3"*) ;; *) return 1;; esac
+}
+if check45 "$H/count.py"; then say "ARM45 ifault2 fixture OK (X45 defs 2, rules 3: the support term's rule read on the D10 line)"
+else say "ARM45 ifault2 fixture FAIL"; c42 "$H/count.py" "$X45" L2M.Y5.ifaultRules; fail=1; fi
+sed 's/L2M_IFAULT = (\x27is_ifault\x27, \x27ifault2\x27)/L2M_IFAULT = (\x27is_ifault\x27,)/' "$H/count.py" > "$F/mutant45.py"
+if cmp -s "$H/count.py" "$F/mutant45.py"; then say "ARM45 mutant NOT PLANTED"; fail=1
+elif check45 "$F/mutant45.py"; then say "ARM45 mutant SURVIVED (ifault2 not read as D10)"; fail=1
+else say "ARM45 mutant KILLED"; fi
+
+# ARM46 (STATUS-vir 147, amend-20 SL1-SL8 + amend-22 D1-D4): the SLang arm, built BEFORE the MetaPRL arm's SLang sha.
+# Base B46: an L1 signature (lam_op in core_ops, arrow_op in sig1), amend-19's l1_induction with two recognisers in its
+# premises (is_tyterm, wfs: the derived recogniser set, so the SL4 control is live) and one pre-existing rule old_r.
+# X46 (clean): a generic itt_slang (SLang, slang_ind, slang_wf) and an L1 instance virl1_slang (ssig1, L1SLang,
+# l1s_induction citing slang_ind and l1s_aux). X46b (dirty): itt_slang names lam_op (SL3 1); l1s_induction's proof cites
+# l1s_rec, whose statement has is_tyterm (SL4 1 through the closure, none in the root); old_r edited (SL1 rules 1).
+R46="$F/r46"; mkdir -p "$R46/theories/vir"; git -C "$R46" init -q; git -C "$R46" config user.email t@t; git -C "$R46" config user.name t
+printf 'define unfold_lam_op : lam_op <--> operator[(l1_lam):op]\ndefine unfold_arrow_op : arrow_op <--> operator[(l1_arrow):op]\ndefine unfold_core_ops : core_ops <-->\n   lam_op :: nil\ndefine unfold_sig1 : sig1 <-->\n   arrow_op :: nil\n' > "$R46/theories/vir/virl1_sig.ml"
+printf 'define unfold_is_tyterm : is_tyterm{\x27t} <--> \x27t\ninteractive l1_induction :\n   [T2] sequent { <H>; t1: L1Lang{sig1}; is_tyterm{\x27t1} = btrue in bool; wfs{\x27t1} = btrue in bool >- \x27Pt[\x27t1] }\ninteractive old_r : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_induct.ml"
+prla "$R46/theories/vir/virl1_induct.prla" "l1_induction=autoT" "old_r=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm base; B46=$(git -C "$R46" rev-parse HEAD)
+printf 'define unfold_SLang : SLang{\x27ss; \x27s} <--> \x27ss\ninteractive slang_ind : sequent { <H> >- SLang{\x27ss; \x27s} }\ninteractive slang_wf : sequent { <H> >- SLang{\x27ss; \x27s} Type }\n' > "$R46/theories/vir/itt_slang.ml"
+prla "$R46/theories/vir/itt_slang.prla" "slang_ind=(autoT thenT dT 0)" "slang_wf=autoT"
+printf 'define unfold_ssig1 : ssig1 <--> lam_op\ndefine unfold_L1SLang : L1SLang{\x27s} <--> SLang{ssig1; \x27s}\ninteractive l1s_induction : sequent { <H>; t: L1SLang{\x27s} >- \x27P[\x27t] }\ninteractive l1s_aux : sequent { <H> >- \x27a }\n' > "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm slang; X46=$(git -C "$R46" rev-parse HEAD)
+printf 'interactive slang_bad : sequent { <H> >- lam_op in Term }\n' >> "$R46/theories/vir/itt_slang.ml"
+printf 'interactive l1s_rec : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27a }\n' >> "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT l1s_rec)" "l1s_aux=autoT" "l1s_rec=autoT"
+sed 's/^interactive old_r : sequent { <H> >- \x27a }/interactive old_r : sequent { <H> >- \x27b }/' "$R46/theories/vir/virl1_induct.ml" > "$F/oi.ml"; mv "$F/oi.ml" "$R46/theories/vir/virl1_induct.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm dirty; X46b=$(git -C "$R46" rev-parse HEAD)
+c46() { VIR_SLANG_ROOT=l1s_induction python3 "$1" --arm slangm --base "$B46" --ext "$2" "$R46" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+check46() {
+  case "$(c46 "$1" "$X46" SLM.SL1.rulesEdited)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL2.newPrims)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.fw)" in "1	MEASURED"*itt_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.stage.l1)" in "1	MEASURED"*virl1_slang*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL3.hits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.control)" in "2	MEASURED"*is_tyterm*wfs*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL4.recogHits)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.L1.C5tok)" in "6	MEASURED"*25332*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL5.total.C5tok)" in "11	MEASURED"*69794*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL8.fw.rules)" in "2	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL1.rulesEdited)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.recogHits)" in "1	MEASURED"*is_tyterm*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL4.rootStatement)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT=nosuch python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in EMPTY*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_ROOT= python3 "$1" --arm slangm --base "$B46" --ext "$X46" "$R46" | awk -F'\t' '$2=="SLM.SL4.recogHits"{print $4}')" in Q*) ;; *) return 1;; esac
+}
+if check46 "$H/count.py"; then say "ARM46 slangm fixture OK (X46 SL1 0, SL3 0, SL4 0 with control 2, L1 6 tok, total 11; X46b SL1 1, SL3 1 lam_op, SL4 1 through the closure; no root => Q)"
+else say "ARM46 slangm fixture FAIL"; VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$X46b" "$R46"; fail=1; fi
+sed 's/todo += list(mpl_refs(x, RT\[x\], names))  # SLM-CLOSURE/pass  # SLM-CLOSURE/' "$H/count.py" > "$F/mutant46.py"
+if cmp -s "$H/count.py" "$F/mutant46.py"; then say "ARM46 mutant NOT PLANTED"; fail=1
+elif check46 "$F/mutant46.py"; then say "ARM46 mutant SURVIVED (SL4 read the root alone)"; fail=1
+else say "ARM46 mutant KILLED"; fi
+sed 's/^SLM_RECOG_RE = .*/SLM_RECOG_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant46b.py"
+if cmp -s "$H/count.py" "$F/mutant46b.py"; then say "ARM46 mutant-b NOT PLANTED"; fail=1
+elif check46 "$F/mutant46b.py"; then say "ARM46 mutant-b SURVIVED (an empty recogniser set read as SL4 HOLDS)"; fail=1
+else say "ARM46 mutant-b KILLED"; fi
+
+# ARM47 (STATUS-vir 174): SL3.binderOnly, BESIDE. At SLang act 1 (mojave 41de5e05d) SL3 read 1 on `kids`, which vir_slang uses only
+# as a BOUND name; the reader is unchanged and this row says which hits are bound names only. X47 = X46 + itt_slang binding lam_op
+# (`spread{'x; lam_op, r. 'r}`, the comma-list form): hits 1, binderOnly 1. X47b = X47 + `lam_op :: nil` (a TERM, and a `::` that
+# must not read as a binder colon): hits 1, binderOnly 0. X46b (lam_op as a term only): binderOnly 0.
+git -C "$R46" checkout -q "$X46"
+printf 'define unfold_SPick : SPick{\x27x} <--> spread{\x27x; lam_op, r. \x27r}\n' >> "$R46/theories/vir/itt_slang.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm x47; X47=$(git -C "$R46" rev-parse HEAD)
+printf 'define unfold_SL : SL <--> lam_op :: nil\n' >> "$R46/theories/vir/itt_slang.ml"
+git -C "$R46" add -A; git -C "$R46" commit -qm x47b; X47b=$(git -C "$R46" rev-parse HEAD)
+check47() {
+  case "$(c46 "$1" "$X47" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47" SLM.SL3.binderOnly)" in "1	BESIDE"*itt_slang:lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47b" SLM.SL3.hits)" in "1	MEASURED"*lam_op*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X47b" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46b" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X46" SLM.SL3.binderOnly)" in "0	BESIDE"*) ;; *) return 1;; esac
+}
+if check47 "$H/count.py"; then say "ARM47 SL3.binderOnly fixture OK (X47 hits 1 binderOnly 1; X47b hits 1 binderOnly 0 with ::; X46b 0)"
+else say "ARM47 SL3.binderOnly fixture FAIL"; for x in "$X47" "$X47b"; do VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$x" "$R46" | grep -F SL3; done; fail=1; fi
+sed 's/if not SLM_BINDER_RE.match(txt, mo.end()):  # SLM-BINDER/if False:  # SLM-BINDER/' "$H/count.py" > "$F/mutant47.py"
+if cmp -s "$H/count.py" "$F/mutant47.py"; then say "ARM47 mutant NOT PLANTED"; fail=1
+elif check47 "$F/mutant47.py"; then say "ARM47 mutant SURVIVED (every hit read as a bound name)"; fail=1
+else say "ARM47 mutant KILLED"; fi
+sed 's/^SLM_BINDER_RE = .*/SLM_BINDER_RE = re.compile(r"\\s*(?:\\.|:)")/' "$H/count.py" > "$F/mutant47b.py"
+if cmp -s "$H/count.py" "$F/mutant47b.py"; then say "ARM47 mutant-b NOT PLANTED"; fail=1
+elif check47 "$F/mutant47b.py"; then say "ARM47 mutant-b SURVIVED (a :: read as a binder colon, or the comma list missed)"; fail=1
+else say "ARM47 mutant-b KILLED"; fi
+
+# ARM48 (STATUS-vir 181): SL6 from the ARTIFACT. VIR_SLANG_SL6 names six rules in the order type-fwd, type-bwd, atom-fwd,
+# atom-bwd, expr-fwd, expr-bwd. A slot counts toward SLM.SL6.directions only if its rule is an `interactive` in an L1-stage module
+# with a STORED derivation (>= 1 step) AND its statement names L1SLang and the slot's recogniser (is_tyterm for type, wfs for
+# atom and expression). Sort numbers are the arm's map (D-S2), so they are printed BESIDE for the hand read, never typed here.
+# X48 = X46 + six such rules, all stored: 6. X48b: expr-bwd has no stored proof and atom-bwd names is_tyterm: 4 (proved 5, recog 5).
+git -C "$R46" checkout -q "$X46"
+printf 'interactive sl6_tf : sequent { <H>; t: L1SLang{0} >- is_tyterm{\x27t} = btrue in bool }\ninteractive sl6_tb : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27t in L1SLang{0} }\ninteractive sl6_af : sequent { <H>; t: L1SLang{2} >- wfs{0; \x27t} = btrue in bool }\ninteractive sl6_ab : sequent { <H>; wfs{0; \x27t} = btrue in bool >- \x27t in L1SLang{2} }\ninteractive sl6_ef : sequent { <H>; t: L1SLang{3} >- wfs{2; \x27t} = btrue in bool }\ninteractive sl6_eb : sequent { <H>; wfs{2; \x27t} = btrue in bool >- \x27t in L1SLang{3} }\n' >> "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT" "sl6_tf=autoT" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT" "sl6_eb=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x48; X48=$(git -C "$R46" rev-parse HEAD)
+sed 's/^interactive sl6_ab : sequent { <H>; wfs{0; /interactive sl6_ab : sequent { <H>; is_tyterm{/' "$R46/theories/vir/virl1_slang.ml" > "$F/s48.ml"; mv "$F/s48.ml" "$R46/theories/vir/virl1_slang.ml"
+prla "$R46/theories/vir/virl1_slang.prla" "l1s_induction=(slang_ind thenT l1s_aux thenT autoT)" "l1s_aux=autoT" "sl6_tf=autoT" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x48b; X48b=$(git -C "$R46" rev-parse HEAD)
+SL6N=sl6_tf,sl6_tb,sl6_af,sl6_ab,sl6_ef,sl6_eb
+c48() { VIR_SLANG_SL6="$SL6N" c46 "$@"; }
+check48() {
+  case "$(c48 "$1" "$X48" SLM.SL6.directions)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48" SLM.SL6.proved)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48" SLM.SL6.recogMatch)" in "6	BESIDE"*"sl6_af:L1SLang{2}/wfs{0"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.directions)" in "4	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.proved)" in "5	MEASURED"*"missing:sl6_eb"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X48b" SLM.SL6.recogMatch)" in "5	BESIDE"*) ;; *) return 1;; esac
+  case "$(VIR_SLANG_SL6=sl6_tf c46 "$1" "$X48" SLM.SL6.directions)" in "1	INVALID"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X48" SLM.SL6.directions)" in "0	Q"*) ;; *) return 1;; esac
+}
+if check48 "$H/count.py"; then say "ARM48 SL6 fixture OK (X48 6/6; X48b 4 = proved 5 with sl6_eb missing, recog 5; one name => INVALID; unset => Q)"
+else say "ARM48 SL6 fixture FAIL"; for x in "$X48" "$X48b"; do VIR_SLANG_SL6="$SL6N" VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$x" "$R46" | grep -F SL6; done; fail=1; fi
+sed 's/if R.get(n, (0,))\[0\] > 0:  # SLM-SL6-STORED/if True:  # SLM-SL6-STORED/' "$H/count.py" > "$F/mutant48.py"
+if cmp -s "$H/count.py" "$F/mutant48.py"; then say "ARM48 mutant NOT PLANTED"; fail=1
+elif check48 "$F/mutant48.py"; then say "ARM48 mutant SURVIVED (a statement with no stored proof read as proved)"; fail=1
+else say "ARM48 mutant KILLED"; fi
+sed 's/if rx and re.search(rx, stt):  # SLM-SL6-RECOG/if True:  # SLM-SL6-RECOG/' "$H/count.py" > "$F/mutant48b.py"
+if cmp -s "$H/count.py" "$F/mutant48b.py"; then say "ARM48 mutant-b NOT PLANTED"; fail=1
+elif check48 "$F/mutant48b.py"; then say "ARM48 mutant-b SURVIVED (the slot's recogniser never checked)"; fail=1
+else say "ARM48 mutant-b KILLED"; fi
+
+# ARM49 (STATUS-vir 182): the SL6 STAGE. mojave puts SL6 in a NEW module (vir_l1sl6) so vir_l1slang stays byte-identical. amend-20
+# SL5(a) prices "the per-form rule and everything L1-specific under it"; SL6 checks that stage and is not under the rule, so its
+# rules must count for SL6's slots and get their own SL8 line, NEVER enter SL5. Stage sl6 = a NEW module, neither fw nor l1, holding
+# the statement of a VIR_SLANG_SL6 rule. X49 = X46 + virl1_sl6.ml/.prla with the six rules: SL6 6/6, stage.sl6 1, SL8.sl6.rules 6,
+# SL5.L1.C5tok EQUAL to X46's. Without VIR_SLANG_SL6 the module is unstaged (stage.sl6 0) and SL5 is still X46's.
+git -C "$R46" checkout -q "$X46"
+printf 'interactive sl6_tf : sequent { <H>; t: L1SLang{0} >- is_tyterm{\x27t} = btrue in bool }\ninteractive sl6_tb : sequent { <H>; is_tyterm{\x27t} = btrue in bool >- \x27t in L1SLang{0} }\ninteractive sl6_af : sequent { <H>; t: L1SLang{2} >- wfs{0; \x27t} = btrue in bool }\ninteractive sl6_ab : sequent { <H>; wfs{0; \x27t} = btrue in bool >- \x27t in L1SLang{2} }\ninteractive sl6_ef : sequent { <H>; t: L1SLang{3} >- wfs{2; \x27t} = btrue in bool }\ninteractive sl6_eb : sequent { <H>; wfs{2; \x27t} = btrue in bool >- \x27t in L1SLang{3} }\n' > "$R46/theories/vir/virl1_sl6.ml"
+prla "$R46/theories/vir/virl1_sl6.prla" "sl6_tf=(autoT thenT dT 0)" "sl6_tb=autoT" "sl6_af=autoT" "sl6_ab=autoT" "sl6_ef=autoT" "sl6_eb=autoT"
+git -C "$R46" add -A; git -C "$R46" commit -qm x49; X49=$(git -C "$R46" rev-parse HEAD)
+L46=$(c46 "$H/count.py" "$X46" SLM.SL5.L1.C5tok | cut -f1)
+check49() {
+  case "$L46" in ''|0) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL6.directions)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.stage.sl6)" in "1	MEASURED"*virl1_sl6*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL8.sl6.rules)" in "6	MEASURED"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.SL5.L1.C5tok)" in "$L46	"*) ;; *) return 1;; esac
+  case "$(c48 "$1" "$X49" SLM.unstaged.rules)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X49" SLM.stage.sl6)" in "0	"*) ;; *) return 1;; esac
+  case "$(c46 "$1" "$X49" SLM.SL5.L1.C5tok)" in "$L46	"*) ;; *) return 1;; esac
+}
+if check49 "$H/count.py"; then say "ARM49 SL6 stage fixture OK (X49: SL6 6/6 from a new module, stage.sl6 1, SL8.sl6 6 rules, SL5.L1 = X46's $L46; unset => unstaged)"
+else say "ARM49 SL6 stage fixture FAIL"; VIR_SLANG_SL6="$SL6N" VIR_SLANG_ROOT=l1s_induction python3 "$H/count.py" --arm slangm --base "$B46" --ext "$X49" "$R46" | grep -E 'SL6|stage|SL5|SL8|unstaged'; fail=1; fi
+sed "s/stmod.get(n) in ('l1', 'sl6'):  # SLM-SL6-STAGE/stmod.get(n) == 'l1':  # SLM-SL6-STAGE/" "$H/count.py" > "$F/mutant49.py"
+if cmp -s "$H/count.py" "$F/mutant49.py"; then say "ARM49 mutant NOT PLANTED"; fail=1
+elif check49 "$F/mutant49.py"; then say "ARM49 mutant SURVIVED (an SL6 module's rules not counted for SL6)"; fail=1
+else say "ARM49 mutant KILLED"; fi
+sed "s/'sl6' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP/'l1' if mod(p) in sl6m else '-'  # SLM-SL6-STAGEMAP/" "$H/count.py" > "$F/mutant49b.py"
+if cmp -s "$H/count.py" "$F/mutant49b.py"; then say "ARM49 mutant-b NOT PLANTED"; fail=1
+elif check49 "$F/mutant49b.py"; then say "ARM49 mutant-b SURVIVED (SL6's rules folded into the L1 stage and SL5)"; fail=1
+else say "ARM49 mutant-b KILLED"; fi
+
+# ARM50 (STATUS-vir 185): the MetaPRL L3 column (amend-18 Z1-Z9). A row's C5 is its IN-LAYER closure: the posted roots, every
+# virl3_* rule a closure text names as a whole identifier, and every virl3_* `{| reduce |}` rule when a text invokes reduceC.
+# Fixture: base = virl1/virl2 modules; ext adds virl3_prog (a `fix` only inside a comment) and virl3_typ, and touches a virl2 file
+# by a COMMENT only (files 1, items 0). R8's posted root has no derivation (a RED row, never a silent 0).
+R50="$F/r50"; mkdir -p "$R50/theories/vir"; git -C "$R50" init -q; git -C "$R50" config user.email t@t; git -C "$R50" config user.name t
+printf 'define unfold_one : one <--> 1\n' > "$R50/theories/vir/virl1_x.ml"
+printf 'define unfold_l2step : l2step{\x27a} <--> \x27a\ninteractive step2_r : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_step.ml"
+printf 'interactive triple_frame : sequent { <H> >- triple{\x27P; \x27e; \x27Q} }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_triple.ml"
+printf 'interactive let_rule : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl2_rules.ml"
+git -C "$R50" add -A; git -C "$R50" commit -qm base; B50=$(git -C "$R50" rev-parse HEAD)
+printf '(* touched *)\n' >> "$R50/theories/vir/virl2_rules.ml"
+printf 'extends Virl2_rules\n(* a fix in a comment is not a fix *)\ndefine unfold_l3_F : l3_F <--> bind{w. e_ret{\x27w}}\n' > "$R50/theories/vir/virl3_prog.ml"
+printf 'extends Virl3_prog\ninteractive_rw h1 {| reduce |} : a <--> b\ninteractive_rw h2 : a <--> b\ninteractive_rw hz {| reduce |} : a <--> b\ninteractive_rw r1 : a <--> b\ninteractive_rw r7 : a <--> b\ninteractive r2 : sequent { <H> >- \x27a }\ninteractive r3 : sequent { <H> >- \x27a }\ninteractive r4 : sequent { <H> >- \x27a }\ninteractive r5 : sequent { <H> >- \x27a }\n' > "$R50/theories/vir/virl3_typ.ml"
+T1="rw (reduceC thenC h2) 0"; TH1="rw (unfold_occ thenC reduceC) 0"; TH2="rw unfold_pty 0"; THZ="rw unfold_x 0"; T7="rw (sweepDnC unfold_l3_F7) 0"
+T2="(let_rule thenT triple_frame thenT autoT)"; T3="(r2 thenT a b c d e f g h i j k l m n o p q r s t u v w x y z thenT autoT)"
+T4="(step2_r thenT step2_r_note thenT unfold_l2step thenT autoT)"; T5="(triple_frame thenT store_local thenT autoT)"
+prla "$R50/theories/vir/virl3_typ.prla" "h1=$TH1" "h2=$TH2" "hz=$THZ" "r1=$T1" "r7=$T7" "r2=$T2" "r3=$T3" "r4=$T4" "r5=$T5"
+git -C "$R50" add -A; git -C "$R50" commit -qm ext; X50=$(git -C "$R50" rev-parse HEAD)
+w() { printf '%s\n' "$1" | wc -w | tr -d ' '; }
+# R1's closure = r1 + h2 (named) + h1 + hz (the reduce resource: r1 and h1 both invoke reduceC)
+C1=$(( $(w "$T1") + $(w "$TH1") + $(w "$TH2") + $(w "$THZ") )); C3=$(( $(w "$T3") + $(w "$T2") ))
+ALL=$(( $(w "$T1") + $(w "$TH1") + $(w "$TH2") + $(w "$THZ") + $(w "$T7") + $(w "$T2") + $(w "$T3") + $(w "$T4") + $(w "$T5") ))
+check50() {
+  o=$(VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$1" --arm metaprll3 --base "$B50" --ext "$X50" "$R50") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L3M.files)" = 2 ] && [ "$(v L3M.prims)" = 0 ] && [ "$(v L3M.declares)" = 0 ] \
+  && [ "$(v L3M.Z1.defsEdited)" = 0 ] && [ "$(v L3M.Z1.rulesEdited)" = 0 ] && [ "$(v L3M.Z1.filesChanged)" = 1 ] \
+  && [ "$(v L3M.rules)" = 9 ] && [ "$(v L3M.rows.rooted)" = 6 ] && [ "$(v L3M.R8.missing)" = 1 ] \
+  && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R8.missing"' | grep -q RED \
+  && [ "$(v L3M.R1.C5tok)" = "$C1" ] && [ "$(v L3M.R1.rootTok)" = "$(w "$T1")" ] && [ "$(v L3M.R7.C5tok)" = "$(w "$T7")" ] \
+  && [ "$(v L3M.Z3.tripleCites)" = 1 ] && [ "$(v L3M.Z3.moduleCites)" = 2 ] && [ "$(v L3M.Z4.R3C5)" = "$C3" ] && [ "$(v L3M.Z5.stepInR4)" = 2 ] \
+  && [ "$(v L3M.Z6.frameApps)" = 1 ] && [ "$(v L3M.Z6.localityCited)" = 1 ] && [ "$(v L3M.Z7.fixInTerms)" = 0 ] \
+  && [ "$(v L3M.Z8.R7Steps)" = 1 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z8.R8Steps"' | grep -q '^.*	Q:' \
+  && [ "$(v L3M.Z9.l3C5tok)" = "$ALL" ]
+}
+if check50 "$H/count.py"; then say "ARM50 metaprll3 fixture OK (Z1 0/0 files 1; R1 closure $C1 tok incl. 2 by the reduce resource; Z3 1 by statement (2 by module); Z4 R3 $C3; Z5 2 (step2_r_note is not step2_r); Z6 1/1; Z7 0; Z8 R7 1 step; R8 RED; Z9 $ALL)"
+else say "ARM50 metaprll3 fixture FAIL"; VIR_L3M_ROOTS='R1=r1;R2=r2;R3=r3;R4=r4;R5=r5;R7=r7;R8=r8' python3 "$H/count.py" --arm metaprll3 --base "$B50" --ext "$X50" "$R50"; fail=1; fi
+sed 's/                todo += sorted(reduce_rw)/                pass/' "$H/count.py" > "$F/mutant50.py"  # the reduce resource dropped: a name closure alone
+if cmp -s "$H/count.py" "$F/mutant50.py"; then say "ARM50 mutant NOT PLANTED"; fail=1
+elif check50 "$F/mutant50.py"; then say "ARM50 mutant SURVIVED (the reduce-resource helpers not in a row's closure)"; fail=1
+else say "ARM50 mutant KILLED"; fi
+sed 's/sum(len(ident(k) \& names) for k in C\[r\])/sum(sum(text(k).count(n) for n in names) for k in C[r])/' "$H/count.py" > "$F/mutant50b.py"  # a cite read inside a longer name
+if cmp -s "$H/count.py" "$F/mutant50b.py"; then say "ARM50 mutant-b NOT PLANTED"; fail=1
+elif check50 "$F/mutant50b.py"; then say "ARM50 mutant-b SURVIVED (a cite read inside a longer name)"; fail=1
+else say "ARM50 mutant-b KILLED"; fi
+
+# ARM51 (STATUS-vir 187, declared 2026-11-07 by the 40th head AFTER R1, R2 and R7 exist on the arm, BEFORE R3-R6/R8): two
+# corrections found at the R2 dry read. (a) Z3 "cites a triple" is read by the cited rule's STATEMENT (it mentions triple{ or
+# triple_i{), never by its module: virl2_rules holds iteration and wf lemmas too (iter2_succ, retv0_wf), and the module
+# reading read R2 FALSIFIED on four non-triple cites. The module reading stays BESIDE. (b) A rule declared {| intro |} is used
+# by autoT/dT through the intro resource and named by nothing, so a name closure misses it: L3M.<row>.C5tokIntro is the
+# closure plus every virl3_* intro rule when a closure text invokes autoT/dT (BESIDE, an upper bound; the primary is unchanged).
+R51="$F/r51"; mkdir -p "$R51/theories/vir"; git -C "$R51" init -q; git -C "$R51" config user.email t@t; git -C "$R51" config user.name t
+printf 'interactive tri_let : sequent { <H> >- triple_i{\x27P; \x27e; \x27Q} }\ninteractive iter_succ : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl2_rules.ml"
+printf 'interactive bt0 : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl2_triple.ml"
+git -C "$R51" add -A; git -C "$R51" commit -qm base; B51=$(git -C "$R51" rev-parse HEAD)
+printf 'interactive w0 {| intro [] |} : sequent { <H> >- \x27a }\ninteractive w1 {| intro [] |} : sequent { <H> >- \x27b }\ninteractive r2 : sequent { <H> >- \x27a }\ninteractive r3 : sequent { <H> >- \x27a }\n' > "$R51/theories/vir/virl3_eq.ml"
+TW0="rw unfold_a 0"; TW1="rw (unfold_b thenC unfold_c) 0"; TR2="(iter_succ thenT bt0 thenT autoT)"; TR3="(tri_let thenT iter_succ thenT w0)"
+prla "$R51/theories/vir/virl3_eq.prla" "w0=$TW0" "w1=$TW1" "r2=$TR2" "r3=$TR3"
+git -C "$R51" add -A; git -C "$R51" commit -qm ext; X51=$(git -C "$R51" rev-parse HEAD)
+check51() {
+  o=$(VIR_L3M_ROOTS='R2=r2;R3=r3' python3 "$1" --arm metaprll3 --base "$B51" --ext "$X51" "$R51") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L3M.Z3.tripleCites)" = 0 ] && [ "$(v L3M.Z3.moduleCites)" = 2 ] \
+  && [ "$(v L3M.R2.C5tok)" = "$(w "$TR2")" ] && [ "$(v L3M.R2.C5tokIntro)" = $(( $(w "$TR2") + $(w "$TW0") + $(w "$TW1") )) ] \
+  && [ "$(v L3M.R3.C5tok)" = $(( $(w "$TR3") + $(w "$TW0") )) ] && [ "$(v L3M.R3.C5tokIntro)" = $(( $(w "$TR3") + $(w "$TW0") )) ]
+}
+if check51 "$H/count.py"; then say "ARM51 metaprll3 Z3-by-statement + intro resource OK (Z3 0 by statement, 2 by module; R2 intro closure adds w0+w1; R3 names w0, no autoT)"
+else say "ARM51 metaprll3 Z3-by-statement / intro FAIL"; VIR_L3M_ROOTS='R2=r2;R3=r3' python3 "$H/count.py" --arm metaprll3 --base "$B51" --ext "$X51" "$R51"; fail=1; fi
+sed 's/                todo += sorted(intro_rw)/                pass/' "$H/count.py" > "$F/mutant51.py"  # the intro resource dropped
+if cmp -s "$H/count.py" "$F/mutant51.py"; then say "ARM51 mutant NOT PLANTED"; fail=1
+elif check51 "$F/mutant51.py"; then say "ARM51 mutant SURVIVED (intro rules not in the intro closure)"; fail=1
+else say "ARM51 mutant KILLED"; fi
+sed 's/names = tri_stated/names = tri_mod/' "$H/count.py" > "$F/mutant51b.py"  # Z3 by module again
+if cmp -s "$H/count.py" "$F/mutant51b.py"; then say "ARM51 mutant-b NOT PLANTED"; fail=1
+elif check51 "$F/mutant51b.py"; then say "ARM51 mutant-b SURVIVED (Z3 read by module)"; fail=1
+else say "ARM51 mutant-b KILLED"; fi
+
+# ARM52 (STATUS-vir 189, the 41st head, 2026-11-08, after the MetaPRL arm's declared read of two Lean L3 files): VIR_L3M_FROZEN
+# 'R7=<sha>' asserts that a row's roots were not touched after <sha>. L3M.R7.frozenSame = 1 iff each root's .ml statement and
+# stored derivation at ext equal those at <sha>; L3M.R7.frozenClosureEdited (BESIDE) counts closure rules present at <sha> whose
+# derivation differs. An unknown sha, or a root absent at <sha>, is a RED 0, never a silent pass.
+R52="$F/r52"; mkdir -p "$R52/theories/vir"; git -C "$R52" init -q; git -C "$R52" config user.email t@t; git -C "$R52" config user.name t
+printf 'interactive base0 : sequent { <H> >- \x27a }\n' > "$R52/theories/vir/virl2_rules.ml"
+git -C "$R52" add -A; git -C "$R52" commit -qm base; B52=$(git -C "$R52" rev-parse HEAD)
+ML52='interactive r7 : sequent { <H> >- \x27a }\ninteractive h1 : sequent { <H> >- \x27c }\ninteractive r8 : sequent { <H> >- \x27b }\n'
+printf "$ML52" > "$R52/theories/vir/virl3_typ.ml"
+TR7="(h1 thenT autoT)"; TH="rw unfold_a 0"; TR8="(base0 thenT autoT)"
+c52() { git -C "$R52" add -A; git -C "$R52" commit -qm "$1"; git -C "$R52" rev-parse HEAD; }
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=$TR8"; F52=$(c52 frozen)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=(base0 thenT trivialT)"; S52=$(c52 other-row-only)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=(h1 thenT trivialT)" "h1=$TH" "r8=$TR8"; P52=$(c52 proof-edited)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=$TR8"
+printf 'interactive r7 : sequent { <H> >- \x27z }\ninteractive h1 : sequent { <H> >- \x27c }\ninteractive r8 : sequent { <H> >- \x27b }\n' > "$R52/theories/vir/virl3_typ.ml"; T52=$(c52 statement-edited)
+printf "$ML52" > "$R52/theories/vir/virl3_typ.ml"
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=rw unfold_b 0" "r8=$TR8"; H52=$(c52 helper-edited)
+r52() { VIR_L3M_ROOTS='R7=r7' VIR_L3M_FROZEN="R7=$3" python3 "$1" --arm metaprll3 --base "$B52" --ext "$2" "$R52"; }
+v52() { awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+check52() {
+  o=$(r52 "$1" "$S52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 1 ] && [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenClosureEdited)" = 0 ] || return 1
+  o=$(r52 "$1" "$P52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] || return 1
+  o=$(r52 "$1" "$T52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] || return 1
+  o=$(r52 "$1" "$H52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 1 ] && [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenClosureEdited)" = 1 ] || return 1
+  o=$(r52 "$1" "$S52" "0000000000000000000000000000000000000000") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R7.frozenSame"' | grep -q RED || return 1
+  o=$(r52 "$1" "$S52" "$B52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R7.frozenSame"' | grep -q RED
+}
+if check52 "$H/count.py"; then say "ARM52 metaprll3 frozen rows OK (another row's edit 1/0; root proof 0; root statement 0; helper edit 1/1; unknown sha and absent root RED)"
+else say "ARM52 metaprll3 frozen rows FAIL"; r52 "$H/count.py" "$P52" "$F52" | awk -F'\t' '$2 ~ /frozen/'; fail=1; fi
+sed 's/if fp\[name\]\[4\] != R\[k\]\[4\]:/if False:/' "$H/count.py" > "$F/mutant52.py"  # the stored derivation not compared
+if cmp -s "$H/count.py" "$F/mutant52.py"; then say "ARM52 mutant NOT PLANTED"; fail=1
+elif check52 "$F/mutant52.py"; then say "ARM52 mutant SURVIVED (a root's proof edit reads frozen)"; fail=1
+else say "ARM52 mutant KILLED"; fi
+sed 's/if fs != items(ext, p + \x27.ml\x27).get(\x27i:\x27 + name):/if False:/' "$H/count.py" > "$F/mutant52b.py"  # the statement not compared
+if cmp -s "$H/count.py" "$F/mutant52b.py"; then say "ARM52 mutant-b NOT PLANTED"; fail=1
+elif check52 "$F/mutant52b.py"; then say "ARM52 mutant-b SURVIVED (a root's statement edit reads frozen)"; fail=1
+else say "ARM52 mutant-b KILLED"; fi
+
+# ARM53 (STATUS-vir 194, the 42nd head, 2026-11-08: AFTER R1/R2/R3/R7 exist on the arm and BEFORE R4 does; written after reading
+# lines 1-20 of the arm's R4 plan, which says R4 reuses R3's path lemmas). amend-18 Z5 says "no step rule in its proof tree".
+# At the R3 export the old reader (every name of virl2_step) read R3's closure at 66, on unfold_effop and its helpers AND on
+# value encoders (unfold_capv, unfold_a_unit), while no step2_* appears in any text: those are reduce rules, fired by resource
+# through the arm's own rule l3_dstep3. So: the primary counts step rules and step unfolds only; the old reading is BESIDE
+# (allNames); BESIDE stepStated names the rules in the closure stated over l2step{/l2iter{/reach{, the one reading that sees a
+# step taken by resource; BESIDE rootStep is the root's own text, the like of Lean's proof-text count.
+R53="$F/r53"; mkdir -p "$R53/theories/vir"; git -C "$R53" init -q; git -C "$R53" config user.email t@t; git -C "$R53" config user.name t
+printf 'define unfold_capv : capv{\x27p} <--> foo{\x27p}\ndefine unfold_effop : effop{\x27o} <--> bar{\x27o}\ninteractive_rw step2_ret {| reduce |} : l2step{(e_ret{\x27a}, \x27s)} <--> inr{it}\n' > "$R53/theories/vir/virl2_step.ml"
+printf 'interactive rs : sequent { <H> >- reach{\x27a; \x27b} }\n' > "$R53/theories/vir/virl2_den.ml"
+git -C "$R53" add -A; git -C "$R53" commit -qm base; B53=$(git -C "$R53" rev-parse HEAD)
+: > "$R53/theories/vir/virl3_eq.ml"
+for n in r4v r4e r4d r4h r4r r4s h1; do printf 'interactive %s : sequent { <H> >- \x27a }\n' "$n" >> "$R53/theories/vir/virl3_eq.ml"; done
+printf 'interactive l3_dstep : sequent { <H> >- l2step{\x27c} = \x27d in \x27T }\n' >> "$R53/theories/vir/virl3_eq.ml"
+prla "$R53/theories/vir/virl3_eq.prla" "r4v=rw unfold_capv 0" "r4e=rw unfold_effop 0" "r4d=(l3_dstep thenT idT)" "r4h=(h1 thenT idT)" "r4r=(rs thenT idT)" "r4s=rw step2_ret 0" "h1=rw unfold_effop 0" "l3_dstep=rw unfold_x 0"
+git -C "$R53" add -A; git -C "$R53" commit -qm ext; X53=$(git -C "$R53" rev-parse HEAD)
+r53() { VIR_L3M_ROOTS="R4=$2" python3 "$1" --arm metaprll3 --base "$B53" --ext "$X53" "$R53"; }
+v53() { awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+e53() { # $1 count.py, $2 root, then stepInR4 allNames stepStated rootStep
+  o=$(r53 "$1" "$2") || return 1
+  [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepInR4)" = "$3" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.allNames)" = "$4" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepStated)" = "$5" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z5.rootStep)" = "$6" ]
+}
+check53() { e53 "$1" r4v 0 1 0 0 && e53 "$1" r4e 1 1 0 1 && e53 "$1" r4d 0 0 1 0 && e53 "$1" r4h 1 1 0 0 && e53 "$1" r4r 0 0 1 0 && e53 "$1" r4s 1 1 1 1; }
+if check53 "$H/count.py"; then say "ARM53 metaprll3 Z5 reader OK (value encoder 0/1; effop unfold 1, in root 1; step by resource 0 named, 1 stated; helper 1, root 0; L2 rule over reach stated 1; step2_ named 1)"
+else say "ARM53 metaprll3 Z5 reader FAIL"; r53 "$H/count.py" r4v | awk -F'\t' '$2 ~ /Z5/'; fail=1; fi
+sed 's/if L3M_STEP_RULE_RE.match(n)}/if True}/' "$H/count.py" > "$F/mutant53.py"  # a value encoder reads as a step rule
+if cmp -s "$H/count.py" "$F/mutant53.py"; then say "ARM53 mutant NOT PLANTED"; fail=1
+elif check53 "$F/mutant53.py"; then say "ARM53 mutant SURVIVED (a value encoder reads as a step rule)"; fail=1
+else say "ARM53 mutant KILLED"; fi
+sed 's/(l2step|l2iter|reach)/(nostepword)/' "$H/count.py" > "$F/mutant53b.py"  # a step taken by resource is invisible
+if cmp -s "$H/count.py" "$F/mutant53b.py"; then say "ARM53 mutant-b NOT PLANTED"; fail=1
+elif check53 "$F/mutant53b.py"; then say "ARM53 mutant-b SURVIVED (a step taken by resource is invisible)"; fail=1
+else say "ARM53 mutant-b KILLED"; fi
+
+# ARM55 (STATUS-vir 199, the 43rd head, 2026-11-08: AFTER R4/R5 exist on the arm; no verdict moves). L3M.Z5.stepInR4 prints a count
+# only, and Z5's FALSIFIED clause is read by hand on the rules it counted. BESIDE: stepNames prints the distinct step rules and
+# unfolds, each with the closure rule that names it. Uses ARM53's fixture.
+check55() { o=$(r53 "$1" r4h) || return 1; l=$(printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z5.stepNames"')
+  [ "$(printf '%s\n' "$l" | cut -f3)" = 1 ] && [ "$(printf '%s\n' "$l" | cut -f4 | sed 's/.*://')" = 'unfold_effop' ] && printf '%s\n' "$l" | cut -f4 | /usr/bin/grep -qF 'h1:unfold_effop' || return 1
+  o=$(r53 "$1" r4v) || return 1; [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepNames)" = 0 ]; }
+if check55 "$H/count.py"; then say "ARM55 metaprll3 Z5 stepNames OK (helper h1 names unfold_effop; a value encoder is not listed)"
+else say "ARM55 metaprll3 Z5 stepNames FAIL"; r53 "$H/count.py" r4h | awk -F'\t' '$2 ~ /Z5/'; fail=1; fi
+sed "s/'%s:%s' % (k.split(':', 1)\[1\], n)/n/" "$H/count.py" > "$F/mutant55.py"  # the site that names the rule is lost
+if cmp -s "$H/count.py" "$F/mutant55.py"; then say "ARM55 mutant NOT PLANTED"; fail=1
+elif check55 "$F/mutant55.py"; then say "ARM55 mutant SURVIVED (the naming site is lost)"; fail=1
+else say "ARM55 mutant KILLED"; fi
+
+# ARM54 (STATUS-vir 195, the 42nd head, 2026-11-08: BEFORE R5 exists on the arm). Z6's localityCited matches virl2_* names
+# containing "local", and at 10b8ddbab no such name exists (population 0), so the row cannot fire. BESIDE: localityPop prints
+# that population, and unionStated names the virl2_* rules in R5's closure stated over st_union{ (the frame's own vocabulary),
+# so a locality lemma is at least visible to the hand read. localityCited and frameApps are unchanged.
+R54="$F/r54"; mkdir -p "$R54/theories/vir"; git -C "$R54" init -q; git -C "$R54" config user.email t@t; git -C "$R54" config user.name t
+printf 'interactive triple_frame : sequent { <H> >- triple{\x27P; \x27e; \x27Q} }\ninteractive op_safe : sequent { <H> >- st_union{\x27a; \x27b; \x27c} }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R54/theories/vir/virl2_rules.ml"
+git -C "$R54" add -A; git -C "$R54" commit -qm base; B54=$(git -C "$R54" rev-parse HEAD)
+for n in r5a r5b r5c; do printf 'interactive %s : sequent { <H> >- \x27a }\n' "$n"; done > "$R54/theories/vir/virl3_tri.ml"
+prla "$R54/theories/vir/virl3_tri.prla" "r5a=(triple_frame thenT idT)" "r5b=(triple_frame thenT op_safe)" "r5c=(triple_frame thenT store_local)"
+git -C "$R54" add -A; git -C "$R54" commit -qm ext; X54=$(git -C "$R54" rev-parse HEAD)
+r54() { VIR_L3M_ROOTS="R5=$2" python3 "$1" --arm metaprll3 --base "$B54" --ext "$X54" "$R54"; }
+e54() { # $1 count.py, $2 root, then frameApps localityCited localityPop unionStated
+  o=$(r54 "$1" "$2") || return 1
+  [ "$(printf '%s\n' "$o" | v53 L3M.Z6.frameApps)" = "$3" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.localityCited)" = "$4" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.localityPop)" = "$5" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.unionStated)" = "$6" ]
+}
+check54() { e54 "$1" r5a 1 0 1 0 && e54 "$1" r5b 1 0 1 1 && e54 "$1" r5c 1 1 1 0; }
+if check54 "$H/count.py"; then say "ARM54 metaprll3 Z6 population OK (frame only 1/0; union-stated lemma visible 1; named locality lemma cited 1; population 1)"
+else say "ARM54 metaprll3 Z6 population FAIL"; r54 "$H/count.py" r5b | awk -F'\t' '$2 ~ /Z6/'; fail=1; fi
+sed 's/pop = len({n for m in l2names.values() for n in m if .local. in n})/pop = 0/' "$H/count.py" > "$F/mutant54.py"  # the population not measured
+if cmp -s "$H/count.py" "$F/mutant54.py"; then say "ARM54 mutant NOT PLANTED"; fail=1
+elif check54 "$F/mutant54.py"; then say "ARM54 mutant SURVIVED (the population is not measured)"; fail=1
+else say "ARM54 mutant KILLED"; fi
+sed 's/st_union\\{/nosuchop\\{/' "$H/count.py" > "$F/mutant54b.py"  # a union-stated lemma is invisible
+if cmp -s "$H/count.py" "$F/mutant54b.py"; then say "ARM54 mutant-b NOT PLANTED"; fail=1
+elif check54 "$F/mutant54b.py"; then say "ARM54 mutant-b SURVIVED (a union-stated lemma is invisible)"; fail=1
+else say "ARM54 mutant-b KILLED"; fi
+
+# ARM56 (STATUS-vir row 166; l4/DECLARATIONS-LEAN.md addendum 7): `--arm l4`, C5 of a row as the in-layer PROOF CLOSURE.
 # Fixture K: a depth-2 private helper under par₄_rule (a one-pass closure misses it), a shared helper `go` reached by S and V
 # (counted once per side), a reference by last dotted component (Shared.go), a def reached only by V (withDefs only), one name
 # of an imported layer (l3), a comment inside a counted block, and an unrelated theorem kept out. Expectations are wc -w of the blocks.
@@ -711,24 +1175,24 @@ B_FA='lemma frame_aux : True := trivial'
   printf '%s\n\n%s\n\n%s\n\n%s\n' "$B_N1V" "$B_N4V" "$B_CF" "$B_CB"; } > "$K/l4/VIRL4/R.lean"
 printf '/- block comment -/\n%s\n\n%s\n' "$B_FR" "$B_FA" > "$K/l2/VIRL2/Logic.lean"
 printf 'theorem trivial_from_l3 : True := trivial\n' > "$K/l3/VIRL3/X.lean"
-E41_PAR=$(( $(wc_w "$B_PR") + $(wc_w "$B_SP") + $(wc_w "$B_HP") )); E41_FR=$(( $(wc_w "$B_FR") + $(wc_w "$B_FA") ))
-E41_S=$(( $(wc_w "$B_N1S") + $(wc_w "$B_F4S") + $(wc_w "$B_GO") )); E41_V=$(( $(wc_w "$B_N1V") + $(wc_w "$B_N4V") + $(wc_w "$B_GO") ))
-E41_VD=$(( E41_V + $(wc_w "$B_DF") )); E41_CE=$(( $(wc_w "$B_CF") + $(wc_w "$B_CB") )); E41_PROOT=$(wc_w "$B_PR")
-check41() {
+E56_PAR=$(( $(wc_w "$B_PR") + $(wc_w "$B_SP") + $(wc_w "$B_HP") )); E56_FR=$(( $(wc_w "$B_FR") + $(wc_w "$B_FA") ))
+E56_S=$(( $(wc_w "$B_N1S") + $(wc_w "$B_F4S") + $(wc_w "$B_GO") )); E56_V=$(( $(wc_w "$B_N1V") + $(wc_w "$B_N4V") + $(wc_w "$B_GO") ))
+E56_VD=$(( E56_V + $(wc_w "$B_DF") )); E56_CE=$(( $(wc_w "$B_CF") + $(wc_w "$B_CB") )); E56_PROOT=$(wc_w "$B_PR")
+check56() {
   o=$(python3 "$1" --arm l4 "$K/l4") || return 1
   v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
-  [ "$(v L4.Q3.par.C5tok)" = "$E41_PAR" ] && [ "$(v L4.Q3.frame.C5tok)" = "$E41_FR" ] && [ "$(v L4.Q3.par.root.C5tok)" = "$E41_PROOT" ] \
-  && [ "$(v L4.Q4.S.C5tok)" = "$E41_S" ] && [ "$(v L4.Q4.V.C5tok)" = "$E41_V" ] && [ "$(v L4.Q4.V.withDefs.C5tok)" = "$E41_VD" ] \
-  && [ "$(v L4.Q4.V.crossRefs)" = 1 ] && [ "$(v L4.Q7.C5tok)" = "$E41_CE" ] \
-  && [ "$(v L4.Q3.held)" = $([ "$E41_PAR" -le $((3 * E41_FR)) ] && echo 1 || echo 0) ] \
-  && [ "$(v L4.Q4.direction)" = $([ "$E41_V" -gt "$E41_S" ] && echo 1 || echo 0) ]
+  [ "$(v L4.Q3.par.C5tok)" = "$E56_PAR" ] && [ "$(v L4.Q3.frame.C5tok)" = "$E56_FR" ] && [ "$(v L4.Q3.par.root.C5tok)" = "$E56_PROOT" ] \
+  && [ "$(v L4.Q4.S.C5tok)" = "$E56_S" ] && [ "$(v L4.Q4.V.C5tok)" = "$E56_V" ] && [ "$(v L4.Q4.V.withDefs.C5tok)" = "$E56_VD" ] \
+  && [ "$(v L4.Q4.V.crossRefs)" = 1 ] && [ "$(v L4.Q7.C5tok)" = "$E56_CE" ] \
+  && [ "$(v L4.Q3.held)" = $([ "$E56_PAR" -le $((3 * E56_FR)) ] && echo 1 || echo 0) ] \
+  && [ "$(v L4.Q4.direction)" = $([ "$E56_V" -gt "$E56_S" ] && echo 1 || echo 0) ]
 }
-if check41 "$H/count.py"; then say "ARM41 l4 fixture OK (Q3 par $E41_PAR vs frame $E41_FR; Q4 V $E41_V vs S $E41_S, withDefs $E41_VD; Q7 $E41_CE)"
-else say "ARM41 l4 fixture FAIL"; python3 "$H/count.py" --arm l4 "$K/l4"; fail=1; fi
-sed 's/changed = True  # CLOSURE-FIXPOINT$/changed = False  # CLOSURE-FIXPOINT/' "$H/count.py" > "$F/mutant41.py"
-if cmp -s "$H/count.py" "$F/mutant41.py"; then say "ARM41 mutant NOT PLANTED"; fail=1
-elif check41 "$F/mutant41.py"; then say "ARM41 mutant SURVIVED (a depth-2 helper went unread: the closure stopped after one pass)"; fail=1
-else say "ARM41 mutant KILLED"; fi
+if check56 "$H/count.py"; then say "ARM56 l4 fixture OK (Q3 par $E56_PAR vs frame $E56_FR; Q4 V $E56_V vs S $E56_S, withDefs $E56_VD; Q7 $E56_CE)"
+else say "ARM56 l4 fixture FAIL"; python3 "$H/count.py" --arm l4 "$K/l4"; fail=1; fi
+sed 's/changed = True  # CLOSURE-FIXPOINT$/changed = False  # CLOSURE-FIXPOINT/' "$H/count.py" > "$F/mutant56.py"
+if cmp -s "$H/count.py" "$F/mutant56.py"; then say "ARM56 mutant NOT PLANTED"; fail=1
+elif check56 "$F/mutant56.py"; then say "ARM56 mutant SURVIVED (a depth-2 helper went unread: the closure stopped after one pass)"; fail=1
+else say "ARM56 mutant KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"

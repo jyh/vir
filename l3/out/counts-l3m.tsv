@@ -1,0 +1,64 @@
+metaprll3	L3M.files	5	MEASURED:virl3_*.ml at ext:virl3_eq,virl3_prog,virl3_run,virl3_tri,virl3_typ
+metaprll3	L3M.prims	0	MEASURED:prim/prim_rw in virl3_*, comments stripped
+metaprll3	L3M.declares	0	MEASURED:new operators in virl3_* (E1: L3 adds none)
+metaprll3	L3M.Z1.defsEdited	0	MEASURED:virl1_*/virl2_* define/declare items, base vs ext
+metaprll3	L3M.Z1.rulesEdited	0	MEASURED:virl1_*/virl2_* interactive/prim items, base vs ext
+metaprll3	L3M.Z1.filesChanged	0	BESIDE:virl1_*/virl2_* files whose bytes differ (.ml/.mli/.prla, added or removed):-
+metaprll3	L3M.rules	164	MEASURED:stored derivations in virl3_*.prla
+metaprll3	L3M.rows.rooted	8	MEASURED:rows whose every posted root has a stored derivation:R1=r1_F+r1_U,R2=r2_F_den+r2_U_den+r2,R3=r3,R4=r4,R5=r5_agree+r5_frame,R6=r6+r6_seq,R7=r7_F7,R8=r8_stuck+r8
+metaprll3	L3M.R1.C5tok	9911	MEASURED:in-layer closure, 22 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R1.C5tokIntro	11982	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R1.rootTok	2894	BESIDE:roots only
+metaprll3	L3M.R1.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R2.C5tok	8591	MEASURED:in-layer closure, 28 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R2.C5tokIntro	10662	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R2.rootTok	634	BESIDE:roots only
+metaprll3	L3M.R2.rootSteps	3	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R3.C5tok	304503	MEASURED:in-layer closure, 50 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R3.C5tokIntro	306574	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R3.rootTok	783	BESIDE:roots only
+metaprll3	L3M.R3.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R4.C5tok	163558	MEASURED:in-layer closure, 62 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R4.C5tokIntro	165527	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R4.rootTok	5721	BESIDE:roots only
+metaprll3	L3M.R4.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R5.C5tok	166062	MEASURED:in-layer closure, 64 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R5.C5tokIntro	168031	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R5.rootTok	2504	BESIDE:roots only
+metaprll3	L3M.R5.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R6.C5tok	172497	MEASURED:in-layer closure, 87 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R6.C5tokIntro	174444	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R6.rootTok	551	BESIDE:roots only
+metaprll3	L3M.R6.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R7.C5tok	8464	MEASURED:in-layer closure, 21 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R7.C5tokIntro	10535	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R7.rootTok	1447	BESIDE:roots only
+metaprll3	L3M.R7.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R8.C5tok	11046	MEASURED:in-layer closure, 43 rules (20 by the reduce resource):LIMIT a reduce use admits EVERY virl3_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll3	L3M.R8.C5tokIntro	13015	BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (29 intro rules in the layer; an upper bound)
+metaprll3	L3M.R8.rootTok	1246	BESIDE:roots only
+metaprll3	L3M.R8.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll3	L3M.R7.frozenSame	1	MEASURED:every root's statement and stored derivation identical at ext and 5e5048dad:LIMIT the roots only, see frozenClosureEdited
+metaprll3	L3M.R7.frozenClosureEdited	0	BESIDE:closure rules present at 5e5048dad whose stored derivation differs at ext:-
+metaprll3	L3M.Z3.tripleCites	0	MEASURED:virl2_* rules whose statement mentions triple{/triple_i{, named in R2's closure:-
+metaprll3	L3M.Z3.moduleCites	10	BESIDE:virl2_triple/virl2_rules rules named in R2's closure, any statement (the reading before addendum 187):bterm0_bterm,decide_inl_inv,iter2_succ,retv0_wf
+metaprll3	L3M.Z4.R3C5	304503	MEASURED:R3 closure tokens
+metaprll3	L3M.Z4.maxOtherC5	172497	MEASURED:R6
+metaprll3	L3M.Z5.stepInR4	7	MEASURED:step rules (step2_*) and step unfolds (l2step, l2iter, l2run, reach, effop) named in R4's closure:LIMIT step2_* are reduce rules, fired by resource and named by no text, so read L3M.Z5.stepStated beside this
+metaprll3	L3M.Z5.allNames	50	BESIDE:every rule and unfold of virl2_step named in R4's closure, value encoders included (the reading before addendum 194)
+metaprll3	L3M.Z5.stepStated	13	BESIDE:rules in R4's closure stated over l2step{/l2iter{/reach{ (in-layer, or a virl2_* rule cited):den2_sound,det_aux,iter2_succ,iter_add,l2iter0_wf,l2step0_wfc,l3_adq_retv,l3_adq_snd,l3_dstep,l3_dstep3,l3_nofault,l3_stuck_iter,reach_det
+metaprll3	L3M.Z5.rootStep	0	BESIDE:step rules and unfolds named in R4's own root derivation (the like of Lean's proof-text count)
+metaprll3	L3M.Z5.stepNames	3	BESIDE:distinct step rules and unfolds in R4's closure, each after the closure rule that names it, for the hand read against Z5:l3_F_p1b:unfold_effop,l3_F_p2b:unfold_effop,l3_F_p3a:unfold_effop,l3_F_p3b:unfold_effop,l3_F_p5:unfold_effop,l3_nofault:unfold_reach,l3_stuck_iter:unfold_l2iter
+metaprll3	L3M.Z6.frameApps	1	MEASURED:triple_frame in R5's closure
+metaprll3	L3M.Z6.localityCited	0	MEASURED:virl2_* *local* names in R5's closure:-
+metaprll3	L3M.Z6.localityPop	0	BESIDE:virl2_* names containing "local", the whole population localityCited can match:LIMIT at 0 that row cannot fire, so read unionStated by hand
+metaprll3	L3M.Z6.unionStated	1	BESIDE:virl2_* rules in R5's closure stated over st_union{, for the hand read against Z6:triple_intro
+metaprll3	L3M.Z7.fixInTerms	0	MEASURED:virl3_prog*
+metaprll3	L3M.Z8.R7Steps	1	MEASURED:refine steps of the root derivation(s); tokens in L3M.R7.rootTok
+metaprll3	L3M.Z8.R8Steps	2	MEASURED:refine steps of the root derivation(s); tokens in L3M.R8.rootTok
+metaprll3	L3M.Z9.l3C5tok	370060	MEASURED:every virl3_* derivation:Q reference = the arm's own virp program-1 router C5, named at scoring
+metaprll3	L3M.C5tok.virl3_eq	329628	BESIDE:54 rules; extras 0 tok kept out
+metaprll3	L3M.C5tok.virl3_run	6742	BESIDE:31 rules; extras 0 tok kept out
+metaprll3	L3M.C5tok.virl3_tri	22332	BESIDE:56 rules; extras 0 tok kept out
+metaprll3	L3M.C5tok.virl3_typ	11358	BESIDE:23 rules; extras 0 tok kept out
+metaprll3	L3M.Z2.C2	0	Q:MetaPRL C2 (wf/equality children) is read from the arm's replay files, reported beside Lean's with no direction when named
