@@ -1596,6 +1596,8 @@ def metaprll3(repo, base, ext):
         rows += [('L3M.Z5.allNames', cites('R4', step_all), 'BESIDE:every rule and unfold of %s named in R4\'s closure, value encoders included (the reading before addendum 194)' % L3M_STEP),
                  ('L3M.Z5.stepStated', len(st), 'BESIDE:rules in R4\'s closure stated over l2step{/l2iter{/reach{ (in-layer, or a virl2_* rule cited):' + (','.join(st) or '-')),
                  ('L3M.Z5.rootStep', sum(len(ident(k) & step_rules) for n in rr['R4'] for k in byname[n]), 'BESIDE:step rules and unfolds named in R4\'s own root derivation (the like of Lean\'s proof-text count)')]
+        z5sites = sorted({'%s:%s' % (k.split(':', 1)[1], n) for k in C['R4'] for n in ident(k) & step_rules})
+        rows.append(('L3M.Z5.stepNames', len({s.split(':', 1)[1] for s in z5sites}), 'BESIDE:distinct step rules and unfolds in R4\'s closure, each after the closure rule that names it, for the hand read against Z5:' + (','.join(z5sites) or '-')))
     if 'R5' in C:
         t5 = ' '.join(text(k) for k in C['R5'])
         loc = sorted({n for m in l2names.values() for n in m if 'local' in n} & set(re.findall(r"[A-Za-z0-9_']+", t5)))

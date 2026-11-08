@@ -1110,6 +1110,19 @@ if cmp -s "$H/count.py" "$F/mutant53b.py"; then say "ARM53 mutant-b NOT PLANTED"
 elif check53 "$F/mutant53b.py"; then say "ARM53 mutant-b SURVIVED (a step taken by resource is invisible)"; fail=1
 else say "ARM53 mutant-b KILLED"; fi
 
+# ARM55 (STATUS-vir 199, the 43rd head, 2026-11-08: AFTER R4/R5 exist on the arm; no verdict moves). L3M.Z5.stepInR4 prints a count
+# only, and Z5's FALSIFIED clause is read by hand on the rules it counted. BESIDE: stepNames prints the distinct step rules and
+# unfolds, each with the closure rule that names it. Uses ARM53's fixture.
+check55() { o=$(r53 "$1" r4h) || return 1; l=$(printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.Z5.stepNames"')
+  [ "$(printf '%s\n' "$l" | cut -f3)" = 1 ] && [ "$(printf '%s\n' "$l" | cut -f4 | sed 's/.*://')" = 'unfold_effop' ] && printf '%s\n' "$l" | cut -f4 | /usr/bin/grep -qF 'h1:unfold_effop' || return 1
+  o=$(r53 "$1" r4v) || return 1; [ "$(printf '%s\n' "$o" | v53 L3M.Z5.stepNames)" = 0 ]; }
+if check55 "$H/count.py"; then say "ARM55 metaprll3 Z5 stepNames OK (helper h1 names unfold_effop; a value encoder is not listed)"
+else say "ARM55 metaprll3 Z5 stepNames FAIL"; r53 "$H/count.py" r4h | awk -F'\t' '$2 ~ /Z5/'; fail=1; fi
+sed "s/'%s:%s' % (k.split(':', 1)\[1\], n)/n/" "$H/count.py" > "$F/mutant55.py"  # the site that names the rule is lost
+if cmp -s "$H/count.py" "$F/mutant55.py"; then say "ARM55 mutant NOT PLANTED"; fail=1
+elif check55 "$F/mutant55.py"; then say "ARM55 mutant SURVIVED (the naming site is lost)"; fail=1
+else say "ARM55 mutant KILLED"; fi
+
 # ARM54 (STATUS-vir 195, the 42nd head, 2026-11-08: BEFORE R5 exists on the arm). Z6's localityCited matches virl2_* names
 # containing "local", and at 10b8ddbab no such name exists (population 0), so the row cannot fire. BESIDE: localityPop prints
 # that population, and unionStated names the virl2_* rules in R5's closure stated over st_union{ (the frame's own vocabulary),
