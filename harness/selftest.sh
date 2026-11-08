@@ -1037,6 +1037,45 @@ if cmp -s "$H/count.py" "$F/mutant51b.py"; then say "ARM51 mutant-b NOT PLANTED"
 elif check51 "$F/mutant51b.py"; then say "ARM51 mutant-b SURVIVED (Z3 read by module)"; fail=1
 else say "ARM51 mutant-b KILLED"; fi
 
+# ARM52 (STATUS-vir 189, the 41st head, 2026-11-08, after the MetaPRL arm's declared read of two Lean L3 files): VIR_L3M_FROZEN
+# 'R7=<sha>' asserts that a row's roots were not touched after <sha>. L3M.R7.frozenSame = 1 iff each root's .ml statement and
+# stored derivation at ext equal those at <sha>; L3M.R7.frozenClosureEdited (BESIDE) counts closure rules present at <sha> whose
+# derivation differs. An unknown sha, or a root absent at <sha>, is a RED 0, never a silent pass.
+R52="$F/r52"; mkdir -p "$R52/theories/vir"; git -C "$R52" init -q; git -C "$R52" config user.email t@t; git -C "$R52" config user.name t
+printf 'interactive base0 : sequent { <H> >- \x27a }\n' > "$R52/theories/vir/virl2_rules.ml"
+git -C "$R52" add -A; git -C "$R52" commit -qm base; B52=$(git -C "$R52" rev-parse HEAD)
+ML52='interactive r7 : sequent { <H> >- \x27a }\ninteractive h1 : sequent { <H> >- \x27c }\ninteractive r8 : sequent { <H> >- \x27b }\n'
+printf "$ML52" > "$R52/theories/vir/virl3_typ.ml"
+TR7="(h1 thenT autoT)"; TH="rw unfold_a 0"; TR8="(base0 thenT autoT)"
+c52() { git -C "$R52" add -A; git -C "$R52" commit -qm "$1"; git -C "$R52" rev-parse HEAD; }
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=$TR8"; F52=$(c52 frozen)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=(base0 thenT trivialT)"; S52=$(c52 other-row-only)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=(h1 thenT trivialT)" "h1=$TH" "r8=$TR8"; P52=$(c52 proof-edited)
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=$TH" "r8=$TR8"
+printf 'interactive r7 : sequent { <H> >- \x27z }\ninteractive h1 : sequent { <H> >- \x27c }\ninteractive r8 : sequent { <H> >- \x27b }\n' > "$R52/theories/vir/virl3_typ.ml"; T52=$(c52 statement-edited)
+printf "$ML52" > "$R52/theories/vir/virl3_typ.ml"
+prla "$R52/theories/vir/virl3_typ.prla" "r7=$TR7" "h1=rw unfold_b 0" "r8=$TR8"; H52=$(c52 helper-edited)
+r52() { VIR_L3M_ROOTS='R7=r7' VIR_L3M_FROZEN="R7=$3" python3 "$1" --arm metaprll3 --base "$B52" --ext "$2" "$R52"; }
+v52() { awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+check52() {
+  o=$(r52 "$1" "$S52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 1 ] && [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenClosureEdited)" = 0 ] || return 1
+  o=$(r52 "$1" "$P52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] || return 1
+  o=$(r52 "$1" "$T52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] || return 1
+  o=$(r52 "$1" "$H52" "$F52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 1 ] && [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenClosureEdited)" = 1 ] || return 1
+  o=$(r52 "$1" "$S52" "0000000000000000000000000000000000000000") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R7.frozenSame"' | grep -q RED || return 1
+  o=$(r52 "$1" "$S52" "$B52") || return 1; [ "$(printf '%s\n' "$o" | v52 L3M.R7.frozenSame)" = 0 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="L3M.R7.frozenSame"' | grep -q RED
+}
+if check52 "$H/count.py"; then say "ARM52 metaprll3 frozen rows OK (another row's edit 1/0; root proof 0; root statement 0; helper edit 1/1; unknown sha and absent root RED)"
+else say "ARM52 metaprll3 frozen rows FAIL"; r52 "$H/count.py" "$P52" "$F52" | awk -F'\t' '$2 ~ /frozen/'; fail=1; fi
+sed 's/if fp\[name\]\[4\] != R\[k\]\[4\]:/if False:/' "$H/count.py" > "$F/mutant52.py"  # the stored derivation not compared
+if cmp -s "$H/count.py" "$F/mutant52.py"; then say "ARM52 mutant NOT PLANTED"; fail=1
+elif check52 "$F/mutant52.py"; then say "ARM52 mutant SURVIVED (a root's proof edit reads frozen)"; fail=1
+else say "ARM52 mutant KILLED"; fi
+sed 's/if fs != items(ext, p + \x27.ml\x27).get(\x27i:\x27 + name):/if False:/' "$H/count.py" > "$F/mutant52b.py"  # the statement not compared
+if cmp -s "$H/count.py" "$F/mutant52b.py"; then say "ARM52 mutant-b NOT PLANTED"; fail=1
+elif check52 "$F/mutant52b.py"; then say "ARM52 mutant-b SURVIVED (a root's statement edit reads frozen)"; fail=1
+else say "ARM52 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

@@ -1525,6 +1525,38 @@ def metaprll3(repo, base, ext):
                  ('L3M.%s.C5tokIntro' % r, sum(R[k][1] for k in clos(rr[r], True)), 'BESIDE:the closure plus every virl3_* {| intro |} rule when a closure text invokes autoT/dT (%d intro rules in the layer; an upper bound)' % len(intro_rw)),
                  ('L3M.%s.rootTok' % r, sum(R[k][1] for n in rr[r] for k in byname[n]), 'BESIDE:roots only'),
                  ('L3M.%s.rootSteps' % r, sum(R[k][0] for n in rr[r] for k in byname[n]), 'BESIDE:refine steps of the roots\' own derivations')]
+    # Frozen rows (STATUS-vir 189, the 41st head, 2026-11-08): VIR_L3M_FROZEN='R7=<sha>;...' asserts a row's roots were not
+    # touched after <sha> (the arm's declared read of Lean files, RESULTS-8 MetaPRL frame, BLINDNESS). frozenSame = 1 iff every
+    # root's .ml statement and stored derivation at ext equal those at <sha>. A closure rule absent at <sha> is not an edit: a
+    # reduce/intro use admits later rules, and those are read in the row's C5.
+    for part in [s for s in os.environ.get('VIR_L3M_FROZEN', '').split(';') if '=' in s]:
+        r, sha = [x.strip() for x in part.split('=', 1)]
+        if r not in C or g('cat-file', '-e', sha + '^{commit}').returncode != 0:
+            rows.append(('L3M.%s.frozenSame' % r, 0, 'RED:no scored root for %s, or %s is not a commit of this tree' % (r, sha[:12])))
+            continue
+        lf, fr, bad = ls(sha), {}, []
+        def frozen(k):
+            m = k.split(':', 1)[0]
+            if m not in fr:
+                pth = 'theories/vir/' + m + '.prla'
+                fr[m] = prla_rules(raw(sha, pth)) if pth in lf else {}
+            return fr[m]
+        for n in rr[r]:
+            for k in byname[n]:
+                m, name = k.split(':', 1)
+                p = 'theories/vir/' + m
+                fp = frozen(k)
+                fs = items(sha, p + '.ml').get('i:' + name) if p + '.ml' in lf else None
+                if name not in fp or fs is None:
+                    bad.append(name + ':absent at the frozen sha')
+                    continue
+                if fp[name][4] != R[k][4]:
+                    bad.append(name + ':stored derivation differs')
+                if fs != items(ext, p + '.ml').get('i:' + name):
+                    bad.append(name + ':statement differs')
+        ce = sorted(k.split(':', 1)[1] for k in C[r] if k.split(':', 1)[1] in frozen(k) and frozen(k)[k.split(':', 1)[1]][4] != R[k][4])
+        rows += [('L3M.%s.frozenSame' % r, 0 if bad else 1, ('RED:' + '; '.join(bad)) if bad else 'MEASURED:every root\'s statement and stored derivation identical at ext and %s:LIMIT the roots only, see frozenClosureEdited' % sha[:12]),
+                 ('L3M.%s.frozenClosureEdited' % r, len(ce), 'BESIDE:closure rules present at %s whose stored derivation differs at ext:' % sha[:12] + (','.join(ce) or '-'))]
     cites = lambda r, names: sum(len(ident(k) & names) for k in C[r]) if r in C else None
     q = lambda r: 'Q:no posted roots for %s' % r
     tri_mod = set().union(*[l2names.get(m, set()) for m in L3M_TRIPLE])
