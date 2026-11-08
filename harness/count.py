@@ -1433,6 +1433,10 @@ L3M_RES_RE = re.compile(r'(?<![A-Za-z0-9_])reduce[CT](?![A-Za-z0-9_])')
 # the step) is reported BESIDE: it is the only reading that sees a step taken that way.
 L3M_STEP_RULE_RE = re.compile(r'^(?:step2_\w+|unfold_(?:l2step|l2iter|l2run|reach|effop))$')
 L3M_STEP_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])(l2step|l2iter|reach)\{')
+# Addendum (STATUS-vir 195, the 42nd head, 2026-11-08, before R5 exists on the arm): Z6's localityCited can match only virl2_*
+# names containing "local", and at 10b8ddbab there are none. localityPop prints that population; unionStated (BESIDE) names the
+# virl2_* rules in R5's closure stated over st_union{, the frame's vocabulary, for the hand read.
+L3M_UNION_STMT_RE = re.compile(r'(?<![A-Za-z0-9_])st_union\{')
 # Addendum (STATUS-vir 187, the 40th head, 2026-11-07: AFTER R1/R2/R7 exist on the arm, BEFORE R3-R6/R8; found at the R2 dry
 # read at d0a445140). (a) Z3's "cites a triple" is a cited L2 rule whose STATEMENT mentions triple{ or triple_i{ -- the Lean
 # reading counts `Triple` itself, never a module. The module reading (a rule of virl2_triple/virl2_rules) stays BESIDE:
@@ -1492,13 +1496,14 @@ def metaprll3(repo, base, ext):
         for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\bintro\b[^|]*\|\}', t, re.M):
             intro_rw |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
     # rule (and unfold_) names of the imported L2 modules, by module, from their .ml
-    l2names, tri_stated, step_stated, l3_step_stated = {}, set(), set(), set()
+    l2names, tri_stated, step_stated, l3_step_stated, union_stated = {}, set(), set(), set(), set()
     for p in le:
         if bn(p).startswith('virl3_') and p.endswith('.ml'):
             l3_step_stated |= {bn(p)[:-3] + ':' + k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
         if bn(p).startswith('virl2_') and p.endswith('.ml'):
             tri_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_TRI_STMT_RE.search(blk)}
             step_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_STEP_STMT_RE.search(blk)}
+            union_stated |= {k[2:] for k, blk in items(ext, p).items() if k[0] in 'ip' and L3M_UNION_STMT_RE.search(blk)}
             t = show(ext, p)
             l2names[bn(p)[:-3]] = set(re.findall(r'^\s*(?:interactive|prim)(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)', t, re.M)) \
                 | set('unfold_' + n for n in re.findall(r'^\s*define\s+unfold_([A-Za-z_][A-Za-z0-9_\']*)', t, re.M))
@@ -1596,6 +1601,10 @@ def metaprll3(repo, base, ext):
         loc = sorted({n for m in l2names.values() for n in m if 'local' in n} & set(re.findall(r"[A-Za-z0-9_']+", t5)))
         rows += [('L3M.Z6.frameApps', len(re.findall(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % L3M_FRAME, t5)), 'MEASURED:%s in R5\'s closure' % L3M_FRAME),
                  ('L3M.Z6.localityCited', len(loc), 'MEASURED:virl2_* *local* names in R5\'s closure:' + (','.join(loc) or '-'))]
+        pop = len({n for m in l2names.values() for n in m if 'local' in n})
+        us = sorted({n for k in C['R5'] for n in ident(k) & union_stated})
+        rows += [('L3M.Z6.localityPop', pop, 'BESIDE:virl2_* names containing "local", the whole population localityCited can match:LIMIT at 0 that row cannot fire, so read unionStated by hand'),
+                 ('L3M.Z6.unionStated', len(us), 'BESIDE:virl2_* rules in R5\'s closure stated over st_union{, for the hand read against Z6:' + (','.join(us) or '-'))]
     else:
         rows.append(('L3M.Z6.frameApps', 0, q('R5')))
     prog = [t for p, t in l3txt.items() if bn(p).startswith('virl3_prog')]

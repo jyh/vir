@@ -27,6 +27,9 @@ found at the R3 dry read at 10b8ddbab, by running Z5's reader on R3. No primary 
   BESIDE: `allNames` (the old reading), `stepStated` (rules in the closure stated over `l2step{`, `l2iter{` or `reach{`, the one
   reading that sees a step taken by resource) and `rootStep` (the root's own text, the like of Lean's proof-text count).
   Z5's FALSIFIED clause is read on the primary and `stepStated` together, by hand, with the named rules printed.
+- Z6's `localityCited` matches `virl2_*` names containing "local", and at 10b8ddbab no such name exists, so that row cannot
+  fire (selftest ARM54). `L3M.Z6.localityPop` prints the population. `L3M.Z6.unionStated` names the `virl2_*` rules in R5's
+  closure stated over `st_union{`, and Z6 is read by hand against that list. Written before R5 exists on the arm.
 
 | id | prediction (amend-18) | MetaPRL | state |
 |---|---|---|---|

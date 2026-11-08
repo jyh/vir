@@ -1110,6 +1110,33 @@ if cmp -s "$H/count.py" "$F/mutant53b.py"; then say "ARM53 mutant-b NOT PLANTED"
 elif check53 "$F/mutant53b.py"; then say "ARM53 mutant-b SURVIVED (a step taken by resource is invisible)"; fail=1
 else say "ARM53 mutant-b KILLED"; fi
 
+# ARM54 (STATUS-vir 195, the 42nd head, 2026-11-08: BEFORE R5 exists on the arm). Z6's localityCited matches virl2_* names
+# containing "local", and at 10b8ddbab no such name exists (population 0), so the row cannot fire. BESIDE: localityPop prints
+# that population, and unionStated names the virl2_* rules in R5's closure stated over st_union{ (the frame's own vocabulary),
+# so a locality lemma is at least visible to the hand read. localityCited and frameApps are unchanged.
+R54="$F/r54"; mkdir -p "$R54/theories/vir"; git -C "$R54" init -q; git -C "$R54" config user.email t@t; git -C "$R54" config user.name t
+printf 'interactive triple_frame : sequent { <H> >- triple{\x27P; \x27e; \x27Q} }\ninteractive op_safe : sequent { <H> >- st_union{\x27a; \x27b; \x27c} }\ninteractive store_local : sequent { <H> >- \x27a }\n' > "$R54/theories/vir/virl2_rules.ml"
+git -C "$R54" add -A; git -C "$R54" commit -qm base; B54=$(git -C "$R54" rev-parse HEAD)
+for n in r5a r5b r5c; do printf 'interactive %s : sequent { <H> >- \x27a }\n' "$n"; done > "$R54/theories/vir/virl3_tri.ml"
+prla "$R54/theories/vir/virl3_tri.prla" "r5a=(triple_frame thenT idT)" "r5b=(triple_frame thenT op_safe)" "r5c=(triple_frame thenT store_local)"
+git -C "$R54" add -A; git -C "$R54" commit -qm ext; X54=$(git -C "$R54" rev-parse HEAD)
+r54() { VIR_L3M_ROOTS="R5=$2" python3 "$1" --arm metaprll3 --base "$B54" --ext "$X54" "$R54"; }
+e54() { # $1 count.py, $2 root, then frameApps localityCited localityPop unionStated
+  o=$(r54 "$1" "$2") || return 1
+  [ "$(printf '%s\n' "$o" | v53 L3M.Z6.frameApps)" = "$3" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.localityCited)" = "$4" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.localityPop)" = "$5" ] && [ "$(printf '%s\n' "$o" | v53 L3M.Z6.unionStated)" = "$6" ]
+}
+check54() { e54 "$1" r5a 1 0 1 0 && e54 "$1" r5b 1 0 1 1 && e54 "$1" r5c 1 1 1 0; }
+if check54 "$H/count.py"; then say "ARM54 metaprll3 Z6 population OK (frame only 1/0; union-stated lemma visible 1; named locality lemma cited 1; population 1)"
+else say "ARM54 metaprll3 Z6 population FAIL"; r54 "$H/count.py" r5b | awk -F'\t' '$2 ~ /Z6/'; fail=1; fi
+sed 's/pop = len({n for m in l2names.values() for n in m if .local. in n})/pop = 0/' "$H/count.py" > "$F/mutant54.py"  # the population not measured
+if cmp -s "$H/count.py" "$F/mutant54.py"; then say "ARM54 mutant NOT PLANTED"; fail=1
+elif check54 "$F/mutant54.py"; then say "ARM54 mutant SURVIVED (the population is not measured)"; fail=1
+else say "ARM54 mutant KILLED"; fi
+sed 's/st_union\\{/nosuchop\\{/' "$H/count.py" > "$F/mutant54b.py"  # a union-stated lemma is invisible
+if cmp -s "$H/count.py" "$F/mutant54b.py"; then say "ARM54 mutant-b NOT PLANTED"; fail=1
+elif check54 "$F/mutant54b.py"; then say "ARM54 mutant-b SURVIVED (a union-stated lemma is invisible)"; fail=1
+else say "ARM54 mutant-b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
