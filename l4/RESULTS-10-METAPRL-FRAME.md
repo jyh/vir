@@ -39,6 +39,10 @@ the arm's first L4 rule.
   an F-amendment with the hash before and after; the erasure lemma a stored rule over ⟶₄ with a red control; the re-proof cost on the arm's ledger line.
 - **Limit on both rulings:** vir holds the Lean arm's choices on both questions (l4/VIRL4/Typing4.lean, l4/DECLARATIONS-LEAN.md addendum 2) and read Typing4 before writing
   the first ruling. Each ruling cites only object and inputs text, which a reader can check against those files. The arm's question about the Lean typing was not answered.
+- **Read back at the arm's F-amendment (F13, mojave 8d298a808; a DRY read, not a score):** the F-amendment's hash is re-derived from the committed file, `d26b29b255f82882` at ed7f131fd to
+  `03a3e425da9881a6` at 8d298a808, and it names the departure from inputs section 2. F12 went the LIFT way. At the re-proved modules (beb365b8c) the reader gives 180 stored derivations, equal to the arm's
+  posted 13 + 52 + 41 + 74, 0 prims, Q1 0/0/0, and no L4 root yet. By hand, the third lock-table column in `virl4_step.ml` is only extended (newlock) and carried (acquire, release) on the lines that
+  name it; that is a text read of those lines, and the erasure rule, still owed with its red control, is the check. The re-proof cost is the arm's ledger line (about 15 minutes, Q).
 
 ## Limits known now
 - The 11-06 rule (past ~100 tactic applications in one proof, stop and systematize) is read as `L4M.maxSteps`, beside C5; tactic-building time is the arm's ledger.
