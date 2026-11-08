@@ -1,21 +1,33 @@
 # RESULTS-10 — layer L4, concurrency with locks (O95; OBJECT-L4 at vir e80bd25; amend-21; errata L4-E1, L4-E2, L4-E3)
 
-**DRAFT, the Lean column only, written on the SEALED branch `l4-lean` (2026-11-06, the 27th vir head).** Nothing here is public
-until the MetaPRL arm posts its L4 declarations (the pace rule (C), as at L3). The C5/W8 counts that Q1, Q3, Q4 and Q5 read are NOT
-in this draft: they are row 166's harness arm (`count.py --arm l4`), built red first at the unseal. Every figure below is a theorem
-name, a commit, or an `EXIT=` line in `l4/logs/`.
+**The Lean column; UNSEALED 2026-11-08** on the MetaPRL arm's L4 declarations (the Captain's pace ruling (C), 11-05, as at L3). Every
+Lean figure is a row of `l4/out/counts-l4.tsv` (`harness/count.py --arm l4 l4`) or `l4/out/counts-q1.tsv` (`--arm w8 --base 7f82f94
+--ext 400f863`), a theorem name, a commit, or an `EXIT=` line in `l4/logs/`. Lean L3-closed sha 7f82f94; Lean L4-closed sha 400f863 (no
+`.lean` file changes after it). The MetaPRL column is scored when that arm builds L4, by `count.py --arm metaprll4`, whose reading was
+committed before the arm's first L4 rule. **`harness/l4-counts-lean.tsv` is the record of the counts as sealed (2026-11-06)**: the counts
+below were taken then, before the MetaPRL declarations existed, and re-derived unchanged at the unseal (40 of 40 `--arm l4` rows; the
+nine W8 rows re-run).
 
-## The declarations, written before the files they govern
-| file | content | commit |
+## The declarations, each written before the files it governs, neither arm reading the other's
+| arm | file | commit | sha256/16 |
+|---|---|---|---|
+| Lean | `l4/DECLARATIONS-LEAN.md` | vir bddbd40 (first form); addenda 1–7 below | at the tip `ba5b73e0457292ca` |
+| MetaPRL | `theories/vir/DECLARATIONS-L4-METAPRL.md` in mojave's metaprl clone, copied byte for byte to `l4/DECLARATIONS-METAPRL-ccfe03d24.md` | ccfe03d24 (2026-11-08) on mojave/vir-l4, parent 2d63bef28 = its L3-closed sha, 0 `virl4_*` files at it | `bca726412efe43ff` |
+| MetaPRL, amended | the same file with F11 (the L4 errata read, N4's term fixed by L4-E2, Q5's population), copied to `l4/DECLARATIONS-METAPRL-d2fc1bb1b.md` | d2fc1bb1b, 0 `virl4_*` files at it | `7dea85c6afd27021` |
+
+Lean addenda, all on the sealed branch, before the rows they govern:
+
+| addendum | content | commit |
 |---|---|---|
-| `l4/DECLARATIONS-LEAN.md` | the arm's L4 plan (fresh Tm₄; ⟶₄ a relation; the triple as Vafeiadis safety; the rows and their files) | bddbd40 |
-| addendum 1 | erratum L4-E1: `par` binds its two results | (before Typing4) |
-| addendum 2 | `I` keyed by region BASE; Shared / Ext / Assn₄ / safe₄ named | 5cba66f |
-| addendum 3 | Q6's typed configuration; scope = typed configurations; preservation OWED | e32b22e |
-| addendum 4 | N4 in Router4.lean; N4-S with ∃ t and I_b | 015171e |
-| addendum 5 | N4-V at the join configuration; EmitsT; the closing compile NT₄.cc | c74651c |
-| addendum 6 | Q6 preservation: the typed configuration and the moves of Ω | dc8c45c |
-The file at dc8c45c reads sha256/16 `29428abea87a9007`.
+| 1 | erratum L4-E1: `par` binds its two results | (before Typing4) |
+| 2 | `I` keyed by region BASE; Shared / Ext / Assn₄ / safe₄ named | 5cba66f |
+| 3 | Q6's typed configuration; scope = typed configurations; preservation OWED | e32b22e |
+| 4 | N4 in Router4.lean; N4-S with ∃ t and I_b | 015171e |
+| 5 | N4-V at the join configuration; EmitsT; the closing compile NT₄.cc | c74651c |
+| 6 | Q6 preservation: the typed configuration and the moves of Ω | dc8c45c |
+| 7 | "C5 of a row": PRIMARY the in-layer proof closure, BESIDE root-only, closure with definitions, file-level; declared before `--arm l4` and before any figure | fd8bc6a |
+
+**Blindness, what crossed, both directions.** (1) **Lean → MetaPRL, 2026-11-06:** a bus post of mine named the Lean arm's embedding ι (a V-F5-class leak), self-reported on the bus the same minute (STATUS 163). (2) **Lean → MetaPRL, 2026-11-08 06:33–06:37:** the arm ran `git log --oneline -1` in vir's working checkout, then on the sealed branch, and read tip c55fac1's subject: it names `safe₄_par`, says 65 % of the Lean S closure is a reusable library, and gives "S 2,635 vs V 8,382". The arm declared it unprompted, before anyone asked, in its declarations and on the bus; no `l4/` file was opened. **Label at scoring, V-F5's: F6's step-indexed safety predicate and Q4's Lean direction are INFORMED on the MetaPRL arm.** vir's fault as much as its: sealed figures in a commit subject, in a checkout the other arm can reach (FINDINGS V-F7). (3) The MetaPRL arm's declarations, read by vir at the unseal, are what the unseal waits for; they postdate every Lean L4 file, so nothing in the Lean column is informed by them.
 
 ## The rows (inputs/L4-programs.md §3), Lean
 | row | theorem(s) | file |
@@ -33,13 +45,13 @@ The file at dc8c45c reads sha256/16 `29428abea87a9007`.
 ## The predictions (amend-21 Q1–Q8), Lean
 | | prediction | Lean | verdict |
 |---|---|---|---|
-| Q1 | L1–L3 untouched (W8) | owed to row 166 | — |
+| Q1 | L1–L3 untouched (W8) | W8 7f82f94..400f863 over `l1/VIRL1`, `l2/VIRL2`, `l3/VIRL3`: defs 0, theorems 0, new files 0 on each | HOLDS |
 | Q2 | no new axiom | `audit-018`: 157 theorems, every one within propext · Classical.choice · Quot.sound; 3 depend on none | HOLDS |
-| Q3 | `par₄_rule` C5 ≤ 3 × L2 `frame` C5 | `par₄_rule` is proved from ⟶₄ (Rules4.lean, via `safe₄_par`), no side condition naming a region; C5 owed to row 166 | — |
-| Q4 | C5(N1-V + N4-V) > C5(N1-S + N4-S) | owed to row 166 (Values.lean + RouterV.lean against the N1-S and F₄_S proofs) | — |
+| Q3 | `par₄_rule` C5 ≤ 3 × L2 `frame` C5 | `par₄_rule` is proved from ⟶₄ (Rules4.lean, via `safe₄_par`), no side condition naming a region. **C5 (PRIMARY, addendum 7): `par₄_rule` 1,398 vs L2 `frame` 237, 5.90×.** BESIDE: root-only 126 vs 155 (0.81×) · closure with definitions 3,698 vs 3,749 (0.99×) · file-level 7,273 vs 595 (12.2×) | **FALSIFIED** on the primary reading (> 3×); the root-only and with-definitions readings stay under the line, the file-level over it |
+| Q4 | C5(N1-V + N4-V) > C5(N1-S + N4-S) | **V 8,395 vs S 7,557, 1.11** (each a union counted once). BESIDE: root-only 418 vs 1,141 (REVERSES) · with definitions 14,017 vs 10,771 · file-level 12,109 vs 4,722 | direction HOLDS on the primary reading, ratio reported; root-only reverses |
 | Q5 | MetaPRL wf rate | Lean: no analogue (0) | — |
 | Q6 | a typed configuration has no race, nothing assumed beyond ⊢₄ | `Q6_no_race` (typed configurations, 17ea0e6) and, stronger, `Q6_typed_program`: a closed ⊢₄-typed program, from the empty store and lock table, has no race at ANY ⟶₄*-reachable configuration (`pres₄`, Preserve4.lean); control `N1_no_race` | HOLDS |
-| Q7 | CE both directions | `ce_fwd` · `ce_bwd` | HOLDS; C5 owed to row 166 |
+| Q7 | CE both directions | `ce_fwd` · `ce_bwd` | HOLDS; C5 2,163 (21 blocks), root-only 644, with definitions 3,978, file-level 1,768 |
 | Q8 | one deadlocking program with `{emp} e {_. False}` | `D_triple_false` · `D_blocks` (it reaches `Blocked₄`, never a fault) | reported |
 
 ## Red backwards (a mutant that restores the defect, the arm firing where it should)
@@ -62,6 +74,7 @@ The file at dc8c45c reads sha256/16 `29428abea87a9007`.
   one back. The same `Shared` serves the triple (Safe.lean) and preservation.
 
 ## Limits
+- The C5 readings count Lean tokens per `l4/DECLARATIONS-LEAN.md` addendum 7, in-layer: a name in an imported layer is not followed (`L4.*.crossRefs` lists each). Name resolution reads the last dotted component, so an over-match is possible; `l4/C5-NOTES-SEALED.md` is the post-hoc reading of where Q3's and Q4's tokens sit, NOT a scored row.
 - N4-V is stated at the configuration the join steps from (both sides `ret`): the last at which both worlds are allocated. Every
   terminating run passes through one; a run that never reaches it is not described by N4-V (whether one exists is a liveness
   question, outside partial correctness, Q8's point).

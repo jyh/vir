@@ -94,6 +94,9 @@ mkdir -p "$M/l3at" && git -C "$V" archive "$L3SHA" l3 | tar -x -C "$M/l3at" \
 echo "  PINNED   l3/ at its counts commit ${L3SHA:0:12}"
 chk "$V/l3/out/counts-l3.tsv" --arm l3 "$M/l3at/l3"
 chk2 "$V/l3/out/counts-z1.tsv" "python3 '$C' --arm w8 --base dc95b53 --ext 037dddc --prefix l2/VIRL2 '$V' && python3 '$C' --arm w8 --base dc95b53 --ext 037dddc --prefix l1/VIRL1 '$V' | sed 's/\tW8\./\tW8.l1./'"
+# the Lean L4 column (STATUS 168), at the sealed Lean tip's files; W8 from L3-closed to L4-closed on each lower layer
+chk "$V/l4/out/counts-l4.tsv" --arm l4 "$V/l4"
+chk2 "$V/l4/out/counts-q1.tsv" "for p in l1:VIRL1 l2:VIRL2 l3:VIRL3; do d=\${p%%:*}; python3 '$C' --arm w8 --base 7f82f94 --ext 400f863 --prefix \$d/\${p##*:} '$V' | sed \"s/\tW8\./\tQ1.\$d.W8./\"; done"
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
