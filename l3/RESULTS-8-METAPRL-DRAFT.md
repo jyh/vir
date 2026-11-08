@@ -31,6 +31,18 @@ found at the R3 dry read at 10b8ddbab, by running Z5's reader on R3. No primary 
   fire (selftest ARM54). `L3M.Z6.localityPop` prints the population. `L3M.Z6.unionStated` names the `virl2_*` rules in R5's
   closure stated over `st_union{`, and Z6 is read by hand against that list. Written before R5 exists on the arm.
 
+ADDENDUM (the 44th head, 2026-11-08; STATUS 197). Written AFTER R1–R5, R7 and R8 exist on the arm and BEFORE R6, and before any
+row is scored; vir has seen the DRY totals, so this fixes no figure's direction.
+- Z9 compares the L3 proof C5 with the arm's "own virp program-1 router C5". amend-18's knowledge paragraph says that router "is
+  complete on both arms". **On the MetaPRL arm it is not, and it was not at the pin.** The arm's virp line stops at branch
+  `mojave/virp-s1`, tip 2894647f2 (2026-11-02): the 22 constructs, the two programs as deep terms, S1–S3 of the separation model
+  and numerals for the semantics. It holds no proof about the router. `U_eq_F` (case-insensitive, `.ml`/`.mli` under `theories/vir`)
+  reads 0 on all 265 refs of the arm's clone, with control `router_fuse` 1. RESULTS-5's MetaPRL column already read "not yet built".
+- **Z9's MetaPRL cell is therefore NOT SCORABLE as written: reported so, neither HOLDS nor FALSIFIED.** vir does not choose a
+  substitute reference after seeing the totals. Reported BESIDE, with no verdict: the L3 total with and without R8, and the arm's
+  shallow program-1 proof (`vir.ml`, the RESULTS-1/2 MetaPRL columns), which is a different language from virp and so is not the
+  like of Lean's 1,617. `virp-s1` is not counted, because it carries no router proof. FINDINGS V-F6.
+
 | id | prediction (amend-18) | MetaPRL | state |
 |---|---|---|---|
 | Z1 | no virl1_/virl2_ definition edited, L2-closed → L3-closed | OWED (DRY at 5e5048dad: defs 0 · rules 0 · files 0) | — |
@@ -41,7 +53,7 @@ found at the R3 dry read at 10b8ddbab, by running Z5's reader on R3. No primary 
 | Z6 | R5: triple_frame once, no locality lemma | OWED (DRY at 8e6b250c2: `frameApps` 1, `localityCited` 0 on a population of 0, `unionStated` 1 = `triple_intro`, the triple's own introduction rule, which is not a locality lemma of an operation; as DRY-read Z6 holds) | — |
 | Z7 | no `fix` in a term; R6 C5 reported | OWED (DRY: fix 0 in virl3_prog) | — |
 | Z8 | R7, R8 ≤ 15 proof lines | OWED (DRY at df4888004: R7 1 step, 1,447 tok; R8 1 step, 595 tok at the root, closure 11,046 tok over 43 rules, so the root step carries none of the run, which lives in helpers); R8's cell is scored INFORMED (see BLINDNESS below) | — |
-| Z9 | L3 proof C5 > own virp router C5 | OWED (DRY total 363,318 at df4888004, every virl3_* derivation; without R8's 23 new rules 358,921, the 8e6b250c2 total; reference Q) | — |
+| Z9 | L3 proof C5 > own virp router C5 | OWED (DRY total 363,318 at df4888004, every virl3_* derivation; without R8's 23 new rules 358,921, the 8e6b250c2 total; NOT SCORABLE as written, the reference does not exist on this arm: see the 44th head's ADDENDUM) | — |
 
 Rows R1–R8 with their roots: R1 = r1_F, r1_U · R2 = r2 (virl3_eq; DRY C5 8,591, intro 9,979) · R3 = r3 (DRY C5 304,503) · R4 = r4 (virl3_tri; DRY C5 163,558, root 5,721 tok, 1 step) · R5 = r5_agree, r5_frame (DRY C5 166,062, roots 2,504 tok, 2 steps) · R7 = r7_F7 (virl3_typ, <--> form, E4 declared beside) · R8 = r8 (virl3_tri; DRY C5 11,046, INFORMED) · R6 OWED.
 
