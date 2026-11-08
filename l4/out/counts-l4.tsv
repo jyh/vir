@@ -1,0 +1,40 @@
+l4	L4.Q3.par.C5tok	1398	MEASURED:12 blocks
+l4	L4.Q3.par.C5lines	120	BESIDE:non-blank lines of the closure
+l4	L4.Q3.par.root.C5tok	126	BESIDE:(b) the root blocks alone
+l4	L4.Q3.par.withDefs.C5tok	3698	BESIDE:(c) closure over every declaration kind, 55 blocks
+l4	L4.Q3.par.file.C5tok	7273	BESIDE:(d) Rules4.lean+Safe.lean
+l4	L4.Q3.par.crossRefs	9	BESIDE:imported-layer names, not followed:Assn,Store,Store.Disj,Store.disj_union_left,Store.disj_union_right,Store.union_assoc,disj_symm,only,union_comm_disj
+l4	L4.Q3.par.closure	12	NAMES:Ext.refl,Ext.trans,glob_frame_in,glob_frame_out,not_term,par₄_rule,progress_of_not_faults,safe₄_ext,safe₄_mono,safe₄_par,store_frame_eq,union_swap_mid
+l4	L4.Q3.frame.C5tok	237	MEASURED:4 blocks
+l4	L4.Q3.frame.C5lines	21	BESIDE:non-blank lines of the closure
+l4	L4.Q3.frame.root.C5tok	155	BESIDE:(b) the root blocks alone
+l4	L4.Q3.frame.withDefs.C5tok	3749	BESIDE:(c) closure over every declaration kind, 69 blocks
+l4	L4.Q3.frame.file.C5tok	595	BESIDE:(d) Logic.lean
+l4	L4.Q3.frame.crossRefs	0	BESIDE:imported-layer names, not followed:-
+l4	L4.Q3.frame.closure	4	NAMES:disj_union_left,disj_union_right,frame,union_assoc
+l4	L4.Q3.held	0	MEASURED:par 1398 vs 3 x frame 711 (ratio 5.90)
+l4	L4.Q3.held.beside	110	BESIDE:(b)(c)(d) in order
+l4	L4.Q4.V.C5tok	8395	MEASURED:53 blocks
+l4	L4.Q4.V.C5lines	733	BESIDE:non-blank lines of the closure
+l4	L4.Q4.V.root.C5tok	418	BESIDE:(b) the root blocks alone
+l4	L4.Q4.V.withDefs.C5tok	14017	BESIDE:(c) closure over every declaration kind, 160 blocks
+l4	L4.Q4.V.file.C5tok	12109	BESIDE:(d) Values.lean+RouterV.lean
+l4	L4.Q4.V.crossRefs	45	BESIDE:imported-layer names, not followed:A,Assn,Atom₂,NA,NTp,NW,Op,OpTriple,R1.alloc,RegionAt,Store,Store.Disj,Store.WF,Store.alloc,Store.disj_union_right,Store.empty,Store.fill,Store.load,Store.nextBase,Store.store,Store.union_assoc,SvA,S₂,TvA,aclA,add,alloc,conj,disj_symm,eq,free,le,letE,load,load_at,lt,mul,only,opStep,show,store,store_at,sub,union_comm_disj,σ.H.insert
+l4	L4.Q4.V.closure	53	NAMES:Env_upd_t,Env_w,Ext.refl,N1_V,N4_V,N4n_eq,NA.c_eq_cc,NA.cc_congr,NA.cc_subst,NT₄.c_eq_cc,NT₄.cc_congr,NT₄.cc_subst,NT₄.cc_subst0,R1_step,R1_steps,R4_init,R4_step,R4_steps,Th_ret_nostep,back_m_bx,bload,bstore,cc_ite_step,cc_op_step,cc_par,cell_load,cell_store,closeN4_eq,cnt_dec,disj_b_mx,disj_mb,disj_mx,eval_cc_const,idx_app_mem,idx_app_nmem,lockOf_cases,lockOf_of_ok,lock_cases,op4_inv,opStep₄_const,raiseV_const,rot,set_get,step_letOp_inv,substL_map,swap12,th_ret,th_step,th_upd,thread0,thread_step,wload,wstore
+l4	L4.Q4.S.C5tok	7557	MEASURED:52 blocks
+l4	L4.Q4.S.C5lines	650	BESIDE:non-blank lines of the closure
+l4	L4.Q4.S.root.C5tok	1141	BESIDE:(b) the root blocks alone
+l4	L4.Q4.S.withDefs.C5tok	10771	BESIDE:(c) closure over every declaration kind, 119 blocks
+l4	L4.Q4.S.file.C5tok	4722	BESIDE:(d) Programs.lean+Router4.lean
+l4	L4.Q4.S.crossRefs	45	BESIDE:imported-layer names, not followed:Assn,Assn.emp,Atom₂,MAGIC,MgA,Op,OpTriple,OwnsRegion,RegionAt,Store,Store.Disj,Store.WF,Store.disj_union_left,Store.disj_union_right,Store.empty,Store.empty_union,Store.union_assoc,SvA,TvA,aclA,add,alloc_axiom,conj,disj_empty_left,disj_symm,eq,free,hbr.isRegion,hf.isRegion,le,letE,load,load_at,lt,mul,only,opStep,op_frame,sep_pure_left,show,store,store_at,store_empty_union_right,sub,union_comm_disj
+l4	L4.Q4.S.closure	52	NAMES:Ext.refl,Ext.trans,F₄_S,INC_triple,N1_S,TAIL_triple,acquire₄_rule,base_of_ext,evalL_cap,evalL_lockv,evalL_lockv_cap,ext_append,ext_set,glob_frame_in,glob_frame_out,ite₄_rule,letRet₄_rule,load₄_at,lock_at,map_base_set,newlock₄_rule,not_term,opStep₄_o2,op₄_rule,owns_mem,par₄_rule,progress_of_not_faults,release_split,release₄_rule,ret₄_rule,safe₄_acquire,safe₄_ext,safe₄_ite,safe₄_letRet,safe₄_mono,safe₄_newlock,safe₄_op2,safe₄_par,safe₄_release,safe₄_ret,sep_emp_right',shared_append,shared_put,shared_take,stable_and,stable_emp_LB,store_frame_eq,store₄_at,triple₄_conseq,triple₄_pre_ex,triple₄_pre_pure,union_swap_mid
+l4	L4.Q4.direction	1	MEASURED:V 8395 vs S 7557 (ratio 1.11)
+l4	L4.Q4.direction.beside	011	BESIDE:(b)(c)(d) in order
+l4	L4.Q7.C5tok	2163	MEASURED:21 blocks
+l4	L4.Q7.C5lines	243	BESIDE:non-blank lines of the closure
+l4	L4.Q7.root.C5tok	644	BESIDE:(b) the root blocks alone
+l4	L4.Q7.withDefs.C5tok	3978	BESIDE:(c) closure over every declaration kind, 54 blocks
+l4	L4.Q7.file.C5tok	1768	BESIDE:(d) CE.lean
+l4	L4.Q7.crossRefs	16	BESIDE:imported-layer names, not followed:Atom₂,Config,Const,L1.Prim.interp,Op,Step,Step₂,Store,S₂,Tm₂,constsOf,letE,only,opStep,pInterp,pure
+l4	L4.Q7.closure	21	NAMES:ce_bwd,ce_fwd,ce_pure,constsOf₄_ι,evalL_ι,evalL_ι_inv,eval_ι,eval_ι_inv,mapM_lowerV_ι,mapM_lowerV_ι_cases,opStep_inv,opStep₄_ι,toBool_ι,ιA_const_inv,ιA_fix_inv,ιA_inl_inv,ιA_inr_inv,ιA_lam_inv,ιA_subst,ιL_substL,ιT_subst
+l4	L4.syntaxCopy.C5tok	1503	BESIDE:Syntax.lean, file-level (addendum 1)

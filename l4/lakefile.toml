@@ -1,0 +1,17 @@
+name = "l4"
+defaultTargets = ["VIRL4"]
+
+# O95, PREDICTIONS-amend-21 (Q1-Q8): layer L4 (OBJECT-L4), concurrency (locks), Lean arm. A SEPARATE project beside
+# l1/ l2/ l3/, so their counts stay put. L3 (and through it L2, L1) is IMPORTED by path and never edited (Q1, base vir 7f82f94;
+# l4/DECLARATIONS-LEAN.md). mathlib at salt's pin (packages APFS-cloned from l3, manifest written by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l3"
+path = "../l3"
+
+[[lean_lib]]
+name = "VIRL4"
