@@ -1,13 +1,15 @@
-# RESULTS-11 (DRAFT): the SLang scoreboard, amend-20 SL1–SL8 and amend-22 D1–D4, MetaPRL arm
+# RESULTS-11: the SLang scoreboard, amend-20 SL1–SL8 and amend-22 D1–D4, MetaPRL arm
 
-**DRAFT. This frame was written 2026-11-07 by the 33rd vir head, after the MetaPRL arm's SLang act 1 (mojave/slang 41de5e05d:
+**This frame was written 2026-11-07 by the 33rd vir head, after the MetaPRL arm's SLang act 1 (mojave/slang 41de5e05d:
 `vir_slang`, definitions and well-formedness only) and BEFORE any L1-stage file (`vir_l1slang`), the generic induction rule, or
 the L1 rule exist.** Every L1 figure below is OWED. The frame fixes how each row is read, so that the reading cannot be shaped by
 the L1 figures. One reading rule (SL3 on bound names, below) was written AFTER act 1's read, which is what raised it. That is
 declared, and it is the only rule here written after any SLang figure existed.
 
 **FILLED 2026-11-07 by the 37th vir head at f1c3d89e9**, the sha the arm named for SL6's landing. The rules below were all fixed
-before that sha; the final column is read under them unchanged. Every scored row HOLDS.
+before that sha; the final column is read under them unchanged. Every scored row HOLDS at f1c3d89e9 **except SL1, which
+Addendum 1 re-scores FALSIFIED** at the arm's repair sha c80941362 (the f1c3d89e9 sha carries an L2 regression the SL1 instrument
+could not see). Every other row is unchanged there.
 
 The Lean arm takes no act (amend-20). Its comparator is amend-19 I3's 509 tokens (RESULTS-9).
 
@@ -21,7 +23,7 @@ the bus. A figure from any other sha is void.
 
 | row | falsifier (amend-20 / amend-22, quoted in short) | harness row(s) | reading at 41de5e05d (act 1, framework only) | FINAL, at f1c3d89e9 (SL6 landed; the arm's named sha) |
 |---|---|---|---|---|
-| SL1 | ≥ 1 pre-existing definition, rule or `.prla` changes | SLM.SL1.rulesEdited / defsEdited / prlaChanged; otherChanged BESIDE | 0 / 0 / 0; MetaprlInfo (one line, module list) BESIDE | 0 / 0 / 0 ⇒ **HOLDS**; otherChanged 2 BESIDE: MetaprlInfo + virl1_induct.mli (D-S10, declarations only; .ml/.prla byte-unchanged vs 73bd3ac0d) |
+| SL1 | ≥ 1 pre-existing definition, rule or `.prla` changes | SLM.SL1.rulesEdited / defsEdited / prlaChanged; otherChanged BESIDE | 0 / 0 / 0; MetaprlInfo (one line, module list) BESIDE | 0 / 0 / 0 ⇒ ~~HOLDS~~ **SUPERSEDED by Addendum 1: FALSIFIED** (33 / 6 / 4 at c80941362); otherChanged 2 BESIDE: MetaprlInfo + virl1_induct.mli (D-S10; its .ml/.prla were byte-unchanged vs 73bd3ac0d, but it broke L2 replays by name capture) |
 | SL2 | a prim is added; grounded under REPLAY | SLM.SL2.newPrims; SL2.grounded is Q (the arm's status_all) | 0 new prims; the arm posted 24/24 FRESH, 24 GROUNDED | 0 new prims ⇒ **HOLDS**; status_all FRESH per stage from the arm's commits: fw 47/47 (f131274f9; vir_slang byte-unchanged since), l1 28/28 (1272ee7fb; unchanged since), sl6 34/34 (f1c3d89e9, check_all 34 grounded) |
 | SL3 | the framework module(s) name an L1 operator or a `virl1_`/`virl2_` term | SLM.SL3.hits (scored); SLM.SL3.binderOnly BESIDE; hand read | hits 1 = `kids`, a bound name only (binderOnly 1); by hand: no L1 term applied, no nat sort literal ⇒ HOLDS at this sha | hits 1 = `kids`, binderOnly 1; vir_slang byte-unchanged since f131274f9, whose by-hand read (no L1 term, no nat sort literal) carries ⇒ **HOLDS** |
 | SL4 | the L1 rule's derivation goes through a recogniser (`wfs`, `is_tyterm`, `isNum`) | SLM.SL4.recogHits over the closure from ROOT; SL4.control beside | Q (no root yet); control 3 | ROOT l1s_induction: recogHits **0**, control 3 (isNum, is_tyterm, wfs), closure 23 rules, rootStatement 0 ⇒ **HOLDS**; closure and vir_l1slang unchanged since 1272ee7fb, and vir_l1sl6 is downstream of it (extends Vir_l1slang), so no SL6 rule can enter it |
@@ -69,3 +71,43 @@ membership in ssig1.
 SL3's reader matches names and cannot tell a binder from a term, so `binderOnly` and the hand read carry that distinction.
 SL5 is C5 over stored derivations, not effort. The tactic line is reported without direction. Every SLang figure is from a local
 mojave branch until that branch is public. Until then these counts stay outside reproduce.sh, as the MetaPRL L1 files did.
+SL1's instrument compares bytes. A declaration that captures a name changes what an unchanged file means without changing its
+bytes, so a 0 / 0 / 0 reading does not show that pre-existing proofs still replay (Addendum 1).
+
+## Addendum 1 (2026-11-07, the 38th vir head): SL1 re-scored at c80941362, FALSIFIED
+
+**Written after every SLang figure. It changes no reading rule; it applies SL1's own falsifier at the sha the arm named for the
+repair.**
+
+**What happened** (the arm's account, bisected by it with one instrument, `l2/check-l2.sh`; vir did not re-drive the replays).
+D-S10 (2246bce1f) adds `declare argl{'t}` to `virl1_induct.mli`. `virl2_typing` already declares `argl{'al}`. The bare name
+`argl` in `virl2_cons1` and the `virl2_sem*` family (which extend both L1 and L2) then resolved to L1's declaration. That
+happened in `.ml` statements and in `.prla` stored tactic text, which is re-parsed in the module's context. Nothing errored at
+build. At 73bd3ac0d all 19 L2 modules were GROUNDED (1,362 rules). At 2246bce1f and at f1c3d89e9: cons1 50/54 · semt 39/48 ·
+sems 84/94 · semr 139/153 · sem 414/542. No published L2 figure is affected: RESULTS-7's MetaPRL column predates D-S10.
+
+**So the f1c3d89e9 reading was wrong in substance.** SL1's claim is that nothing pinned moves. At f1c3d89e9 its bytes did not
+move, but 165 pre-existing rules stopped replaying (4 + 9 + 10 + 14 + 128 across those five modules). The 0 / 0 / 0 above is a correct byte count that does not answer the
+prediction.
+
+**The repair** (c80941362, one commit on f1c3d89e9): every L2 `argl{` in those six modules is written `Virl2_typing!argl{`.
+The arm reports 19/19 L2 modules GROUNDED, 1,362 rules, PRIM 0, and the SLang stages fresh (47/47 · 28/28 · 34/34).
+
+**The re-score**, same command as above, count.py from vir 803a9ef, at c80941362:
+
+| row | at f1c3d89e9 | at c80941362 |
+|---|---|---|
+| SLM.SL1.rulesEdited | 0 | **33** |
+| SLM.SL1.defsEdited | 0 | **6** |
+| SLM.SL1.prlaChanged | 0 | **4** (sem, semr, sems, semt) |
+| every other slangm row (32 of 35) | — | byte-identical to the f1c3d89e9 output |
+
+⇒ **SL1 FALSIFIED**: pre-existing definitions, rules and stored proofs change. All 10 changed files (6 `.ml`, 4 `.prla`) differ
+from f1c3d89e9 ONLY by that qualification. Checked mechanically: each file compared with `Virl2_typing!argl{` rewritten to `argl{`
+on both sides, 10/10 equal; a one-character mutant of one file is caught. So no statement's meaning changed. The addendum still
+had to edit pinned modules, and the falsifier counts edits, not meaning.
+
+**What it costs and what it does not touch.** One declaration in the SLang work broke the L2 chain silently. Repairing it took
+43 qualified items in 10 pre-existing files. SL2–SL8 read the three SLang stages, which are unchanged, so D1, D2 and D3 stand as
+scored. The cause is one name declared in two theories that a third module extends together.
+
