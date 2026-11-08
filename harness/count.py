@@ -1950,9 +1950,170 @@ def leanl4(d):
     return rows
 
 
+# amend-21 Q1-Q8 on the MetaPRL arm (STATUS-vir 209; selftest ARM57). DIR is a clone of the arm's tree, --base its L3-closed sha, --ext
+# the sha scored. A row's C5 is its IN-LAYER closure, the reading of metaprll3 (ARM50): the posted roots, every virl4_* rule a closure
+# text names as a whole identifier, every virl4_* `{| reduce |}` rule when a text invokes reduceC. Roots are posted by the arm, as
+# VIR_L4M_ROOTS='Q3par=..;Q4S=..;Q4V=..;Q6=..;Q7=..;Q8=..'; a group's roots are unioned and counted once (the Lean arm's addendum 7).
+# Q5's rate is `[wf]` premise labels per rule statement, a rule being `interactive` or `prim` and never a rewrite. PRIMARY: the six rules the
+# arm names (its declarations F6; VIR_L4M_Q5) against L2's six of the same roles, because amend-21 says "the same number of rules"; fixed
+# 2026-11-08 before the arm's first virl4 rule. BESIDE: L2's program rules, its module, and every rule of each layer.
+L4M_RULE_KINDS = ('interactive', 'prim')
+L4M_WF_RE = re.compile(r'\[wf\]')
+L4M_Q5_L2 = ('triple_let', 'triple_frame', 'triple_load', 'triple_store', 'triple_free', 'triple_alloc')  # the roles of the arm's six
+L4M_Q5_L2P = ('triple_let', 'triple_conseq', 'triple_step', 'triple_gstep', 'triple_if_t', 'triple_if_f', 'triple_app', 'triple_load', 'triple_store', 'triple_free', 'triple_alloc', 'triple_frame')
+
+
+def metaprll4(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0 or g('cat-file', '-e', base + '^{commit}').returncode != 0:
+        return [('L4M.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '--name-only', sha, 'theories/vir/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    raw = lambda sha, p: g('show', sha + ':' + p).stdout
+    show = lambda sha, p: strip_ml_comments(raw(sha, p))
+    bn = os.path.basename
+    l4 = sorted(p for p in le if bn(p).startswith('virl4_') and p.endswith('.ml'))
+    l4txt = {p: show(ext, p) for p in l4}
+    rows = [('L4M.files', len(l4), 'MEASURED:virl4_*.ml at ext:' + (','.join(bn(p)[:-3] for p in l4) or '-')),
+            ('L4M.Q2.prims', sum(len(PRIM_RE.findall(t)) for t in l4txt.values()), 'MEASURED:prim/prim_rw in virl4_*, comments stripped')]
+    fw = g('diff', '--name-only', base, ext)
+    if fw.returncode != 0:
+        rows.append(('L4M.Q2.frameworkFiles', 0, 'RED:git diff failed, rc %d' % fw.returncode))
+    else:
+        out = sorted(f for f in fw.stdout.split() if not f.startswith('theories/vir/'))
+        rows.append(('L4M.Q2.frameworkFiles', len(out), 'BESIDE:files outside theories/vir/ whose bytes differ, base to ext:' + (','.join(out) or '-')))
+
+    def items(sha, p):
+        o = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive|prim|define|declare)(?:_rw)?\s+(\S+)', blk)
+            if m:
+                o[m.group(1)[0] + ':' + m.group(2)] = ' '.join(blk.split())
+        return o
+    low = lambda p: re.match(r'virl[123]_', bn(p))
+    redit = dedit = 0
+    for p in sorted(x for x in lb if low(x) and x.endswith('.ml')):
+        b, a = items(base, p), items(ext, p) if p in le else {}
+        for k in b:
+            if k not in a or b[k] != a[k]:
+                if k[0] in 'ip':
+                    redit += 1
+                else:
+                    dedit += 1
+    fch = sorted(bn(p) for p in lb | le if low(p) and (p not in lb or p not in le or raw(base, p) != raw(ext, p)))
+    rows += [('L4M.Q1.defsEdited', dedit, 'MEASURED:virl1_*/virl2_*/virl3_* define/declare items, base vs ext (Q1, widened at the pin)'),
+             ('L4M.Q1.rulesEdited', redit, 'BESIDE:virl1_*/virl2_*/virl3_* interactive/prim items, base vs ext'),
+             ('L4M.Q1.filesChanged', len(fch), 'BESIDE:virl1_*/virl2_*/virl3_* files whose bytes differ (.ml/.mli/.prla, added or removed):' + (','.join(fch) or '-'))]
+
+    def layer(prefix):
+        R, byname, rs = {}, {}, set()
+        for p in sorted(le):
+            if bn(p).startswith(prefix) and p.endswith('.prla'):
+                for n, v in prla_rules(raw(ext, p)).items():
+                    k = bn(p)[:-5] + ':' + n
+                    R[k] = v
+                    byname.setdefault(n, set()).add(k)
+        for p in sorted(le):
+            if bn(p).startswith(prefix) and p.endswith('.ml'):
+                for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\breduce\b[^|]*\|\}', show(ext, p), re.M):
+                    rs |= {k for k in byname.get(n, ()) if k.startswith(bn(p)[:-3] + ':')}
+
+        def clos(roots):
+            seen, todo = set(), [k for n in roots for k in byname.get(n, ())]
+            while todo:
+                x = todo.pop()
+                if x in seen:
+                    continue
+                seen.add(x)
+                t = ' '.join(R[x][4])
+                todo += [k for n in set(re.findall(r"[A-Za-z0-9_']+", t)) - {x.split(':', 1)[1]} for k in byname.get(n, ())]
+                if L3M_RES_RE.search(t):
+                    todo += sorted(rs)  # L4M-RESOURCE
+            return seen
+        return R, byname, clos
+
+    R, byname, clos = layer('virl4_')
+    rr = {}
+    for part in [s for s in os.environ.get('VIR_L4M_ROOTS', '').split(';') if '=' in s]:
+        r, ns = part.split('=', 1)
+        rr[r.strip()] = [n.strip() for n in ns.split(',') if n.strip()]
+    rows += [('L4M.rules', len(R), 'MEASURED:stored derivations in virl4_*.prla'),
+             ('L4M.total.C5tok', sum(v[1] for v in R.values()), 'MEASURED:every stored derivation in virl4_*'),
+             ('L4M.rows.rooted', len([r for r in rr if all(n in byname for n in rr[r])]),
+              'MEASURED:rows whose every posted root has a stored derivation:' + (','.join('%s=%s' % (r, '+'.join(rr[r])) for r in sorted(rr)) or '-'))]
+    if R:
+        mk = max(sorted(R), key=lambda k: R[k][0])
+        rows.append(('L4M.maxSteps', R[mk][0], 'BESIDE:most refine steps in one stored derivation, %s (the 11-06 rule: past ~100, stop and systematize)' % mk))
+    C = {}
+    for r in sorted(rr):
+        miss = [n for n in rr[r] if n not in byname]
+        if miss:
+            rows.append(('L4M.%s.missing' % r, len(miss), 'RED:posted root(s) with no stored derivation:' + ','.join(miss)))
+            continue
+        c = clos(rr[r])
+        C[r] = sum(R[k][1] for k in c)
+        rows += [('L4M.%s.C5tok' % r, C[r], 'MEASURED:in-layer closure, %d rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled' % len(c)),
+                 ('L4M.%s.rootTok' % r, sum(R[k][1] for n in rr[r] for k in byname[n]), 'BESIDE:roots only'),
+                 ('L4M.%s.rootSteps' % r, sum(R[k][0] for n in rr[r] for k in byname[n]), 'BESIDE:refine steps of the roots\' own derivations')]
+    R2, by2, clos2 = layer('virl2_')
+    fn = os.environ.get('VIR_L4M_FRAME', L3M_FRAME)
+    if fn in by2:
+        fc = sum(R2[k][1] for k in clos2([fn]))
+        rows.append(('L4M.Q3.frameC5tok', fc, 'BESIDE:L2 %s, in-layer closure over virl2_* (Q3 predicts the Lean ratio only; this arm reports)' % fn))
+        if 'Q3par' in C and fc:
+            rows.append(('L4M.Q3.parOverFrame', round(C['Q3par'] / fc, 2), 'BESIDE:reported, no prediction on this arm'))
+    else:
+        rows.append(('L4M.Q3.frameC5tok', 0, 'Q:no stored derivation of %s in virl2_*' % fn))
+    if 'Q4S' in C and 'Q4V' in C:
+        rows.append(('L4M.Q4.direction', 1 if C['Q4V'] > C['Q4S'] else 0, 'MEASURED:1 iff C5(N1-V + N4-V) > C5(N1-S + N4-S), each group a union counted once; ratio %.2f' % (C['Q4V'] / max(C['Q4S'], 1))))
+    else:
+        rows.append(('L4M.Q4.direction', 0, 'Q:Q4S/Q4V not both rooted'))
+
+    def wf(prefix, names=None):
+        w, n, seen = 0, 0, set()
+        for p in sorted(le):
+            if bn(p).startswith(prefix) and p.endswith('.ml'):
+                for blk in MPL_ITEM_RE.split(show(ext, p)):
+                    m = re.match(r'(interactive_rw|prim_rw|interactive|prim)\s+([A-Za-z_][A-Za-z0-9_\']*)', blk)
+                    if m and m.group(1) in L4M_RULE_KINDS and (names is None or m.group(2) in names):
+                        n += 1
+                        w += len(L4M_WF_RE.findall(blk))
+                        seen.add(m.group(2))
+        return w, n, seen
+
+    def ge(a, b, c, d):
+        return a * d >= c * b  # L4M-GE
+    names4 = [n.strip() for n in os.environ.get('VIR_L4M_Q5', '').split(',') if n.strip()]
+    if names4:
+        l4w, l4r, s4 = wf('virl4_', set(names4))
+    else:
+        l4w, l4r, s4 = 0, 0, set()
+    l2w, l2r, s2 = wf('virl2_', set(L4M_Q5_L2))
+    miss = sorted(set(names4) - s4) + sorted(set(L4M_Q5_L2) - s2)
+    rows += [('L4M.Q5.l4Wf', l4w, 'MEASURED:[wf] premise labels in the statements of the rules the arm names as Q5\'s six (VIR_L4M_Q5):' + (','.join(names4) or '-')),
+             ('L4M.Q5.l4Rules', l4r, 'MEASURED:those rule statements found in virl4_*'),
+             ('L4M.Q5.l2Wf', l2w, 'MEASURED:[wf] premise labels, the L2 rules of the same roles at ext:' + ','.join(L4M_Q5_L2)),
+             ('L4M.Q5.l2Rules', l2r, 'MEASURED:those rule statements found in virl2_*')]
+    if miss:
+        rows.append(('L4M.Q5.missing', len(miss), 'RED:named rule(s) with no statement:' + ','.join(miss)))
+    if names4 and not miss and l4r and l2r:
+        rows.append(('L4M.Q5.held', 1 if ge(l4w, l4r, l2w, l2r) else 0, 'MEASURED:1 iff rate4 >= rate2 (%d/%d vs %d/%d):LIMIT six named rules on each side; the wider populations are beside' % (l4w, l4r, l2w, l2r)))
+    else:
+        rows.append(('L4M.Q5.held', 0, 'Q:the six not named by the arm, or a named rule absent'))
+    aw, an, _ = wf('virl4_')
+    bw, bn_, _ = wf('virl2_')
+    pw, pr, _ = wf('virl2_', set(L4M_Q5_L2P))
+    mw, mr, _ = wf(L3M_TRIPLE[1])
+    rows += [('L4M.Q5.allL4', '%d/%d' % (aw, an), 'BESIDE:every rule statement of virl4_*'),
+             ('L4M.Q5.allL2', '%d/%d' % (bw, bn_), 'BESIDE:every rule statement of virl2_*'),
+             ('L4M.Q5.l2Prog', '%d/%d' % (pw, pr), 'BESIDE:L2\'s eleven program rules plus the frame rule'),
+             ('L4M.Q5.l2Module', '%d/%d' % (mw, mr), 'BESIDE:%s whole' % L3M_TRIPLE[1])]
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'l4'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -1984,6 +2145,8 @@ def main():
         rows = metaprll2(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll3':
         rows = metaprll3(a.dir, a.base, a.ext)
+    elif a.arm == 'metaprll4':
+        rows = metaprll4(a.dir, a.base, a.ext)
     elif a.arm == 'slangm':
         rows = slangm(a.dir, a.base, a.ext)
     elif a.arm == 'indm':

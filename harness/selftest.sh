@@ -1193,6 +1193,73 @@ sed 's/changed = True  # CLOSURE-FIXPOINT$/changed = False  # CLOSURE-FIXPOINT/'
 if cmp -s "$H/count.py" "$F/mutant56.py"; then say "ARM56 mutant NOT PLANTED"; fail=1
 elif check56 "$F/mutant56.py"; then say "ARM56 mutant SURVIVED (a depth-2 helper went unread: the closure stopped after one pass)"; fail=1
 else say "ARM56 mutant KILLED"; fi
+# ARM57 (STATUS-vir 209; amend-21 Q1-Q8 on the MetaPRL arm): `--arm metaprll4`. A row's C5 is its IN-LAYER closure, as in ARM50, over
+# the roots the arm posts as VIR_L4M_ROOTS='Q3par=..;Q4S=..;Q4V=..;Q6=..;Q7=..;Q8=..'. Q5's rate is `[wf]` premise labels per RULE
+# (interactive + prim, never a rewrite): the arm's six named rules against L2's six of the same roles, the layers beside. Q1 widened at the pin to virl1/2/3.
+# Fixture: ext edits one virl3 define (Q1 defs 1), touches a framework file (Q2 beside 1), adds one prim, a `[wf]` inside a comment
+# (never counted), a rule name inside a longer name (never a cite), and Q8's posted root has no derivation (RED, never a silent 0).
+R57="$F/r57"; mkdir -p "$R57/theories/vir" "$R57/theories/itt"; git -C "$R57" init -q; git -C "$R57" config user.email t@t; git -C "$R57" config user.name t
+printf 'define unfold_one : one <--> 1\n' > "$R57/theories/vir/virl1_x.ml"
+printf 'interactive triple_frame :\n   [wf] sequent { <H> >- a } -->\n   [wf] sequent { <H> >- b } -->\n   sequent { <H> >- c }\ninteractive l2h :\n   [wf] sequent { <H> >- a } -->\n   sequent { <H> >- c }\ninteractive triple_let :\n   [wf] sequent { <H> >- a } -->\n   sequent { <H> >- c }\ninteractive triple_load :\n   [wf] sequent { <H> >- a } -->\n   sequent { <H> >- c }\ninteractive triple_store : sequent { <H> >- c }\ninteractive triple_free : sequent { <H> >- c }\ninteractive triple_alloc : sequent { <H> >- c }\ninteractive_rw l2rw : a <--> b\n' > "$R57/theories/vir/virl2_rules.ml"
+TF="(l2h thenT autoT)"; TL="rw a b c 0"
+prla "$R57/theories/vir/virl2_rules.prla" "triple_frame=$TF" "l2h=$TL"
+printf 'define unfold_l3 : l3 <--> 1\n' > "$R57/theories/vir/virl3_prog.ml"
+printf 'x\n' > "$R57/theories/itt/itt_x.ml"
+git -C "$R57" add -A; git -C "$R57" commit -qm base; B57=$(git -C "$R57" rev-parse HEAD)
+printf 'define unfold_l3 : l3 <--> 2\n' > "$R57/theories/vir/virl3_prog.ml"
+printf 'y\n' > "$R57/theories/itt/itt_x.ml"
+cat > "$R57/theories/vir/virl4_sem.ml" <<'EOF57'
+extends Virl3_prog
+(* [wf] in a comment is not a premise; prim in a comment is not a prim *)
+prim bad_prim : sequent { <H> >- a }
+interactive par_rule :
+   [wf] sequent { <H> >- a } -->
+   [wf] sequent { <H> >- b } -->
+   [wf] sequent { <H> >- c } -->
+   sequent { <H> >- d }
+interactive h4 : sequent { <H> >- a }
+interactive h4_note : sequent { <H> >- a }
+interactive_rw hr {| reduce |} : a <--> b
+interactive n1v : sequent { <H> >- a }
+interactive n4v : sequent { <H> >- a }
+interactive n1s : sequent { <H> >- a }
+interactive ce1 : sequent { <H> >- a }
+EOF57
+TP="(h4 thenT h4_note_x thenT reduceC thenT autoT)"; TH="rw a 0"; TN="rw a b c d e f g 0"; TR="rw z 0"
+TV1="(h4 thenT x y z thenT autoT)"; TV4="(h4 thenT p thenT autoT)"; TS="(q thenT autoT)"; TC="(r thenT s thenT autoT)"
+prla "$R57/theories/vir/virl4_sem.prla" "par_rule=$TP" "h4=$TH" "h4_note=$TN" "hr=$TR" "n1v=$TV1" "n4v=$TV4" "n1s=$TS" "ce1=$TC"
+git -C "$R57" add -A; git -C "$R57" commit -qm ext; X57=$(git -C "$R57" rev-parse HEAD)
+E57_PAR=$(( $(w "$TP") + $(w "$TH") + $(w "$TR") )); E57_F=$(( $(w "$TF") + $(w "$TL") ))
+E57_V=$(( $(w "$TV1") + $(w "$TV4") + $(w "$TH") )); E57_S=$(w "$TS"); E57_C=$(w "$TC")
+E57_ALL=$(( $(w "$TP") + $(w "$TH") + $(w "$TN") + $(w "$TR") + $(w "$TV1") + $(w "$TV4") + $(w "$TS") + $(w "$TC") ))
+ROOTS57='Q3par=par_rule;Q4S=n1s;Q4V=n1v,n4v;Q7=ce1;Q8=absent_root'
+check57() {
+  o=$(VIR_L4M_Q5='par_rule,n1v' VIR_L4M_ROOTS="$ROOTS57" python3 "$1" --arm metaprll4 --base "$B57" --ext "$X57" "$R57") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v L4M.files)" = 1 ] && [ "$(v L4M.Q2.prims)" = 1 ] && [ "$(v L4M.Q2.frameworkFiles)" = 1 ] \
+  && [ "$(v L4M.Q1.defsEdited)" = 1 ] && [ "$(v L4M.Q1.rulesEdited)" = 0 ] && [ "$(v L4M.Q1.filesChanged)" = 1 ] \
+  && [ "$(v L4M.rules)" = 8 ] && [ "$(v L4M.rows.rooted)" = 4 ] && [ "$(v L4M.Q8.missing)" = 1 ] \
+  && printf '%s\n' "$o" | awk -F'\t' '$2=="L4M.Q8.missing"' | grep -q RED \
+  && [ "$(v L4M.Q3par.C5tok)" = "$E57_PAR" ] && [ "$(v L4M.Q3.frameC5tok)" = "$E57_F" ] \
+  && [ "$(v L4M.Q4V.C5tok)" = "$E57_V" ] && [ "$(v L4M.Q4S.C5tok)" = "$E57_S" ] && [ "$(v L4M.Q4.direction)" = 1 ] \
+  && [ "$(v L4M.Q7.C5tok)" = "$E57_C" ] && [ "$(v L4M.total.C5tok)" = "$E57_ALL" ] \
+  && [ "$(v L4M.Q5.l4Wf)" = 3 ] && [ "$(v L4M.Q5.l4Rules)" = 2 ] && [ "$(v L4M.Q5.l2Wf)" = 4 ] && [ "$(v L4M.Q5.l2Rules)" = 6 ] \
+  && [ "$(v L4M.Q5.held)" = 1 ] && [ "$(v L4M.Q5.allL4)" = 3/8 ] && [ "$(v L4M.Q5.allL2)" = 5/7 ] && [ "$(v L4M.maxSteps)" -ge 1 ]
+}
+if check57 "$H/count.py"; then say "ARM57 metaprll4 fixture OK (Q1 defs 1, files 1; Q2 prims 1, framework 1; Q3 par $E57_PAR vs frame $E57_F; Q4 V $E57_V > S $E57_S, shared helper once; Q5 3/2 vs 4/6, all 3/8 vs 5/7; Q8 RED)"
+else say "ARM57 metaprll4 fixture FAIL"; VIR_L4M_Q5='par_rule,n1v' VIR_L4M_ROOTS="$ROOTS57" python3 "$H/count.py" --arm metaprll4 --base "$B57" --ext "$X57" "$R57"; fail=1; fi
+sed "s/L4M_RULE_KINDS = ('interactive', 'prim')/L4M_RULE_KINDS = ('interactive', 'prim', 'interactive_rw')/" "$H/count.py" > "$F/mutant57.py"  # a rewrite counted as a rule
+if cmp -s "$H/count.py" "$F/mutant57.py"; then say "ARM57 mutant NOT PLANTED"; fail=1
+elif check57 "$F/mutant57.py"; then say "ARM57 mutant SURVIVED (a rewrite counted in Q5's denominator)"; fail=1
+else say "ARM57 mutant KILLED"; fi
+sed 's/                    todo += sorted(rs)  # L4M-RESOURCE/                    pass/' "$H/count.py" > "$F/mutant57b.py"  # the reduce resource dropped
+if cmp -s "$H/count.py" "$F/mutant57b.py"; then say "ARM57 mutant-b NOT PLANTED"; fail=1
+elif check57 "$F/mutant57b.py"; then say "ARM57 mutant-b SURVIVED (the reduce-resource helpers not in a row's closure)"; fail=1
+else say "ARM57 mutant-b KILLED"; fi
+sed 's/return a \* d >= c \* b  # L4M-GE/return a * d <= c * b/' "$H/count.py" > "$F/mutant57c.py"  # Q5's direction reversed
+if cmp -s "$H/count.py" "$F/mutant57c.py"; then say "ARM57 mutant-c NOT PLANTED"; fail=1
+elif check57 "$F/mutant57c.py"; then say "ARM57 mutant-c SURVIVED (Q5's comparison reversed)"; fail=1
+else say "ARM57 mutant-c KILLED"; fi
 
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
