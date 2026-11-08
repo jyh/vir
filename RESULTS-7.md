@@ -55,8 +55,8 @@ Binder lemmas (`L2.binder`, the leanp binder row on VIRL2/): **13**.
   `is_ifault` the let congruence, because OBJECT-L2 §2's fault is a configuration with no step. The helm counted D10 as the
   fourth gap under the 11-06 rule and stopped Y5. **The arm and the scorer both read D10 differently** (@98,660,464; @98,663,002):
   D8, D9 and D8a NARROW Y5's domain, while D10 adds no hypothesis and corrects the arm's own definition up to the object, so it
-  is an arm DEFECT the drive found, not a carving. Whether that counts as the rule's "fourth domain gap" is the Captain's word,
-  and it is pending. If he rules it is not one, this row becomes OPEN, with the 11-08 cap restored.
+  is an arm DEFECT the drive found, not a carving. Whether that counts as the rule's "fourth domain gap" was the Captain's word.
+  **His word, council 2026-11-08: "Yes (a)". The stop STANDS, recorded as the helm's judgment: D10 is a defect in the arm's own definition, not a domain carving; progress, the frame lemma and the reach induction are unreached.**
 - **Red backwards (D10).** Mutant 6d015121d (mojave/vir-l2-d10-mutant, never merged) restores the head-only definition. There,
   `is_ifault_let`'s own script leaves `bfalse = <e1's head-only test> in bool` open, which is false at an index-faulting e1.
   **LIMIT: this is "shown unprovable with what was run". It is not refuted by a concrete instance** (no concrete store was built).
