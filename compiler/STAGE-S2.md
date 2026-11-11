@@ -35,6 +35,8 @@ caps, and C4 (b), checked arithmetic with an overflow exit.
     value of its type, and its word code either OVERFLOWS or yields related words. All ten primitives are covered (checked
     add/sub/mul; comparisons; `eq` through `ofInt` injectivity on the range; `max`; boolean and/or/not), as are λ/fix (their
     labels, against the final table) and pairs, projections and sums.
+  - part 4, MEMORY: `layout_store` and `memrel_store`. A store preserves the layout premise and the memory relation, through
+    `cellAddr_inj` and L2's own region disjointness (`cell_ne`). R never changes.
 
 ## OWED (in order)
 1. (was: `VIRC/Layout.lean`, now built): the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise

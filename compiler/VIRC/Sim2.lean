@@ -514,4 +514,51 @@ theorem opdL_sim {T lay σ} (hT : T.length < 2 ^ 64) : ∀ {as : List Atom₂} {
       exact ⟨v :: vs, by simp [lowerL, Opd.evalL, ev, evs], .cons vt wo wos⟩
 end
 
+/-! ## Part 4: memory. A store preserves the layout premise and the memory relation; R never changes (S2-A (a)). -/
+theorem store_eq {σ σ' : Store} {p i v : Int} {n : Nat} (hR : σ.R.lookup p = some n) (hs : Store.store p i v σ = some σ') :
+    (0 ≤ i ∧ i < n) ∧ σ' = ⟨σ.H.insert (p + i) v, σ.R⟩ := by
+  unfold Store.store at hs; simp only [hR] at hs
+  split at hs
+  · next h => exact ⟨h, (Option.some.inj hs).symm⟩
+  · cases hs
+
+/-- Two live cells of distinct (region, index) pairs have distinct L2 addresses. -/
+theorem cell_ne {σ : Store} (hw : σ.WF) {p q : Int} {n m : Nat} (hp : σ.R.lookup p = some n) (hq : σ.R.lookup q = some m)
+    {i j : Int} (hi : 0 ≤ i ∧ i < n) (hj : 0 ≤ j ∧ j < m) (hne : ¬ (q = p ∧ j = i)) : q + j ≠ p + i := by
+  intro h
+  by_cases hqp : q = p
+  · subst hqp; exact hne ⟨rfl, by omega⟩
+  · exact hw.disj q p m n hq hp hqp (q + j) ⟨by omega, by omega⟩ (by rw [h]; exact ⟨by omega, by omega⟩)
+
+theorem layout_store {σ σ' : Store} {lay} {p i v : Int} {n : Nat} (hl : Layout σ lay) (hR : σ.R.lookup p = some n)
+    (hv : inRange v = true) (hs : Store.store p i v σ = some σ') : Layout σ' lay ∧ σ'.R = σ.R := by
+  obtain ⟨hi, rfl⟩ := store_eq hR hs
+  have hmem : p + i ∈ σ.H := (hl.wf.domH _).2 ⟨p, n, hR, ⟨by omega, by omega⟩⟩
+  refine ⟨⟨wf_insert_mem hmem hl.wf, hl.fits, hl.disj, fun q m hq j hj => ?_⟩, rfl⟩
+  by_cases hc : q = p ∧ (j : Int) = i
+  · obtain ⟨rfl, hji⟩ := hc
+    exact ⟨v, by rw [hji, Finmap.lookup_insert], hv⟩
+  · rw [Finmap.lookup_insert_of_ne _ (cell_ne hl.wf hR hq hi ⟨by omega, by simpa using hj⟩ hc)]
+    exact hl.cells q m hq j hj
+
+theorem memrel_store {σ σ' : Store} {lay} {m : WMem} {p i v : Int} {n : Nat} (hl : Layout σ lay) (hm : MemRel lay σ m)
+    (hR : σ.R.lookup p = some n) (hs : Store.store p i v σ = some σ') :
+    MemRel lay σ' (Function.update m (cellAddr (lay p) (BitVec.ofNat 64 i.toNat)) (BitVec.ofInt 64 v)) := by
+  obtain ⟨hi, rfl⟩ := store_eq hR hs
+  intro q m' hq j hj w hw
+  by_cases hc : q = p ∧ j = i.toNat
+  · obtain ⟨rfl, rfl⟩ := hc
+    rw [Function.update_self]
+    rw [Int.toNat_of_nonneg hi.1, Finmap.lookup_insert] at hw
+    cases hw; rfl
+  · have hne : cellAddr (lay q) (BitVec.ofNat 64 j) ≠ cellAddr (lay p) (BitVec.ofNat 64 i.toNat) := by
+      intro h
+      obtain ⟨h1, h2⟩ := cellAddr_inj hl hq hR hj (by omega) h
+      exact hc ⟨h1, h2⟩
+    rw [Function.update_of_ne hne]
+    have hne' : q + (j : Int) ≠ p + i :=
+      cell_ne hl.wf hR hq hi ⟨by omega, by simpa using hj⟩ (fun h => hc ⟨h.1, by omega⟩)
+    rw [Finmap.lookup_insert_of_ne _ hne'] at hw
+    exact hm q m' hq j hj w hw
+
 end VIRC
