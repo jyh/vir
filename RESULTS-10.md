@@ -3,8 +3,8 @@
 **The Lean column; UNSEALED 2026-11-08** on the MetaPRL arm's L4 declarations (the Captain's pace ruling (C), 11-05, as at L3). Every
 Lean figure is a row of `l4/out/counts-l4.tsv` (`harness/count.py --arm l4 l4`) or `l4/out/counts-q1.tsv` (`--arm w8 --base 7f82f94
 --ext 4017931`), a theorem name, a commit, or an `EXIT=` line in `l4/logs/`. Lean L3-closed sha 7f82f94; Lean L4-closed sha 4017931 (no
-`.lean` file changes after it). The MetaPRL column is scored when that arm builds L4, by `count.py --arm metaprll4`, whose reading was
-committed before the arm's first L4 rule. **`harness/l4-counts-lean.tsv` is the record of the counts as sealed (2026-11-06)**: the counts
+`.lean` file changes after it). The MetaPRL column was scored on 2026-11-10 at that arm's L4-closed sha d257d2f29, by `count.py --arm metaprll4`, whose reading
+was committed before the arm's first L4 rule (section "The MetaPRL column" below). **`harness/l4-counts-lean.tsv` is the record of the counts as sealed (2026-11-06)**: the counts
 below were taken then, before the MetaPRL declarations existed, and re-derived unchanged at the unseal (40 of 40 `--arm l4` rows; the
 nine W8 rows re-run). Shas here are the published ones; the branch was rewritten once before its first push, to redact home paths in
 forty build logs, and `L4-SHA-MAP.tsv` maps every pre-rewrite sha (which `l4/` prose and commit bodies from before it cite).
@@ -85,3 +85,61 @@ Lean addenda, all on the sealed branch, before the rows they govern:
   safety predicate (addendum 2's reason).
 - Mutant 007 stubbed `F₄_S` to reach N4-V; mutant 008 adjusted the two structural lemmas' acquire lines to the mutated rule. Both
   are declared in their commits; neither edit survives (files restored by copy, the next build EXIT=0).
+
+## The MetaPRL column (scored 2026-11-10 by the 60th vir head)
+
+Every MetaPRL figure is a row of `l4/out/counts-l4m.tsv`, produced by the command in `l4/out/counts-l4m.cmd`
+(`count.py --arm metaprll4 --base 2d63bef28 --ext d257d2f29`, selftest ARM57, whose units were committed before the arm's first L4
+rule). Base 2d63bef28 is the arm's L3-closed sha; d257d2f29 is the sha the arm closed L4 at (its closing census, 2026-11-10 22:56:
+17 `virl4_*` modules, 1,464 GROUNDED, 0 UNGR, 0 INCOMPLETE, 0 PRIM). The harness counts the same 1,464 stored derivations there.
+Q5's six are the arm's F6 rules on `triple4K` (declarations F15, the re-proof): `triple4K_par`, `triple4K_newlock`, `triple4K_acquire`,
+`triple4K_release`, `triple4K_frame`, `triple4K_let`.
+
+⚠️ **LIMIT, beside every MetaPRL figure:** 2d63bef28 and d257d2f29 are in the MetaPRL arm's LOCAL tree and on no public remote at this
+commit. The rows are reproducible from the artifacts only once that arm publishes them (as at RESULTS-9).
+⚠️ **LIMIT, beside every C5:** a use of `reduce` admits every `virl4_*` reduce rule into the closure, fired or not, so each C5 is an
+UPPER BOUND; other resources are not modelled.
+
+| | prediction | MetaPRL | verdict |
+|---|---|---|---|
+| Q1 | L1–L3 untouched | `virl1/2/3_*` defs edited 0 · rules edited 0 · files changed 0 | **HOLDS** |
+| Q2 | 0 prims in `virl4_*` | prims 0 · framework files 0 · 1,464 GROUNDED (the arm's census) | **HOLDS** |
+| Q3 | parallel rule from ⟶₄, no side condition naming a region | `triple4K_par`, proved from ⟶₄ through `safe4K`, no region-naming side condition (read by hand, declarations F15). C5 185,852 over 231 rules, root 11,438. BESIDE: L2 `triple_frame` C5 55,583, ratio **3.34** (reported; the 3× line is Lean's only). The first-generation `triple4_par` is 137,287 | **HOLDS** (the statement); ratio reported |
+| Q4 | C5(N1-V + N4-V) > C5(N1-S + N4-S) | **V 361,314 (601 rules) vs S 1,439,383 (534 rules), 0.25**. Root-only V 5,473 vs S 13,531 (also reverses). `n4_side` alone is 1,068,014, almost all of it `n4_core` (1,059,883): N4-S re-proves L3's F proof on `triple4K` | **FALSIFIED** on this arm; **INFORMED** |
+| Q5 | rate₄ ≥ rate₂ | `[wf]` labels **41/6 vs L2's 42/6**. BESIDE: every `virl4_*` rule 4,417/1,127 · every `virl2_*` rule 3,442/1,170 · L2 program rules + frame 70/12 · `virl2_rules` 269/70 | **FALSIFIED by one label** on the primary reading; the whole-layer reading reverses (3.92 vs 2.94) |
+| Q6 | no data race from typing | `q6a`: a `tc4`-typed configuration with `store_ok{s}` has `race4 = bfalse`, for every `k`, `n`, `dl`, `T` (one configuration). Red control closed in both halves (`q6r_tc`, `q6r_race`, counted). Q6b (preservation over ⟶₄*) not proved: the arm priced it at a full port of `virl2_semr` to `tc4m` and recommends no spend before the 11-12 EOD cap | **HOLDS at one configuration**; the reachable-configuration form **UNREACHED** (written at the cap); **INFORMED** (route) |
+| Q7 | CE both directions | `ce_step` (one equation for every `s`, `k`, the table carried unchanged: F9's two iffs) · `ce_fault` · `ce_typing` · `ce_tc`. C5 442,676 over 374 rules, roots 231 tok | **HOLDS** |
+| Q8 | one deadlocking program, `{emp} e {_. False}` | `q8_deadlock` on `triple4K`, for every `J` with `J 0 [0]`. C5 176,177 over 344 rules | reported |
+
+**The rows (inputs/L4-programs.md §3), MetaPRL:** N1-T `n1_ty` · N3-T `n3_ty` · N4-T `n4_ty` · N1-S `n1_s` (C5 681,625) · N1-V `n1_v`
+(85,181) · N3 `n3_nt` (refuted through `adeq4K` at the empty start; 110,088) · N4-S `n4_side` (1,068,014) · N4-V `n4_v` (347,298) ·
+erasure `l4succ_erase`, `fault4_erase`, `effstep4_erase`, `lockop_index_erase` (84,629) · adequacy `adeq4K` (105,028). maxSteps 59
+(`virl4_ceq:ceP_mk`), under the 11-06 line of ~100. N2 has no MetaPRL theorem (its row is the typing's refusal, read at Q6's control (i)).
+
+### Readings that ride with the figures
+- **INFORMED (V-F5's label, FINDINGS V-F7):** F6's step-indexed safety predicate and Q4's Lean direction (the arm read a Lean commit
+  subject naming "S 2,635 vs V 8,382" on 11-08); Q6's route (the arm's declared read of a fleet status row of vir's that named a Lean
+  route). The Q4 verdict here goes AGAINST the direction the arm read.
+- **The two arms' V and Q6 statements are not the same strength, in opposite directions.** MetaPRL's `n4_v` counts at EVERY reachable
+  configuration still inside the par; Lean's `N4_V` at the join only (its own Limits). Lean's Q6 includes preservation
+  (`Q6_typed_program`); MetaPRL's is one configuration. A cross-arm C5 ratio on Q4 or Q6 compares different theorems.
+- **Why V is cheap here:** `n1_v` computes the reach sets by the kernel's rewrites (`l4reach{16} = nil`), so N1-V needed no invariant;
+  `n4_v` carries the counting invariant `b(sd) + #{past decrement} = tk sd`. S is dear because `triple4K` does not reuse L3's proof
+  object: N4-S re-proves F over copies of L3's four definitions (checked equal to `virl3_eq`/`virl3_tri` after renaming).
+- **Statement readings, each checked by hand against the object or the arm's declared term:** N4-S's post is `∃t. 0 ≤ t ∗ …` (a side
+  cannot know `b`'s history; forced by a failed check that `l3_fpost` on cells 0…82 depends on `w` alone); N4-V carries `not(p1 = p2)`
+  (object-given: each `w` is its own region); N1-S reads `v ∈ ℤ` as `∃n:int. v = venc n`; Q8 carries the `J 0 [0]` premise; no closed
+  `adeq4K` instance is proved for Q8 or N1-S (the rows are the triples); `triple4K_free` and N4's par assembly are not claimed.
+- **Red controls:** N1-V, N3, Q6a (both halves), the lock rules and Q8 fire as declared. LOCALIZED (driven at a lemma, not by replaying
+  the row): N1-S (`n1_nl`), N4-S control (1), N4-V, release (two lemmas), newlock (first clause only). N4-S control (2) was NARROWED
+  after a non-firing first run, before its decisive run: weaker evidence than a control declared once. Several are reported (Q) from the
+  arm's tools, not re-driven here.
+- **Order departures, method rules only, no statement moved:** `lupd` taken in probe before its declaration; route (A)'s amendment and
+  its probe closures in the same minute; the N4-S walk helpers declared after the probe and before any count (declared-before-COUNTED).
+  The atoms change and route (A) rest on bus posts for declared-before-built, the intermediate declaration hash not being committed.
+- **Generations:** frame and let have three proof generations and par two that were proved; the scored rules are the `triple4K` re-proof
+  (frame 82,817 · let 87,780 · par 185,852), the first generation beside (75,378 · 81,495 · 137,287). The frame
+  (`l4/RESULTS-10-METAPRL-FRAME.md`) carries every per-commit reading this column summarises.
+- **What vir got wrong while reading:** at N4-V it accepted the pay store as "the only store to cell 2" while the bucket store also
+  matched the emit test (an over-count check missed; caught before scoring); a fleet status row of vir's carried Lean route detail an
+  arm could read (the Q6 INFORMED label); `fac9abd14` counted 1,438 rules until the arm committed the missing archive at d257d2f29.

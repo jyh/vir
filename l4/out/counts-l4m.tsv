@@ -1,0 +1,148 @@
+metaprll4	L4M.files	17	MEASURED:virl4_*.ml at ext:virl4_cem,virl4_ceq,virl4_cer,virl4_cet,virl4_cons,virl4_erase,virl4_prog,virl4_rules,virl4_sem,virl4_sig,virl4_step,virl4_tc2t,virl4_tc4t,virl4_tot,virl4_tri,virl4_trik,virl4_typing
+metaprll4	L4M.Q2.prims	0	MEASURED:prim/prim_rw in virl4_*, comments stripped
+metaprll4	L4M.Q2.frameworkFiles	0	BESIDE:files outside theories/vir/ whose bytes differ, base to ext:-
+metaprll4	L4M.Q1.defsEdited	0	MEASURED:virl1_*/virl2_*/virl3_* define/declare items, base vs ext (Q1, widened at the pin)
+metaprll4	L4M.Q1.rulesEdited	0	BESIDE:virl1_*/virl2_*/virl3_* interactive/prim items, base vs ext
+metaprll4	L4M.Q1.filesChanged	0	BESIDE:virl1_*/virl2_*/virl3_* files whose bytes differ (.ml/.mli/.prla, added or removed):-
+metaprll4	L4M.rules	1464	MEASURED:stored derivations in virl4_*.prla
+metaprll4	L4M.total.C5tok	2690672	MEASURED:every stored derivation in virl4_*
+metaprll4	L4M.rows.rooted	42	MEASURED:rows whose every posted root has a stored derivation:N1S=n1_s,N1T=n1_ty,N1V=n1_v,N3S=n3_nt,N3T=n3_ty,N4S=n4_side,N4T=n4_ty,N4V=n4_v,Q3par=triple4K_par,Q4S=n1_s+n4_side,Q4V=n1_v+n4_v,Q6=q6a,Q6a=q6a,Q7=ce_step+ce_fault+ce_typing+ce_tc,Q8=q8_deadlock,acqK=triple4K_acquire,adeq=adeq4,adeqK=adeq4K,allocK=triple4K_alloc,ceFault=ce_fault,ceStep=ce_step,ceTc=ce_tc,ceTyping=ce_typing,dupK=islock_dup,erase=l4succ_erase+fault4_erase+effstep4_erase+lockop_index_erase,frame=triple4_frame,frameK=triple4K_frame,ifK=triple4K_if,let=triple4_let,letK=triple4K_let,loadK=triple4K_load,n4core=n4_core,newK=triple4K_newlock,par=triple4_par,parK=triple4K_par,postK=triple4K_post,q6rrace=q6r_race,q6rtc=q6r_tc,relK=triple4K_release,retK=triple4K_ret,storeK=triple4K_store,storeok=l4succ_store_ok
+metaprll4	L4M.maxSteps	59	BESIDE:most refine steps in one stored derivation, virl4_ceq:ceP_mk (the 11-06 rule: past ~100, stop and systematize)
+metaprll4	L4M.N1S.C5tok	681625	MEASURED:in-layer closure, 438 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N1S.rootTok	6458	BESIDE:roots only
+metaprll4	L4M.N1S.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N1T.C5tok	65822	MEASURED:in-layer closure, 173 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N1T.rootTok	979	BESIDE:roots only
+metaprll4	L4M.N1T.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N1V.C5tok	85181	MEASURED:in-layer closure, 220 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N1V.rootTok	150	BESIDE:roots only
+metaprll4	L4M.N1V.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N3S.C5tok	110088	MEASURED:in-layer closure, 253 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N3S.rootTok	470	BESIDE:roots only
+metaprll4	L4M.N3S.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N3T.C5tok	65822	MEASURED:in-layer closure, 173 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N3T.rootTok	979	BESIDE:roots only
+metaprll4	L4M.N3T.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N4S.C5tok	1068014	MEASURED:in-layer closure, 462 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N4S.rootTok	7073	BESIDE:roots only
+metaprll4	L4M.N4S.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N4T.C5tok	68373	MEASURED:in-layer closure, 182 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N4T.rootTok	2037	BESIDE:roots only
+metaprll4	L4M.N4T.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.N4V.C5tok	347298	MEASURED:in-layer closure, 576 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.N4V.rootTok	5323	BESIDE:roots only
+metaprll4	L4M.N4V.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q3par.C5tok	185852	MEASURED:in-layer closure, 231 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q3par.rootTok	11438	BESIDE:roots only
+metaprll4	L4M.Q3par.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q4S.C5tok	1439383	MEASURED:in-layer closure, 534 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q4S.rootTok	13531	BESIDE:roots only
+metaprll4	L4M.Q4S.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q4V.C5tok	361314	MEASURED:in-layer closure, 601 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q4V.rootTok	5473	BESIDE:roots only
+metaprll4	L4M.Q4V.rootSteps	2	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q6.C5tok	391111	MEASURED:in-layer closure, 231 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q6.rootTok	2056	BESIDE:roots only
+metaprll4	L4M.Q6.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q6a.C5tok	391111	MEASURED:in-layer closure, 231 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q6a.rootTok	2056	BESIDE:roots only
+metaprll4	L4M.Q6a.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q7.C5tok	442676	MEASURED:in-layer closure, 374 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q7.rootTok	231	BESIDE:roots only
+metaprll4	L4M.Q7.rootSteps	4	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q8.C5tok	176177	MEASURED:in-layer closure, 344 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.Q8.rootTok	1350	BESIDE:roots only
+metaprll4	L4M.Q8.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.acqK.C5tok	103667	MEASURED:in-layer closure, 238 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.acqK.rootTok	5649	BESIDE:roots only
+metaprll4	L4M.acqK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.adeq.C5tok	101497	MEASURED:in-layer closure, 224 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.adeq.rootTok	3552	BESIDE:roots only
+metaprll4	L4M.adeq.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.adeqK.C5tok	105028	MEASURED:in-layer closure, 229 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.adeqK.rootTok	3249	BESIDE:roots only
+metaprll4	L4M.adeqK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.allocK.C5tok	74683	MEASURED:in-layer closure, 194 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.allocK.rootTok	4925	BESIDE:roots only
+metaprll4	L4M.allocK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.ceFault.C5tok	81238	MEASURED:in-layer closure, 205 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.ceFault.rootTok	86	BESIDE:roots only
+metaprll4	L4M.ceFault.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.ceStep.C5tok	77230	MEASURED:in-layer closure, 204 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.ceStep.rootTok	92	BESIDE:roots only
+metaprll4	L4M.ceStep.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.ceTc.C5tok	422079	MEASURED:in-layer closure, 337 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.ceTc.rootTok	25	BESIDE:roots only
+metaprll4	L4M.ceTc.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.ceTyping.C5tok	422069	MEASURED:in-layer closure, 336 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.ceTyping.rootTok	28	BESIDE:roots only
+metaprll4	L4M.ceTyping.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.dupK.C5tok	72769	MEASURED:in-layer closure, 196 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.dupK.rootTok	370	BESIDE:roots only
+metaprll4	L4M.dupK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.erase.C5tok	84629	MEASURED:in-layer closure, 215 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.erase.rootTok	520	BESIDE:roots only
+metaprll4	L4M.erase.rootSteps	4	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.frame.C5tok	75378	MEASURED:in-layer closure, 203 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.frame.rootTok	390	BESIDE:roots only
+metaprll4	L4M.frame.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.frameK.C5tok	82817	MEASURED:in-layer closure, 206 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.frameK.rootTok	1781	BESIDE:roots only
+metaprll4	L4M.frameK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.ifK.C5tok	85735	MEASURED:in-layer closure, 200 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.ifK.rootTok	5672	BESIDE:roots only
+metaprll4	L4M.ifK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.let.C5tok	81495	MEASURED:in-layer closure, 207 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.let.rootTok	1332	BESIDE:roots only
+metaprll4	L4M.let.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.letK.C5tok	87780	MEASURED:in-layer closure, 210 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.letK.rootTok	2458	BESIDE:roots only
+metaprll4	L4M.letK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.loadK.C5tok	119984	MEASURED:in-layer closure, 213 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.loadK.rootTok	34308	BESIDE:roots only
+metaprll4	L4M.loadK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.n4core.C5tok	1059883	MEASURED:in-layer closure, 460 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.n4core.rootTok	79951	BESIDE:roots only
+metaprll4	L4M.n4core.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.newK.C5tok	95477	MEASURED:in-layer closure, 237 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.newK.rootTok	4625	BESIDE:roots only
+metaprll4	L4M.newK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.par.C5tok	137287	MEASURED:in-layer closure, 222 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.par.rootTok	5079	BESIDE:roots only
+metaprll4	L4M.par.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.parK.C5tok	185852	MEASURED:in-layer closure, 231 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.parK.rootTok	11438	BESIDE:roots only
+metaprll4	L4M.parK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.postK.C5tok	74651	MEASURED:in-layer closure, 193 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.postK.rootTok	792	BESIDE:roots only
+metaprll4	L4M.postK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.q6rrace.C5tok	68643	MEASURED:in-layer closure, 173 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.q6rrace.rootTok	3800	BESIDE:roots only
+metaprll4	L4M.q6rrace.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.q6rtc.C5tok	103672	MEASURED:in-layer closure, 202 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.q6rtc.rootTok	36359	BESIDE:roots only
+metaprll4	L4M.q6rtc.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.relK.C5tok	93251	MEASURED:in-layer closure, 231 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.relK.rootTok	4973	BESIDE:roots only
+metaprll4	L4M.relK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.retK.C5tok	74257	MEASURED:in-layer closure, 195 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.retK.rootTok	694	BESIDE:roots only
+metaprll4	L4M.retK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.storeK.C5tok	136304	MEASURED:in-layer closure, 224 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.storeK.rootTok	42003	BESIDE:roots only
+metaprll4	L4M.storeK.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.storeok.C5tok	88635	MEASURED:in-layer closure, 215 rules:LIMIT a reduce use admits every virl4_* reduce rule, fired or not (an upper bound); other resources not modelled
+metaprll4	L4M.storeok.rootTok	171	BESIDE:roots only
+metaprll4	L4M.storeok.rootSteps	1	BESIDE:refine steps of the roots' own derivations
+metaprll4	L4M.Q3.frameC5tok	55583	BESIDE:L2 triple_frame, in-layer closure over virl2_* (Q3 predicts the Lean ratio only; this arm reports)
+metaprll4	L4M.Q3.parOverFrame	3.34	BESIDE:reported, no prediction on this arm
+metaprll4	L4M.Q4.direction	0	MEASURED:1 iff C5(N1-V + N4-V) > C5(N1-S + N4-S), each group a union counted once; ratio 0.25
+metaprll4	L4M.Q5.l4Wf	41	MEASURED:[wf] premise labels in the statements of the rules the arm names as Q5's six (VIR_L4M_Q5):triple4K_par,triple4K_newlock,triple4K_acquire,triple4K_release,triple4K_frame,triple4K_let
+metaprll4	L4M.Q5.l4Rules	6	MEASURED:those rule statements found in virl4_*
+metaprll4	L4M.Q5.l2Wf	42	MEASURED:[wf] premise labels, the L2 rules of the same roles at ext:triple_let,triple_frame,triple_load,triple_store,triple_free,triple_alloc
+metaprll4	L4M.Q5.l2Rules	6	MEASURED:those rule statements found in virl2_*
+metaprll4	L4M.Q5.held	0	MEASURED:1 iff rate4 >= rate2 (41/6 vs 42/6):LIMIT six named rules on each side; the wider populations are beside
+metaprll4	L4M.Q5.allL4	4417/1127	BESIDE:every rule statement of virl4_*
+metaprll4	L4M.Q5.allL2	3442/1170	BESIDE:every rule statement of virl2_*
+metaprll4	L4M.Q5.l2Prog	70/12	BESIDE:L2's eleven program rules plus the frame rule
+metaprll4	L4M.Q5.l2Module	269/70	BESIDE:virl2_rules whole
