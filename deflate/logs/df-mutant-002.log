@@ -1,0 +1,16 @@
+saltqueue: ticket P2 seat=root pid=26064
+mutants/BitsLe.lean:88:20: error: Application type mismatch: The argument
+  hv
+has type
+  v ≤ 2 ^ (i + n + 1)
+but is expected to have type
+  v < 2 ^ (i + n + 1)
+in the application
+  ih v h0 hv
+mutants/BitsLe.lean:104:24: warning: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/BitsLe.lean:104:24: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=1

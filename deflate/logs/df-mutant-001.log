@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=23534
+mutants/WrongByte.lean:4:95: error: Tactic `decide` failed for proposition
+  acceptsWith (inflate i_fixed_one_literal 65536) #[98] = true
+because its `Decidable` instance
+  instDecidableEqBool (acceptsWith (inflate i_fixed_one_literal 65536) #[98]) true
+did not reduce to `isTrue` or `isFalse`.
+
+Reduction got stuck at the `Decidable` instance
+  match acceptsWith (inflate i_fixed_one_literal 65536) #[98], true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+saltbuild EXIT=1

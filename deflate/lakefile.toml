@@ -1,0 +1,17 @@
+name = "deflate"
+defaultTargets = ["VIRDeflate"]
+
+# O95, OBJECT-DEFLATE (pinned a5edcc7), the LEAN arm (X0 (a)). A SEPARATE project beside l1/ … l4/ and compiler/, so their
+# counts stay put. L2 is IMPORTED by path and never edited (amend-23 D2). mathlib at salt's pin (packages APFS-cloned from
+# compiler/, manifest written by edit; never a bare lake update). D6 counts `saltbuild EXIT=` lines in deflate/logs/df-*.log.
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l2"
+path = "../l2"
+
+[[lean_lib]]
+name = "VIRDeflate"

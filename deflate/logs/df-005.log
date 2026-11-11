@@ -1,0 +1,23 @@
+saltqueue: ticket P2 seat=root pid=10359
+⚠ [2973/2976] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+ℹ [2976/2976] Built VIRDeflate.Run (47s)
+info: VIRDeflate/Run.lean:26:0: ("i-stored-empty-final", "ACCEPT 0 bytes", "ACCEPT 0 bytes")
+info: VIRDeflate/Run.lean:32:0: ("i-fixed-empty-final", "ACCEPT 0 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:38:0: ("i-fixed-one-literal", "ACCEPT 1 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:44:0: ("i-fixed-overlap-copy", "ACCEPT 4 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:50:0: ("i-two-blocks", "ACCEPT 2 bytes", "ACCEPT 2 bytes")
+info: VIRDeflate/Run.lean:56:0: ("iii-btype-11", "REJECT invalid block type", "REJECT invalid block type")
+info: VIRDeflate/Run.lean:62:0: ("iii-stored-bad-nlen", "REJECT invalid stored block lengths", "REJECT invalid stored block lengths")
+info: VIRDeflate/Run.lean:68:0: ("iii-distance-too-far", "REJECT distance too far back", "REJECT incomplete")
+info: VIRDeflate/Run.lean:74:0: ("iii-hlit-too-many", "REJECT too many length or distance symbols", "REJECT too many length or distance symbols")
+info: VIRDeflate/Run.lean:80:0: ("iii-cl-oversubscribed", "REJECT over-subscribed", "REJECT over-subscribed")
+info: VIRDeflate/Run.lean:86:0: ("iii-cl-incomplete", "REJECT incomplete", "REJECT incomplete")
+info: VIRDeflate/Run.lean:92:0: ("iii-repeat-no-first", "REJECT truncated", "REJECT truncated")
+Build completed successfully (2976 jobs).
+saltbuild EXIT=0
