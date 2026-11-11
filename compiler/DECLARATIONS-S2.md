@@ -53,3 +53,10 @@ space, every initial cell in range):
 ## K6's population
 K6 holds if no file under `compiler/` states a layout lemma about ONE program. The router's and DEFLATE's layouts are instances
 of `Layout.lean`'s premise, discharged by the caller's setup.
+
+## Added before the file exists (same day)
+- `VIRC/Infer.lean`: syntax-directed type inference for L2 (`inferA`, `inferT`; no masks), and the theorem that a ⊢₂ derivation
+  fixes it: `HasType₂ Γ Δ e τ → inferT Γ e = some τ`. S2 needs the type at every binder, and S1's IR erased types.
+- **S2's lowering is indexed by the SOURCE term**, as `lowerT` is: `lower2 Γ e`, with `Γ` the inferred context. The simulation
+  relates an IR state (S1's image of e) to a word state (S2's image of the same e). So S1 ∘ S2 is a statement about e, with no
+  type re-inference over erased code.
