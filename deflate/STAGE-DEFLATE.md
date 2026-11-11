@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-067; audit df-audit-012: 142 of 142 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-073; audit df-audit-014: 147 of 147 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -74,6 +74,23 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       `bit_steps`, continue. The continuation is never written out; unification takes it from the computed run.
     - Mutant: the table index `8·tb` → `7·tb` is red INSIDE `table_step` (df-mutant-016: lines 385/389/393). The unmutated
       copy is GREEN (df-mutant-015). A one-line attribution grep first named the wrong line; reading the log corrected it.
+  - **S-8, declared BEFORE any code for the modes it touches (vir 9a79768):** a bit-serial `READ` mode reads every LSB-first
+    field ONE bit per step into acc (k, wt, ret in cursor-2 cells 2068–2071; the input moves to 2080). HDR reads BFINAL and
+    BTYPE as two fields, since R-c has no primitive to split one 3-bit field. `FIXLENS` is named for the S5 lengths, which S-2
+    left without a mode. Huffman DECODE (MSB-first) is NOT covered and owes its own line.
+  - **`readbit_step` / `readbit_trunc`: truncation and the carry, proved ONCE** (df-072). With byte < n, input cell v < 256 and
+    table cell `8·v + bi` = t, one step adds t·wt to acc, doubles wt, counts k down, advances (byte, bit) with a carry, and sets
+    mode := ret when k reaches 0. With byte ≥ n it writes reason 1 ("truncated") and mode REJECT, and nothing else. Both
+    resulting stores are given exactly.
+    - Mutant: the carry at bit 6 is red INSIDE `readbit_step`, in both branches (df-mutant-017: lines 488/496). The unmutated
+      copy is GREEN (df-mutant-018).
+  - **`hdr_step`, `hdrb_step`, `hdrd_step`: the block header, three straight-line modes with no bit read in them** (df-073).
+    HDR requests 1 bit with ret HDRB. HDRB keeps BFINAL in cell 4 and requests 2 bits with ret HDRD. HDRD dispatches: 0 → SHDR,
+    1 → FIXLENS (fill index 0), 2 → DHDR, otherwise reason 2 ("invalid block type") and REJECT.
+    - Mutant: BTYPE 1 → DHDR is red INSIDE `hdrd_step`'s BTYPE-1 branch (df-mutant-019: line 610). The unmutated copy is GREEN
+      (df-mutant-020).
+    - Not yet stated: the link from table cell t to S1's bit (t = `bitAt v bi` once TABLE has run). That link belongs to the
+      simulation (S-5) and is owed there.
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -120,5 +137,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-98 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…067, df-audit-001…012, df-audit-control-001, df-mutant-001…016, df-probe-001/002).
-D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.
+110 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…073, df-audit-001…014, df-audit-control-001, df-mutant-001…020, df-probe-001/002).
+D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
+(> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
+score is taken at that audit.
