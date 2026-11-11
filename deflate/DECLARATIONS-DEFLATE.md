@@ -77,3 +77,66 @@ accept/reject it is one more input like any other.
   - A positive control alters one oracle output in memory and must raise the disagreement count by exactly one.
 - ⚠️ **CORRECTION (after run 1, 14:15):** the population is **313**, not 314. The 313 pinned FILES include `ii-seed-raw`, which is
   not a stream, so the streams are 312 + A1's 1. The run counted it correctly (`x5/X5-RUN-1.md`). The line above is left as written.
+
+## The L2 step program (STATUS-vir 292), DECLARED BEFORE `Step.lean` EXISTS (2026-11-11, the 62nd head)
+X1 (a): one decode step is the L2 program, and the loop is in the logic. These are forced by L2 as built, the same way OBJECT-L3
+§1 forced the router. They are stated so that they are not found in a proof:
+- **(R-a) ONE region, `world`.** `ret` gives back one capability and a product cannot carry one, so the step is a term with Δ =
+  {world}, and it ends `ret world` on every path. This is L3's G2 (a) layout, taken for the same reason.
+  ⇒ **The cursor record cannot be a returned value. It lives in cells of `world`**, and the step reads it with `load` and
+  writes it with `store`.
+- **(R-b) No loop inside a step.** A `fix` body is checked with Δ = ∅, so it cannot load. **Every step does a BOUNDED number of
+  loads and stores, independent of n and OUTMAX.** Pure top-level `fix` terms (Δ = ∅) do the arithmetic between them. D4's
+  `bitAt` is one such `fix`.
+- **(R-c) P₂ = P₁.** There is no shift, bitwise operator, division or modulus. The bit position is kept as (byte index, bit
+  index), never divided at run time.
+
+**S-1 The layout of `world`** (cells are ints; offsets are functions of the parameters n and OUTMAX, X6):
+`[ cursor | input, n cells | output, OUTMAX cells | lengths, 316 + 19 cells | three code tables (CL, L, D), each count[16] ·
+first[16] · syms[288] ]`. The cursor cells are:
+- mode, byte index, bit index, m (output length), BFINAL;
+- a pending count (stored bytes or copy bytes left), the copy distance;
+- HLIT, HDIST, HCLEN, a fill index, the last length;
+- the build phase and its index;
+- the reason code.
+
+**S-2 The step's case split, by `mode`.** Each step does exactly ONE of these:
+| mode | the step |
+|---|---|
+| HDR | read BFINAL and BTYPE, then dispatch; BTYPE 3 → REJECT |
+| SHDR | align, read LEN and NLEN, check them |
+| SCOPY | copy ONE input byte to the output |
+| DHDR | read HLIT, HDIST, HCLEN, check them |
+| CLREAD | read ONE 3-bit code-length length |
+| BUILD | ONE cell of S4's construction for the current table (bl_count, then next_code, then syms, then the Kraft `left` check), the phase in a cursor cell |
+| LENS | decode ONE code-length symbol (+ its extra bits); write one length or start a repeat |
+| REP | write ONE repeated length |
+| SYM | decode ONE literal/length symbol: a literal writes one byte; 256 ends the block; a length reads its extra bits, decodes and checks the distance, and sets the pending copy |
+| COPY | copy ONE byte of a back-reference |
+| DONE / REJECT | fixed points: the step returns `world` unchanged |
+
+Fixed blocks reach BUILD with the S5 lengths written by the step itself (DEFLATE-E1's repaired reading: no completeness check
+on the fixed codes). The literal reading is a separate flag, so both readings run one program.
+
+**S-3 Decode inside one step** (S4's `decode`, ≤ 15 bits):
+- load the ≤ 3 input bytes that cover the next 15 bits, and the code's count[1..15] and first[1..15] (≤ 33 loads);
+- compute (ℓ, v) with a pure `fix` over those values;
+- then ONE load of syms. Truncation is decided from n, a cursor cell.
+
+**S-4 The named layer.** Step.lean carries its own named terms, compiled to de Bruijn `Tm₂` the way L3's `NT.c` does. Unlike
+L3's, they have `fix`, `app` and pairs. **l1/ and l2/ are untouched (D2).** l3/ is not a dependency.
+
+**S-5 The X3 (a) statements, fixed here and written in Safety.lean / Correct.lean BEFORE their proofs:**
+- **Safety:** for every n, every OUTMAX and every byte string b (**no premise on the bytes, D7**), from the world initialised
+  with b:
+  - no step is an index fault;
+  - the iteration reaches DONE or REJECT within a bound N(n, OUTMAX).
+  The measure is what D3 scores.
+- **Correctness:** the iteration reaches DONE with output o iff `inflate b OUTMAX = .ok o`, and REJECT iff `.error _`. It is
+  proved by a simulation of Spec.lean (whose loops are now fuel-free by `*_adequate`).
+
+**S-6 Reason codes** are ints in a cursor cell, one per S8 reason string, in a table in Step.lean. They are compared to S's
+reasons and never scored (S8).
+
+**What would show this declaration wrong:** a step with an unbounded number of loads; a cursor value carried outside `world`;
+any edit under l1/ or l2/; a mode added after the first Step.lean proof without a line here first.
