@@ -830,6 +830,8 @@ def cPHASE : Int := 12
 def cINDEX : Int := 13
 def cLIT : Int := 17
 def cCHK : Int := 2072
+def cDYN : Int := 2073
+def cTGT : Int := 2074
 def mBUILD : Int := 11
 
 /-- S5's length for position i of the 318-cell lengths run (288 literal/length, then 30 distance). -/
@@ -866,7 +868,9 @@ def fixlensN : NT :=
      .op "w3" tcap .store [.v "w2", .i cCHK, .v "lit"] <|
      .op "w4" tcap .store [.v "w3", .i cPHASE, .i 0] <|
      .op "w5" tcap .store [.v "w4", .i cINDEX, .i 0] <|
-     .op "w6" tcap .store [.v "w5", .i cMODE, .i mBUILD] (.ret (.v "w6")))
+     .op "w6" tcap .store [.v "w5", .i cTGT, .i 1] <|
+     .op "w7" tcap .store [.v "w6", .i cDYN, .i 0] <|
+     .op "w8" tcap .store [.v "w7", .i cMODE, .i mBUILD] (.ret (.v "w8")))
 
 def fixlensT : Tm₂ := fixlensN.c ["w"]
 
@@ -915,12 +919,13 @@ theorem fixlens_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Wo
     show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
     show (0 : Int) < L by omega, show 0 < L by omega]
 
-/-- **`FIXLENS`, the hand-off (i = 318):** HLIT 288, HDIST 30, CHK := the literal-reading flag, phase and index 0, mode BUILD. -/
+/-- **`FIXLENS`, the hand-off (i = 318):** HLIT 288, HDIST 30, CHK := the literal-reading flag, phase and index 0, TGT 1 (L),
+DYN 0 (S-10), mode BUILD. -/
 theorem fixlens_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
     (n om lit : Int) (hi : f cFILL = 318) (hn : f cN = n) (hom : f cOUTMAX = om) (hlit : f cLIT = lit) :
     Steps₂ (closeAt p fixlensT, σ)
-      (.ret (.const (.cap p)), ⟨(((((σ.H.insert (p + 7) 288).insert (p + 8) 30).insert (p + 2072) lit).insert (p + 12) 0).insert
-        (p + 13) 0).insert (p + 0) 11, σ.R⟩) := by
+      (.ret (.const (.cap p)), ⟨(((((((σ.H.insert (p + 7) 288).insert (p + 8) 30).insert (p + 2072) lit).insert (p + 12) 0).insert
+        (p + 13) 0).insert (p + 2074) 1).insert (p + 2073) 0).insert (p + 0) 11, σ.R⟩) := by
   simp only [cFILL, cN, cOUTMAX, cLIT] at hi hn hom hlit
   have h10 := hw.cell 10 (by decide) (by omega)
   have h15 := hw.cell 15 (by decide) (by omega)
@@ -931,7 +936,7 @@ theorem fixlens_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Wor
   simp [fixlensT, fixlensN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
       stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
       Const.toL1, Const.ofL1, Const.toBool, h10, h15, h16, h17, cFILL, cN, cOUTMAX, cLIT, cHLIT, cHDIST, cCHK, cPHASE, cINDEX,
-    cMODE, mBUILD, show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+    cMODE, mBUILD, cTGT, cDYN, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
     show (17 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega,
     show (2072 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega,
     show (0 : Int) < L by omega, show 0 < L by omega]

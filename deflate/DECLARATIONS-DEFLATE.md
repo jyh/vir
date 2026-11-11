@@ -232,3 +232,14 @@ syms[offs[ℓ] + v' − f], mode := ret; else ℓ = 15 → reason "invalid code"
 **S-8's falsifier is amended:** "a mode other than READ **or DECODE** that loads from the bit table".
 **What would show this wrong:** a build phase with more than one cell written per step beyond its counters; a check made in an
 order other than S4's; a decode that reads a bit after ℓ = 15 fails.
+
+### S-11 (amendment 5, 2026-11-11, the 63rd head). DECLARED before any BUILD code (FIXLENS's hand-off is re-proved with it).
+**BUILD's per-target values live in cells, written where the target is set, instead of being re-derived by branching on TGT at
+every step** (S-10 had BUILD branch on TGT for its source, its length and its table, which triples every phase lemma). Cursor-3
+gains four cells: X+5 SB (the source's first cell) · X+6 NN (its length) · X+7 TBB (the table's first cell) · X+8 VAR (0 normal,
+1 strict, 2 dist); all are cell indices relative to `world`'s base.
+- FIXLENS's hand-off writes SB := IN+n+OUTMAX, NN := 288, TBB := TB(1), VAR := 0, besides S-10's TGT := 1 and DYN := 0.
+- SYMS's end at TGT = 1 writes TGT := 2, SB := IN+n+OUTMAX+HLIT, NN := HDIST, TBB := TB(2), VAR := 2 if DYN = 1 else 0.
+- The CL target's hand-off (CLREAD's end) writes TGT := 0, SB := IN+n+OUTMAX+318, NN := 19, TBB := TB(0), VAR := 1.
+- Every BUILD phase reads SB, NN, TBB and VAR from those cells, and branches only on its own phase and data.
+S-10's semantics are unchanged: the values in the cells are exactly what S-10 derived from TGT.
