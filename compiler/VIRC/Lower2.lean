@@ -3,6 +3,9 @@
   context (caller parameters first). Types come from `inferA`, which every derivation fixes (`inferT_sound`). A λ/fix atom gets a
   LABEL: the table's next index is reserved before its body is compiled, so nested functions take the labels after it, and
   the body is written into its slot afterwards. Every label is therefore fixed at the moment its atom is reached.
+  A body is compiled under its OWN context ([τ] for λ, [τ₁, τ₁ → τ₂] for fix), never the enclosing one. C2 makes it closed, so
+  the offsets would agree either way. What this buys is that a body's code does not depend on WHERE its atom occurs, which is
+  what the code-value relation in the simulation needs.
   A shape that ⊢₂ or `Fragment2.ok` rules out lowers to a harmless placeholder. The S2 theorem quantifies only over
   accepted, typed programs.
 -/
@@ -35,10 +38,10 @@ def lower2A (Γ : Ctx S₂) : Atom₂ → Table → WOpd × Table
   | .const (.cap _), t => (.imm [], t)
   | .prim p as, t => let r := lower2L Γ as t; (primW p r.1, r.2)
   | .lam τ e, t =>
-      let r := lower2T (τ :: Γ) e (t ++ [(false, placeholder)])
+      let r := lower2T [τ] e (t ++ [(false, placeholder)])
       (.imm [BitVec.ofNat 64 t.length], r.2.set t.length (false, r.1))
   | .fix τ₁ τ₂ e, t =>
-      let r := lower2T (τ₁ :: .arr τ₁ τ₂ :: Γ) e (t ++ [(true, placeholder)])
+      let r := lower2T [τ₁, .arr τ₁ τ₂] e (t ++ [(true, placeholder)])
       (.imm [BitVec.ofNat 64 t.length], r.2.set t.length (true, r.1))
   | .pair a₁ a₂, t => let r₁ := lower2A Γ a₁ t; let r₂ := lower2A Γ a₂ r₁.2; (.cat r₁.1 r₂.1, r₂.2)
   | .fst a, t => let r := lower2A Γ a t

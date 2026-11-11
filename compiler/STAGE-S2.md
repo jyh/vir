@@ -19,8 +19,14 @@ caps, and C4 (b), checked arithmetic with an overflow exit.
   - `run_load` gives [42].
   - Red control: `mutants/RunWrong.lean`, the same run expecting [7, 15], `saltbuild EXIT=1` (`logs/s2-mutant-runwrong.log`).
 
+## Built since
+- `VIRC/Layout.lean`: the premise (`Layout`), `MemRel`, `cellAddr_toNat`, and `cellAddr_inj` (two live cells share an address
+  only if they are the same cell).
+- `Lower2`: λ/fix bodies now compile under their own closed context, so a body's code is independent of where its atom
+  occurs. The offsets agree either way for a closed body; the change serves the code-value relation.
+
 ## OWED (in order)
-1. `VIRC/Layout.lean`: the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise
+1. (was: `VIRC/Layout.lean`, now built): the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise
    disjoint as word ranges, no wraparound, lengths < 2⁶³, and `Store.WF`. `MemRel lay σ m` holds when every live cell (p+i) has
    its value in range at `cellAddr (lay p) i`. The cap value `⟨p⟩` corresponds to `[lay p, R(p)]`.
 2. `VIRC/Sim2.lean`:
