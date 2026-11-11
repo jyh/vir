@@ -167,4 +167,42 @@ theorem bitProg_spec (b i : Nat) (hb : b < 256) (hi : i < 8) (σ : Store) :
   rw [← bitAt_eq b i hb hi]
   exact bitProg_steps b i (by omega) σ
 
+
+/-! ## D4's terms are well-typed L2: `bitProg` at ⊢₂, closed, with Δ = ∅, and both `fix` bodies checked with Δ = ∅ (the rule) -/
+
+theorem mask_empty_replicate (k : Nat) : Mask.empty (List.replicate k false) := by
+  intro n h
+  rw [List.getElem?_replicate] at h
+  split at h <;> simp at h
+
+macro "l2type" : tactic => `(tactic| repeat' (first
+  | exact Split.nil | apply Split.none
+  | exact mask_empty_replicate _
+  | exact (mask_empty_replicate 0 : Mask.empty [])
+  | (intro n; rcases n with _ | _ | _ | _ | _ | _ | n <;> simp [tint, tcap])
+  | (right; rfl)
+  | rfl
+  | apply HasType₂.ret | apply HasType₂.letE | apply HasType₂.app | apply HasType₂.ite
+  | apply HasTypeA₂.var | apply HasTypeA₂.int | apply HasTypeA₂.prim
+  | apply HasTypeA₂.pair | apply HasTypeA₂.fst | apply HasTypeA₂.snd
+  | apply HasTypeL₂.cons | apply HasTypeL₂.nil))
+
+theorem POW_typed : HasTypeA₂ [] POW tPow := by
+  refine HasTypeA₂.fix (Δ := List.replicate 2 false) rfl rfl (mask_empty_replicate _) rfl ?_
+  unfold ple psub pmul
+  l2type
+
+theorem STRIP_typed : HasTypeA₂ [tPow] STRIP tStrip := by
+  refine HasTypeA₂.fix (Δ := List.replicate 3 false) rfl rfl (mask_empty_replicate _) rfl ?_
+  unfold ple plt padd psub
+  l2type
+
+/-- **D4's program is a closed, well-typed L2 term, with no capability anywhere.** -/
+theorem bitProg_typed (v i : Int) : HasType₂ [] [] (bitProg v i) tint := by
+  unfold bitProg plt
+  refine HasType₂.letE Split.nil (Or.inr rfl) (HasType₂.ret (mask_empty_replicate 0) POW_typed) ?_
+  refine HasType₂.letE (Split.none Split.nil) (Or.inr rfl)
+    (HasType₂.ret (mask_empty_replicate 1) STRIP_typed) ?_
+  l2type
+
 end VIRDeflate.Step

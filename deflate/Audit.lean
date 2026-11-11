@@ -129,3 +129,7 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.strip_steps
 #print axioms VIRDeflate.Step.bitProg_steps
 #print axioms VIRDeflate.Step.bitProg_spec
+#print axioms VIRDeflate.Step.mask_empty_replicate
+#print axioms VIRDeflate.Step.POW_typed
+#print axioms VIRDeflate.Step.STRIP_typed
+#print axioms VIRDeflate.Step.bitProg_typed
