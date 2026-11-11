@@ -55,3 +55,23 @@ the code 1 (symbol 16) first. Generator `corpus/gen_addendum.py`, manifest `corp
 `--check` rc 0 and red rc 1 on an altered byte. The pinned 313 files and their digest cc18ad46… are unchanged (`gen_corpus.py
 --check` rc 0 after the addendum). **X5's population is 313 + 1 = 314.** D1's REASON prediction is scored on the added stream; on
 accept/reject it is one more input like any other.
+
+## Addendum A2 (2026-11-11, the 62nd head): THE ORACLE PINNED, before its first run
+- **zlib 1.4**, `zlib-1.4.tar.gz` from https://zlib.net/, **sha256 `02dd159783677a749c04adbdd02b55b8a2bcc7e054f51b76b549199a916ad584`**,
+  read at download (1,507,140 bytes) and equal to the hash zlib.net publishes beside the link. Its `zlib.h` says
+  `ZLIB_VERSION "1.4"`. The tarball and its build stay in scratch; nothing of zlib is committed.
+- **The oracle driver** is `x5/zinflate.c`, compiled with zlib's own `inflate.c inftrees.c inffast.c adler32.c crc32.c zutil.c`
+  from that tarball (never a system zlib). It uses `inflateInit2(-15)`, gives the whole input at once, and calls `inflate`
+  until it returns anything but `Z_OK`. **ACCEPT iff `Z_STREAM_END`**. Everything else (`Z_BUF_ERROR`, `Z_DATA_ERROR`, any
+  other code) is REJECT, with zlib's message kept as the reason.
+- **The arm's driver** is `X5Driver.lean` (lake exe `x5`). It is HARNESS and is in NEITHER of D5's groups. It runs `inflateLit`
+  (S read literally) and `inflate` (DEFLATE-E1's repaired reading) with **OUTMAX = 2^26**. That is above the largest output any
+  corpus input can produce (≤ 40,010 input bytes; at most 258 output bytes per 12 input bits ≈ 6.9 MB), so X6's overflow
+  REJECT cannot cause a disagreement on this corpus.
+- **The comparison** is `x5/run_x5.py`. The population is the 313 pinned files (the class (iii) mutations are re-derived by
+  `gen_corpus.py --check`) plus Addendum A1's 1, which is 314. For each input it compares ACCEPT/REJECT, and on a double ACCEPT
+  the bytes, separately for each reading.
+  - **D1 is scored on `inflateLit`**, as DEFLATE-E1 says. `inflate`'s agreement is reported beside it as the repaired reading's,
+    never as D1's.
+  - Reasons are tabulated, never scored.
+  - A positive control alters one oracle output in memory and must raise the disagreement count by exactly one.
