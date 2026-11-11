@@ -710,4 +710,250 @@ theorem step_letE {T lay τfin σ m} {Γl Γt : Ctx S₂} {Δ₁ Δ₂ : List Bo
     exact ⟨τ₁ :: Γl, e₂, τ₁ :: Γt, Δ₂, _, rfl, rfl, hk.mono (lower2T_keeps Γl e₁ t).1, h₂, by simpa using hw.2,
       by simpa using hag.cons τ₁, hf.2, hok.2, .cons hv he⟩
 
+/-- The ending of a STUCK IR state, at the word level: the fault exit, or the overflow exit. -/
+def WStops (T : Table) (Wst : WSt × WMem) : Prop :=
+  ∃ W', stepW T Wst = some W' ∧ (W'.1 = .fault ∨ W'.1 = .ovf)
+
+/-- A capability variable: its IR value and its two words. -/
+theorem cap_lookup {T lay σ} {Γl : Ctx S₂} {ρ ρw} (he : EnvRel T lay σ Γl ρ ρw) {n : Nat} (hg : Γl[n]? = some tcap) :
+    ∃ p len, ρ[n]? = some (.const (.cap p)) ∧ σ.R.lookup p = some len ∧
+      ρw[offset Γl n]? = some (lay p) ∧ ρw[offset Γl n + 1]? = some (BitVec.ofNat 64 len) := by
+  obtain ⟨v, ws, h1, h2, h3⟩ := he.lookup hg
+  cases h2 with
+  | cap hR =>
+    rename_i p len
+    refine ⟨p, len, h1, hR, ?_⟩
+    simp only [varSlice, hg, Option.map_some, Option.getD_some, evalW] at h3
+    split at h3
+    · simp only [WRes.ok.injEq] at h3
+      exact slice2 (by simpa [size, tcap] using h3)
+    · cases h3
+
+theorem step_load {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {Δ : List Bool} {t : Table} {n : Nat}
+    {a : Atom₂} {e : Tm₂} {τ : Ty₂} {ρ ρw k kw}
+    (hg : Γt[n]? = some tcap) (ha : HasTypeA₂ Γt a tint) (he' : HasType₂ (tint :: Γt) (false :: Δ) e τ)
+    (hw : Tm.wfB Γl.length (.letOp .load [.var n, a] tint e) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.letOp .load [.var n, a] tint e) = true)
+    (hok : Tm.ok2 (.letOp .load [.var n, a] tint e) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.letOp .load [.var n, a] tint e) t).2 T) (hfr : FRel2 T lay σ τ k kw τfin)
+    (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    (stepIR (.run (lowerT (.letOp .load [.var n, a] tint e)) ρ k, σ) = none ∧
+        WStops T (.run (lower2T Γl (.letOp .load [.var n, a] tint e) t).1 ρw kw, m)) ∨
+    ∃ I', stepIR (.run (lowerT (.letOp .load [.var n, a] tint e)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.letOp .load [.var n, a] tint e) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Atom.wfLB, Atom.wfB, decide_eq_true_eq, Bool.and_eq_true] at hw
+  simp only [Tm.fnOk, Atom.fnOkL, Atom.fnOk, Bool.and_eq_true, true_and] at hf
+  simp only [Tm.ok2, Atom.ok2L, Atom.ok2, Bool.and_eq_true, true_and] at hok
+  simp only [lower2T, lower2L, lower2A, opCode] at hk ⊢
+  have hg' : Γl[n]? = some tcap := by rw [hag n hw.1.1]; exact hg
+  obtain ⟨p, len, hρ, hR, hb, hn⟩ := cap_lookup he hg'
+  obtain ⟨vi, evi, vti, woi⟩ := opd_sim hT t ha hw.1.2.1 hag he hf.1.1 hok.1.1
+    (KeepsFrom.of_keeps (lower2T_keeps _ e _) hk)
+  obtain ⟨i, rfl, hi⟩ := wout_int vti woi
+  have hlen : len < 2 ^ 63 := (hl.fits p len hR).2
+  have hIR : stepIR (.run (lowerT (.letOp .load [.var n, a] tint e)) ρ k, σ) =
+      (Store.load p i σ).map fun v₀ => (.run (lowerT e) (.const (.int v₀) :: ρ) k, σ) := by
+    simp [lowerT, lowerL, lowerA, stepIR, Opd.evalL, Opd.eval, hρ, evi, opIR, Val.asConst, List.mapM_cons, opStep]
+    cases Store.load p i σ <;> rfl
+  by_cases hbd : 0 ≤ i ∧ i < len
+  · obtain ⟨v₀, hv₀, hr₀, hm₀⟩ := load_sim hl hm hR hbd
+    refine .inr ⟨_, by rw [hIR, hv₀]; rfl, ?_⟩
+    rcases hi with hi | ⟨ri, hi⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi], .inr rfl⟩
+    · refine ⟨(.run (lower2T (tint :: Γl) e (lower2A Γl a t).2).1 (BitVec.ofInt 64 v₀ :: ρw) kw, m), ?_, .inl ?_⟩
+      · simp only [stepW, hb, hn, hi]; rw [if_pos ((bounds_iff ri hlen).2 hbd), hm₀]
+      · refine .run (Γl := tint :: Γl) (τ := τ) ⟨e, tint :: Γt, false :: Δ, _, rfl, rfl,
+          hk.mono (lower2A_keeps Γl a t).1, he', by simpa using hw.2, by simpa using hag.cons tint, hf.2, hok.2, ?_⟩ hfr hl hm
+        exact .cons (.int hr₀) he
+  · refine .inl ⟨by rw [hIR]; simp [Store.load, hR, hbd], ?_⟩
+    rcases hi with hi | ⟨ri, hi⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi], .inr rfl⟩
+    · refine ⟨(.fault, m), ?_, .inl rfl⟩
+      simp only [stepW, hb, hn, hi]; rw [if_neg (fun h => hbd ((bounds_iff ri hlen).1 h))]
+
+theorem step_store {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {Δ : List Bool} {t : Table} {n : Nat}
+    {a₁ a₂ : Atom₂} {e : Tm₂} {τ : Ty₂} {ρ ρw k kw}
+    (hg : Γt[n]? = some tcap) (ha₁ : HasTypeA₂ Γt a₁ tint) (ha₂ : HasTypeA₂ Γt a₂ tint)
+    (he' : HasType₂ (tcap :: Γt) (true :: Δ.set n false) e τ)
+    (hw : Tm.wfB Γl.length (.letOp .store [.var n, a₁, a₂] tcap e) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.letOp .store [.var n, a₁, a₂] tcap e) = true)
+    (hok : Tm.ok2 (.letOp .store [.var n, a₁, a₂] tcap e) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.letOp .store [.var n, a₁, a₂] tcap e) t).2 T)
+    (hfr : FRel2 T lay σ τ k kw τfin) (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    (stepIR (.run (lowerT (.letOp .store [.var n, a₁, a₂] tcap e)) ρ k, σ) = none ∧
+        WStops T (.run (lower2T Γl (.letOp .store [.var n, a₁, a₂] tcap e) t).1 ρw kw, m)) ∨
+    ∃ I', stepIR (.run (lowerT (.letOp .store [.var n, a₁, a₂] tcap e)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.letOp .store [.var n, a₁, a₂] tcap e) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Atom.wfLB, Atom.wfB, decide_eq_true_eq, Bool.and_eq_true] at hw
+  simp only [Tm.fnOk, Atom.fnOkL, Atom.fnOk, Bool.and_eq_true, true_and] at hf
+  simp only [Tm.ok2, Atom.ok2L, Atom.ok2, Bool.and_eq_true, true_and] at hok
+  simp only [lower2T, lower2L, lower2A, opCode] at hk ⊢
+  have hg' : Γl[n]? = some tcap := by rw [hag n hw.1.1]; exact hg
+  obtain ⟨p, len, hρ, hR, hb, hn⟩ := cap_lookup he hg'
+  have k₂ := KeepsFrom.of_keeps (lower2T_keeps _ e _) hk
+  obtain ⟨v₁, ev₁, vt₁, wo₁⟩ := opd_sim hT t ha₁ hw.1.2.1 hag he hf.1.1 hok.1.1
+    (KeepsFrom.of_keeps (lower2A_keeps Γl a₂ _) k₂)
+  obtain ⟨v₂, ev₂, vt₂, wo₂⟩ := opd_sim hT _ ha₂ hw.1.2.2.1 hag he hf.1.2.1 hok.1.2.1
+    (k₂.mono (lower2A_keeps Γl a₁ t).1)
+  obtain ⟨i, rfl, hi⟩ := wout_int vt₁ wo₁
+  obtain ⟨x, rfl, hx⟩ := wout_int vt₂ wo₂
+  have hlen : len < 2 ^ 63 := (hl.fits p len hR).2
+  have hIR : stepIR (.run (lowerT (.letOp .store [.var n, a₁, a₂] tcap e)) ρ k, σ) =
+      (Store.store p i x σ).map fun σ' => (.run (lowerT e) (.const (.cap p) :: ρ) k, σ') := by
+    simp [lowerT, lowerL, lowerA, stepIR, Opd.evalL, Opd.eval, hρ, ev₁, ev₂, opIR, Val.asConst, List.mapM_cons, opStep]
+    cases Store.store p i x σ <;> rfl
+  by_cases hbd : 0 ≤ i ∧ i < len
+  · have hs : Store.store p i x σ = some ⟨σ.H.insert (p + i) x, σ.R⟩ := by simp [Store.store, hR, hbd]
+    refine .inr ⟨_, by rw [hIR, hs]; rfl, ?_⟩
+    rcases hi with hi | ⟨ri, hi⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi], .inr rfl⟩
+    rcases hx with hx | ⟨rx, hx⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi, hx], .inr rfl⟩
+    obtain ⟨hl', hR'⟩ := layout_store hl hR rx hs
+    have hm' := memrel_store hl hm hR hs
+    refine ⟨(.run (lower2T (tcap :: Γl) e (lower2A Γl a₂ (lower2A Γl a₁ t).2).2).1 (lay p :: BitVec.ofNat 64 len :: ρw) kw,
+      Function.update m (cellAddr (lay p) (BitVec.ofInt 64 i)) (BitVec.ofInt 64 x)), ?_, .inl ?_⟩
+    · simp only [stepW, hb, hn, hi, hx]; rw [if_pos ((bounds_iff ri hlen).2 hbd)]
+    · rw [ofInt_nonneg hbd.1]
+      refine .run (Γl := tcap :: Γl) (τ := τ) ⟨e, tcap :: Γt, true :: Δ.set n false, _, rfl, rfl,
+        hk.mono (Keeps.trans (lower2A_keeps Γl a₁ t) (lower2A_keeps Γl a₂ _)).1, he', by simpa using hw.2,
+        by simpa using hag.cons tcap, hf.2, hok.2, ?_⟩ (hfr.transport hR') hl' hm'
+      exact .cons (.cap (by rw [hR']; exact hR)) (he.transport hR')
+  · refine .inl ⟨by rw [hIR]; simp [Store.store, hR, hbd], ?_⟩
+    rcases hi with hi | ⟨ri, hi⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi], .inr rfl⟩
+    rcases hx with hx | ⟨rx, hx⟩
+    · exact ⟨(.ovf, m), by simp [stepW, hb, hn, hi, hx], .inr rfl⟩
+    · refine ⟨(.fault, m), ?_, .inl rfl⟩
+      simp only [stepW, hb, hn, hi, hx]; rw [if_neg (fun h => hbd ((bounds_iff ri hlen).1 h))]
+
+theorem Agree.append (Γ Γ' : Ctx S₂) : Agree Γ.length Γ (Γ ++ Γ') := fun i hi => (List.getElem?_append_left hi).symm
+
+theorem toNat_label {l : Nat} (h : l < 2 ^ 64) : (BitVec.ofNat 64 l).toNat = l := by
+  simp only [BitVec.toNat_ofNat]; exact Nat.mod_eq_of_lt h
+
+theorem step_app {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {t : Table} {a₁ a₂ : Atom₂}
+    {τ₁ τ : Ty₂} {ρ ρw k kw}
+    (h₁ : HasTypeA₂ Γt a₁ (.arr τ₁ τ)) (h₂ : HasTypeA₂ Γt a₂ τ₁)
+    (hw : Tm.wfB Γl.length (.app a₁ a₂) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.app a₁ a₂) = true) (hok : Tm.ok2 (.app a₁ a₂) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.app a₁ a₂) t).2 T) (hfr : FRel2 T lay σ τ k kw τfin)
+    (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (lowerT (.app a₁ a₂)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.app a₁ a₂) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Bool.and_eq_true] at hw; simp only [Tm.fnOk, Bool.and_eq_true] at hf
+  simp only [Tm.ok2, Bool.and_eq_true] at hok
+  simp only [lower2T] at hk ⊢
+  obtain ⟨f, ef, vtf, wof⟩ := opd_sim hT t h₁ hw.1 hag he hf.1 hok.1
+    (KeepsFrom.of_keeps (lower2A_keeps Γl a₂ _) hk)
+  obtain ⟨v, ev, vtv, wov⟩ := opd_sim hT _ h₂ hw.2 hag he hf.2 hok.2 (hk.mono (lower2A_keeps Γl a₁ t).1)
+  rcases wof with wof | ⟨wsf, wof, rf⟩
+  · -- the function operand overflowed: the IR still calls (its value is code), the word machine stops at ovf
+    cases vtf with
+    | code =>
+      rename_i b c
+      cases b
+      · exact ⟨(.run c [v] k, σ), by simp [lowerT, stepIR, ef, ev], (.ovf, m), by simp [stepW, wof], .inr rfl⟩
+      · exact ⟨(.run c [v, .code true c] k, σ), by simp [lowerT, stepIR, ef, ev], (.ovf, m), by simp [stepW, wof],
+          .inr rfl⟩
+  cases rf with
+  | lam hlt hcode hbody =>
+    rename_i eb l
+    obtain ⟨t', ht', hTl, hkeep⟩ := hcode
+    obtain ⟨Γ, Δ, hty, hwb, hfb, hob⟩ := hbody
+    refine ⟨(.run (lowerT eb) [v] k, σ), by simp [lowerT, stepIR, ef, ev], ?_⟩
+    rcases wov with wov | ⟨wsv, wov, rv⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wof, wov], .inr rfl⟩
+    · refine ⟨(.run (lower2T [τ₁] eb t').1 wsv kw, m), by simp [stepW, wof, wov, toNat_label hlt, hTl], .inl ?_⟩
+      refine .run (Γl := [τ₁]) (τ := τ) ⟨eb, [τ₁] ++ Γ, Δ, t', rfl, rfl, by rw [ht']; exact hkeep, hty, hwb,
+        Agree.append _ _, hfb, hob, ?_⟩ hfr hl hm
+      simpa using EnvRel.cons rv .nil
+  | fix hlt hcode hbody =>
+    rename_i eb l
+    obtain ⟨t', ht', hTl, hkeep⟩ := hcode
+    obtain ⟨Γ, Δ, hty, hwb, hfb, hob⟩ := hbody
+    refine ⟨(.run (lowerT eb) [v, .code true (lowerT eb)] k, σ), by simp [lowerT, stepIR, ef, ev], ?_⟩
+    rcases wov with wov | ⟨wsv, wov, rv⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wof, wov], .inr rfl⟩
+    · refine ⟨(.run (lower2T [τ₁, .arr τ₁ τ] eb t').1 (wsv ++ [BitVec.ofNat 64 l]) kw, m),
+        by simp [stepW, wof, wov, toNat_label hlt, hTl], .inl ?_⟩
+      refine .run (Γl := [τ₁, .arr τ₁ τ]) (τ := τ) ⟨eb, [τ₁, .arr τ₁ τ] ++ Γ, Δ, t', rfl, rfl, by rw [ht']; exact hkeep,
+        hty, hwb, Agree.append _ _, hfb, hob, ?_⟩ hfr hl hm
+      simpa using EnvRel.cons rv (EnvRel.cons (.fix hlt ⟨t', ht', hTl, hkeep⟩ ⟨Γ, Δ, hty, hwb, hfb, hob⟩) .nil)
+
+theorem step_ite {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {Δ : List Bool} {t : Table} {a : Atom₂}
+    {e₁ e₂ : Tm₂} {τ : Ty₂} {ρ ρw k kw}
+    (h : HasTypeA₂ Γt a tbool) (h₁ : HasType₂ Γt Δ e₁ τ) (h₂ : HasType₂ Γt Δ e₂ τ)
+    (hw : Tm.wfB Γl.length (.ite a e₁ e₂) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.ite a e₁ e₂) = true) (hok : Tm.ok2 (.ite a e₁ e₂) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.ite a e₁ e₂) t).2 T) (hfr : FRel2 T lay σ τ k kw τfin)
+    (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (lowerT (.ite a e₁ e₂)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.ite a e₁ e₂) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Bool.and_eq_true] at hw; simp only [Tm.fnOk, Bool.and_eq_true] at hf
+  simp only [Tm.ok2, Bool.and_eq_true] at hok
+  simp only [lower2T] at hk ⊢
+  have kA := KeepsFrom.of_keeps (Keeps.trans (lower2T_keeps Γl e₁ _) (lower2T_keeps Γl e₂ _)) hk
+  have k₁ := (KeepsFrom.of_keeps (lower2T_keeps Γl e₂ _) hk).mono (lower2A_keeps Γl a t).1
+  have k₂ := hk.mono (Keeps.trans (lower2A_keeps Γl a t) (lower2T_keeps Γl e₁ _)).1
+  obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw.1.1 hag he hf.1.1 hok.1.1 kA
+  obtain ⟨b, rfl, hb⟩ := wout_bool vt wo
+  cases b
+  · refine ⟨(.run (lowerT e₂) ρ k, σ), by simp [lowerT, stepIR, ev], ?_⟩
+    rcases hb with hb | hb
+    · exact ⟨(.ovf, m), by simp [stepW, hb], .inr rfl⟩
+    · exact ⟨_, by simp [stepW, hb, boolW], .inl (.run (Γl := Γl) ⟨e₂, Γt, Δ, _, rfl, rfl, k₂, h₂, hw.2, hag, hf.2, hok.2, he⟩
+        hfr hl hm)⟩
+  · refine ⟨(.run (lowerT e₁) ρ k, σ), by simp [lowerT, stepIR, ev], ?_⟩
+    rcases hb with hb | hb
+    · exact ⟨(.ovf, m), by simp [stepW, hb], .inr rfl⟩
+    · exact ⟨_, by simp [stepW, hb, boolW], .inl (.run (Γl := Γl) ⟨e₁, Γt, Δ, _, rfl, rfl, k₁, h₁, hw.1.2, hag, hf.1.2,
+        hok.1.2, he⟩ hfr hl hm)⟩
+
+theorem step_case {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {Δ : List Bool} {t : Table} {a : Atom₂}
+    {e₁ e₂ : Tm₂} {τ₁ τ₂ τ : Ty₂} {ρ ρw k kw}
+    (h : HasTypeA₂ Γt a (.sum τ₁ τ₂)) (h₁ : HasType₂ (τ₁ :: Γt) (false :: Δ) e₁ τ)
+    (h₂ : HasType₂ (τ₂ :: Γt) (false :: Δ) e₂ τ)
+    (hw : Tm.wfB Γl.length (.case a e₁ e₂) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.case a e₁ e₂) = true) (hok : Tm.ok2 (.case a e₁ e₂) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.case a e₁ e₂) t).2 T) (hfr : FRel2 T lay σ τ k kw τfin)
+    (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (lowerT (.case a e₁ e₂)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.case a e₁ e₂) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Bool.and_eq_true] at hw; simp only [Tm.fnOk, Bool.and_eq_true] at hf
+  simp only [Tm.ok2, Bool.and_eq_true] at hok
+  have hinf : inferA Γl a = some (.sum τ₁ τ₂) := by rw [inferA_agree a hw.1.1 hag]; exact inferA_sound h
+  simp only [lower2T, hinf] at hk ⊢
+  have kA := KeepsFrom.of_keeps (Keeps.trans (lower2T_keeps (τ₁ :: Γl) e₁ _) (lower2T_keeps (τ₂ :: Γl) e₂ _)) hk
+  have k₁ := (KeepsFrom.of_keeps (lower2T_keeps (τ₂ :: Γl) e₂ _) hk).mono (lower2A_keeps Γl a t).1
+  have k₂ := hk.mono (Keeps.trans (lower2A_keeps Γl a t) (lower2T_keeps (τ₁ :: Γl) e₁ _)).1
+  obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw.1.1 hag he hf.1.1 hok.1.1 kA
+  cases vt with
+  | inl vt' =>
+    rename_i x
+    refine ⟨(.run (lowerT e₁) (x :: ρ) k, σ), by simp [lowerT, stepIR, ev], ?_⟩
+    rcases wo with wo | ⟨ws, wo, r⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wo], .inr rfl⟩
+    · cases r with
+      | inl r' =>
+        rename_i w
+        have htake : List.take (size τ₁) (w ++ List.replicate (max (size τ₁) (size τ₂) - size τ₁) 0) = w := by
+          rw [← r'.length, List.take_left]
+        refine ⟨(.run (lower2T (τ₁ :: Γl) e₁ (lower2A Γl a t).2).1 (w ++ ρw) kw, m), by simp [stepW, wo]; exact htake,
+          .inl (.run (Γl := τ₁ :: Γl) ⟨e₁, τ₁ :: Γt, false :: Δ, _, rfl, rfl, k₁, h₁, by simpa using hw.1.2,
+            by simpa using hag.cons τ₁, hf.1.2, hok.1.2, .cons r' he⟩ hfr hl hm)⟩
+  | inr vt' =>
+    rename_i x
+    refine ⟨(.run (lowerT e₂) (x :: ρ) k, σ), by simp [lowerT, stepIR, ev], ?_⟩
+    rcases wo with wo | ⟨ws, wo, r⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wo], .inr rfl⟩
+    · cases r with
+      | inr r' =>
+        rename_i w
+        have htake : List.take (size τ₂) (w ++ List.replicate (max (size τ₁) (size τ₂) - size τ₂) 0) = w := by
+          rw [← r'.length, List.take_left]
+        refine ⟨(.run (lower2T (τ₂ :: Γl) e₂ (lower2T (τ₁ :: Γl) e₁ (lower2A Γl a t).2).2).1 (w ++ ρw) kw, m),
+          by simp [stepW, wo]; exact htake, .inl (.run (Γl := τ₂ :: Γl) ⟨e₂, τ₂ :: Γt, false :: Δ, _, rfl, rfl, k₂, h₂,
+            by simpa using hw.2, by simpa using hag.cons τ₂, hf.2, hok.2, .cons r' he⟩ hfr hl hm)⟩
+
 end VIRC
