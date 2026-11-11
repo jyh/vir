@@ -184,3 +184,17 @@ HCLEN, the 3-bit code-length lengths, every extra-bits field) is read by `READ`,
   **D4:** unaffected (every table cell is still computed by `BITc` in TABLE).
 - **What would show this amendment wrong:** a mode other than READ that loads from the bit table; a field read whose value
   is not acc at its ret mode.
+
+### S-9 (amendment 3, 2026-11-11, the 63rd head). DECLARED before any FIXLENS or BUILD code. A LAYOUT DEFECT in S-1, found by reading S5 against it.
+- **S-1 sized the lengths area at 316 (+ 19 for CL)**, which is right for a dynamic block (HLIT ≤ 286, HDIST ≤ 30, read as ONE
+  run by S's `lensLoop`) and **too small for S5's fixed codes: 288 literal/length + 30 distance = 318**. The area is now
+  **318 cells, contiguous, at `IN + n + OUTMAX`**, followed by the 19 CL cells. The literal/distance split is the HLIT cell (7)
+  in both cases: a dynamic block writes it from its header, and FIXLENS writes 288 (and HDIST := 30).
+- **FIXLENS, one step:** with fill index i < 318, write S5's length for i at lengths[i] (i < 144 → 8, < 256 → 9, < 280 → 7,
+  < 288 → 8, else 5) and advance i. At i = 318: HLIT := 288, HDIST := 30, CHK := the literal-reading flag (cell 17), build
+  phase := 0, build index := 0, mode := BUILD.
+- **CHK (cursor-2 cell 2072)** tells BUILD whether to run S4's checks: under DEFLATE-E1's repaired reading a fixed code is
+  S4's assignment alone (CHK = 0), under the literal reading it goes through `code` with its checks (CHK = 1). A dynamic block
+  sets it from its own path. BUILD's own phases, and S4's `.strict`/`.dist` variants, get their line before BUILD's code.
+- **What would show this wrong:** a fixed length written outside lengths[0..318); a BUILD that reads the split from anything
+  but cell 7.
