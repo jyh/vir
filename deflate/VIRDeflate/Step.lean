@@ -398,4 +398,126 @@ theorem table_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Worl
           hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
           cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
 
+/-! ## `READ` (S-8): ONE bit per step, LSB-first into `acc`; truncation decided here and nowhere else -/
+
+def cBY : Int := 1       -- the input byte index
+def cBI : Int := 2       -- the bit index in that byte
+def cREASON : Int := 14
+def cN : Int := 15
+def cK : Int := 2068     -- cursor-2: bits left in the field
+def cACC : Int := 2069
+def cWT : Int := 2070
+def cRET : Int := 2071
+def IN : Int := 2080     -- the input, n cells
+def mREAD : Int := 2
+def mREJECT : Int := 99
+def rTRUNC : Int := 1
+
+def readN : NT :=
+  .op "by" tint .load [.v "w", .i cBY] <|
+  .op "bi" tint .load [.v "w", .i cBI] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .ite (.p2 .lt (.v "by") (.v "n"))
+    (.op "v" tint .load [.v "w", .p2 .add (.i IN) (.v "by")] <|
+     .op "x" tint .load [.v "w", .p2 .add (.i BT) (.p2 .add (.p2 .mul (.i 8) (.v "v")) (.v "bi"))] <|
+     .op "k" tint .load [.v "w", .i cK] <|
+     .op "acc" tint .load [.v "w", .i cACC] <|
+     .op "wt" tint .load [.v "w", .i cWT] <|
+     .op "rt" tint .load [.v "w", .i cRET] <|
+     .letE "nb" (.prod tint tint)
+       (.ite (.p2 .eq (.v "bi") (.i 7)) (.ret (.pair (.p2 .add (.v "by") (.i 1)) (.i 0)))
+         (.ret (.pair (.v "by") (.p2 .add (.v "bi") (.i 1))))) <|
+     .op "w1" tcap .store [.v "w", .i cBY, .fst (.v "nb")] <|
+     .op "w2" tcap .store [.v "w1", .i cBI, .snd (.v "nb")] <|
+     .op "w3" tcap .store [.v "w2", .i cACC, .p2 .add (.v "acc") (.p2 .mul (.v "x") (.v "wt"))] <|
+     .op "w4" tcap .store [.v "w3", .i cWT, .p2 .mul (.i 2) (.v "wt")] <|
+     .op "w5" tcap .store [.v "w4", .i cK, .p2 .sub (.v "k") (.i 1)] <|
+     .ite (.p2 .eq (.p2 .sub (.v "k") (.i 1)) (.i 0))
+       (.op "w6" tcap .store [.v "w5", .i cMODE, .v "rt"] (.ret (.v "w6")))
+       (.ret (.v "w5")))
+    (.op "w1" tcap .store [.v "w", .i cREASON, .i rTRUNC] <|
+     .op "w2" tcap .store [.v "w1", .i cMODE, .i mREJECT] (.ret (.v "w2")))
+
+def readT : Tm₂ := readN.c ["w"]
+
+/-- The cells `READ`'s step writes when a bit remains: the cursor (with a carry), acc, wt, k. -/
+def rdH (H : Finmap (fun _ : Int => Int)) (p bx bi acc wt k t : Int) : Finmap (fun _ : Int => Int) :=
+  ((((H.insert (p + 1) (tblNext bx bi).1).insert (p + 2) (tblNext bx bi).2).insert (p + 2069) (acc + t * wt)).insert
+    (p + 2070) (2 * wt)).insert (p + 2068) (k - 1)
+
+set_option maxHeartbeats 1000000 in
+/-- **`READ`, one step, a bit remaining (`readbit_step`):** from a world whose cursor is (bx, bi), bx < n, whose input cell
+`by` holds the byte v < 256 and whose table cell `8·v + bi` holds t, the step adds t·wt to acc, doubles wt, counts k down,
+advances the cursor with a carry, returns to `rt` when k reaches 0, and gives the world back. -/
+theorem readbit_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f)
+    (bx bi n v : Nat) (k acc wt rt t : Int) (hL : 2080 + n ≤ L)
+    (hby : f cBY = bx) (hbi : f cBI = bi) (hn : f cN = n) (hbyn : bx < n) (hbi7 : bi ≤ 7)
+    (hv : f (IN + bx) = v) (hv8 : v < 256) (ht : f (BT + (8 * v + bi)) = t)
+    (hk : f cK = k) (hacc : f cACC = acc) (hwt : f cWT = wt) (hrt : f cRET = rt) :
+    Steps₂ (closeAt p readT, σ)
+      (.ret (.const (.cap p)),
+        if k - 1 = 0 then ⟨(rdH σ.H p bx bi acc wt k t).insert (p + 0) rt, σ.R⟩ else ⟨rdH σ.H p bx bi acc wt k t, σ.R⟩) := by
+  simp only [cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET] at hby hbi hn hv ht hk hacc hwt hrt
+  have h1 := hw.cell 1 (by decide) (by omega)
+  have h2 := hw.cell 2 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  have hiv := hw.cell (2080 + bx) (by omega) (by omega)
+  have hit := hw.cell (20 + (8 * v + bi)) (by omega) (by omega)
+  have hik := hw.cell 2068 (by decide) (by omega)
+  have hia := hw.cell 2069 (by decide) (by omega)
+  have hiw := hw.cell 2070 (by decide) (by omega)
+  have hir := hw.cell 2071 (by decide) (by omega)
+  rw [hby] at h1; rw [hbi] at h2; rw [hn] at h15; rw [hv] at hiv; rw [ht] at hit
+  rw [hk] at hik; rw [hacc] at hia; rw [hwt] at hiw; rw [hrt] at hir
+  have hlt : (bx : Int) < n := by exact_mod_cast hbyn
+  have hiL : (2080 : Int) + bx < L := by omega
+  have hi0 : (0 : Int) ≤ 2080 + bx := by omega
+  have htL : (20 : Int) + (8 * v + bi) < L := by omega
+  have ht0 : (0 : Int) ≤ 20 + (8 * v + bi) := by omega
+  have hL1 : (1 : Int) < L := by omega
+  have hL2 : (2 : Int) < L := by omega
+  have hL15 : (15 : Int) < L := by omega
+  have hL0 : (0 : Int) < L := by omega
+  have hL0' : 0 < L := by omega
+  have hLk : (2068 : Int) < L := by omega
+  have hLa : (2069 : Int) < L := by omega
+  have hLw : (2070 : Int) < L := by omega
+  have hLr : (2071 : Int) < L := by omega
+  refine steps_run 40 ?_
+  by_cases h7 : bi = 7
+  · subst h7
+    simp only [Nat.cast_ofNat] at hit htL ht0 h2
+    by_cases hk1 : k - 1 = 0 <;>
+    simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH, tblNext, hk1, hlt,
+      Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+      hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+      Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+      hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr]
+  · have h7' : ¬ ((bi : Int) = 7) := by exact_mod_cast h7
+    by_cases hk1 : k - 1 = 0 <;>
+    simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH, tblNext, h7', hk1, hlt,
+      Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+      hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+      Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+      hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr]
+
+/-- **`READ`, one step, no bit remaining (`readbit_trunc`):** bx ≥ n sets reason "truncated" and mode REJECT, and nothing else. -/
+theorem readbit_trunc {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (bx n : Int) (hby : f cBY = bx) (hn : f cN = n) (hbyn : n ≤ bx) :
+    Steps₂ (closeAt p readT, σ)
+      (.ret (.const (.cap p)), ⟨(σ.H.insert (p + 14) 1).insert (p + 0) 99, σ.R⟩) := by
+  simp only [cBY, cN] at hby hn
+  have h1 := hw.cell 1 (by decide) (by omega)
+  have h2 := hw.cell 2 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  rw [hby] at h1; rw [hn] at h15
+  have hnlt : ¬ (bx < n) := by omega
+  refine steps_run 10 ?_
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, hnlt,
+    Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15,
+    Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+    cBY, cBI, cN, cMODE, cREASON, rTRUNC, mREJECT,
+    show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (15 : Int) < L by omega,
+    show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
 end VIRDeflate.Step

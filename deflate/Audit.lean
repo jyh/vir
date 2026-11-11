@@ -141,3 +141,5 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.BITc_subst
 #print axioms VIRDeflate.Step.steps_via_bit
 #print axioms VIRDeflate.Step.table_step
+#print axioms VIRDeflate.Step.readbit_step
+#print axioms VIRDeflate.Step.readbit_trunc
