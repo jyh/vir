@@ -175,16 +175,22 @@ theorem mask_empty_replicate (k : Nat) : Mask.empty (List.replicate k false) := 
   rw [List.getElem?_replicate] at h
   split at h <;> simp at h
 
+theorem fix_typed {Γ : Ctx S₂} {τ₁ τ₂ : Ty₂} {e : Tm₂} (h1 : hasCap τ₁ = false) (h2 : hasCap τ₂ = false)
+    (h : HasType₂ (τ₁ :: .arr τ₁ τ₂ :: Γ) (List.replicate (Γ.length + 2) false) e τ₂) :
+    HasTypeA₂ Γ (.fix τ₁ τ₂ e) (.arr τ₁ τ₂) :=
+  HasTypeA₂.fix h1 h2 (mask_empty_replicate _) (by simp) h
+
 macro "l2type" : tactic => `(tactic| repeat' (first
   | exact Split.nil | apply Split.none
   | exact mask_empty_replicate _
   | exact (mask_empty_replicate 0 : Mask.empty [])
-  | (intro n; rcases n with _ | _ | _ | _ | _ | _ | n <;> simp [tint, tcap])
+  | (intro n; rcases n with _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | n <;> simp [tint, tcap])
   | (right; rfl)
   | rfl
   | apply HasType₂.ret | apply HasType₂.letE | apply HasType₂.app | apply HasType₂.ite
   | apply HasTypeA₂.var | apply HasTypeA₂.int | apply HasTypeA₂.prim
   | apply HasTypeA₂.pair | apply HasTypeA₂.fst | apply HasTypeA₂.snd
+  | apply fix_typed rfl rfl
   | apply HasTypeL₂.cons | apply HasTypeL₂.nil))
 
 theorem POW_typed : HasTypeA₂ [] POW tPow := by
@@ -203,6 +209,44 @@ theorem bitProg_typed (v i : Int) : HasType₂ [] [] (bitProg v i) tint := by
   refine HasType₂.letE Split.nil (Or.inr rfl) (HasType₂.ret (mask_empty_replicate 0) POW_typed) ?_
   refine HasType₂.letE (Split.none Split.nil) (Or.inr rfl)
     (HasType₂.ret (mask_empty_replicate 1) STRIP_typed) ?_
+  l2type
+
+
+/-! ## `BITc`: the bit of a byte as ONE closed `fix` atom, the form the step program calls -/
+
+/-- `fix bit((v, i)) : int. let r = STRIPc(((7 − i, i), v)) in let q = POW(i) in if r < q then 0 else 1` (x = #0, bit = #1). -/
+def BITc : Atom₂ :=
+  .fix (.prod tint tint) tint <|
+    .letE tint (.app STRIPc (.pair (.pair (psub (ci 7) (.snd (vr 0))) (.snd (vr 0))) (.fst (vr 0)))) <|   -- r : #0, x : #1
+    .letE tint (.app POW (.snd (vr 1))) <|                                                                -- q : #0, r : #1
+    .ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1))
+
+/-- **The step's bit call:** for `a` evaluating to `(b, i)` with `i ≤ 7`, `let x = BITc(a) in e₂` steps to `e₂[bitAt b i / x]`. -/
+theorem bit_steps (b : Int) (i : Nat) (hi : i ≤ 7) (a : Atom₂) (ha : Atom.eval a = some (.pair (ci b) (ci i)))
+    (τ : Ty₂) (e₂ : Tm₂) (σ : Store) :
+    Steps₂ (.letE τ (.app BITc a) e₂, σ) (e₂.subst 0 (ci (bitAt b i)), σ) := by
+  -- the call
+  refine Steps₂.trans (steps_run 1
+    (d := (.letE τ (.letE tint (.app STRIPc (.pair (.pair (psub (ci 7) (.snd (.pair (ci b) (ci i))))
+        (.snd (.pair (ci b) (ci i)))) (.fst (.pair (ci b) (ci i)))))
+      (.letE tint (.app POW (.snd (.pair (ci b) (ci i)))) (.ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1))))) e₂, σ))
+    (by simp only [BITc]; l2eval)) ?_
+  -- strip
+  refine Steps₂.trans (Steps₂.letE (strip_steps (7 - i) i b _
+    (by rw [show ((7 - i : Nat) : Int) = 7 - (i : Int) by omega]; l2eval) _ _ σ)) ?_
+  -- pow2(i)
+  refine Steps₂.trans (Steps₂.letE (pow2_steps i _ (by l2eval) _ _ σ)) ?_
+  -- the comparison, then the binding
+  refine steps_run 2 ?_
+  unfold bitAt
+  rw [pow2_eq]
+  by_cases h : stripTop (7 - i) i b < 2 ^ i
+  · rw [if_pos h]; l2eval
+  · rw [if_neg h]; l2eval
+    all_goals (rw [show decide (stripTop (7 - i) i b < 2 ^ i) = false from decide_eq_false (by omega)]; l2eval)
+
+theorem BITc_typed : HasTypeA₂ [] BITc (.arr (.prod tint tint) tint) := by
+  simp only [BITc, STRIPc, STRIP, POW, Atom.subst, Tm.subst, Atom.substL, ple, plt, psub, pmul, padd]
   l2type
 
 end VIRDeflate.Step

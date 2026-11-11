@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-052; audit df-audit-010: 134 of 134 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-057; audit df-audit-011: 137 of 137 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -57,6 +57,9 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - **Typed (df-051): `bitProg_typed`, `POW_typed`, `STRIP_typed`.** `bitProg v i` is a closed, well-typed L2 term at ⊢₂, with
     Δ = ∅ and no capability anywhere. Both `fix` bodies are checked with Δ = ∅ by the rule itself. That is D4's "≥ 1 `fix`",
     as an L2 fact.
+  - **`BITc`** is the bit of a byte as ONE closed `fix` atom, the form the step program calls. **`bit_steps`** (df-054…056):
+    `let x = BITc((b, i)) in e₂` steps to `e₂[bitAt b i / x]` for i ≤ 7. **`BITc_typed`**: closed, at ⊢₂. A `fix` rule that
+    supplies its own empty mask (`fix_typed`) was added to the typing tactic.
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -103,5 +106,5 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-79 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…052, df-audit-001…010, df-audit-control-001, df-mutant-001…014, df-probe-001/002).
+85 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…057, df-audit-001…011, df-audit-control-001, df-mutant-001…014, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.
