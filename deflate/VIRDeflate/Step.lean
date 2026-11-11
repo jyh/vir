@@ -623,4 +623,202 @@ theorem hdrd_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World
     constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, cREASON, rBTYPE, mREJECT,
     show (2069 : Int) < L by omega, show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
 
+/-! ## Stored blocks (S3, split at each field by S-8): `SHDR` aligns and requests LEN, `SLEN` keeps it and requests NLEN,
+`SNLEN` makes S's three checks in S's order, `SCOPY` copies ONE byte per step and ends the block -/
+
+def cM : Int := 3
+def cPEND : Int := 5
+def cOUTMAX : Int := 16
+def mSLEN : Int := 8
+def mSNLEN : Int := 9
+def mSCOPY : Int := 10
+def mDONE : Int := 98
+def rSTORED : Int := 3   -- "invalid stored block lengths"
+def rOVER : Int := 4     -- "overflow"
+
+/-- `SHDR`: align the cursor (S1's `align`: to the next byte unless bit = 0), then request LEN (16 bits), ret `SLEN`. -/
+def shdrN : NT :=
+  .op "by" tint .load [.v "w", .i cBY] <|
+  .op "bi" tint .load [.v "w", .i cBI] <|
+  .letE "nb" tint (.ite (.p2 .eq (.v "bi") (.i 0)) (.ret (.v "by")) (.ret (.p2 .add (.v "by") (.i 1)))) <|
+  .op "w1" tcap .store [.v "w", .i cBY, .v "nb"] <|
+  .op "w2" tcap .store [.v "w1", .i cBI, .i 0] (reqN "w2" 16 mSLEN)
+/-- `SLEN`: LEN is in acc; keep it as the pending count, then request NLEN (16 bits), ret `SNLEN`. -/
+def slenN : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "w1" tcap .store [.v "w", .i cPEND, .v "a"] (reqN "w1" 16 mSNLEN)
+/-- `SNLEN`: NLEN is in acc. S3's checks, in S3's order: NLEN = LEN ^ 0xFFFF (for 16-bit fields, NLEN + LEN = 65535), then
+byte + LEN ≤ n ("truncated"), then m + LEN ≤ OUTMAX ("overflow"); all pass → `SCOPY`. -/
+def snlenN : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "len" tint .load [.v "w", .i cPEND] <|
+  .op "by" tint .load [.v "w", .i cBY] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "m" tint .load [.v "w", .i cM] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .ite (.p2 .eq (.p2 .add (.v "a") (.v "len")) (.i 65535))
+    (.ite (.p2 .lt (.v "n") (.p2 .add (.v "by") (.v "len")))
+      (.op "w1" tcap .store [.v "w", .i cREASON, .i rTRUNC] (.op "w2" tcap .store [.v "w1", .i cMODE, .i mREJECT] (.ret (.v "w2"))))
+      (.ite (.p2 .lt (.v "om") (.p2 .add (.v "m") (.v "len")))
+        (.op "w1" tcap .store [.v "w", .i cREASON, .i rOVER] (.op "w2" tcap .store [.v "w1", .i cMODE, .i mREJECT] (.ret (.v "w2"))))
+        (.op "w1" tcap .store [.v "w", .i cMODE, .i mSCOPY] (.ret (.v "w1")))))
+    (.op "w1" tcap .store [.v "w", .i cREASON, .i rSTORED] (.op "w2" tcap .store [.v "w1", .i cMODE, .i mREJECT] (.ret (.v "w2"))))
+/-- `SCOPY`: with pending 0 the block ends (BFINAL = 1 → `DONE`, else `HDR`); otherwise copy input[byte] to output[m]
+(the output at `IN + n`), and advance byte, m and the pending count. -/
+def scopyN : NT :=
+  .op "k" tint .load [.v "w", .i cPEND] <|
+  .ite (.p2 .eq (.v "k") (.i 0))
+    (.op "bf" tint .load [.v "w", .i cBF] <|
+     .ite (.p2 .eq (.v "bf") (.i 1))
+       (.op "w1" tcap .store [.v "w", .i cMODE, .i mDONE] (.ret (.v "w1")))
+       (.op "w1" tcap .store [.v "w", .i cMODE, .i mHDR] (.ret (.v "w1"))))
+    (.op "by" tint .load [.v "w", .i cBY] <|
+     .op "n" tint .load [.v "w", .i cN] <|
+     .op "x" tint .load [.v "w", .p2 .add (.i IN) (.v "by")] <|
+     .op "m" tint .load [.v "w", .i cM] <|
+     .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.i IN) (.v "n")) (.v "m"), .v "x"] <|
+     .op "w2" tcap .store [.v "w1", .i cBY, .p2 .add (.v "by") (.i 1)] <|
+     .op "w3" tcap .store [.v "w2", .i cM, .p2 .add (.v "m") (.i 1)] <|
+     .op "w4" tcap .store [.v "w3", .i cPEND, .p2 .sub (.v "k") (.i 1)] (.ret (.v "w4")))
+
+def shdrT : Tm₂ := shdrN.c ["w"]
+def slenT : Tm₂ := slenN.c ["w"]
+def snlenT : Tm₂ := snlenN.c ["w"]
+def scopyT : Tm₂ := scopyN.c ["w"]
+
+/-- **`SHDR`, one step:** the cursor aligned, then LEN requested (16 bits, ret `SLEN`). -/
+theorem shdr_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (bx bi : Int) (hby : f cBY = bx) (hbi : f cBI = bi) :
+    Steps₂ (closeAt p shdrT, σ)
+      (.ret (.const (.cap p)), ⟨reqH ((σ.H.insert (p + 1) (if bi = 0 then bx else bx + 1)).insert (p + 2) 0) p 16 8, σ.R⟩) := by
+  simp only [cBY, cBI] at hby hbi
+  have h1 := hw.cell 1 (by decide) (by omega)
+  have h2 := hw.cell 2 (by decide) (by omega)
+  rw [hby] at h1; rw [hbi] at h2
+  refine steps_run 16 ?_
+  by_cases h0 : bi = 0
+  · subst h0
+    simp [shdrT, shdrN, reqN, reqH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, h1, h2, cBY, cBI, cK, cACC, cWT, cRET, cMODE, mREAD, mSLEN,
+      show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (2068 : Int) < L by omega,
+      show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+  · simp [shdrT, shdrN, reqN, reqH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, h0, h1, h2, cBY, cBI, cK, cACC, cWT, cRET, cMODE, mREAD, mSLEN,
+      show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (2068 : Int) < L by omega,
+      show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`SLEN`, one step:** LEN (acc) becomes the pending count, and NLEN is requested (16 bits, ret `SNLEN`). -/
+theorem slen_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a : Int) (ha : f cACC = a) :
+    Steps₂ (closeAt p slenT, σ) (.ret (.const (.cap p)), ⟨reqH (σ.H.insert (p + 5) a) p 16 9, σ.R⟩) := by
+  simp only [cACC] at ha
+  have hia := hw.cell 2069 (by decide) (by omega)
+  rw [ha] at hia
+  refine steps_run 10 ?_
+  simp [slenT, slenN, reqN, reqH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hia, cK, cACC, cWT, cRET, cMODE, cPEND, mREAD, mSNLEN,
+    show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega,
+    show (2071 : Int) < L by omega, show (5 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- The cells `SNLEN` writes: the reason and REJECT on a failed check, else mode `SCOPY`. -/
+def snlenH (H : Finmap (fun _ : Int => Int)) (p a len bx n m om : Int) : Finmap (fun _ : Int => Int) :=
+  if a + len = 65535 then
+    if n < bx + len then (H.insert (p + 14) 1).insert (p + 0) 99
+    else if om < m + len then (H.insert (p + 14) 4).insert (p + 0) 99
+    else H.insert (p + 0) 10
+  else (H.insert (p + 14) 3).insert (p + 0) 99
+
+/-- **`SNLEN`, one step:** S3's three checks in S3's order, each to its own reason; all passing → `SCOPY`. -/
+theorem snlen_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a len bx n m om : Int) (ha : f cACC = a) (hlen : f cPEND = len) (hby : f cBY = bx) (hn : f cN = n) (hm : f cM = m)
+    (hom : f cOUTMAX = om) :
+    Steps₂ (closeAt p snlenT, σ) (.ret (.const (.cap p)), ⟨snlenH σ.H p a len bx n m om, σ.R⟩) := by
+  simp only [cACC, cPEND, cBY, cN, cM, cOUTMAX] at ha hlen hby hn hm hom
+  have hia := hw.cell 2069 (by decide) (by omega)
+  have h5 := hw.cell 5 (by decide) (by omega)
+  have h1 := hw.cell 1 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  have h3 := hw.cell 3 (by decide) (by omega)
+  have h16 := hw.cell 16 (by decide) (by omega)
+  rw [ha] at hia; rw [hlen] at h5; rw [hby] at h1; rw [hn] at h15; rw [hm] at h3; rw [hom] at h16
+  refine steps_run 16 ?_
+  by_cases hs : a + len = 65535
+  · by_cases ht : n < bx + len
+    · simp [snlenT, snlenN, snlenH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hs, ht, hia, h5, h1, h15, h3, h16, cACC, cPEND, cBY, cN, cM, cOUTMAX, cMODE,
+        cREASON, rTRUNC, mREJECT, show (2069 : Int) < L by omega, show (5 : Int) < L by omega, show (1 : Int) < L by omega,
+        show (15 : Int) < L by omega, show (3 : Int) < L by omega, show (16 : Int) < L by omega,
+        show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+    · by_cases ho : om < m + len
+      · simp [snlenT, snlenN, snlenH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hs, ht, ho, hia, h5, h1, h15, h3, h16, cACC, cPEND, cBY, cN, cM, cOUTMAX,
+          cMODE, cREASON, rOVER, mREJECT, show (2069 : Int) < L by omega, show (5 : Int) < L by omega,
+          show (1 : Int) < L by omega, show (15 : Int) < L by omega, show (3 : Int) < L by omega,
+          show (16 : Int) < L by omega, show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+      · simp [snlenT, snlenN, snlenH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hs, ht, ho, hia, h5, h1, h15, h3, h16, cACC, cPEND, cBY, cN, cM, cOUTMAX,
+          cMODE, mSCOPY, show (2069 : Int) < L by omega, show (5 : Int) < L by omega, show (1 : Int) < L by omega,
+          show (15 : Int) < L by omega, show (3 : Int) < L by omega, show (16 : Int) < L by omega,
+          show (0 : Int) < L by omega, show 0 < L by omega]
+  · simp [snlenT, snlenN, snlenH, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hs, hia, h5, h1, h15, h3, h16, cACC, cPEND, cBY, cN, cM, cOUTMAX, cMODE,
+      cREASON, rSTORED, mREJECT, show (2069 : Int) < L by omega, show (5 : Int) < L by omega, show (1 : Int) < L by omega,
+      show (15 : Int) < L by omega, show (3 : Int) < L by omega, show (16 : Int) < L by omega,
+      show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`SCOPY`, the block's end (pending 0):** BFINAL = 1 → `DONE`, otherwise `HDR`; nothing else is written. -/
+theorem scopy_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (bf : Int) (hk : f cPEND = 0) (hbf : f cBF = bf) :
+    Steps₂ (closeAt p scopyT, σ)
+      (.ret (.const (.cap p)), ⟨σ.H.insert (p + 0) (if bf = 1 then 98 else 1), σ.R⟩) := by
+  simp only [cPEND, cBF] at hk hbf
+  have h5 := hw.cell 5 (by decide) (by omega)
+  have h4 := hw.cell 4 (by decide) (by omega)
+  rw [hk] at h5; rw [hbf] at h4
+  refine steps_run 10 ?_
+  by_cases h : bf = 1
+  · subst h
+    simp [scopyT, scopyN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, h5, h4, cPEND, cBF, cMODE, mDONE, show (5 : Int) < L by omega,
+      show (4 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+  · simp [scopyT, scopyN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, h, h5, h4, cPEND, cBF, cMODE, mHDR, show (5 : Int) < L by omega,
+      show (4 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`SCOPY`, one byte (pending k ≠ 0):** input[bx] is written at output[m] (cell `IN + n + m`), and byte, m and the
+pending count advance. The bounds bx < n and m < OUTMAX are what `SNLEN`'s checks leave behind. -/
+theorem scopy_byte {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f)
+    (bx n m om : Nat) (k x : Int) (hL : 2080 + n + om ≤ L) (hk : f cPEND = k) (hk0 : k ≠ 0) (hby : f cBY = bx)
+    (hn : f cN = n) (hbyn : bx < n) (hx : f (IN + bx) = x) (hm : f cM = m) (hmo : m < om) :
+    Steps₂ (closeAt p scopyT, σ)
+      (.ret (.const (.cap p)),
+        ⟨(((σ.H.insert (p + (2080 + n + m)) x).insert (p + 1) (bx + 1)).insert (p + 3) (m + 1)).insert (p + 5) (k - 1),
+          σ.R⟩) := by
+  simp only [cPEND, cBY, cN, IN, cM] at hk hby hn hx hm
+  have h5 := hw.cell 5 (by decide) (by omega)
+  have h1 := hw.cell 1 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  have hix := hw.cell (2080 + bx) (by omega) (by omega)
+  have h3 := hw.cell 3 (by decide) (by omega)
+  rw [hk] at h5; rw [hby] at h1; rw [hn] at h15; rw [hx] at hix; rw [hm] at h3
+  refine steps_run 16 ?_
+  simp [scopyT, scopyN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hk0, h5, h1, h15, hix, h3, cPEND, cBY, cN, IN, cM,
+    show (5 : Int) < L by omega, show (1 : Int) < L by omega, show (15 : Int) < L by omega,
+    show (3 : Int) < L by omega, show (2080 : Int) + bx < L by omega, show (0 : Int) ≤ 2080 + bx by omega,
+    show (2080 : Int) + n + m < L by omega, show (0 : Int) ≤ 2080 + n + m by omega,
+    show (0 : Int) < L by omega, show 0 < L by omega]
+
 end VIRDeflate.Step

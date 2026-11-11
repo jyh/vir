@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-073; audit df-audit-014: 147 of 147 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-074; audit df-audit-015: 152 of 152 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -91,6 +91,15 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       (df-mutant-020).
     - Not yet stated: the link from table cell t to S1's bit (t = `bitAt v bi` once TABLE has run). That link belongs to the
       simulation (S-5) and is owed there.
+  - **Stored blocks, four straight-line modes (S3 split at each field by S-8)** (df-074). `shdr_step`: S1's `align` (next
+    byte unless bit = 0), then LEN requested (16 bits, ret SLEN). `slen_step`: LEN kept as the pending count, NLEN requested
+    (ret SNLEN). `snlen_step`: S3's checks in S3's order, each to its own reason code — NLEN + LEN = 65535 (S3's
+    `NLEN = LEN ^ 0xFFFF` for 16-bit fields; that both fields are < 2^16 is READ's to supply, and it is owed in the simulation),
+    then byte + LEN ≤ n (1, "truncated"), then m + LEN ≤ OUTMAX (4, "overflow"); all pass → SCOPY. `scopy_end`: pending 0 →
+    DONE if BFINAL = 1, else HDR. `scopy_byte`: input[byte] to output[m] at `IN + n + m`, byte, m and pending advanced.
+    - Mutants: the truncated and overflow reasons swapped is red INSIDE `snlen_step`'s truncated branch (df-mutant-021: line
+      752); the output address without `n` is red INSIDE `scopy_byte` (df-mutant-022: line 807). The unmutated copy is GREEN
+      (df-mutant-023).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -137,7 +146,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-110 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…073, df-audit-001…014, df-audit-control-001, df-mutant-001…020, df-probe-001/002).
+115 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…074, df-audit-001…015, df-audit-control-001, df-mutant-001…023, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
