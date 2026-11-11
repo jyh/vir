@@ -9,3 +9,4 @@ import VIRC
 #print axioms VIRC.rejects_alloc
 #print axioms VIRC.run_ovf
 #print axioms VIRC.compile_refines
+#print axioms VIRC.s2_converse

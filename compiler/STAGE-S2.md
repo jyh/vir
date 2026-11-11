@@ -32,9 +32,12 @@ this is a reading, not a score. **K6 HOLDS so far**: no file states a layout lem
   - a ⟶₂ fault is matched by FAULT or OVERFLOW;
   - n ⟶₂ steps are matched by ≥ n word steps, or by OVERFLOW.
 
-  Logs `s2c-*`: 3 builds and 1 audit, beside S2's count. **Still owed: the CONVERSE of S2** (a word run that finishes implies the
-  IR run finishes). It needs the IR to be total on typed states, which `sim2_step`'s two branches already give, plus determinism
-  of `stepW`, which holds because it is a function.
+  Logs `s2c-*`: 3 builds and 1 audit, beside S2's count.
+- **S2's converse is PROVED: `VIRC.s2_converse`** (`logs/s2c-audit-002.log`, standard axioms). If the word machine FINISHES with
+  `done ws` from a related start, the IR run finishes with a value related to ws: the word machine's answer is always an IR
+  answer. It rests on lock-step (`s2_run`), word determinism (`WN.det_stuck`) and `ir_classify`.
+  **Still owed:** the composed converse about the SOURCE (word finishes ⇒ ⟶₂ finishes). It needs `s1_converse` restated from
+  `compile_refines`'s initial Match (caller parameters) rather than `match_init`, which assumes a closed program.
 - The word memory is word-granular (`W → W` at cell addresses). The byte view (x86lean's `Mem`, 8 bytes per cell) is S3's bridge.
 - The code-table bound (< 2⁶⁴ entries) and the layout premise are HYPOTHESES the caller discharges. They are not checked by the
   compiler.

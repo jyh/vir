@@ -84,4 +84,76 @@ theorem s2_refines {lay σ m} (Γ₀ : Ctx S₂) (Δ₀ : List Bool) (e : Tm₂)
     · exact ⟨_, W', hw', .inl rfl⟩
     · exact ⟨j, W', hw', .inr r⟩
 
+/-! ## The converse: a word run that FINISHES forces the IR run to finish, with a related value. -/
+theorem WN.det_stuck {tbl : Table} : ∀ {n s t}, WN tbl n s t → stepW tbl t = none → ∀ {m u}, WN tbl m s u →
+    m ≤ n ∧ WN tbl (n - m) u t
+  | _, _, _, .refl _, ht, _, _, hm => by
+      cases hm with
+      | refl => exact ⟨le_refl _, by simpa using WN.refl _⟩
+      | step h _ => rw [ht] at h; cases h
+  | _, _, _, .step h₁ h₂, ht, _, _, hm => by
+      cases hm with
+      | refl => exact ⟨Nat.zero_le _, by simpa using WN.step h₁ h₂⟩
+      | step h₁' h₂' =>
+        rw [h₁] at h₁'; cases h₁'
+        obtain ⟨hle, hr⟩ := WN.det_stuck h₂ ht h₂'
+        exact ⟨by omega, by simpa [Nat.add_sub_add_right] using hr⟩
+
+theorem WN.from_stopped {tbl : Table} {k s u} (h : WN tbl k s u) (hs : stepW tbl s = none) : k = 0 ∧ u = s := by
+  cases h with
+  | refl => exact ⟨rfl, rfl⟩
+  | step h _ => rw [hs] at h; cases h
+
+/-- An IR run either takes n steps or stops (no step) before. -/
+theorem ir_classify (I : St × Store) : ∀ n, (∃ I', IRN n I I') ∨ (∃ j I', j < n ∧ IRN j I I' ∧ stepIR I' = none)
+  | 0 => .inl ⟨I, .refl _⟩
+  | n + 1 => by
+      rcases ir_classify I n with ⟨I', h⟩ | ⟨j, I', hj, h, hs⟩
+      · cases hst : stepIR I' with
+        | none => exact .inr ⟨n, I', by omega, h, hst⟩
+        | some I'' => exact .inl ⟨I'', by simpa using IRN.trans h (.step hst (.refl _))⟩
+      · exact .inr ⟨j, I', by omega, h, hs⟩
+
+/-- **S2's converse.** If the word machine FINISHES (`done ws`) from a related start, the IR run finishes with a value related to
+ws at the final store: the word machine's answer is always an IR answer. -/
+theorem s2_converse {T lay τfin} (hT : T.length < 2 ^ 64) {I₀ : St × Store} {W₀ : WSt × WMem}
+    (h0 : SRel T lay τfin I₀ W₀) {k ws m'} (hw : WN T k W₀ (.done ws, m')) :
+    ∃ j v σ', IRN j I₀ (.done v, σ') ∧ VRel T lay σ' τfin v ws := by
+  have hdone : stepW T (.done ws, m') = none := rfl
+  rcases ir_classify I₀ (k + 1) with ⟨I', hI⟩ | ⟨j, I', -, hI, hs⟩
+  · -- the IR takes k + 1 steps: the word machine would take k + 1 (impossible past done) or stop at ovf (≠ done)
+    obtain ⟨m, W', hW, r⟩ := s2_run hT h0 hI
+    rcases r with ⟨rfl, -⟩ | ⟨-, r⟩
+    · obtain ⟨hle, -⟩ := WN.det_stuck hw hdone hW; omega
+    · obtain ⟨-, hr⟩ := WN.det_stuck hw hdone hW
+      obtain ⟨st, mm⟩ := W'
+      simp only at r; subst r
+      obtain ⟨-, hu⟩ := WN.from_stopped hr rfl
+      cases hu
+  · obtain ⟨m, W', hW, r⟩ := s2_run hT h0 hI
+    obtain ⟨st, σ'⟩ := I'
+    rcases r with ⟨-, r⟩ | ⟨-, r⟩
+    · cases st with
+      | done v =>
+        cases r with
+        | done hv =>
+          rename_i ws' m''
+          obtain ⟨-, hr⟩ := WN.det_stuck hw hdone hW
+          obtain ⟨-, hu⟩ := WN.from_stopped hr rfl
+          simp only [Prod.mk.injEq, WSt.done.injEq] at hu
+          obtain ⟨rfl, rfl⟩ := hu
+          exact ⟨j, v, σ', hI, hv⟩
+      | run c ρ kk =>
+        rcases sim2_step hT r with ⟨-, W'', h1, h2⟩ | ⟨I₁, h1, -⟩
+        · obtain ⟨-, hr⟩ := WN.det_stuck hw hdone (WN.trans hW (.step h1 (.refl _)))
+          obtain ⟨st'', mm⟩ := W''
+          obtain ⟨-, hu⟩ := WN.from_stopped hr (by rcases h2 with h2 | h2 <;> (simp only at h2; subst h2; rfl))
+          rcases h2 with h2 | h2 <;> (simp only at h2; subst h2; cases hu)
+        · rw [hs] at h1; cases h1
+    · obtain ⟨-, hr⟩ := WN.det_stuck hw hdone hW
+      obtain ⟨st', mm⟩ := W'
+      simp only at r; subst r
+      obtain ⟨-, hu⟩ := WN.from_stopped hr rfl
+      cases hu
+
 end VIRC
