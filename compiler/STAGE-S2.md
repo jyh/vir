@@ -38,15 +38,35 @@ caps, and C4 (b), checked arithmetic with an overflow exit.
   - part 4, MEMORY: `layout_store` and `memrel_store`. A store preserves the layout premise and the memory relation, through
     `cellAddr_inj` and L2's own region disjointness (`cell_ne`). R never changes.
 
-## OWED (in order)
-1. (was: `VIRC/Layout.lean`, now built): the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise
-   disjoint as word ranges, no wraparound, lengths < 2⁶³, and `Store.WF`. `MemRel lay σ m` holds when every live cell (p+i) has
-   its value in range at `cellAddr (lay p) i`. The cap value `⟨p⟩` corresponds to `[lay p, R(p)]`.
-2. `VIRC/Sim2.lean`, the rest (the operand lemma is DONE, above):
-   - `VRel tbl τ v ws`: an IR value at type τ against words. A code value relates to a label whose table entry is `lower2T` of
-     the SAME source body. This is a relation and needs no decidable equality on code.
-   - The table lemma: entries are final once written (reserve, then set).
-   - The operand lemma: `evalW` of `lower2A` agrees with `Opd.eval` through `VRel`, or gives `ovf` exactly where an int leaves
-     the range.
-   - The store lemma: `Function.update` at one cell address preserves `MemRel`. This is the BitVec address-disjointness work.
-3. `VIRC/S2.lean`: `s2_refines`, the four clauses in `DECLARATIONS-S2.md`, and its composition with `s1_refines`/`s1_converse`.
+  - part 5, groundwork: `load_sim` (a live cell's load reads its value's word), `bounds_iff` (the word bounds test is L2's),
+    `slice2` (a capability's two words), `toInt_ofNat_small`, `ofInt_nonneg`, and `VRel/EnvRel.transport` (the relations read
+    σ only through R, which a store keeps).
+
+## A CORRECTION to DECLARATIONS-S2's theorem form, found while specifying the step (written BEFORE the step theorem exists)
+The declaration says *"an IR run that is stuck is matched by a word-machine run that reaches the FAULT exit"*. That is too
+strong. A load or store whose INDEX computation overflows makes the IR stuck at the out-of-bounds op, or not stuck at all, while
+the word machine stops at OVF first. The clause will be stated as **"… reaches the FAULT exit, or the OVERFLOW exit"**. The
+declaration's third clause (*OVF only where an int leaves the range*) is what that disjunct means, and **no clause allows a wrong
+finished value**. The declaration is left as written, and this is the record of the change.
+
+## OWED: the step simulation (the next head's first act), specified
+- **State relation** `SRel T lay (I : St × Store) (Wst : WSt × WMem)`:
+  - `run`: ∃ e Γl Γt Δ τ t with `c = lowerT e`, `wc = (lower2T Γl e t).1`, `KeepsFrom t.length (lower2T Γl e t).2 T`,
+    `HasType₂ Γt Δ e τ`, `Tm.wfB Γl.length e`, `Agree Γl.length Γl Γt`, `fnOk e`, `ok2 e` and `EnvRel T lay σ Γl ρ ρw`.
+  - Frames: `FRel2 τ k kw τfin`, a chain in which each frame's continuation is the same data at `τin :: Γl`, typed
+    `τin :: Γt ⊢ e₂ : τout`.
+  - `Layout σ lay` and `MemRel lay σ m`.
+  - `done`: `VRel τfin v ws`.
+- **Step lemma** (lock-step, one word step per IR step). From related states, an IR step is matched either by one word step to a
+  related state, or by one word step to `ovf`. Case by case:
+  - ret: pop or done, via `opd_sim`.
+  - letE: push both.
+  - load: `load_sim` + `bounds_iff` + `slice2`.
+  - store: `layout_store` + `memrel_store` + transport; the rebound cap is `VRel.cap`.
+  - app: the label's `CodeAt` gives the body's code at `[τ₁]`. `BodyOK` and `Agree 1` re-establish the relation in the body; a
+    fix's environment adds the self label's `VRel.fix`.
+  - ite and case: from `VRel.bool`, `.inl`, `.inr` (`take (size τ₁)` of the padded words).
+- **Stuck lemma**: a stuck IR `run` state under SRel is an out-of-bounds load/store (typed atoms always evaluate: `opd_sim`), and
+  the word machine steps to `fault` or `ovf`.
+- **S2 theorem**: the four clauses with the correction above. Then compose with `s1_refines`/`s1_converse` into one statement
+  about the source term.

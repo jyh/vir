@@ -561,4 +561,51 @@ theorem memrel_store {σ σ' : Store} {lay} {m : WMem} {p i v : Int} {n : Nat} (
     rw [Finmap.lookup_insert_of_ne _ hne'] at hw
     exact hm q m' hq j hj w hw
 
+/-! ## Part 5: groundwork for the step simulation (loads, capability words, transport across stores with the same R). -/
+theorem toInt_ofNat_small {n : Nat} (h : n < 2 ^ 63) : (BitVec.ofNat 64 n).toInt = n := by
+  have : BitVec.ofNat 64 n = BitVec.ofInt 64 (n : Int) := by simp
+  rw [this]; exact toInt_word (by simp only [inRange, decide_eq_true_eq]; omega)
+
+theorem ofInt_nonneg {i : Int} (h : 0 ≤ i) : BitVec.ofInt 64 i = BitVec.ofNat 64 i.toNat := by
+  obtain ⟨k, rfl⟩ := Int.eq_ofNat_of_zero_le h
+  simp
+
+/-- A live cell's load reads, through the layout, the word of its value. -/
+theorem load_sim {σ lay m} (hl : Layout σ lay) (hm : MemRel lay σ m) {p i : Int} {n : Nat}
+    (hR : σ.R.lookup p = some n) (hi : 0 ≤ i ∧ i < n) :
+    ∃ v, Store.load p i σ = some v ∧ inRange v = true ∧ m (cellAddr (lay p) (BitVec.ofInt 64 i)) = BitVec.ofInt 64 v := by
+  obtain ⟨v, hv, hr⟩ := hl.cells p n hR i.toNat (by omega)
+  rw [Int.toNat_of_nonneg hi.1] at hv
+  refine ⟨v, by simp [Store.load, hR, hi, hv], hr, ?_⟩
+  rw [ofInt_nonneg hi.1]
+  exact hm p n hR i.toNat (by omega) v (by rw [Int.toNat_of_nonneg hi.1]; exact hv)
+
+/-- The word bounds test agrees with L2's, for an index in range and a live length. -/
+theorem bounds_iff {i : Int} {n : Nat} (hi : inRange i = true) (hn : n < 2 ^ 63) :
+    (0 ≤ (BitVec.ofInt 64 i).toInt ∧ (BitVec.ofInt 64 i).toInt < (BitVec.ofNat 64 n).toInt) ↔ (0 ≤ i ∧ i < n) := by
+  rw [toInt_word hi, toInt_ofNat_small hn]
+
+/-- A two-word slice names the two words of the environment. -/
+theorem slice2 {ρw : List W} {off : Nat} {a b : W} (h : (ρw.drop off).take 2 = [a, b]) :
+    ρw[off]? = some a ∧ ρw[off + 1]? = some b := by
+  have h0 := congrArg (·[0]?) h; have h1 := congrArg (·[1]?) h
+  simp [List.getElem?_take, List.getElem?_drop] at h0 h1
+  exact ⟨h0, by simpa [Nat.add_comm] using h1⟩
+
+/-- The relations read σ only through R, so a store that keeps R keeps them. -/
+theorem VRel.transport {T lay} {σ σ' : Store} (hR : σ'.R = σ.R) : ∀ {τ v ws}, VRel T lay σ τ v ws → VRel T lay σ' τ v ws
+  | _, _, _, .int h => .int h
+  | _, _, _, .bool => .bool
+  | _, _, _, .unit => .unit
+  | _, _, _, .cap h => .cap (by rw [hR]; exact h)
+  | _, _, _, .lam h₁ h₂ h₃ => .lam h₁ h₂ h₃
+  | _, _, _, .fix h₁ h₂ h₃ => .fix h₁ h₂ h₃
+  | _, _, _, .pair h₁ h₂ => .pair (VRel.transport hR h₁) (VRel.transport hR h₂)
+  | _, _, _, .inl h => .inl (VRel.transport hR h)
+  | _, _, _, .inr h => .inr (VRel.transport hR h)
+
+theorem EnvRel.transport {T lay} {σ σ' : Store} (hR : σ'.R = σ.R) : ∀ {Γ ρ ρw}, EnvRel T lay σ Γ ρ ρw → EnvRel T lay σ' Γ ρ ρw
+  | _, _, _, .nil => .nil
+  | _, _, _, .cons h hs => .cons (h.transport hR) (EnvRel.transport hR hs)
+
 end VIRC
