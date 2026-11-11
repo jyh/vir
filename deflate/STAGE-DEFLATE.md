@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-007; audit df-audit-003)
+## What is built (saltbuild EXIT=0 at df-022; audit df-audit-005: 97 of 97 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -43,9 +43,16 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
    - The bug is in the generator's bit-writing, not in Appendix S.
 
 ## Limits, declared
-- **The fuel argument.** S's loops are written with fuel equal to the unread bits plus one. Running out REJECTs "truncated".
-  The claim that it never runs out before a REJECT ("every iteration reads ≥ 1 bit") is a lemma OWED and NOT PROVED here. Until
-  it is proved, `inflate` is S up to that claim.
+- ~~The fuel argument~~ **DISCHARGED at df-022 (audit df-audit-005): FUEL ADEQUACY for all three of S's unbounded loops.**
+  `huffLoop_fuel`, `lensLoop_fuel` and `blocks_fuel` (Spec.lean, §Fuel) each say: from any state, any two fuels above the unread
+  bits give the same run. `huff_adequate`, `lensLoop_adequate` and `run_adequate` say the spec as written (fuel = unread bits + 1
+  at entry) equals the loop at ANY such fuel. **So `inflate` and `inflateLit` are S, with no fuel caveat.**
+  - The proof rests on progress: `bit` and `decode` move the bit position forward from inside the input (`Adv`); every other
+    step, including the stored copy's `set` and the block bodies, never moves it back (`Mono`, via the start-state form `MF`).
+  - Mutant: a block header reading `bits 0` for BFINAL is red INSIDE `blocks_fuel` at its progress step (df-mutant-009). The
+    unmutated copy in the same sub-namespace is GREEN (df-mutant-008).
+  - The definitions X5 ran are byte-identical to these. The lemmas were appended below them, and the prefix was checked equal
+    against vir d3f4b39.
 - ~~The code representation~~ **DISCHARGED at df-012 (audit df-audit-004): `lookup_codeOf` and `lookup_some` (Huffman.lean, D5's
   group).** For every length ℓ in 1..15, the test `decodeGo` makes at ℓ (`lookup`, tied to `decodeGo` by `decodeGo_succ`) maps
   the code S4 assigns symbol i (`codeOf`: next_code[ℓ] plus the number of earlier symbols of length ℓ) to i. Conversely, any
@@ -59,5 +66,5 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-25 `saltbuild EXIT=` lines in `logs/df-*.log` so far (df-001…013 including df-008, the x5 exe; df-audit-001…004; df-audit-control-001; df-mutant-001…007).
+37 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…022, df-audit-001…005, df-audit-control-001, df-mutant-001…009).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.

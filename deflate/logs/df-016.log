@@ -1,0 +1,112 @@
+saltqueue: ticket P2 seat=root pid=8001
+⚠ [2973/2975] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2974/2975] Replayed VIRDeflate.Huffman
+warning: VIRDeflate/Huffman.lean:148:62: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:149:63: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:198:86: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:213:59: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [2975/2975] Building VIRDeflate.Spec (1.0s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Spec.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.setup.json --json
+error: VIRDeflate/Spec.lean:333:12: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  go (?m >>= ?k) ?e ?s
+in the target expression
+  go
+      (have __do_jp := fun __r => do
+        let e ← read
+        let s ← get
+        have __do_jp : Unit → M Unit := fun __r =>
+          have __do_jp := fun __r =>
+            set { pos := s.pos + 8 * len, out := s.out ++ e.inp.extract (s.pos / 8) (s.pos / 8 + len) };
+          if s.out.size + len > e.outmax then do
+            let __r ← reject "overflow"
+            __do_jp __r
+          else __do_jp ()
+        if s.pos / 8 + len > e.inp.size then do
+            let __r ← reject "truncated"
+            __do_jp __r
+          else __do_jp ();
+      if nlen ≠ len ^^^ 65535 then do
+        let __r ← reject "invalid stored block lengths"
+        __do_jp __r
+      else __do_jp ())
+      e s2 =
+    Except.ok (a, s')
+
+case h_1
+e : Env
+s : St
+a : Unit
+s' : St
+x✝² : Except String (Unit × St)
+a✝ : Unit
+s0 : St
+h0 : go align e s = Except.ok (a✝, s0)
+p0 : s.pos ≤ s0.pos
+x✝¹ : Except String (ℕ × St)
+len : ℕ
+s1 : St
+h1 : go (bits 16) e s0 = Except.ok (len, s1)
+p1 : s0.pos ≤ s1.pos
+x✝ : Except String (ℕ × St)
+nlen : ℕ
+s2 : St
+h2 : go (bits 16) e s1 = Except.ok (nlen, s2)
+hg :
+  go
+      (have __do_jp := fun __r => do
+        let e ← read
+        let s ← get
+        have __do_jp : Unit → M Unit := fun __r =>
+          have __do_jp := fun __r =>
+            set { pos := s.pos + 8 * len, out := s.out ++ e.inp.extract (s.pos / 8) (s.pos / 8 + len) };
+          if s.out.size + len > e.outmax then do
+            let __r ← reject "overflow"
+            __do_jp __r
+          else __do_jp ()
+        if s.pos / 8 + len > e.inp.size then do
+            let __r ← reject "truncated"
+            __do_jp __r
+          else __do_jp ();
+      if nlen ≠ len ^^^ 65535 then do
+        let __r ← reject "invalid stored block lengths"
+        __do_jp __r
+      else __do_jp ())
+      e s2 =
+    Except.ok (a, s')
+p2 : s1.pos ≤ s2.pos
+⊢ s.pos ≤ s'.pos
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Spec
+error: build failed
+saltbuild EXIT=1

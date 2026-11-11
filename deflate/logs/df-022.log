@@ -1,0 +1,67 @@
+saltqueue: ticket P2 seat=root pid=42853
+⚠ [2973/2978] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2974/2978] Replayed VIRDeflate.Huffman
+warning: VIRDeflate/Huffman.lean:148:62: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:149:63: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:198:86: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:213:59: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [2975/2978] Replayed VIRDeflate.Spec
+warning: VIRDeflate/Spec.lean:402:8: 'refine mf_bind (mono_pure _) fun _ _ _ => ?_' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Spec.lean:402:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRDeflate/Spec.lean:508:8: '(refine ag_bind fun _ s2 h2 => ?_; have := mono_pure _ e _ _ s2 h2)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Spec.lean:508:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+ℹ [2976/2978] Built VIRDeflate.Run (47s)
+info: VIRDeflate/Run.lean:26:0: ("i-stored-empty-final", "ACCEPT 0 bytes", "ACCEPT 0 bytes")
+info: VIRDeflate/Run.lean:32:0: ("i-fixed-empty-final", "ACCEPT 0 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:38:0: ("i-fixed-one-literal", "ACCEPT 1 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:44:0: ("i-fixed-overlap-copy", "ACCEPT 4 bytes", "REJECT incomplete")
+info: VIRDeflate/Run.lean:50:0: ("i-two-blocks", "ACCEPT 2 bytes", "ACCEPT 2 bytes")
+info: VIRDeflate/Run.lean:56:0: ("iii-btype-11", "REJECT invalid block type", "REJECT invalid block type")
+info: VIRDeflate/Run.lean:62:0: ("iii-stored-bad-nlen", "REJECT invalid stored block lengths", "REJECT invalid stored block lengths")
+info: VIRDeflate/Run.lean:68:0: ("iii-distance-too-far", "REJECT distance too far back", "REJECT incomplete")
+info: VIRDeflate/Run.lean:74:0: ("iii-hlit-too-many", "REJECT too many length or distance symbols", "REJECT too many length or distance symbols")
+info: VIRDeflate/Run.lean:80:0: ("iii-cl-oversubscribed", "REJECT over-subscribed", "REJECT over-subscribed")
+info: VIRDeflate/Run.lean:86:0: ("iii-cl-incomplete", "REJECT incomplete", "REJECT incomplete")
+info: VIRDeflate/Run.lean:92:0: ("iii-repeat-no-first", "REJECT truncated", "REJECT truncated")
+info: VIRDeflate/Run.lean:98:0: ("iiia1-repeat-no-first", "REJECT repeat with no first length", "REJECT repeat with no first length")
+✔ [2977/2978] Built VIRDeflate (1.7s)
+Build completed successfully (2978 jobs).
+saltbuild EXIT=0

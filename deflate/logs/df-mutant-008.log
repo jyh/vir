@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=41556
+mutants/SpecCtl.lean:402:8: warning: 'refine mf_bind (mono_pure _) fun _ _ _ => ?_' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/SpecCtl.lean:402:8: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/SpecCtl.lean:508:8: warning: '(refine ag_bind fun _ s2 h2 => ?_; have := mono_pure _ e _ _ s2 h2)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/SpecCtl.lean:508:8: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=0
