@@ -5,6 +5,7 @@ file). This file grows per row. FIRST: D4's bit-of-a-byte as an L2 term, a pure 
 l1/ and l2/ are imported and never edited (D2).
 -/
 import VIRDeflate.Bits
+import VIRDeflate.Spec
 import VIRL2
 
 namespace VIRDeflate.Step
@@ -819,6 +820,120 @@ theorem scopy_byte {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Worl
     show (5 : Int) < L by omega, show (1 : Int) < L by omega, show (15 : Int) < L by omega,
     show (3 : Int) < L by omega, show (2080 : Int) + bx < L by omega, show (0 : Int) ≤ 2080 + bx by omega,
     show (2080 : Int) + n + m < L by omega, show (0 : Int) ≤ 2080 + n + m by omega,
+    show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-! ## `FIXLENS` (S-8, S-9): S5's 318 fixed lengths, ONE per step, at `IN + n + OUTMAX`; then the hand-off to `BUILD` -/
+
+def cHLIT : Int := 7
+def cHDIST : Int := 8
+def cPHASE : Int := 12
+def cINDEX : Int := 13
+def cLIT : Int := 17
+def cCHK : Int := 2072
+def mBUILD : Int := 11
+
+/-- S5's length for position i of the 318-cell lengths run (288 literal/length, then 30 distance). -/
+def fixLenI (i : Int) : Int := if i < 144 then 8 else if i < 256 then 9 else if i < 280 then 7 else if i < 288 then 8 else 5
+
+/-- `fixLenI` IS S5's two tables, read as one run (`fixedLLens`, then `fixedDLens`). -/
+theorem fixLenI_eq (i : Nat) (hi : i < 318) :
+    fixLenI i = if i < 288 then ((fixedLLens.getD i 0 : Nat) : Int) else ((fixedDLens.getD (i - 288) 0 : Nat) : Int) := by
+  unfold fixLenI fixedLLens fixedDLens
+  by_cases h288 : i < 288
+  · simp only [h288, if_true, Array.getD_eq_getD_getElem?, Array.getElem?_map, List.getElem?_toArray,
+      List.getElem?_range h288, Option.map_some, Option.getD_some]
+    split_ifs <;> first | rfl | omega
+  · have : i - 288 < 30 := by omega
+    simp only [h288, if_false, Array.getD_eq_getD_getElem?, Array.getElem?_map, List.getElem?_toArray,
+      List.getElem?_range this, Option.map_some, Option.getD_some]
+    split_ifs <;> first | rfl | omega
+
+def fixlensN : NT :=
+  .op "i" tint .load [.v "w", .i cFILL] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .ite (.p2 .lt (.v "i") (.i 318))
+    (.letE "x" tint
+      (.ite (.p2 .lt (.v "i") (.i 144)) (.ret (.i 8)) <|
+       .ite (.p2 .lt (.v "i") (.i 256)) (.ret (.i 9)) <|
+       .ite (.p2 .lt (.v "i") (.i 280)) (.ret (.i 7)) <|
+       .ite (.p2 .lt (.v "i") (.i 288)) (.ret (.i 8)) (.ret (.i 5))) <|
+     .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.v "i"), .v "x"] <|
+     .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "i") (.i 1)] (.ret (.v "w2")))
+    (.op "lit" tint .load [.v "w", .i cLIT] <|
+     .op "w1" tcap .store [.v "w", .i cHLIT, .i 288] <|
+     .op "w2" tcap .store [.v "w1", .i cHDIST, .i 30] <|
+     .op "w3" tcap .store [.v "w2", .i cCHK, .v "lit"] <|
+     .op "w4" tcap .store [.v "w3", .i cPHASE, .i 0] <|
+     .op "w5" tcap .store [.v "w4", .i cINDEX, .i 0] <|
+     .op "w6" tcap .store [.v "w5", .i cMODE, .i mBUILD] (.ret (.v "w6")))
+
+def fixlensT : Tm₂ := fixlensN.c ["w"]
+
+/-- **`FIXLENS`, one length (i < 318):** S5's length for i (`fixLenI`) at lengths[i], the fill index advanced. -/
+theorem fixlens_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f)
+    (i n om : Nat) (hL : 2080 + n + om + 318 ≤ L) (hi : f cFILL = i) (hi318 : i < 318) (hn : f cN = n)
+    (hom : f cOUTMAX = om) :
+    Steps₂ (closeAt p fixlensT, σ)
+      (.ret (.const (.cap p)), ⟨(σ.H.insert (p + (2080 + n + om + i)) (fixLenI i)).insert (p + 10) (i + 1), σ.R⟩) := by
+  simp only [cFILL, cN, cOUTMAX] at hi hn hom
+  have h10 := hw.cell 10 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  have h16 := hw.cell 16 (by decide) (by omega)
+  rw [hi] at h10; rw [hn] at h15; rw [hom] at h16
+  have hlt : (i : Int) < 318 := by exact_mod_cast hi318
+  have haL : (2080 : Int) + n + om + i < L := by omega
+  have ha0 : (0 : Int) ≤ 2080 + n + om + i := by omega
+  refine steps_run 16 ?_
+  by_cases c1 : (i : Int) < 144
+  · simp [fixlensT, fixlensN, fixLenI, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hlt, c1, h10, h15, h16, haL, ha0, cFILL, cN, cOUTMAX, IN,
+      show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+  by_cases c2 : (i : Int) < 256
+  · simp [fixlensT, fixlensN, fixLenI, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hlt, c1, c2, h10, h15, h16, haL, ha0, cFILL, cN, cOUTMAX, IN,
+      show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+  by_cases c3 : (i : Int) < 280
+  · simp [fixlensT, fixlensN, fixLenI, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hlt, c1, c2, c3, h10, h15, h16, haL, ha0, cFILL, cN, cOUTMAX, IN,
+      show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+  by_cases c4 : (i : Int) < 288
+  · simp [fixlensT, fixlensN, fixLenI, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hlt, c1, c2, c3, c4, h10, h15, h16, haL, ha0, cFILL, cN, cOUTMAX, IN,
+      show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+      show (0 : Int) < L by omega, show 0 < L by omega]
+  simp [fixlensT, fixlensN, fixLenI, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, hlt, c1, c2, c3, c4, h10, h15, h16, haL, ha0, cFILL, cN, cOUTMAX, IN,
+    show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+    show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`FIXLENS`, the hand-off (i = 318):** HLIT 288, HDIST 30, CHK := the literal-reading flag, phase and index 0, mode BUILD. -/
+theorem fixlens_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (n om lit : Int) (hi : f cFILL = 318) (hn : f cN = n) (hom : f cOUTMAX = om) (hlit : f cLIT = lit) :
+    Steps₂ (closeAt p fixlensT, σ)
+      (.ret (.const (.cap p)), ⟨(((((σ.H.insert (p + 7) 288).insert (p + 8) 30).insert (p + 2072) lit).insert (p + 12) 0).insert
+        (p + 13) 0).insert (p + 0) 11, σ.R⟩) := by
+  simp only [cFILL, cN, cOUTMAX, cLIT] at hi hn hom hlit
+  have h10 := hw.cell 10 (by decide) (by omega)
+  have h15 := hw.cell 15 (by decide) (by omega)
+  have h16 := hw.cell 16 (by decide) (by omega)
+  have h17 := hw.cell 17 (by decide) (by omega)
+  rw [hi] at h10; rw [hn] at h15; rw [hom] at h16; rw [hlit] at h17
+  refine steps_run 16 ?_
+  simp [fixlensT, fixlensN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, h10, h15, h16, h17, cFILL, cN, cOUTMAX, cLIT, cHLIT, cHDIST, cCHK, cPHASE, cINDEX,
+    cMODE, mBUILD, show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
+    show (17 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega,
+    show (2072 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega,
     show (0 : Int) < L by omega, show 0 < L by omega]
 
 end VIRDeflate.Step

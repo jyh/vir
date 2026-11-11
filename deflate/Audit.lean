@@ -151,3 +151,6 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.snlen_step
 #print axioms VIRDeflate.Step.scopy_end
 #print axioms VIRDeflate.Step.scopy_byte
+#print axioms VIRDeflate.Step.fixLenI_eq
+#print axioms VIRDeflate.Step.fixlens_step
+#print axioms VIRDeflate.Step.fixlens_end

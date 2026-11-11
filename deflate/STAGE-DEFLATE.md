@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-074; audit df-audit-015: 152 of 152 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-075; audit df-audit-016: 155 of 155 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -100,6 +100,14 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - Mutants: the truncated and overflow reasons swapped is red INSIDE `snlen_step`'s truncated branch (df-mutant-021: line
       752); the output address without `n` is red INSIDE `scopy_byte` (df-mutant-022: line 807). The unmutated copy is GREEN
       (df-mutant-023).
+  - **S-9, a layout defect in my own S-1, found by reading S5 against it before FIXLENS existed (vir 5902da4):** the lengths
+    area held 316, which is right for a dynamic block and two cells short for S5's fixed 288 + 30. It is now 318 cells; the
+    split is the HLIT cell in both cases.
+  - **`FIXLENS`** (df-075). `fixlens_step`: with fill index i < 318, S5's length for i at lengths[i] (`IN + n + OUTMAX + i`),
+    i advanced. `fixlens_end`: at 318, HLIT 288, HDIST 30, CHK := the literal-reading flag, phase and index 0, mode BUILD.
+    `fixLenI_eq`: the step's lengths ARE `fixedLLens` then `fixedDLens`, read as one run.
+    - Mutant: the 280 boundary at 279 is red INSIDE `fixlens_step` (df-mutant-024: lines 878/901/907). The unmutated copy
+      is GREEN (df-mutant-025).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -146,7 +154,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-115 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…074, df-audit-001…015, df-audit-control-001, df-mutant-001…023, df-probe-001/002).
+119 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…075, df-audit-001…016, df-audit-control-001, df-mutant-001…025, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
