@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-077; audit df-audit-017: 162 of 162 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-079; audit df-audit-018: 168 of 168 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -121,6 +121,17 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - Mutants: first[j] without the doubling, red INSIDE `build_next_cell` (df-mutant-026: line 1136); count[ℓ] += 2, red
       INSIDE `build_count_cell` (df-mutant-027: line 1095); FIXLENS's SB written at X+4, red INSIDE `fixlens_end`
       (df-mutant-028: line 936). The unmutated copy is GREEN (df-mutant-029).
+  - **BUILD phases 3–4** (df-079; df-078 failed on two step bounds set too low, `run₂ 16` on a 17-step path, which reads as
+    `⊢ False`, and one heartbeat timeout). `build_left_cell`: left' = 2·left − count[j], below 0 → reason 5
+    ("over-subscribed"), REJECT; else left, total and rest (j ≥ 2) updated. `build_left_end`: left > 0 and `bExempt` ≠ 1 →
+    reason 6 ("incomplete"), REJECT; else phase 4. `bExempt` is S4's exempt by VAR (normal: one symbol of length 1; strict:
+    never; dist: that, or the empty code). `build_syms_cell`: syms[slot[ℓ]] := j, slot[ℓ] += 1 when ℓ ≠ 0.
+    `build_syms_end_cl` → LENS; `build_syms_end_l` → the D target's S-11 cells (VAR 2 iff DYN = 1), phase 0;
+    `build_syms_end_d` → SYM.
+    - Not yet stated: `bExempt` against S's `code` exemption by `Mode`, and BUILD's run against `assign` / `code`. Both
+      belong to the simulation (S-5).
+    - Mutants: dist without the empty-code exemption, red INSIDE `build_left_end` (df-mutant-030: line 1312); slot += 2, red
+      INSIDE `build_syms_cell` (df-mutant-031: line 1363). The unmutated copy is GREEN (df-mutant-032).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -167,7 +178,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-126 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…077, df-audit-001…017, df-audit-control-001, df-mutant-001…029, df-probe-001/002).
+132 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…079, df-audit-001…018, df-audit-control-001, df-mutant-001…032, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.

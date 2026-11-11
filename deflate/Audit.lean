@@ -161,3 +161,9 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.build_count_end
 #print axioms VIRDeflate.Step.build_next_cell
 #print axioms VIRDeflate.Step.build_next_end
+#print axioms VIRDeflate.Step.build_left_cell
+#print axioms VIRDeflate.Step.build_left_end
+#print axioms VIRDeflate.Step.build_syms_cell
+#print axioms VIRDeflate.Step.build_syms_end_cl
+#print axioms VIRDeflate.Step.build_syms_end_l
+#print axioms VIRDeflate.Step.build_syms_end_d
