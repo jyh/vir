@@ -243,3 +243,9 @@ gains four cells: X+5 SB (the source's first cell) · X+6 NN (its length) · X+7
 - The CL target's hand-off (CLREAD's end) writes TGT := 0, SB := IN+n+OUTMAX+318, NN := 19, TBB := TB(0), VAR := 1.
 - Every BUILD phase reads SB, NN, TBB and VAR from those cells, and branches only on its own phase and data.
 S-10's semantics are unchanged: the values in the cells are exactly what S-10 derived from TGT.
+
+### S-12 (amendment 6, 2026-11-11, the 63rd head). DECLARED before any code reading cursor-3.
+**Cell 2079 (cursor-2's last spare) holds X = IN + n + OUTMAX + 1393, cursor-3's first cell, set in the initial world beside n
+(15) and OUTMAX (16)** — it is a function of the parameters alone, like them. Every cursor-3 access loads X from 2079 rather than
+re-deriving it from n and OUTMAX. The initial world's contents are a function of (b, OUTMAX) only, so D7 (no premise on the
+bytes) is unaffected.
