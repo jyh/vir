@@ -6,3 +6,7 @@ import VIRC.Sim
 import VIRC.S1
 import VIRC.Converse
 import VIRC.Infer
+import VIRC.Word
+import VIRC.Flatten
+import VIRC.Fragment2
+import VIRC.Lower2

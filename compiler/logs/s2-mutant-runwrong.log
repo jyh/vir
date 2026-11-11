@@ -1,0 +1,10 @@
+saltqueue: ticket P2 seat=root pid=56947
+mutants/RunWrong.lean:5:116: error: Tactic `decide` proved that the proposition
+  WSt.isDone [7, 15]
+      (runProg []
+        (Tm.letE tint (Tm.ret (Atom.prim L1.Prim.add [Atom.const (Const.int 3), Atom.const (Const.int 4)]))
+          (Tm.ret ((Atom.var 0).pair (Atom.prim L1.Prim.mul [Atom.var 0, Atom.const (Const.int 2)]))))
+        [] (fun x => 0) 10) =
+    true
+is false
+saltbuild EXIT=1
