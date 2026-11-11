@@ -140,3 +140,19 @@ reasons and never scored (S8).
 
 **What would show this declaration wrong:** a step with an unbounded number of loads; a cursor value carried outside `world`;
 any edit under l1/ or l2/; a mode added after the first Step.lean proof without a line here first.
+
+### S-7 (amendment 1 to the step declaration, 2026-11-11, the 62nd head). DECLARED before any step-mode code exists. Step.lean so far holds D4's terms, the world predicate and the named layer, and no mode.
+**A mode is ADDED: `TABLE`, the INITIAL mode.** It fills a **bit table** of 2,048 cells, cell `8·b + i` = bit i of byte b, ONE
+cell per step, by ONE call of D4's `BITc` (cursor cells hold the byte and bit counters, advanced with a carry). When the table is
+full it moves to `HDR`. **Every later mode reads a bit as ONE `load` from the table**, at the index the cursor's byte and bit
+give: `8 · input[byte] + bit`.
+- **Why:** with a `fix` call per bit read, every mode's one-step lemma needs a relational split at each call, up to 15 per
+  decode. With table loads every mode is a straight-line run that `simp` evaluates on a symbolic world (L3's `F_short` form).
+  Exactly ONE mode then needs the `fix` lemma (`bit_steps`), once.
+- **D4 is unaffected and is scored as written.** The table's every cell is computed by an L2 term (`BITc`, a top-level `fix`)
+  during the run. "Bits come from something other than L2 terms" does not happen. A table SUPPLIED in the initial world, rather
+  than computed by the program, would falsify D4, and it is not done.
+- **The layout gains the table:** `[ cursor | bit table, 2048 | input, n | output, OUTMAX | lengths | code tables ]`. The
+  cursor gains the two counters.
+- **D3 is unaffected in kind:** the TABLE prefix is 2,048 steps, independent of the input. A termination measure must count
+  it, and it does not involve the input cursor.

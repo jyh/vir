@@ -249,4 +249,71 @@ theorem BITc_typed : HasTypeA₂ [] BITc (.arr (.prod tint tint) tint) := by
   simp only [BITc, STRIPc, STRIP, POW, Atom.subst, Tm.subst, Atom.substL, ple, plt, psub, pmul, padd]
   l2type
 
+
+/-! ## The world (S-1): ONE region of `L` cells at base `p`, its contents a function `f` (L3's `World`, with `L` a parameter) -/
+
+structure World (σ : Store) (p : Int) (L : Nat) (f : Int → Int) : Prop where
+  reg : σ.R.lookup p = some L
+  cell : ∀ i : Int, 0 ≤ i → i < L → σ.H.lookup (p + i) = some (f i)
+
+/-- A `store` inside the region keeps it a world, with the contents updated at that cell. -/
+theorem World.store {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) {i v : Int} (_hi0 : 0 ≤ i)
+    (_hiL : i < L) : World ⟨σ.H.insert (p + i) v, σ.R⟩ p L (Function.update f i v) where
+  reg := hw.reg
+  cell j hj0 hjL := by
+    by_cases hj : j = i
+    · subst hj; simp
+    · rw [Finmap.lookup_insert_of_ne _ (by omega), Function.update_of_ne hj]
+      exact hw.cell j hj0 hjL
+
+/-- Close a step term at the world's capability ⟨p⟩ (the step has `world` as de Bruijn #0). -/
+def closeAt (p : Int) (e : Tm₂) : Tm₂ := Tm.subst 0 (.const (.cap p)) e
+
+/-! ## The named layer (S-4): L3's `NT.c` idea, with `fix` atoms, `app`, pairs and projections -/
+
+inductive NA where
+  | v (x : String)
+  | i (n : Int)
+  | p2 (o : L1.Prim) (a b : NA)
+  | p1 (o : L1.Prim) (a : NA)
+  | pair (a b : NA)
+  | fst (a : NA)
+  | snd (a : NA)
+  | atom (a : Atom₂)            -- a CLOSED atom, e.g. `BITc`
+
+inductive NT where
+  | ret (a : NA)
+  | letE (x : String) (τ : Ty₂) (e₁ e₂ : NT)
+  | op (x : String) (τ : Ty₂) (o : Op) (as : List NA) (e : NT)
+  | ite (a : NA) (e₁ e₂ : NT)
+  | app (f a : NA)
+
+/-- Compile a named atom in scope Γ (innermost first). -/
+def NA.c (Γ : List String) : NA → Atom₂
+  | .v x => .var (Γ.idxOf x)
+  | .i n => .const (.int n)
+  | .p2 o a b => .prim o [a.c Γ, b.c Γ]
+  | .p1 o a => .prim o [a.c Γ]
+  | .pair a b => .pair (a.c Γ) (b.c Γ)
+  | .fst a => .fst (a.c Γ)
+  | .snd a => .snd (a.c Γ)
+  | .atom a => a
+
+def NT.c (Γ : List String) : NT → Tm₂
+  | .ret a => .ret (a.c Γ)
+  | .letE x τ e₁ e₂ => .letE τ (e₁.c Γ) (e₂.c (x :: Γ))
+  | .op x τ o as e => .letOp o (as.map (NA.c Γ)) τ (e.c (x :: Γ))
+  | .ite a e₁ e₂ => .ite (a.c Γ) (e₁.c Γ) (e₂.c Γ)
+  | .app f a => .app (f.c Γ) (a.c Γ)
+
+/-! ## Smoke: one load through the named layer, run by `simp` on a symbolic world -/
+
+def smokeN : NT := .op "x" tint .load [.v "w", .i 3] (.ret (.v "w"))
+
+theorem smoke_run {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 3 < L) :
+    run₂ 2 (closeAt p (smokeN.c ["w"]), σ) = (.ret (.const (.cap p)), σ) := by
+  have h3 := hw.cell (3 : Int) (by norm_num) (by omega)
+  simp [closeAt, smokeN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂,
+    stepFn₂, stepFn, opStep, Store.load, hw.reg, h3, Atom.eval, Atom.evalL, show (3 : Int) < L by omega]
+
 end VIRDeflate.Step
