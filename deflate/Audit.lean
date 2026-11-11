@@ -36,6 +36,11 @@ import VIRDeflate
 #print axioms VIRDeflate.complete_iff
 #print axioms VIRDeflate.prefix_free
 #print axioms VIRDeflate.codes_fit
+#print axioms VIRDeflate.first_one
+#print axioms VIRDeflate.tile_step
+#print axioms VIRDeflate.tile
+#print axioms VIRDeflate.complete_covers
+#print axioms VIRDeflate.Step.retInt?_eq
 #print axioms VIRDeflate.Run.i_stored_empty_final_inflate
 #print axioms VIRDeflate.Run.i_stored_empty_final_inflateLit
 #print axioms VIRDeflate.Run.i_fixed_empty_final_inflate

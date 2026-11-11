@@ -1,0 +1,3 @@
+saltqueue: ticket P2 seat=root pid=43425
+libc++abi: terminating due to uncaught exception of type lean::memory_exception: excessive memory consumption detected at 'interpreter' (potential solution: increase memory consumption threshold)
+saltbuild EXIT=134

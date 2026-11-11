@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-028; audit df-audit-006: 118 of 118 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-033; audit df-audit-007: 123 of 123 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -19,6 +19,10 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - **`complete_iff`**: `left = 0` iff the Kraft sum is exactly 1.
   - **`prefix_free`**: no code at a shorter length is a prefix of a code. With `lookup_some`, that is decode's uniqueness.
   - `codes_fit`: when the code is not over-subscribed, every ℓ-bit code is below 2^ℓ.
+  - **`complete_covers`** (df-032, STATUS 294) is completeness's converse. When `left = 0`, every 15-bit string has, at some
+    length, its leading bits equal to a code that decode's test accepts. With `prefix_free`, that length is unique.
+    - The proof tiles [0, 2^15) by the per-length intervals, using next_code[ℓ+1] = 2·F ℓ.
+    - No new mutant was run for it. The shift-0 mutant breaks `nextCodes_succ`, which it rests on.
   - Mutants, each on the definition AND its restatement together (Huffman's loop and Kraft's step):
     - shift by 0 instead of 1 is red inside `ncLoop_inv` (df-mutant-011);
     - `left' ≤ 0` instead of `< 0` is red inside `leftLoop_eq` (df-mutant-012);
@@ -33,6 +37,17 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - the sorry control is red (sorryAx, df-audit-control-001);
   - `mutants/WrongByte.lean` (the one-literal stream expected as "b") is red (df-mutant-001);
   - `mutants/BitsLe.lean` (`v < p` → `v ≤ p` in `stripTop`) is red INSIDE `stripTop_eq` (df-mutant-002).
+
+## The L2 step program, begun (STATUS 292; declarations in DECLARATIONS-DEFLATE.md, written before this file)
+- `VIRDeflate/Step.lean` holds D4's bit-of-a-byte as an L2 term: `POW` and `STRIP` are pure `fix` terms using only
+  `sub`/`lt`/`le`/`add`/`mul`, and `bitProg v i` combines them. It runs under L2's own `run₂`.
+- **Measured, and a route abandoned. Proving `bitProg = bitAt` on every byte by KERNEL EVALUATION does not scale:**
+  - one declaration over all 2,048 cases reached 16 GB RSS at 11 min. I stopped it by pid (df-030, a registered executor,
+    retired with its landing read);
+  - one bit index, 256 cases, under saltbuild `--cap 8000`, aborted at 8 GB in 19 s (df-probe-002);
+  - 2 cases take ~3 s, startup included (df-probe-001).
+  The kernel's cache grows per case. **The general proof needs compositional `run₂` lemmas (sequencing, `let` contexts,
+  `app` of a `fix`).** Safety and Correct will need the same lemmas, so they are the next work, not a detour.
 
 ## Findings, recorded before X5 (no oracle has run)
 1. **DEFLATE-E1** (`errata/ERRATA-DEFLATE.md`), found by READING S while transcribing it, before any build of Spec.lean.
@@ -77,5 +92,5 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-47 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…028, df-audit-001…006, df-audit-control-001, df-mutant-001…012).
+55 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…033, df-audit-001…007, df-audit-control-001, df-mutant-001…012, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.

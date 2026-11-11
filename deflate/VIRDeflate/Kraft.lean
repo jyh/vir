@@ -228,4 +228,54 @@ theorem codes_fit (lens : Array Nat) (left : Int) (h : leftAfter lens = some lef
   unfold F at this
   omega
 
+/-! ## Completeness, the converse (STATUS-vir 294): a complete code decodes every 15-bit string.
+The 15-bit strings whose first ℓ bits are an ℓ-bit code form `[first ℓ · 2^(15−ℓ), F ℓ · 2^(15−ℓ))`. Since `next_code[ℓ+1] = 2·F ℓ`,
+length ℓ's interval ends where length ℓ+1's begins, the first starts at 0, and the last ends at `F 15`. So when `F 15 = 2^15` they
+tile every 15-bit string. -/
+
+theorem first_one (lens : Array Nat) : (nextCodes lens).getD 1 0 = 0 := by
+  rw [nextCodes_succ lens 0 (by norm_num), nextCodes_zero, blCount_zero]
+
+theorem tile_step (lens : Array Nat) (l : Nat) (h : l < 15) :
+    F lens l * 2 ^ (15 - l) = (nextCodes lens).getD (l + 1) 0 * 2 ^ (15 - (l + 1)) := by
+  rw [nextCodes_succ lens l h, show 15 - l = (15 - (l + 1)) + 1 by omega, pow_succ]
+  unfold F; ring
+
+/-- Every 15-bit string below `F ℓ · 2^(15−ℓ)` lies in some length-j interval, j ≤ ℓ. -/
+theorem tile (lens : Array Nat) (w : Nat) : ∀ l, 1 ≤ l → l ≤ 15 → w < F lens l * 2 ^ (15 - l) →
+    ∃ j, 1 ≤ j ∧ j ≤ l ∧ (nextCodes lens).getD j 0 * 2 ^ (15 - j) ≤ w ∧ w < F lens j * 2 ^ (15 - j) := by
+  intro l
+  induction l with
+  | zero => intro h; omega
+  | succ l ih =>
+    intro _ hl hw
+    rcases Nat.eq_zero_or_pos l with h0 | h0
+    · subst h0
+      exact ⟨1, le_rfl, le_rfl, by rw [first_one]; simp, hw⟩
+    · by_cases hlt : w < F lens l * 2 ^ (15 - l)
+      · obtain ⟨j, h1, h2, h3, h4⟩ := ih h0 (by omega) hlt
+        exact ⟨j, h1, by omega, h3, h4⟩
+      · refine ⟨l + 1, by omega, le_rfl, ?_, hw⟩
+        rw [← tile_step lens l (by omega)]
+        omega
+
+/-- **COMPLETENESS, CONVERSE:** when S4's `left` is 0, every 15-bit string `w` has, at some length ℓ, its first ℓ bits equal to
+a code that `decode`'s test accepts. With `prefix_free`, that length is unique. -/
+theorem complete_covers (lens : Array Nat) (h : leftAfter lens = some 0) (w : Nat) (hw : w < 2 ^ 15) :
+    ∃ l, 1 ≤ l ∧ l ≤ 15 ∧ (lookup (assign lens) l (w / 2 ^ (15 - l))).isSome := by
+  rw [leftAfter_eq] at h
+  split_ifs at h with hF
+  simp only [Option.some.injEq] at h
+  have hF15 : F lens 15 = 2 ^ 15 := by
+    have : ((F lens 15 : Nat) : Int) = (2 : Int) ^ 15 := by linarith
+    exact_mod_cast this
+  obtain ⟨j, h1, h2, h3, h4⟩ := tile lens w 15 (by norm_num) le_rfl (by rw [hF15]; simpa using hw)
+  refine ⟨j, h1, h2, ?_⟩
+  have hk : 0 < 2 ^ (15 - j) := by positivity
+  have lo : (nextCodes lens).getD j 0 ≤ w / 2 ^ (15 - j) := (Nat.le_div_iff_mul_le hk).mpr h3
+  have hi : w / 2 ^ (15 - j) < F lens j := (Nat.div_lt_iff_lt_mul hk).mpr h4
+  unfold lookup
+  rw [assign_first, assign_count _ _ (by omega), if_pos ⟨lo, by unfold F at hi; exact hi⟩]
+  rfl
+
 end VIRDeflate
