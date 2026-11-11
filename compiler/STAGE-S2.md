@@ -24,6 +24,9 @@ caps, and C4 (b), checked arithmetic with an overflow exit.
   only if they are the same cell).
 - `Lower2`: λ/fix bodies now compile under their own closed context, so a body's code is independent of where its atom
   occurs. The offsets agree either way for a closed body; the change serves the code-value relation.
+- `VIRC/Table.lean`: `Keeps`. Lowering only appends or fills its own reserved slot, so every entry below the incoming length is
+  final (`lower2T_keeps`). `letOp` now lowers its operands and continuation uniformly, and `opCode` picks the instruction, so
+  the table threads one way in every case.
 
 ## OWED (in order)
 1. (was: `VIRC/Layout.lean`, now built): the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise

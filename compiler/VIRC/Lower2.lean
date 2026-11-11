@@ -29,6 +29,13 @@ def primW : L1.Prim → List WOpd → WOpd
 
 def placeholder : WCode := .ret (.imm [])
 
+/-- The instruction for an O₂ operation, given its lowered operands and its lowered continuation. S2-A (a): only `load` and
+`store`. The capability is a VARIABLE (⊢₂), read by its offset. -/
+def opCode (Γ : Ctx S₂) : VIRL2.Op → List Atom₂ → List WOpd → WCode → WCode
+  | .load, [.var n, _], [_, oi], k => .load (offset Γ n) oi k
+  | .store, [.var n, _, _], [_, oi, ov], k => .store (offset Γ n) oi ov k
+  | _, _, _, _ => placeholder
+
 mutual
 def lower2A (Γ : Ctx S₂) : Atom₂ → Table → WOpd × Table
   | .var n, t => (varSlice Γ n, t)
@@ -66,12 +73,8 @@ def lower2L (Γ : Ctx S₂) : List Atom₂ → Table → List WOpd × Table
 def lower2T (Γ : Ctx S₂) : Tm₂ → Table → WCode × Table
   | .ret a, t => let r := lower2A Γ a t; (.ret r.1, r.2)
   | .letE τ e₁ e₂, t => let r₁ := lower2T Γ e₁ t; let r₂ := lower2T (τ :: Γ) e₂ r₁.2; (.letE r₁.1 r₂.1, r₂.2)
-  | .letOp .load [.var n, a] τ e, t =>
-      let r := lower2A Γ a t; let k := lower2T (τ :: Γ) e r.2; (.load (offset Γ n) r.1 k.1, k.2)
-  | .letOp .store [.var n, a₁, a₂] τ e, t =>
-      let r₁ := lower2A Γ a₁ t; let r₂ := lower2A Γ a₂ r₁.2; let k := lower2T (τ :: Γ) e r₂.2
-      (.store (offset Γ n) r₁.1 r₂.1 k.1, k.2)
-  | .letOp _ _ _ _, t => (placeholder, t)
+  | .letOp o as τ e, t =>
+      let rs := lower2L Γ as t; let k := lower2T (τ :: Γ) e rs.2; (opCode Γ o as rs.1 k.1, k.2)
   | .app a₁ a₂, t => let r₁ := lower2A Γ a₁ t; let r₂ := lower2A Γ a₂ r₁.2; (.app r₁.1 r₂.1, r₂.2)
   | .ite a e₁ e₂, t =>
       let r := lower2A Γ a t; let r₁ := lower2T Γ e₁ r.2; let r₂ := lower2T Γ e₂ r₁.2; (.ite r.1 r₁.1 r₂.1, r₂.2)

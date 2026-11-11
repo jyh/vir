@@ -60,3 +60,5 @@ of `Layout.lean`'s premise, discharged by the caller's setup.
 - **S2's lowering is indexed by the SOURCE term**, as `lowerT` is: `lower2 Γ e`, with `Γ` the inferred context. The simulation
   relates an IR state (S1's image of e) to a word state (S2's image of the same e). So S1 ∘ S2 is a statement about e, with no
   type re-inference over erased code.
+- `VIRC/Table.lean` (added before it exists): the table lemmas. Lowering only APPENDS, or SETS its own reserved slot, so every
+  entry below the incoming table's length is unchanged, and the table only grows.
