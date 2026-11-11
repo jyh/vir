@@ -1,0 +1,17 @@
+name = "compiler"
+defaultTargets = ["VIRC"]
+
+# O95, PREDICTIONS-amend-23 §K: the VIR → x86-64 compiler for L2 programs (OBJECT-COMPILER), Lean. A SEPARATE project beside
+# l1/ … l4/, so their counts stay put. L2 is IMPORTED by path and never edited (compiler/DECLARATIONS-S1.md).
+# mathlib at salt's pin (packages APFS-cloned from l3, manifest written by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l2"
+path = "../l2"
+
+[[lean_lib]]
+name = "VIRC"
