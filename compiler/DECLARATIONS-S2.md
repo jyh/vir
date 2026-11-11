@@ -62,3 +62,6 @@ of `Layout.lean`'s premise, discharged by the caller's setup.
   type re-inference over erased code.
 - `VIRC/Table.lean` (added before it exists): the table lemmas. Lowering only APPENDS, or SETS its own reserved slot, so every
   entry below the incoming table's length is unchanged, and the table only grows.
+- `VIRC/Compose.lean` (added before it exists, after S2 closed): S1 ∘ S2 as ONE statement about the SOURCE program. The source
+  term is the program with its caller parameters instantiated (`instL`); S1's simulation starts from an environment of those
+  parameters (`TRel.inst`, by `TRel.subst` outermost-first). Its logs are `s2c-*`, beside S2's count and not in it.
