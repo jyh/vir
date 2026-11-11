@@ -135,6 +135,8 @@ the arm's first L4 rule.
   ✅ **RESOLVED at d257d2f29 (22:10, the arm's "my defect"):** the exported `virl4_sem.prla` (3,601,455 bytes, `q6r_tc` present) is committed. Dry `--arm metaprll4`, rc 0, roots plus `q6rtc=q6r_tc;q6rrace=q6r_race`: 1,464 rules (1,438 + 26), 2,690,672 tok, rooted 37; `q6r_tc` C5 103,672/202 (root 36,359 tok), `q6r_race` C5 68,643/173 (root 3,800 tok), 1 step each (upper bounds). **The control is COUNTED at d257d2f29.**
 - **L4 CLOSING CENSUS at d257d2f29 (22:56, committed bytes, clean tree, one session): 17 `virl4_*` modules, 1,464 GROUNDED, 0 UNGR, 0 INCOMPLETE, 0 PRIM** (sig 13 · step 52 · tot 41 · typing 74 · erase 25 · prog 74 · tri 48 · rules 34 · cons 15 · tc2t 32 · cet 17 · cem 63 · cer 46 · ceq 25 · trik 781 · tc4t 47 · sem 77). **This harness's dry read at the same sha counts 1,464 stored derivations: the two agree.** Q6b: the arm recommends no spend before the cap (a full port of `virl2_semr` to `tc4m`, days, priced at the object), so the row is written UNREACHED at 11-12 EOD with that price; semantic typing UNREACHED as declared. **Every other L4 row is ready to score at d257d2f29** with `count.py --arm metaprll4 --base 2d63bef28 --ext d257d2f29` and the roots in STATUS-vir rows 213–271.
 
+- **SCORED 2026-11-10 (the 60th head): the column is in `RESULTS-10.md`, "The MetaPRL column", every figure a row of `l4/out/counts-l4m.tsv`.** The OWED cells above are superseded there; this frame stays as the per-commit record.
+
 ## Limits known now
 - The 11-06 rule (past ~100 tactic applications in one proof, stop and systematize) is read as `L4M.maxSteps`, beside C5; tactic-building time is the arm's ledger.
 - `L4M.Q5.held` over six named rules is a small population; the wider readings are beside and can disagree.
