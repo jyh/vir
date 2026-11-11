@@ -66,4 +66,57 @@ theorem compile_refines {lay σ m} (Γ₀ : Ctx S₂) (Δ₀ : List Bool) (e : T
     · exact ⟨k, W', hW, .inl hle⟩
     · exact ⟨k, W', hW, .inr r⟩
 
+/-- S1's converse from ANY matched start (here: a program with caller parameters), the proof of `s1_converse` with its
+start generalized. -/
+theorem s1_converse_from {I₀ : St × Store} {S₀ : Config} (h0 : Match I₀ S₀) {n v σ'} (hI : IRN n I₀ (.done v, σ')) :
+    ∃ a w, Steps₂ S₀ (.ret a, σ') ∧ Atom.eval a = some w ∧ valOf w = v := by
+  have hdone : stepIR (.done v, σ') = none := rfl
+  have no_stuck_run : ∀ p c ρ k σ₀, IRN p I₀ (.run c ρ k, σ₀) → stepIR (.run c ρ k, σ₀) = none → False := by
+    intro p c ρ k σ₀ hp hst
+    obtain ⟨-, hr⟩ := IRN.det_stuck hp hst hI
+    obtain ⟨-, hu⟩ := IRN.from_done hr
+    cases hu
+  rcases src_classify S₀ (n + 1) with ⟨c', hc'⟩ | ⟨k, c', -, hc', hs⟩
+  · obtain ⟨m, I, hle, hm, -⟩ := sim_n hc' h0
+    obtain ⟨hle', -⟩ := IRN.det_stuck hI hdone hm
+    omega
+  · obtain ⟨m, I, -, hm, hmatch⟩ := sim_n hc' h0
+    obtain ⟨t, σ₀⟩ := c'
+    by_cases hret : ∃ a, t = .ret a
+    · obtain ⟨a, rfl⟩ := hret
+      cases hw : Atom.eval a with
+      | some w =>
+        have hstep := match_ret hmatch (a := a) rfl hw
+        have hrun : IRN (m + 1) I₀ (.done (valOf w), σ₀) := by simpa using IRN.trans hm (.step hstep (.refl _))
+        obtain ⟨-, hr⟩ := IRN.det_stuck hI hdone hrun
+        obtain ⟨-, hu⟩ := IRN.from_done hr
+        simp only [Prod.mk.injEq, St.done.injEq] at hu
+        obtain ⟨rfl, rfl⟩ := hu
+        exact ⟨a, w, SrcN.to_steps hc', hw, rfl⟩
+      | none =>
+        obtain ⟨c, ρ, k', σ₁, rfl, hst⟩ := match_ret_none hmatch (a := a) rfl hw
+        exact (no_stuck_run m c ρ k' σ₁ hm hst).elim
+    · have hf : Faults (t, σ₀) := ⟨by cases t <;> simp_all [Tm.IsTerminal], fun c'' h => hs c'' h⟩
+      obtain ⟨n', c, ρ, k', σ₁, h', hst⟩ := match_fault hmatch hf
+      exact (no_stuck_run (m + n') c ρ k' σ₁ (IRN.trans hm h') hst).elim
+
+/-- **The converse, about the SOURCE.** Under `compile_refines`'s premises, if the word machine FINISHES with words ws, then the
+instantiated source program FINISHES under ⟶₂ with `ret a`, ⟨a⟩ = w, and ws is related to w's image at the same final store.
+So every answer the compiled code gives is an answer the source gives. -/
+theorem compile_converse {lay σ m} (Γ₀ : Ctx S₂) (Δ₀ : List Bool) (e : Tm₂) (τ : Ty₂) (vs : List Atom₂) (ρw₀ : List W)
+    (hty : HasType₂ Γ₀ Δ₀ e τ) (hw : Tm.wfB Γ₀.length e = true) (hf : Tm.fnOk e = true) (hok : Tm.ok2 e = true)
+    (hlen : vs.length = Γ₀.length) (hg : Good vs) (hT : (lower2T Γ₀ e []).2.length < 2 ^ 64)
+    (he : EnvRel (lower2T Γ₀ e []).2 lay σ Γ₀ (vs.map valOf) ρw₀) (hl : Layout σ lay) (hm : MemRel lay σ m)
+    {k ws m'} (hW : WN (lower2T Γ₀ e []).2 k (.run (lower2T Γ₀ e []).1 ρw₀ [], m) (.done ws, m')) :
+    ∃ a w σ', Steps₂ (instL 0 vs e, σ) (.ret a, σ') ∧ Atom.eval a = some w ∧
+      VRel (lower2T Γ₀ e []).2 lay σ' τ (valOf w) ws := by
+  have hS1 : Match (.run (lowerT e) (vs.map valOf) [], σ) (instL 0 vs e, σ) := by
+    have hr := lowerT_rel e (n := 0 + vs.length) (by rw [hlen]; simpa using hw) hf
+    have := TRel.inst vs 0 (env := []) hg.closed (by simp [Closed]) hr
+    rw [List.append_nil] at this
+    exact Match.mk (k := []) (fs := []) (σ := σ) hg this .nil
+  obtain ⟨j, v, σ', hI, hv⟩ := s2_converse hT (s2_init Γ₀ Δ₀ e τ (vs.map valOf) ρw₀ hty hw hf hok he hl hm) hW
+  obtain ⟨a, w, hs, hw', rfl⟩ := s1_converse_from hS1 hI
+  exact ⟨a, w, σ', hs, hw', hv⟩
+
 end VIRC

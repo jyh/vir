@@ -36,8 +36,10 @@ this is a reading, not a score. **K6 HOLDS so far**: no file states a layout lem
 - **S2's converse is PROVED: `VIRC.s2_converse`** (`logs/s2c-audit-002.log`, standard axioms). If the word machine FINISHES with
   `done ws` from a related start, the IR run finishes with a value related to ws: the word machine's answer is always an IR
   answer. It rests on lock-step (`s2_run`), word determinism (`WN.det_stuck`) and `ir_classify`.
-  **Still owed:** the composed converse about the SOURCE (word finishes ⇒ ⟶₂ finishes). It needs `s1_converse` restated from
-  `compile_refines`'s initial Match (caller parameters) rather than `match_init`, which assumes a closed program.
+- **The composed converse is PROVED: `VIRC.compile_converse`** (`logs/s2c-audit-003.log`, standard axioms). Under
+  `compile_refines`'s premises, if the compiled code FINISHES with words ws, the instantiated source finishes under ⟶₂ with
+  `ret a`, ⟨a⟩ = w, and ws is related to w's image at the same final store. **Every answer the compiled code gives is an answer
+  the source gives.** It rests on `s1_converse_from` (S1's converse from any matched start) and `s2_converse`.
 - The word memory is word-granular (`W → W` at cell addresses). The byte view (x86lean's `Mem`, 8 bytes per cell) is S3's bridge.
 - The code-table bound (< 2⁶⁴ entries) and the layout premise are HYPOTHESES the caller discharges. They are not checked by the
   compiler.
