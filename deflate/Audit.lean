@@ -154,3 +154,10 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.fixLenI_eq
 #print axioms VIRDeflate.Step.fixlens_step
 #print axioms VIRDeflate.Step.fixlens_end
+#print axioms VIRDeflate.Step.World.get
+#print axioms VIRDeflate.Step.build_zero_cell
+#print axioms VIRDeflate.Step.build_zero_end
+#print axioms VIRDeflate.Step.build_count_cell
+#print axioms VIRDeflate.Step.build_count_end
+#print axioms VIRDeflate.Step.build_next_cell
+#print axioms VIRDeflate.Step.build_next_end

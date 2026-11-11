@@ -832,6 +832,7 @@ def cLIT : Int := 17
 def cCHK : Int := 2072
 def cDYN : Int := 2073
 def cTGT : Int := 2074
+def cX : Int := 2079      -- S-12: cursor-3's base X = IN + n + OUTMAX + 1393
 def mBUILD : Int := 11
 
 /-- S5's length for position i of the 318-cell lengths run (288 literal/length, then 30 distance). -/
@@ -863,7 +864,12 @@ def fixlensN : NT :=
      .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.v "i"), .v "x"] <|
      .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "i") (.i 1)] (.ret (.v "w2")))
     (.op "lit" tint .load [.v "w", .i cLIT] <|
-     .op "w1" tcap .store [.v "w", .i cHLIT, .i 288] <|
+     .op "x" tint .load [.v "w", .i cX] <|
+     .op "s1" tcap .store [.v "w", .p2 .add (.v "x") (.i 5), .p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")] <|
+     .op "s2" tcap .store [.v "s1", .p2 .add (.v "x") (.i 6), .i 288] <|
+     .op "s3" tcap .store [.v "s2", .p2 .add (.v "x") (.i 7), .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 689)] <|
+     .op "s4" tcap .store [.v "s3", .p2 .add (.v "x") (.i 8), .i 0] <|
+     .op "w1" tcap .store [.v "s4", .i cHLIT, .i 288] <|
      .op "w2" tcap .store [.v "w1", .i cHDIST, .i 30] <|
      .op "w3" tcap .store [.v "w2", .i cCHK, .v "lit"] <|
      .op "w4" tcap .store [.v "w3", .i cPHASE, .i 0] <|
@@ -922,23 +928,260 @@ theorem fixlens_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Wo
 /-- **`FIXLENS`, the hand-off (i = 318):** HLIT 288, HDIST 30, CHK := the literal-reading flag, phase and index 0, TGT 1 (L),
 DYN 0 (S-10), mode BUILD. -/
 theorem fixlens_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
-    (n om lit : Int) (hi : f cFILL = 318) (hn : f cN = n) (hom : f cOUTMAX = om) (hlit : f cLIT = lit) :
+    (n om lit X : Int) (hi : f cFILL = 318) (hn : f cN = n) (hom : f cOUTMAX = om) (hlit : f cLIT = lit) (hX : f cX = X)
+    (hX0 : 0 ≤ X) (hXL : X + 8 < L) :
     Steps₂ (closeAt p fixlensT, σ)
-      (.ret (.const (.cap p)), ⟨(((((((σ.H.insert (p + 7) 288).insert (p + 8) 30).insert (p + 2072) lit).insert (p + 12) 0).insert
+      (.ret (.const (.cap p)), ⟨(((((((((((σ.H.insert (p + (X + 5)) (2080 + n + om)).insert (p + (X + 6)) 288).insert
+        (p + (X + 7)) (2080 + n + om + 689)).insert (p + (X + 8)) 0).insert (p + 7) 288).insert (p + 8) 30).insert (p + 2072) lit).insert (p + 12) 0).insert
         (p + 13) 0).insert (p + 2074) 1).insert (p + 2073) 0).insert (p + 0) 11, σ.R⟩) := by
-  simp only [cFILL, cN, cOUTMAX, cLIT] at hi hn hom hlit
+  simp only [cFILL, cN, cOUTMAX, cLIT, cX] at hi hn hom hlit hX
   have h10 := hw.cell 10 (by decide) (by omega)
   have h15 := hw.cell 15 (by decide) (by omega)
   have h16 := hw.cell 16 (by decide) (by omega)
   have h17 := hw.cell 17 (by decide) (by omega)
-  rw [hi] at h10; rw [hn] at h15; rw [hom] at h16; rw [hlit] at h17
-  refine steps_run 16 ?_
-  simp [fixlensT, fixlensN, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  have h2079 := hw.cell 2079 (by decide) (by omega)
+  rw [hi] at h10; rw [hn] at h15; rw [hom] at h16; rw [hlit] at h17; rw [hX] at h2079
+  refine steps_run 24 ?_
+  simp [fixlensT, fixlensN, closeAt, h2079, cX, IN, show (2079 : Int) < L by omega,
+    show (0 : Int) ≤ X + 5 by omega, show X + 5 < L by omega, show (0 : Int) ≤ X + 6 by omega, show X + 6 < L by omega,
+    show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
       stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
       Const.toL1, Const.ofL1, Const.toBool, h10, h15, h16, h17, cFILL, cN, cOUTMAX, cLIT, cHLIT, cHDIST, cCHK, cPHASE, cINDEX,
     cMODE, mBUILD, cTGT, cDYN, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (10 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega,
     show (17 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega,
     show (2072 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega,
     show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-! ## `BUILD` (S-10, S-11, S-12): S4's construction ONE cell per step, dispatched on the phase cell first -/
+
+def cCODE : Int := 2075
+def cLEFT : Int := 2076
+def cREST : Int := 2077
+def cTOTAL : Int := 2078
+
+/-- A world cell, as a store lookup. -/
+theorem World.get {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) {i v : Int} (h0 : 0 ≤ i)
+    (hL : i < L) (hv : f i = v) : σ.H.lookup (p + i) = some v := hv ▸ hw.cell i h0 hL
+
+/-- Phase 0, ZERO: count[j] := 0 for j < 16. -/
+def bZeroN : NT :=
+  .op "j" tint .load [.v "w", .i cINDEX] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "tbb" tint .load [.v "w", .p2 .add (.v "x") (.i 7)] <|
+  .ite (.p2 .lt (.v "j") (.i 16))
+    (.op "w1" tcap .store [.v "w", .p2 .add (.v "tbb") (.v "j"), .i 0] <|
+     .op "w2" tcap .store [.v "w1", .i cINDEX, .p2 .add (.v "j") (.i 1)] (.ret (.v "w2")))
+    (.op "w1" tcap .store [.v "w", .i cPHASE, .i 1] <|
+     .op "w2" tcap .store [.v "w1", .i cINDEX, .i 0] (.ret (.v "w2")))
+
+/-- Phase 1, COUNT: ℓ := src[j]; count[ℓ] += 1 when ℓ ≠ 0. At N: phase 2, j := 1, code := 0, first[0] := 0, offs[0] := 0. -/
+def bCountN : NT :=
+  .op "j" tint .load [.v "w", .i cINDEX] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "tbb" tint .load [.v "w", .p2 .add (.v "x") (.i 7)] <|
+  .op "sb" tint .load [.v "w", .p2 .add (.v "x") (.i 5)] <|
+  .op "nn" tint .load [.v "w", .p2 .add (.v "x") (.i 6)] <|
+  .ite (.p2 .lt (.v "j") (.v "nn"))
+    (.op "l" tint .load [.v "w", .p2 .add (.v "sb") (.v "j")] <|
+     .ite (.p2 .eq (.v "l") (.i 0))
+       (.op "w1" tcap .store [.v "w", .i cINDEX, .p2 .add (.v "j") (.i 1)] (.ret (.v "w1")))
+       (.op "c" tint .load [.v "w", .p2 .add (.v "tbb") (.v "l")] <|
+        .op "w1" tcap .store [.v "w", .p2 .add (.v "tbb") (.v "l"), .p2 .add (.v "c") (.i 1)] <|
+        .op "w2" tcap .store [.v "w1", .i cINDEX, .p2 .add (.v "j") (.i 1)] (.ret (.v "w2"))))
+    (.op "w1" tcap .store [.v "w", .i cPHASE, .i 2] <|
+     .op "w2" tcap .store [.v "w1", .i cINDEX, .i 1] <|
+     .op "w3" tcap .store [.v "w2", .i cCODE, .i 0] <|
+     .op "w4" tcap .store [.v "w3", .p2 .add (.v "tbb") (.i 16), .i 0] <|
+     .op "w5" tcap .store [.v "w4", .p2 .add (.v "tbb") (.i 32), .i 0] (.ret (.v "w5")))
+
+/-- Phase 2, NEXT: for 1 ≤ j ≤ 15, code := 2·(code + count[j−1]), first[j] := code, offs[j] := offs[j−1] + count[j−1],
+slot[j] := offs[j]. At 16: CHK = 1 → phase 3 (j 1, left 1, rest 0, total 0); else phase 4 (j 0). -/
+def bNextN : NT :=
+  .op "j" tint .load [.v "w", .i cINDEX] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "tbb" tint .load [.v "w", .p2 .add (.v "x") (.i 7)] <|
+  .ite (.p2 .le (.v "j") (.i 15))
+    (.op "code" tint .load [.v "w", .i cCODE] <|
+     .op "cp" tint .load [.v "w", .p2 .add (.v "tbb") (.p2 .sub (.v "j") (.i 1))] <|
+     .op "op" tint .load [.v "w", .p2 .add (.p2 .add (.v "tbb") (.i 32)) (.p2 .sub (.v "j") (.i 1))] <|
+     .op "w1" tcap .store [.v "w", .i cCODE, .p2 .mul (.i 2) (.p2 .add (.v "code") (.v "cp"))] <|
+     .op "w2" tcap .store [.v "w1", .p2 .add (.p2 .add (.v "tbb") (.i 16)) (.v "j"),
+        .p2 .mul (.i 2) (.p2 .add (.v "code") (.v "cp"))] <|
+     .op "w3" tcap .store [.v "w2", .p2 .add (.p2 .add (.v "tbb") (.i 32)) (.v "j"), .p2 .add (.v "op") (.v "cp")] <|
+     .op "w4" tcap .store [.v "w3", .p2 .add (.p2 .add (.v "tbb") (.i 48)) (.v "j"), .p2 .add (.v "op") (.v "cp")] <|
+     .op "w5" tcap .store [.v "w4", .i cINDEX, .p2 .add (.v "j") (.i 1)] (.ret (.v "w5")))
+    (.op "chk" tint .load [.v "w", .i cCHK] <|
+     .ite (.p2 .eq (.v "chk") (.i 1))
+       (.op "w1" tcap .store [.v "w", .i cPHASE, .i 3] <|
+        .op "w2" tcap .store [.v "w1", .i cINDEX, .i 1] <|
+        .op "w3" tcap .store [.v "w2", .i cLEFT, .i 1] <|
+        .op "w4" tcap .store [.v "w3", .i cREST, .i 0] <|
+        .op "w5" tcap .store [.v "w4", .i cTOTAL, .i 0] (.ret (.v "w5")))
+       (.op "w1" tcap .store [.v "w", .i cPHASE, .i 4] <|
+        .op "w2" tcap .store [.v "w1", .i cINDEX, .i 0] (.ret (.v "w2"))))
+
+/-- Phases 3 and 4 come with their own rows; until then the dispatch's tail returns the world unchanged. -/
+def bRestN : NT := .ret (.v "w")
+
+def buildN : NT :=
+  .op "ph" tint .load [.v "w", .i cPHASE] <|
+  .ite (.p2 .eq (.v "ph") (.i 0)) bZeroN <|
+  .ite (.p2 .eq (.v "ph") (.i 1)) bCountN <|
+  .ite (.p2 .eq (.v "ph") (.i 2)) bNextN bRestN
+
+def buildT : Tm₂ := buildN.c ["w"]
+
+/-- **ZERO, one cell:** count[j] := 0 (cell tbb + j), j advanced. -/
+theorem build_zero_cell {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb : Int) (hph : f cPHASE = 0) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hj0 : 0 ≤ j) (hj16 : j < 16) (ht0 : 0 ≤ tbb) (htL : tbb + 352 ≤ L) :
+    Steps₂ (closeAt p buildT, σ) (.ret (.const (.cap p)), ⟨(σ.H.insert (p + (tbb + j)) 0).insert (p + 13) (j + 1), σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX] at hph hj hX
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  refine steps_run 12 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bZeroN, g12, g13, g79, g7, hj16, show (12 : Int) < L by omega, show (13 : Int) < L by omega,
+    show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega,
+    show (0 : Int) ≤ tbb + j by omega, show tbb + j < L by omega]
+
+/-- **ZERO, the end (j ≥ 16):** phase 1, j := 0. -/
+theorem build_zero_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb : Int) (hph : f cPHASE = 0) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hj16 : ¬ j < 16) :
+    Steps₂ (closeAt p buildT, σ) (.ret (.const (.cap p)), ⟨(σ.H.insert (p + 12) 1).insert (p + 13) 0, σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX] at hph hj hX
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  refine steps_run 12 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bZeroN, g12, g13, g79, g7, hj16, show (12 : Int) < L by omega, show (13 : Int) < L by omega,
+    show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega]
+
+/-- **COUNT, one length:** ℓ := src[j]; ℓ ≠ 0 → count[ℓ] += 1; j advanced. -/
+theorem build_count_cell {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb sb nn l c : Int) (hph : f cPHASE = 1) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hsb : f (X + 5) = sb) (hnn : f (X + 6) = nn) (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hjn : j < nn)
+    (hs0 : 0 ≤ sb + j) (hsL : sb + j < L) (hl : f (sb + j) = l) (ht0 : 0 ≤ tbb) (htL : tbb + 352 ≤ L)
+    (hl0 : 0 ≤ l) (hl15 : l ≤ 15) (hc : f (tbb + l) = c) :
+    Steps₂ (closeAt p buildT, σ)
+      (.ret (.const (.cap p)),
+        if l = 0 then ⟨σ.H.insert (p + 13) (j + 1), σ.R⟩
+        else ⟨(σ.H.insert (p + (tbb + l)) (c + 1)).insert (p + 13) (j + 1), σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX] at hph hj hX
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  have g5 := hw.get (i := X + 5) (by omega) (by omega) hsb
+  have g6 := hw.get (i := X + 6) (by omega) (by omega) hnn
+  have gl := hw.get hs0 hsL hl
+  have gc := hw.get (i := tbb + l) (by omega) (by omega) hc
+  refine steps_run 16 ?_
+  by_cases h0 : l = 0
+  · subst h0
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bCountN, g12, g13, g79, g7, g5, g6, gl, hjn, hs0, hsL, show (12 : Int) < L by omega,
+      show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega,
+      show X + 7 < L by omega, show (0 : Int) ≤ X + 5 by omega, show X + 5 < L by omega,
+      show (0 : Int) ≤ X + 6 by omega, show X + 6 < L by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bCountN, h0, g12, g13, g79, g7, g5, g6, gl, gc, hjn, hs0, hsL, show (12 : Int) < L by omega,
+      show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega,
+      show X + 7 < L by omega, show (0 : Int) ≤ X + 5 by omega, show X + 5 < L by omega,
+      show (0 : Int) ≤ X + 6 by omega, show X + 6 < L by omega, show (0 : Int) ≤ tbb + l by omega,
+      show tbb + l < L by omega]
+
+/-- **COUNT, the end (j ≥ N):** phase 2, j := 1, code := 0, first[0] := 0, offs[0] := 0. -/
+theorem build_count_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb sb nn : Int) (hph : f cPHASE = 1) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hsb : f (X + 5) = sb) (hnn : f (X + 6) = nn) (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hjn : ¬ j < nn)
+    (ht0 : 0 ≤ tbb) (htL : tbb + 352 ≤ L) :
+    Steps₂ (closeAt p buildT, σ)
+      (.ret (.const (.cap p)), ⟨((((σ.H.insert (p + 12) 2).insert (p + 13) 1).insert (p + 2075) 0).insert (p + (tbb + 16)) 0).insert
+        (p + (tbb + 32)) 0, σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX] at hph hj hX
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  have g5 := hw.get (i := X + 5) (by omega) (by omega) hsb
+  have g6 := hw.get (i := X + 6) (by omega) (by omega) hnn
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bCountN, g12, g13, g79, g7, g5, g6, hjn, show (12 : Int) < L by omega,
+    show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2075 : Int) < L by omega,
+    show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega, show (0 : Int) ≤ X + 5 by omega,
+    show X + 5 < L by omega, show (0 : Int) ≤ X + 6 by omega, show X + 6 < L by omega,
+    show (0 : Int) ≤ tbb + 16 by omega, show tbb + 16 < L by omega, show (0 : Int) ≤ tbb + 32 by omega,
+    show tbb + 32 < L by omega]
+
+/-- **NEXT, one length (1 ≤ j ≤ 15):** S4's next_code step, and offs/slot. -/
+theorem build_next_cell {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb code cp op : Int) (hph : f cPHASE = 2) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hj1 : 1 ≤ j) (hj15 : j ≤ 15) (ht0 : 0 ≤ tbb) (htL : tbb + 352 ≤ L)
+    (hcode : f cCODE = code) (hcp : f (tbb + (j - 1)) = cp) (hop : f (tbb + 32 + (j - 1)) = op) :
+    Steps₂ (closeAt p buildT, σ)
+      (.ret (.const (.cap p)),
+        ⟨((((σ.H.insert (p + 2075) (2 * (code + cp))).insert (p + (tbb + 16 + j)) (2 * (code + cp))).insert
+          (p + (tbb + 32 + j)) (op + cp)).insert (p + (tbb + 48 + j)) (op + cp)).insert (p + 13) (j + 1), σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX, cCODE] at hph hj hX hcode
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  have g75 := hw.get (i := 2075) (by decide) (by omega) hcode
+  have gcp := hw.get (i := tbb + (j - 1)) (by omega) (by omega) hcp
+  have gop := hw.get (i := tbb + 32 + (j - 1)) (by omega) (by omega) hop
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bNextN, g12, g13, g79, g7, g75, gcp, gop, hj15, show (12 : Int) < L by omega,
+    show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2075 : Int) < L by omega,
+    show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega,
+    show (0 : Int) ≤ tbb + (j - 1) by omega, show tbb + (j - 1) < L by omega,
+    show (0 : Int) ≤ tbb + 32 + (j - 1) by omega, show tbb + 32 + (j - 1) < L by omega,
+    show (0 : Int) ≤ tbb + 16 + j by omega, show tbb + 16 + j < L by omega,
+    show (0 : Int) ≤ tbb + 32 + j by omega, show tbb + 32 + j < L by omega,
+    show (0 : Int) ≤ tbb + 48 + j by omega, show tbb + 48 + j < L by omega]
+
+/-- **NEXT, the end (j > 15):** CHK = 1 → phase 3 (j 1, left 1, rest 0, total 0); otherwise phase 4 (j 0). -/
+theorem build_next_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (j X tbb chk : Int) (hph : f cPHASE = 2) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
+    (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hj15 : ¬ j ≤ 15) (hchk : f cCHK = chk) :
+    Steps₂ (closeAt p buildT, σ)
+      (.ret (.const (.cap p)),
+        if chk = 1 then ⟨((((σ.H.insert (p + 12) 3).insert (p + 13) 1).insert (p + 2076) 1).insert (p + 2077) 0).insert
+          (p + 2078) 0, σ.R⟩
+        else ⟨(σ.H.insert (p + 12) 4).insert (p + 13) 0, σ.R⟩) := by
+  simp only [cPHASE, cINDEX, cX, cCHK] at hph hj hX hchk
+  have g12 := hw.get (i := 12) (by decide) (by omega) hph
+  have g13 := hw.get (i := 13) (by decide) (by omega) hj
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g7 := hw.get (i := X + 7) (by omega) (by omega) htbb
+  have g72 := hw.get (i := 2072) (by decide) (by omega) hchk
+  refine steps_run 16 ?_
+  by_cases h1 : chk = 1
+  · subst h1
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bNextN, g12, g13, g79, g7, g72, hj15, show (12 : Int) < L by omega,
+      show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2072 : Int) < L by omega,
+      show (2076 : Int) < L by omega, show (2077 : Int) < L by omega, show (2078 : Int) < L by omega,
+      show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bNextN, h1, g12, g13, g79, g7, g72, hj15, show (12 : Int) < L by omega,
+      show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2072 : Int) < L by omega,
+      show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega]
 
 end VIRDeflate.Step

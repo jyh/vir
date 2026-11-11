@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-075; audit df-audit-016: 155 of 155 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-077; audit df-audit-017: 162 of 162 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -108,6 +108,19 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     `fixLenI_eq`: the step's lengths ARE `fixedLLens` then `fixedDLens`, read as one run.
     - Mutant: the 280 boundary at 279 is red INSIDE `fixlens_step` (df-mutant-024: lines 878/901/907). The unmutated copy
       is GREEN (df-mutant-025).
+  - **S-10, S-11, S-12, declared BEFORE any BUILD or DECODE code (vir 1bd7557, 3e77cd0, b85a7b4):** S4's construction one
+    cell per step in five phases (ZERO, COUNT, NEXT, LEFT with S4's checks in S4's order, SYMS) over flat code tables
+    (count · first · offs · slot · syms, 352 cells per target); `decodeGo` one bit per step; BUILD's source, length, table base
+    and variant kept in cursor-3 cells written at each hand-off (so no phase branches on TGT); cell 2079 holds cursor-3's base.
+    FIXLENS's hand-off was re-proved twice with the cells these name (df-076, df-077).
+  - **BUILD phases 0–2, one step each, dispatched on the phase cell first** (df-077): `build_zero_cell` / `build_zero_end`,
+    `build_count_cell` (ℓ = 0 writes only the index; else count[ℓ] += 1) / `build_count_end` (phase 2, code 0, first[0] and
+    offs[0] := 0), `build_next_cell` (code := 2·(code + count[j−1]), first[j], offs[j] = slot[j] = offs[j−1] + count[j−1]) /
+    `build_next_end` (CHK = 1 → phase 3 with left 1, rest 0, total 0; else phase 4). Phases 3–4 are the dispatch's tail,
+    returning the world unchanged, until their row.
+    - Mutants: first[j] without the doubling, red INSIDE `build_next_cell` (df-mutant-026: line 1136); count[ℓ] += 2, red
+      INSIDE `build_count_cell` (df-mutant-027: line 1095); FIXLENS's SB written at X+4, red INSIDE `fixlens_end`
+      (df-mutant-028: line 936). The unmutated copy is GREEN (df-mutant-029).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -154,7 +167,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-119 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…075, df-audit-001…016, df-audit-control-001, df-mutant-001…025, df-probe-001/002).
+126 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…077, df-audit-001…017, df-audit-control-001, df-mutant-001…029, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
