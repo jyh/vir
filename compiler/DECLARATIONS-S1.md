@@ -48,3 +48,10 @@ The constants in the driver theorem's statement (`#print` of its type, every `Na
 `VIRC.*`, `VIRL1.*`, `VIRL2.*`, `X86.*`, or Lean core / Std / Mathlib. **Any constant under `VIRL3.*`, `VIRL4.*`, `VIRP.*`,
 `VIRDeflate.*`, `Router.*` or `X86Compose.*` FALSIFIES K3**, and so does any constant whose name contains `router`, `inflate`
 or `deflate` (case-insensitive).
+
+## Added 2026-11-11, after S1's forward theorem and before the file exists (the rule above: an added file is declared first)
+- `VIRC/Converse.lean`: ⟶₂ is deterministic (through `stepFn₂` completeness; L2 is imported, not edited). Then the converse
+  corollary: every IR run of `lowerT e` that FINISHES is matched by a ⟶₂ run that finishes with the related value and the same
+  store. It counts in S1's logs as `s1c-*`, reported beside K1's 9 and never folded into it, because K1's declared window
+  closed at `s1-audit-001`.
+
