@@ -12,3 +12,4 @@ import VIRC.Fragment2
 import VIRC.Lower2
 import VIRC.Layout
 import VIRC.Table
+import VIRC.Sim2
