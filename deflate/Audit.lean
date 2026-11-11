@@ -136,3 +136,8 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.bitProg_typed
 #print axioms VIRDeflate.Step.bit_steps
 #print axioms VIRDeflate.Step.BITc_typed
+#print axioms VIRDeflate.Step.World.store
+#print axioms VIRDeflate.Step.smoke_run
+#print axioms VIRDeflate.Step.BITc_subst
+#print axioms VIRDeflate.Step.steps_via_bit
+#print axioms VIRDeflate.Step.table_step

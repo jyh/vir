@@ -316,4 +316,86 @@ theorem smoke_run {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World
   simp [closeAt, smokeN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂,
     stepFn₂, stepFn, opStep, Store.load, hw.reg, h3, Atom.eval, Atom.evalL, show (3 : Int) < L by omega]
 
+
+/-! ## The layout (S-1, S-7): cursor cells, then the bit table at `BT` -/
+
+def cMODE : Int := 0
+def cTB : Int := 18      -- the table's byte counter
+def cTI : Int := 19      -- the table's bit counter
+def BT : Int := 20       -- the bit table: cell BT + 8·b + i = bit i of byte b
+def mTABLE : Int := 0
+def mHDR : Int := 1
+
+/-- `TABLE` (S-7): one cell of the bit table per step, by one call of D4's `BITc`; at 256 bytes, move to `HDR`. -/
+def tableN : NT :=
+  .op "tb" tint .load [.v "w", .i cTB] <|
+  .op "ti" tint .load [.v "w", .i cTI] <|
+  .letE "x" tint (.app (.atom BITc) (.pair (.v "tb") (.v "ti"))) <|
+  .op "w1" tcap .store [.v "w", .p2 .add (.i BT) (.p2 .add (.p2 .mul (.i 8) (.v "tb")) (.v "ti")), .v "x"] <|
+  .letE "nb" (.prod tint tint)
+    (.ite (.p2 .eq (.v "ti") (.i 7)) (.ret (.pair (.p2 .add (.v "tb") (.i 1)) (.i 0)))
+      (.ret (.pair (.v "tb") (.p2 .add (.v "ti") (.i 1))))) <|
+  .op "w2" tcap .store [.v "w1", .i cTB, .fst (.v "nb")] <|
+  .op "w3" tcap .store [.v "w2", .i cTI, .snd (.v "nb")] <|
+  .ite (.p2 .eq (.fst (.v "nb")) (.i 256))
+    (.op "w4" tcap .store [.v "w3", .i cMODE, .i mHDR] (.ret (.v "w4")))
+    (.ret (.v "w3"))
+
+def tableT : Tm₂ := tableN.c ["w"]
+
+/-- `BITc` is closed: no substitution touches it. -/
+theorem BITc_subst (k : Nat) (v : Atom₂) : BITc.subst k v = BITc := by
+  simp [BITc, STRIPc, STRIP, POW, Atom.subst, Tm.subst, Atom.substL, ple, plt, psub, pmul, padd]
+
+/-- Run k computed steps to a `BITc` call, take the call by `bit_steps`, and continue: the continuation `K` is never written out,
+it is whatever the computed run reaches. -/
+theorem steps_via_bit {c : Config} (k : Nat) {b : Int} {i : Nat} (hi : i ≤ 7) {K : Tm₂} {σ₁ : Store} {d : Config}
+    (h1 : run₂ k c = (.letE tint (.app BITc (.pair (ci b) (ci i))) K, σ₁))
+    (h2 : Steps₂ (K.subst 0 (ci (bitAt b i)), σ₁) d) : Steps₂ c d :=
+  Steps₂.trans (steps_run k h1) (Steps₂.trans (bit_steps b i hi _ (by simp [Atom.eval]) tint K σ₁) h2)
+
+/-- The counters after `TABLE`'s step: (tb, ti + 1), or (tb + 1, 0) after bit 7. -/
+def tblNext (tb ti : Int) : Int × Int := if ti = 7 then (tb + 1, 0) else (tb, ti + 1)
+
+/-- The cells `TABLE`'s step writes: the table cell, then the two counters. -/
+def tblH (H : Finmap (fun _ : Int => Int)) (p tb ti : Int) : Finmap (fun _ : Int => Int) :=
+  ((H.insert (p + (20 + (8 * tb + ti))) (bitAt tb ti.toNat)).insert (p + 18) (tblNext tb ti).1).insert (p + 19)
+    (tblNext tb ti).2
+
+/-- **`TABLE`, one step:** from a world with the counters (tb, ti), tb < 256, ti ≤ 7, the step writes bit ti of byte tb at
+`BT + 8·tb + ti`, advances the counters with a carry, moves to `HDR` when tb reaches 256, and gives the world back. -/
+theorem table_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2068 ≤ L)
+    (tb ti : Nat) (htb : f cTB = tb) (hti : f cTI = ti) (htb8 : tb < 256) (hti8 : ti ≤ 7) :
+    Steps₂ (closeAt p tableT, σ)
+      (.ret (.const (.cap p)),
+        if (tblNext tb ti).1 = 256 then ⟨(tblH σ.H p tb ti).insert (p + 0) 1, σ.R⟩ else ⟨tblH σ.H p tb ti, σ.R⟩) := by
+  have hb := hw.cell 18 (by decide) (by omega)
+  have hi := hw.cell 19 (by decide) (by omega)
+  simp only [cTB, cTI] at htb hti
+  apply steps_via_bit 2 (b := (tb : Int)) hti8
+  · conv_lhs => simp [closeAt, tableT, tableN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+      Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, hw.reg, hb, hi, htb, hti, Atom.eval, Atom.evalL,
+      cTB, cTI, BITc_subst, show (18 : Int) < L by omega, show (19 : Int) < L by omega]
+  · refine steps_run 10 ?_
+    by_cases h7 : ti = 7
+    · subst h7
+      have hidx : (20 : Int) + (8 * tb + 7) < L := by omega
+      have hnn : (0 : Int) ≤ 20 + (8 * tb + 7) := by omega
+      by_cases h256 : tb + 1 = 256
+      · have h256' : (tb : Int) + 1 = 256 := by exact_mod_cast h256
+        simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+      · have h256' : ¬ ((tb : Int) + 1 = 256) := by exact_mod_cast h256
+        simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+    · have h7' : ¬ ((ti : Int) = 7) := by exact_mod_cast h7
+      have hidx : (20 : Int) + (8 * tb + ti) < L := by omega
+      have hnn : (0 : Int) ≤ 20 + (8 * tb + ti) := by omega
+      have htb' : ¬ ((tb : Int) = 256) := by omega
+      simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
 end VIRDeflate.Step

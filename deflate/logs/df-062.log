@@ -1,0 +1,355 @@
+saltqueue: ticket P2 seat=root pid=5340
+⚠ [2973/3017] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2977/3017] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [2984/3017] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [2988/3017] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [2994/3017] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [2997/3017] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [3000/3017] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3002/3017] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3004/3017] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [3005/3017] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [3007/3017] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [3008/3017] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [3009/3017] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3012/3017] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [3017/3017] Building VIRDeflate.Step (8.7s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Step.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Step.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Step.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Step.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Step.setup.json --json
+warning: VIRDeflate/Step.lean:129:28: 'all_goals (push_cast; ring_nf)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Step.lean:129:38: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRDeflate/Step.lean:135:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRDeflate/Step.lean:152:61: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Step.lean:152:71: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+error: VIRDeflate/Step.lean:369:4: Tactic `rfl` failed: The left-hand side
+  match
+    Option.map
+      ((fun x =>
+          (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 19)] tint
+              (Tm.letE tint
+                (Tm.app ((Atom.subst BITc 2 (Atom.const (Const.cap p))).subst 1 x.1) (Atom.pair x.1 (Atom.var 0)))
+                (Tm.letOp Op.store
+                  [Atom.const (Const.cap p),
+                    Atom.prim L1.Prim.add
+                      [Atom.const (Const.int BT),
+                        Atom.prim L1.Prim.add [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), x.1], Atom.var 1]],
+                    Atom.var 0]
+                  tcap
+                  (Tm.letE (Ty.prod tint tint)
+                    (Tm.ite (Atom.prim L1.Prim.eq [Atom.var 2, Atom.const (Const.int 7)])
+                      (Tm.ret ((Atom.prim L1.Prim.add [x.1, Atom.const (Const.int 1)]).pair (Atom.const (Const.int 0))))
+                      (Tm.ret (Atom.pair x.1 (Atom.prim L1.Prim.add [Atom.var 2, Atom.const (Const.int 1)]))))
+                    (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                      (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                        (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                          (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cMODE), Atom.const (Const.int mHDR)]
+                            tcap (Tm.ret (Atom.var 0)))
+                          (Tm.ret (Atom.var 0)))))))),
+            x.2)) ∘
+        fun v => (Atom.const (Const.int v), σ))
+      (Finmap.lookup (p + 18) σ.H) with
+  | some c' =>
+    match stepFn₂ c'.1 c'.2 with
+    | some c' => c'
+    | none => c'
+  | none =>
+    (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 18)] tint
+        (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 19)] tint
+          (Tm.letE tint (Tm.app (Atom.subst BITc 2 (Atom.const (Const.cap p))) ((Atom.var 1).pair (Atom.var 0)))
+            (Tm.letOp Op.store
+              [Atom.const (Const.cap p),
+                Atom.prim L1.Prim.add
+                  [Atom.const (Const.int BT),
+                    Atom.prim L1.Prim.add [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.var 2], Atom.var 1]],
+                Atom.var 0]
+              tcap
+              (Tm.letE (Ty.prod tint tint)
+                (Tm.ite (Atom.prim L1.Prim.eq [Atom.var 2, Atom.const (Const.int 7)])
+                  (Tm.ret
+                    ((Atom.prim L1.Prim.add [Atom.var 3, Atom.const (Const.int 1)]).pair (Atom.const (Const.int 0))))
+                  (Tm.ret ((Atom.var 3).pair (Atom.prim L1.Prim.add [Atom.var 2, Atom.const (Const.int 1)]))))
+                (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                    (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                      (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cMODE), Atom.const (Const.int mHDR)] tcap
+                        (Tm.ret (Atom.var 0)))
+                      (Tm.ret (Atom.var 0))))))))),
+      σ)
+is not definitionally equal to the right-hand side
+  (Tm.letE tint (Tm.app BITc (Atom.pair (ci ↑tb) (ci ↑ti))) ?m.147, ?m.148)
+
+case h1
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb ti : ℕ
+htb : f cTB = ↑tb
+hti : f cTI = ↑ti
+htb8 : tb < 256
+hti8 : ti ≤ 7
+x : ℤ := bitAt (↑tb) ti
+nb : ℤ × ℤ := if ↑ti = 7 then (↑tb + 1, 0) else (↑tb, ↑ti + 1)
+H3 : Finmap fun x => ℤ :=
+  Finmap.insert (p + cTI) nb.2 (Finmap.insert (p + cTB) nb.1 (Finmap.insert (p + (BT + (8 * ↑tb + ↑ti))) x σ.H))
+hb : Finmap.lookup (p + cTB) σ.H = some (f cTB)
+hi : Finmap.lookup (p + cTI) σ.H = some (f cTI)
+⊢ (match
+      Option.map
+        ((fun x =>
+            (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 19)] tint
+                (Tm.letE tint
+                  (Tm.app ((Atom.subst BITc 2 (Atom.const (Const.cap p))).subst 1 x.1) (Atom.pair x.1 (Atom.var 0)))
+                  (Tm.letOp Op.store
+                    [Atom.const (Const.cap p),
+                      Atom.prim L1.Prim.add
+                        [Atom.const (Const.int BT),
+                          Atom.prim L1.Prim.add [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), x.1], Atom.var 1]],
+                      Atom.var 0]
+                    tcap
+                    (Tm.letE (Ty.prod tint tint)
+                      (Tm.ite (Atom.prim L1.Prim.eq [Atom.var 2, Atom.const (Const.int 7)])
+                        (Tm.ret
+                          ((Atom.prim L1.Prim.add [x.1, Atom.const (Const.int 1)]).pair (Atom.const (Const.int 0))))
+                        (Tm.ret (Atom.pair x.1 (Atom.prim L1.Prim.add [Atom.var 2, Atom.const (Const.int 1)]))))
+                      (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                        (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                          (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cMODE), Atom.const (Const.int mHDR)]
+                              tcap (Tm.ret (Atom.var 0)))
+                            (Tm.ret (Atom.var 0)))))))),
+              x.2)) ∘
+          fun v => (Atom.const (Const.int v), σ))
+        (Finmap.lookup (p + 18) σ.H) with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 18)] tint
+          (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 19)] tint
+            (Tm.letE tint (Tm.app (Atom.subst BITc 2 (Atom.const (Const.cap p))) ((Atom.var 1).pair (Atom.var 0)))
+              (Tm.letOp Op.store
+                [Atom.const (Const.cap p),
+                  Atom.prim L1.Prim.add
+                    [Atom.const (Const.int BT),
+                      Atom.prim L1.Prim.add [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.var 2], Atom.var 1]],
+                  Atom.var 0]
+                tcap
+                (Tm.letE (Ty.prod tint tint)
+                  (Tm.ite (Atom.prim L1.Prim.eq [Atom.var 2, Atom.const (Const.int 7)])
+                    (Tm.ret
+                      ((Atom.prim L1.Prim.add [Atom.var 3, Atom.const (Const.int 1)]).pair (Atom.const (Const.int 0))))
+                    (Tm.ret ((Atom.var 3).pair (Atom.prim L1.Prim.add [Atom.var 2, Atom.const (Const.int 1)]))))
+                  (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                      (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                        (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cMODE), Atom.const (Const.int mHDR)] tcap
+                          (Tm.ret (Atom.var 0)))
+                        (Tm.ret (Atom.var 0))))))))),
+        σ)) =
+    (Tm.letE tint (Tm.app BITc (Atom.pair (ci ↑tb) (ci ↑ti))) ?m.147, ?m.148)
+error: VIRDeflate/Step.lean:361:103: unsolved goals
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb ti : ℕ
+htb : f cTB = ↑tb
+hti : f cTI = ↑ti
+htb8 : tb < 256
+hti8 : ti ≤ 7
+x : ℤ := ⋯
+nb : ℤ × ℤ := ⋯
+H3 : Finmap fun x => ℤ := ⋯
+hb : Finmap.lookup (p + cTB) σ.H = some (f cTB)
+hi : Finmap.lookup (p + cTI) σ.H = some (f cTI)
+⊢ Tm₂
+
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb ti : ℕ
+htb : f cTB = ↑tb
+hti : f cTI = ↑ti
+htb8 : tb < 256
+hti8 : ti ≤ 7
+x : ℤ := ⋯
+nb : ℤ × ℤ := ⋯
+H3 : Finmap fun x => ℤ := ⋯
+hb : Finmap.lookup (p + cTB) σ.H = some (f cTB)
+hi : Finmap.lookup (p + cTI) σ.H = some (f cTI)
+⊢ Store
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Step
+error: build failed
+saltbuild EXIT=1

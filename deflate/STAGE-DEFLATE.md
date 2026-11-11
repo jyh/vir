@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-057; audit df-audit-011: 137 of 137 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-067; audit df-audit-012: 142 of 142 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -60,6 +60,20 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - **`BITc`** is the bit of a byte as ONE closed `fix` atom, the form the step program calls. **`bit_steps`** (df-054…056):
     `let x = BITc((b, i)) in e₂` steps to `e₂[bitAt b i / x]` for i ≤ 7. **`BITc_typed`**: closed, at ⊢₂. A `fix` rule that
     supplies its own empty mask (`fix_typed`) was added to the typing tactic.
+  - **The world and the named layer (S-1, S-4):**
+    - `World σ p L f`: ONE region of L cells, contents f. L is a parameter, where L3's was fixed at 87. `World.store` keeps it.
+    - `closeAt` closes a step at ⟨p⟩.
+    - `NA`/`NT` compile to `Tm₂` with `fix` atoms, `app` and pairs. A one-load smoke run is evaluated by `simp` on a symbolic
+      world (`smoke_run`).
+  - **S-7, declared BEFORE any mode code (vir dd073cf):** the TABLE mode fills a 2,048-cell bit table by one `BITc` call per
+    step, so every later mode reads a bit as one `load`, and their lemmas are `simp`-evaluable runs.
+  - **`table_step`: the FIRST MODE's one-step lemma** (df-066). From a world with counters (tb, ti), tb < 256, ti ≤ 7, ONE
+    step writes `bitAt tb ti` at `BT + 8·tb + ti`, advances the counters with a carry, sets the mode to HDR when tb reaches 256,
+    and returns ⟨p⟩. The resulting store is given exactly.
+    - `steps_via_bit` is the combinator that makes this short: run k computed steps to a `BITc` call, take the call by
+      `bit_steps`, continue. The continuation is never written out; unification takes it from the computed run.
+    - Mutant: the table index `8·tb` → `7·tb` is red INSIDE `table_step` (df-mutant-016: lines 385/389/393). The unmutated
+      copy is GREEN (df-mutant-015). A one-line attribution grep first named the wrong line; reading the log corrected it.
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -106,5 +120,5 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-85 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…057, df-audit-001…011, df-audit-control-001, df-mutant-001…014, df-probe-001/002).
+98 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…067, df-audit-001…012, df-audit-control-001, df-mutant-001…016, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.
