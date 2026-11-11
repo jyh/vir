@@ -216,4 +216,302 @@ theorem EnvRel.lookup {T lay σ} : ∀ {Γ ρ ρw}, EnvRel T lay σ Γ ρ ρw �
         rw [← List.drop_drop, List.drop_left]; exact h3
       · cases h3
 
+/-! ## Part 3: operands. -/
+/-- IR values by type, independent of words (the overflow branch still needs the value's SHAPE). -/
+inductive VTy : Ty₂ → VIRC.Val → Prop where
+  | int {n : Int} : VTy (Ty.base BTy.int) (VIRC.Val.const (.int n))
+  | bool {b : Bool} : VTy (Ty.base BTy.bool) (VIRC.Val.const (.bool b))
+  | unit : VTy (Ty.base BTy.unit) (VIRC.Val.const .unit)
+  | cap {p : Int} : VTy (Ty.base BTy.cap) (VIRC.Val.const (.cap p))
+  | code {τ₁ τ₂ : Ty₂} {b : Bool} {c : Code} : VTy (Ty.arr τ₁ τ₂) (VIRC.Val.code b c)
+  | pair {τ₁ τ₂ v₁ v₂} : VTy τ₁ v₁ → VTy τ₂ v₂ → VTy (Ty.prod τ₁ τ₂) (VIRC.Val.pair v₁ v₂)
+  | inl {τ₁ τ₂ v} : VTy τ₁ v → VTy (Ty.sum τ₁ τ₂) (VIRC.Val.inl v)
+  | inr {τ₁ τ₂ v} : VTy τ₂ v → VTy (Ty.sum τ₁ τ₂) (VIRC.Val.inr v)
+
+theorem VRel.vty {T lay σ} : ∀ {τ v ws}, VRel T lay σ τ v ws → VTy τ v
+  | _, _, _, .int _ => .int
+  | _, _, _, .bool => .bool
+  | _, _, _, .unit => .unit
+  | _, _, _, .cap _ => .cap
+  | _, _, _, .lam _ _ _ => .code
+  | _, _, _, .fix _ _ _ => .code
+  | _, _, _, .pair h₁ h₂ => .pair h₁.vty h₂.vty
+  | _, _, _, .inl h => .inl h.vty
+  | _, _, _, .inr h => .inr h.vty
+
+/-- The word outcome of an operand against an IR value at a type: an OVERFLOW, or related words. -/
+def WOut (T : Table) (lay : Int → W) (σ : Store) (ρw : List W) (o : WOpd) (τ : Ty₂) (v : VIRC.Val) : Prop :=
+  evalW ρw o = .ovf ∨ ∃ ws, evalW ρw o = .ok ws ∧ VRel T lay σ τ v ws
+
+inductive WOutL (T : Table) (lay : Int → W) (σ : Store) (ρw : List W) :
+    List WOpd → List Ty₂ → List VIRC.Val → Prop where
+  | nil : WOutL T lay σ ρw [] [] []
+  | cons {o os τ τs v vs} : VTy τ v → WOut T lay σ ρw o τ v → WOutL T lay σ ρw os τs vs →
+      WOutL T lay σ ρw (o :: os) (τ :: τs) (v :: vs)
+
+theorem wout_int {T lay σ ρw o v} (hv : VTy (Ty.base BTy.int) v) (hw : WOut T lay σ ρw o (Ty.base BTy.int) v) :
+    ∃ n, v = .const (.int n) ∧ (evalW ρw o = .ovf ∨ (inRange n = true ∧ evalW ρw o = .ok [BitVec.ofInt 64 n])) := by
+  cases hv with
+  | int =>
+    rename_i n
+    refine ⟨n, rfl, ?_⟩
+    rcases hw with h | ⟨ws, h, hr⟩
+    · exact .inl h
+    · cases hr with
+      | int hn => exact .inr ⟨hn, h⟩
+
+theorem wout_bool {T lay σ ρw o v} (hv : VTy (Ty.base BTy.bool) v) (hw : WOut T lay σ ρw o (Ty.base BTy.bool) v) :
+    ∃ b, v = .const (.bool b) ∧ (evalW ρw o = .ovf ∨ evalW ρw o = .ok [boolW b]) := by
+  cases hv with
+  | bool =>
+    rename_i b
+    refine ⟨b, rfl, ?_⟩
+    rcases hw with h | ⟨ws, h, hr⟩
+    · exact .inl h
+    · cases hr with
+      | bool => exact .inr h
+
+/-- A binary operator over two one-word operands: an overflow in either propagates; otherwise the operator applies. -/
+theorem arith_out {ρw : List W} (op : AOp) {o₁ o₂ : WOpd} {x y : W}
+    (h₁ : evalW ρw o₁ = .ovf ∨ evalW ρw o₁ = .ok [x]) (h₂ : evalW ρw o₂ = .ovf ∨ evalW ρw o₂ = .ok [y]) :
+    evalW ρw (.arith op o₁ o₂) = .ovf ∨ evalW ρw (.arith op o₁ o₂) = op.apply x y := by
+  rcases h₁ with h₁ | h₁ <;> rcases h₂ with h₂ | h₂ <;> simp [evalW, WRes.bind, h₁, h₂]
+
+theorem chk_out {T lay σ} (n : Int) :
+    chk n = .ovf ∨ ∃ ws, chk n = .ok ws ∧ VRel T lay σ (Ty.base BTy.int) (.const (.int n)) ws := by
+  unfold chk; split
+  · next h => exact .inr ⟨_, rfl, .int h⟩
+  · exact .inl rfl
+
+theorem boolW_band (a b : Bool) : boolW a &&& boolW b = boolW (a && b) := by cases a <;> cases b <;> decide
+theorem boolW_bor (a b : Bool) : boolW a ||| boolW b = boolW (a || b) := by cases a <;> cases b <;> decide
+theorem boolW_not (a : Bool) : 1 - boolW a = boolW (!a) := by cases a <;> decide
+
+theorem ofInt_eq_iff {a b : Int} (ha : inRange a = true) (hb : inRange b = true) :
+    (BitVec.ofInt 64 a = BitVec.ofInt 64 b) ↔ a = b := by
+  constructor
+  · intro h; have := congrArg BitVec.toInt h; rwa [toInt_word ha, toInt_word hb] at this
+  · rintro rfl; rfl
+
+theorem inRange_max {a b : Int} (ha : inRange a = true) (hb : inRange b = true) : inRange (max a b) = true := by
+  simp only [inRange, decide_eq_true_eq] at *; omega
+
+theorem eval_prim {ρ : List VIRC.Val} {os : List Opd} {p : L1.Prim} {vs : List VIRC.Val} (h : Opd.evalL ρ os = some vs) :
+    Opd.eval ρ (.prim p os) = (vs.mapM Val.asConst).bind fun cs => (pInterp p cs).map VIRC.Val.const := by
+  simp [Opd.eval, h]
+
+/-- Binary integer operators: the IR result and the word outcome, from the two operand outcomes. -/
+theorem int2 {T lay σ ρw} {o₁ o₂ : WOpd} {x y : Int} (op : AOp)
+    (hx : evalW ρw o₁ = .ovf ∨ (inRange x = true ∧ evalW ρw o₁ = .ok [BitVec.ofInt 64 x]))
+    (hy : evalW ρw o₂ = .ovf ∨ (inRange y = true ∧ evalW ρw o₂ = .ok [BitVec.ofInt 64 y]))
+    (τ : Ty₂) (v : VIRC.Val)
+    (hop : inRange x = true → inRange y = true →
+      op.apply (BitVec.ofInt 64 x) (BitVec.ofInt 64 y) = .ovf ∨
+      ∃ ws, op.apply (BitVec.ofInt 64 x) (BitVec.ofInt 64 y) = .ok ws ∧ VRel T lay σ τ v ws) :
+    WOut T lay σ ρw (.arith op o₁ o₂) τ v := by
+  rcases hx with hx | ⟨rx, hx⟩
+  · exact .inl (by simp [evalW, WRes.bind, hx])
+  rcases hy with hy | ⟨ry, hy⟩
+  · exact .inl (by simp [evalW, WRes.bind, hx, hy])
+  simp only [WOut, evalW, WRes.bind, hx, hy]
+  exact hop rx ry
+
+theorem bool2 {T lay σ ρw} {o₁ o₂ : WOpd} {x y : Bool} (op : AOp)
+    (hx : evalW ρw o₁ = .ovf ∨ evalW ρw o₁ = .ok [boolW x]) (hy : evalW ρw o₂ = .ovf ∨ evalW ρw o₂ = .ok [boolW y])
+    (τ : Ty₂) (v : VIRC.Val)
+    (hop : ∃ ws, op.apply (boolW x) (boolW y) = .ok ws ∧ VRel T lay σ τ v ws) :
+    WOut T lay σ ρw (.arith op o₁ o₂) τ v := by
+  rcases hx with hx | hx
+  · exact .inl (by simp [evalW, WRes.bind, hx])
+  rcases hy with hy | hy
+  · exact .inl (by simp [evalW, WRes.bind, hx, hy])
+  simp only [WOut, evalW, WRes.bind, hx, hy]
+  exact .inr hop
+
+mutual
+theorem opd_sim {T lay σ} (hT : T.length < 2 ^ 64) : ∀ {a : Atom₂} {Γl Γt : Ctx S₂} {k : Nat} {τ : Ty₂}
+    {ρ : List VIRC.Val} {ρw : List W} (t : Table),
+    HasTypeA₂ Γt a τ → Atom.wfB k a = true → Agree k Γl Γt → EnvRel T lay σ Γl ρ ρw →
+    Atom.fnOk a = true → Atom.ok2 a = true → KeepsFrom t.length (lower2A Γl a t).2 T →
+    ∃ v, Opd.eval ρ (lowerA a) = some v ∧ VTy τ v ∧ WOut T lay σ ρw (lower2A Γl a t).1 τ v
+  | _, Γl, Γt, k, τ, ρ, ρw, t, .var (n := n) hg _, hw, hag, he, _, _, _ => by
+      simp only [Atom.wfB, decide_eq_true_eq] at hw
+      have hg' : Γl[n]? = some τ := by rw [hag n hw]; exact hg
+      obtain ⟨v, ws, h1, h2, h3⟩ := he.lookup hg'
+      exact ⟨v, by simpa [lowerA, Opd.eval] using h1, h2.vty, .inr ⟨ws, by simpa [lower2A] using h3, h2⟩⟩
+  | _, _, _, _, _, _, _, _, .int (n := n), _, _, _, _, hok, _ => by
+      simp only [Atom.ok2] at hok
+      exact ⟨_, rfl, .int, .inr ⟨_, rfl, .int hok⟩⟩
+  | _, _, _, _, _, _, _, _, .bool, _, _, _, _, _, _ => ⟨_, rfl, .bool, .inr ⟨_, rfl, .bool⟩⟩
+  | _, _, _, _, _, _, _, _, .unit, _, _, _, _, _, _ => ⟨_, rfl, .unit, .inr ⟨_, rfl, .unit⟩⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .prim (p := p) (as := as) hl, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB] at hw; simp only [Atom.fnOk] at hf; simp only [Atom.ok2] at hok
+      simp only [lower2A] at hk ⊢
+      obtain ⟨vs, hev, hout⟩ := opdL_sim hT t hl hw hag he hf hok hk
+      simp only [lowerA]
+      rw [eval_prim hev]
+      generalize (lower2L Γl as t).1 = os at hout ⊢
+      cases p <;> simp only [S₂, L1.Prim.args, L1.Prim.res, BTy.ofL1, List.map] at hout ⊢
+      all_goals rcases hout with _ | ⟨hv1, hw1, _ | ⟨hv2, hw2, ⟨⟩⟩⟩
+      -- add
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.int (x + y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1, L1.Prim.interp,
+          Const.ofL1], .int, ?_⟩
+        exact int2 .add hx hy _ _ fun rx ry => by simp only [AOp.apply, toInt_word rx, toInt_word ry]; exact chk_out _
+      -- sub
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.int (x - y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1, L1.Prim.interp,
+          Const.ofL1], .int, ?_⟩
+        exact int2 .sub hx hy _ _ fun rx ry => by simp only [AOp.apply, toInt_word rx, toInt_word ry]; exact chk_out _
+      -- mul
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.int (x * y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1, L1.Prim.interp,
+          Const.ofL1], .int, ?_⟩
+        exact int2 .mul hx hy _ _ fun rx ry => by simp only [AOp.apply, toInt_word rx, toInt_word ry]; exact chk_out _
+      -- lt
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.bool (decide (x < y))), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        exact int2 .lt hx hy _ _ fun rx ry => .inr ⟨_, by simp only [AOp.apply, toInt_word rx, toInt_word ry], .bool⟩
+      -- le
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.bool (decide (x ≤ y))), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        exact int2 .le hx hy _ _ fun rx ry => .inr ⟨_, by simp only [AOp.apply, toInt_word rx, toInt_word ry], .bool⟩
+      -- eq
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.bool (decide (x = y))), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        exact int2 .eq hx hy _ _ fun rx ry => .inr ⟨_, by simp only [AOp.apply, ofInt_eq_iff rx ry], .bool⟩
+      -- and
+      · obtain ⟨x, rfl, hx⟩ := wout_bool hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_bool hv2 hw2
+        refine ⟨.const (.bool (x && y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        exact bool2 .band hx hy _ _ ⟨_, by simp only [AOp.apply, boolW_band], .bool⟩
+      -- or
+      · obtain ⟨x, rfl, hx⟩ := wout_bool hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_bool hv2 hw2
+        refine ⟨.const (.bool (x || y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        exact bool2 .bor hx hy _ _ ⟨_, by simp only [AOp.apply, boolW_bor], .bool⟩
+      -- not
+      · obtain ⟨x, rfl, hx⟩ := wout_bool hv1 hw1
+        refine ⟨.const (.bool (!x)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .bool, ?_⟩
+        rcases hx with hx | hx
+        · exact .inl (by simp [primW, evalW, WRes.bind, hx])
+        · exact .inr ⟨_, by simp [primW, evalW, WRes.bind, hx]; cases x <;> decide, .bool⟩
+      -- max
+      · obtain ⟨x, rfl, hx⟩ := wout_int hv1 hw1; obtain ⟨y, rfl, hy⟩ := wout_int hv2 hw2
+        refine ⟨.const (.int (max x y)), by simp [List.mapM_cons, Val.asConst, pInterp, Const.toL1,
+          L1.Prim.interp, Const.ofL1], .int, ?_⟩
+        refine int2 .max hx hy _ _ fun rx ry => .inr ⟨_, rfl, ?_⟩
+        simp only [toInt_word rx, toInt_word ry]
+        by_cases hxy : x ≤ y
+        · rw [if_pos hxy, max_eq_right hxy]; exact .int ry
+        · rw [if_neg hxy, max_eq_left (by omega)]; exact .int rx
+  | _, Γl, Γt, k, _, ρ, ρw, t, .lam (τ₁ := τ₁) (τ₂ := τ₂) (e := e) (Δ := Δ) _ _ _ _ hb, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.fnOk, Bool.and_eq_true] at hf; simp only [Atom.ok2] at hok
+      simp only [lower2A] at hk ⊢
+      have hkr := lower2T_keeps [τ₁] e (t ++ [(false, placeholder)])
+      have hlen' : t.length < (lower2T [τ₁] e (t ++ [(false, placeholder)])).2.length := by
+        have := hkr.1; simp at this; omega
+      have hTl : T[t.length]? = some (false, (lower2T [τ₁] e (t ++ [(false, placeholder)])).1) := by
+        rw [hk.2 t.length (le_refl _) (by simpa using hlen')]; simp [hlen']
+      have hlt : t.length < 2 ^ 64 := by have := hk.1; simp at this; omega
+      refine ⟨.code false (lowerT e), rfl, .code, .inr ⟨_, rfl, .lam hlt ⟨_, by simp, hTl, ?_⟩ ⟨Γt, Δ, by simpa using hb,
+        hf.1, hf.2, hok⟩⟩⟩
+      exact ⟨le_trans (by simp) hk.1, fun i hi hl => by
+        rw [hk.2 i (by omega) (by simpa using hl), List.getElem?_set_ne (by omega)]⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .fix (τ₁ := τ₁) (τ₂ := τ₂) (e := e) (Δ := Δ) _ _ _ _ hb, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.fnOk, Bool.and_eq_true] at hf; simp only [Atom.ok2] at hok
+      simp only [lower2A] at hk ⊢
+      have hkr := lower2T_keeps [τ₁, .arr τ₁ τ₂] e (t ++ [(true, placeholder)])
+      have hlen' : t.length < (lower2T [τ₁, .arr τ₁ τ₂] e (t ++ [(true, placeholder)])).2.length := by
+        have := hkr.1; simp at this; omega
+      have hTl : T[t.length]? = some (true, (lower2T [τ₁, .arr τ₁ τ₂] e (t ++ [(true, placeholder)])).1) := by
+        rw [hk.2 t.length (le_refl _) (by simpa using hlen')]; simp [hlen']
+      have hlt : t.length < 2 ^ 64 := by have := hk.1; simp at this; omega
+      refine ⟨.code true (lowerT e), rfl, .code, .inr ⟨_, rfl, .fix hlt ⟨_, by simp, hTl, ?_⟩ ⟨Γt, Δ, by simpa using hb,
+        hf.1, hf.2, hok⟩⟩⟩
+      exact ⟨le_trans (by simp) hk.1, fun i hi hl => by
+        rw [hk.2 i (by omega) (by simpa using hl), List.getElem?_set_ne (by omega)]⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .pair (a₁ := a₁) (a₂ := a₂) h₁ h₂, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB, Bool.and_eq_true] at hw; simp only [Atom.fnOk, Bool.and_eq_true] at hf
+      simp only [Atom.ok2, Bool.and_eq_true] at hok
+      simp only [lower2A] at hk ⊢
+      have k₂ := hk.mono (lower2A_keeps Γl a₁ t).1
+      have k₁ := KeepsFrom.of_keeps (lower2A_keeps Γl a₂ _) hk
+      obtain ⟨v₁, e₁, t₁, w₁⟩ := opd_sim hT t h₁ hw.1 hag he hf.1 hok.1 k₁
+      obtain ⟨v₂, e₂, t₂, w₂⟩ := opd_sim hT _ h₂ hw.2 hag he hf.2 hok.2 k₂
+      refine ⟨.pair v₁ v₂, by simp [lowerA, Opd.eval, e₁, e₂], .pair t₁ t₂, ?_⟩
+      rcases w₁ with w₁ | ⟨ws₁, w₁, r₁⟩
+      · exact .inl (by simp [evalW, WRes.bind, w₁])
+      rcases w₂ with w₂ | ⟨ws₂, w₂, r₂⟩
+      · exact .inl (by simp [evalW, WRes.bind, w₁, w₂])
+      · exact .inr ⟨_, by simp [evalW, WRes.bind, w₁, w₂], .pair r₁ r₂⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .fst (a := a) (τ₁ := τ₁) (τ₂ := τ₂) h, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB] at hw; simp only [Atom.fnOk] at hf; simp only [Atom.ok2] at hok
+      have hinf : inferA Γl a = some (.prod τ₁ τ₂) := by rw [inferA_agree a hw hag]; exact inferA_sound h
+      simp only [lower2A, hinf] at hk ⊢
+      obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw hag he hf hok hk
+      cases vt with
+      | pair vt₁ vt₂ =>
+        rename_i v₁ v₂
+        refine ⟨v₁, by simp [lowerA, Opd.eval, ev], vt₁, ?_⟩
+        rcases wo with wo | ⟨ws, wo, r⟩
+        · exact .inl (by simp [evalW, WRes.bind, wo])
+        · cases r with
+          | pair r₁ r₂ =>
+            refine .inr ⟨_, by simp [evalW, WRes.bind, wo]; rfl, ?_⟩
+            rw [← r₁.length, List.take_left]; exact r₁
+  | _, Γl, Γt, k, _, ρ, ρw, t, .snd (a := a) (τ₁ := τ₁) (τ₂ := τ₂) h, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB] at hw; simp only [Atom.fnOk] at hf; simp only [Atom.ok2] at hok
+      have hinf : inferA Γl a = some (.prod τ₁ τ₂) := by rw [inferA_agree a hw hag]; exact inferA_sound h
+      simp only [lower2A, hinf] at hk ⊢
+      obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw hag he hf hok hk
+      cases vt with
+      | pair vt₁ vt₂ =>
+        rename_i v₁ v₂
+        refine ⟨v₂, by simp [lowerA, Opd.eval, ev], vt₂, ?_⟩
+        rcases wo with wo | ⟨ws, wo, r⟩
+        · exact .inl (by simp [evalW, WRes.bind, wo])
+        · cases r with
+          | pair r₁ r₂ =>
+            refine .inr ⟨_, by simp [evalW, WRes.bind, wo]; rfl, ?_⟩
+            rw [← r₁.length, List.drop_left]; exact r₂
+  | _, Γl, Γt, k, _, ρ, ρw, t, .inl (a := a) (τ₁ := τ₁) (τ₂ := τ₂) _ h, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB] at hw; simp only [Atom.fnOk] at hf; simp only [Atom.ok2] at hok
+      have hinf : inferA Γl a = some τ₁ := by rw [inferA_agree a hw hag]; exact inferA_sound h
+      simp only [lower2A, hinf] at hk ⊢
+      obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw hag he hf hok hk
+      refine ⟨.inl v, by simp [lowerA, Opd.eval, ev], .inl vt, ?_⟩
+      rcases wo with wo | ⟨ws, wo, r⟩
+      · exact .inl (by simp [evalW, WRes.bind, wo])
+      · exact .inr ⟨_, by simp [evalW, WRes.bind, wo], .inl r⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .inr (a := a) (τ₁ := τ₁) (τ₂ := τ₂) _ h, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfB] at hw; simp only [Atom.fnOk] at hf; simp only [Atom.ok2] at hok
+      have hinf : inferA Γl a = some τ₂ := by rw [inferA_agree a hw hag]; exact inferA_sound h
+      simp only [lower2A, hinf] at hk ⊢
+      obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw hag he hf hok hk
+      refine ⟨.inr v, by simp [lowerA, Opd.eval, ev], .inr vt, ?_⟩
+      rcases wo with wo | ⟨ws, wo, r⟩
+      · exact .inl (by simp [evalW, WRes.bind, wo])
+      · exact .inr ⟨_, by simp [evalW, WRes.bind, wo], .inr r⟩
+theorem opdL_sim {T lay σ} (hT : T.length < 2 ^ 64) : ∀ {as : List Atom₂} {Γl Γt : Ctx S₂} {k : Nat} {τs : List Ty₂}
+    {ρ : List VIRC.Val} {ρw : List W} (t : Table),
+    HasTypeL₂ Γt as τs → Atom.wfLB k as = true → Agree k Γl Γt → EnvRel T lay σ Γl ρ ρw →
+    Atom.fnOkL as = true → Atom.ok2L as = true → KeepsFrom t.length (lower2L Γl as t).2 T →
+    ∃ vs, Opd.evalL ρ (lowerL as) = some vs ∧ WOutL T lay σ ρw (lower2L Γl as t).1 τs vs
+  | _, _, _, _, _, _, _, _, .nil, _, _, _, _, _, _ => ⟨[], rfl, .nil⟩
+  | _, Γl, Γt, k, _, ρ, ρw, t, .cons (a := a) (as := as) h hs, hw, hag, he, hf, hok, hk => by
+      simp only [Atom.wfLB, Bool.and_eq_true] at hw; simp only [Atom.fnOkL, Bool.and_eq_true] at hf
+      simp only [Atom.ok2L, Bool.and_eq_true] at hok
+      simp only [lower2L] at hk ⊢
+      have k₂ := hk.mono (lower2A_keeps Γl a t).1
+      have k₁ := KeepsFrom.of_keeps (lower2L_keeps Γl as _) hk
+      obtain ⟨v, ev, vt, wo⟩ := opd_sim hT t h hw.1 hag he hf.1 hok.1 k₁
+      obtain ⟨vs, evs, wos⟩ := opdL_sim hT _ hs hw.2 hag he hf.2 hok.2 k₂
+      exact ⟨v :: vs, by simp [lowerL, Opd.evalL, ev, evs], .cons vt wo wos⟩
+end
+
 end VIRC

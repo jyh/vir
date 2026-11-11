@@ -27,12 +27,20 @@ caps, and C4 (b), checked arithmetic with an overflow exit.
 - `VIRC/Table.lean`: `Keeps`. Lowering only appends or fills its own reserved slot, so every entry below the incoming length is
   final (`lower2T_keeps`). `letOp` now lowers its operands and continuation uniformly, and `opCode` picks the instruction, so
   the table threads one way in every case.
+- `VIRC/Sim2.lean`:
+  - part 1, AGREEMENT: inference and lowering agree under contexts that agree below a term's bound.
+  - part 2, the relations: `VRel` (by type; a code value relates to a label whose final-table entry `CodeAt` is the lowering of
+    the same body), `EnvRel`, and `EnvRel.lookup` (a variable's slice reads its value's words).
+  - part 3, THE OPERAND LEMMA `opd_sim`/`opdL_sim`: a typed, accepted atom under related environments evaluates in the IR to a
+    value of its type, and its word code either OVERFLOWS or yields related words. All ten primitives are covered (checked
+    add/sub/mul; comparisons; `eq` through `ofInt` injectivity on the range; `max`; boolean and/or/not), as are λ/fix (their
+    labels, against the final table) and pairs, projections and sums.
 
 ## OWED (in order)
 1. (was: `VIRC/Layout.lean`, now built): the layout premise. It is a map `lay : Int → W` from region base to address, with regions pairwise
    disjoint as word ranges, no wraparound, lengths < 2⁶³, and `Store.WF`. `MemRel lay σ m` holds when every live cell (p+i) has
    its value in range at `cellAddr (lay p) i`. The cap value `⟨p⟩` corresponds to `[lay p, R(p)]`.
-2. `VIRC/Sim2.lean`:
+2. `VIRC/Sim2.lean`, the rest (the operand lemma is DONE, above):
    - `VRel tbl τ v ws`: an IR value at type τ against words. A code value relates to a label whose table entry is `lower2T` of
      the SAME source body. This is a relation and needs no decidable equality on code.
    - The table lemma: entries are final once written (reserve, then set).
