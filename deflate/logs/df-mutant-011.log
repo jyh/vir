@@ -1,0 +1,47 @@
+saltqueue: ticket P2 seat=root pid=91735
+mutants/KraftShift0.lean:148:62: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/KraftShift0.lean:149:63: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/KraftShift0.lean:198:86: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/KraftShift0.lean:213:59: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+mutants/KraftShift0.lean:274:6: error: unsolved goals
+case succ.refine_3.inr
+lens : Array ℕ
+acc : ℕ × Array ℕ
+h3 : acc.2.getD 0 0 = 0
+j : ℕ
+h1 : acc.2.size = j + 1
+h2 : acc.1 = acc.2.getD j 0
+h4 : ∀ j_1 < j, acc.2.getD (j_1 + 1) 0 = 2 * (acc.2.getD j_1 0 + blCount lens j_1)
+hj : j < j + 1
+⊢ acc.1 + blCount lens j = acc.1 * 2 + blCount lens j * 2
+saltbuild EXIT=1
