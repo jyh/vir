@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-033; audit df-audit-007: 123 of 123 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-049; audit df-audit-009: 130 of 130 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -46,8 +46,16 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     retired with its landing read);
   - one bit index, 256 cases, under saltbuild `--cap 8000`, aborted at 8 GB in 19 s (df-probe-002);
   - 2 cases take ~3 s, startup included (df-probe-001).
-  The kernel's cache grows per case. **The general proof needs compositional `run₂` lemmas (sequencing, `let` contexts,
-  `app` of a `fix`).** Safety and Correct will need the same lemmas, so they are the next work, not a detour.
+  The kernel's cache grows per case.
+- **REPLACED BY A GENERAL PROOF at df-048 (audit df-audit-009): `bitProg_spec`. For every byte b < 256 and every i < 8,
+  `bitProg b i` steps, under L2's own relational semantics `Steps₂`, to `ret ((b >>> i) &&& 1)`. D4's L2 recursion IS S1's bit.**
+  - It is built from compositional lemmas, each stated in the `let` context its callers use: `steps_run` (a computed
+    straight-line run is reached), `pow2_steps` (induction on k) and `strip_steps` (induction on n; the recursion is a TAIL
+    call, so it lands back in the caller's context). These are the run lemmas Safety and Correct need.
+  - Mutant: STRIP's test `<` → `≤` in the L2 term is red INSIDE `strip_steps` (df-mutant-014). The unmutated copy is GREEN
+    (df-mutant-013).
+  - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
+    lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
 ## Findings, recorded before X5 (no oracle has run)
 1. **DEFLATE-E1** (`errata/ERRATA-DEFLATE.md`), found by READING S while transcribing it, before any build of Spec.lean.
@@ -92,5 +100,5 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-55 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…033, df-audit-001…007, df-audit-control-001, df-mutant-001…012, df-probe-001/002).
+75 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…049, df-audit-001…009, df-audit-control-001, df-mutant-001…014, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.

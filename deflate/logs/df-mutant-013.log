@@ -1,0 +1,18 @@
+saltqueue: ticket P2 seat=root pid=13364
+~/fleet/vir/deflate/../../saltbuild.sh: child setpgid (13462 to 13462): Operation not permitted
+mutants/StepCtl.lean:129:28: warning: 'all_goals (push_cast; ring_nf)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepCtl.lean:129:38: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/StepCtl.lean:135:67: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+mutants/StepCtl.lean:152:61: warning: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepCtl.lean:152:71: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=0

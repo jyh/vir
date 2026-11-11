@@ -40,7 +40,6 @@ import VIRDeflate
 #print axioms VIRDeflate.tile_step
 #print axioms VIRDeflate.tile
 #print axioms VIRDeflate.complete_covers
-#print axioms VIRDeflate.Step.retInt?_eq
 #print axioms VIRDeflate.Run.i_stored_empty_final_inflate
 #print axioms VIRDeflate.Run.i_stored_empty_final_inflateLit
 #print axioms VIRDeflate.Run.i_fixed_empty_final_inflate
@@ -122,3 +121,11 @@ import VIRDeflate
 #print axioms VIRDeflate.huff_adequate
 #print axioms VIRDeflate.run_adequate
 #print axioms VIRDeflate.lensLoop_adequate
+#print axioms VIRDeflate.Step.retInt?_eq
+#print axioms VIRDeflate.Step.steps_of
+#print axioms VIRDeflate.Step.steps_letRet
+#print axioms VIRDeflate.Step.steps_run
+#print axioms VIRDeflate.Step.pow2_steps
+#print axioms VIRDeflate.Step.strip_steps
+#print axioms VIRDeflate.Step.bitProg_steps
+#print axioms VIRDeflate.Step.bitProg_spec
