@@ -46,12 +46,18 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - **The fuel argument.** S's loops are written with fuel equal to the unread bits plus one. Running out REJECTs "truncated".
   The claim that it never runs out before a REJECT ("every iteration reads ≥ 1 bit") is a lemma OWED and NOT PROVED here. Until
   it is proved, `inflate` is S up to that claim.
-- **The code representation.** `Code` stores S4's assignment as (bl_count, next_code, symbols by length in index order). That it
-  equals "assign i the code next_code[lens[i]]++" symbol by symbol is a Huffman.lean lemma OWED (D5's group).
+- ~~The code representation~~ **DISCHARGED at df-012 (audit df-audit-004): `lookup_codeOf` and `lookup_some` (Huffman.lean, D5's
+  group).** For every length ℓ in 1..15, the test `decodeGo` makes at ℓ (`lookup`, tied to `decodeGo` by `decodeGo_succ`) maps
+  the code S4 assigns symbol i (`codeOf`: next_code[ℓ] plus the number of earlier symbols of length ℓ) to i. Conversely, any
+  value it maps to i is that code, and lens[i] = ℓ. `nextCodes` is shared by both sides, and it is S4's loop as written.
+  Mutants are red inside the proofs: symbols taken in decreasing index (df-mutant-006, in `symsOf_eq`) and `decodeGo`'s range
+  test widened by one (df-mutant-007, in `decodeGo_succ`). The unmutated copy in the same sub-namespace is GREEN
+  (df-mutant-005). That green is the control that the method is sound: df-mutant-003/004 were spurious reds, because a renamed
+  namespace lost `M` and `reject`. They are kept in the logs and are not counted as controls.
 - The verdict expectations in Run.lean are the manifest's notes, which are the AUTHOR'S reading. They are not zlib's. X5
   (row 288) is the oracle.
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-13 `saltbuild EXIT=` lines in `logs/df-*.log` so far (df-001…007, df-audit-001…003, df-audit-control-001, df-mutant-001/002).
+25 `saltbuild EXIT=` lines in `logs/df-*.log` so far (df-001…013 including df-008, the x5 exe; df-audit-001…004; df-audit-control-001; df-mutant-001…007).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet.

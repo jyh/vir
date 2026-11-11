@@ -1,0 +1,238 @@
+saltqueue: ticket P2 seat=root pid=30858
+⚠ [2973/2974] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✖ [2974/2974] Building VIRDeflate.Huffman (2.0s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Huffman.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Huffman.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Huffman.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Huffman.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Huffman.setup.json --json
+error: VIRDeflate/Huffman.lean:105:3: Unknown identifier `nextCodes`
+error: VIRDeflate/Huffman.lean:110:5: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  C
+has type `Code` which does not have the necessary form.
+error: VIRDeflate/Huffman.lean:110:32: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  C
+has type `Code` which does not have the necessary form.
+error: VIRDeflate/Huffman.lean:110:51: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  C
+has type `Code` which does not have the necessary form.
+error: VIRDeflate/Huffman.lean:111:11: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  C
+has type `Code` which does not have the necessary form.
+error: VIRDeflate/Huffman.lean:115:4: Function expected at
+  decodeGo
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  C
+
+Hint: The identifier `decodeGo` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:119:16: Function expected at
+  decodeGo
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  C
+
+Hint: The identifier `decodeGo` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:120:13: Invalid argument: Variable `decodeGo` is not a proposition or let-declaration
+warning: VIRDeflate/Huffman.lean:120:23: declaration uses `sorry`
+error: VIRDeflate/Huffman.lean:132:4: unsolved goals
+case neg
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : p x
+h✝ : ¬decide (p x) = true
+⊢ acc.push x ++ (List.filter (fun b => decide (p b)) xs).toArray =
+    acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+error: VIRDeflate/Huffman.lean:128:17: unsolved goals
+case pos
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : ¬p x
+h✝ : decide (p x) = true
+⊢ List.foldl (fun a i => if p i then a.push i else a) acc xs =
+    acc ++ (x :: List.filter (fun b => decide (p b)) xs).toArray
+
+case neg
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : ¬p x
+h✝ : ¬decide (p x) = true
+⊢ List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+error: VIRDeflate/Huffman.lean:138:49: Function expected at
+  symsOf
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `symsOf` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:139:9: Tactic `unfold` failed: Local variable `symsOf` has no definition
+error: VIRDeflate/Huffman.lean:149:37: `simp` made no progress
+warning: VIRDeflate/Huffman.lean:149:43: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRDeflate/Huffman.lean:153:50: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  List.countP (?m.18 ∘ ?m.19) ?m.20
+in the target expression
+  List.countP (fun i => decide (lens.getD i 0 = l)) (List.range lens.size) = List.countP (fun x => x == l) lens.toList
+
+lens : Array ℕ
+l : ℕ
+⊢ List.countP (fun i => decide (lens.getD i 0 = l)) (List.range lens.size) = List.countP (fun x => x == l) lens.toList
+error: VIRDeflate/Huffman.lean:161:63: Function expected at
+  blCount
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `blCount` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:162:9: Tactic `unfold` failed: Local variable `blCount` has no definition
+error: VIRDeflate/Huffman.lean:167:5: Function expected at
+  assign
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `assign` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:167:35: Function expected at
+  blCount
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `blCount` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:168:8: Invalid argument: Variable `assign` is not a proposition or let-declaration
+warning: VIRDeflate/Huffman.lean:168:16: This simp argument is unused:
+  Array.getD
+
+Hint: Omit it from the simp argument list.
+  simp [assign, A̵r̵r̵a̵y̵.̵g̵e̵t̵D̵,̵ ̵hl]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:168:28: This simp argument is unused:
+  hl
+
+Hint: Omit it from the simp argument list.
+  simp [assign, Array.getD,̵ ̵h̵l̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRDeflate/Huffman.lean:171:5: Function expected at
+  assign
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `assign` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:171:36: Function expected at
+  symsOf
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `symsOf` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:172:8: Invalid argument: Variable `assign` is not a proposition or let-declaration
+warning: VIRDeflate/Huffman.lean:172:16: This simp argument is unused:
+  Array.getD
+
+Hint: Omit it from the simp argument list.
+  simp [assign, A̵r̵r̵a̵y̵.̵g̵e̵t̵D̵,̵ ̵hl]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:172:28: This simp argument is unused:
+  hl
+
+Hint: Omit it from the simp argument list.
+  simp [assign, Array.getD,̵ ̵h̵l̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRDeflate/Huffman.lean:174:53: Function expected at
+  assign
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `assign` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:174:84: Function expected at
+  nextCodes
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `nextCodes` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:183:4: No goals to be solved
+error: VIRDeflate/Huffman.lean:192:12: Function expected at
+  assign
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `assign` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:206:17: Function expected at
+  assign
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  lens
+
+Hint: The identifier `assign` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: VIRDeflate/Huffman.lean:209:6: Unknown identifier `assign_count`
+error: VIRDeflate/Huffman.lean:207:61: unsolved goals
+x✝ : Sort u_1
+assign : x✝
+lens : Array ℕ
+l v i : ℕ
+hl0 : l ≠ 0
+hl : l < 16
+h : (if sorry ≤ v ∧ v < sorry + sorry then some sorry else none) = some i
+⊢ i < lens.size ∧ lens.getD i 0 = l ∧ v = codeOf lens i
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Huffman
+error: build failed
+saltbuild EXIT=1
