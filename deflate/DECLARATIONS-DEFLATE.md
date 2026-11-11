@@ -45,3 +45,13 @@ only, and is not the oracle.
 - `Z_BUF_ERROR` (truncated input) and `Z_DATA_ERROR` are REJECTED.
 - Bytes after the final block are ignored, as in Appendix S's S2.
 - REASONS are compared and reported (D1 predicts ≥ 1 reason disagreement), never scored.
+
+## Addendum A1 (2026-11-11, the 62nd head), DECLARED BEFORE X5's FIRST RUN
+The pinned corpus's crafted `iii-repeat-no-first` does not reach S6's *"repeat with no first length"*: its code-length code is
+{0: 1, 16: 1}, and S4's canonical assignment gives symbol 0 the code 0, so the stream decodes length-0 symbols until the input
+runs out (`STAGE-DEFLATE.md` finding 2; the generator's comment had the assignment backwards). Its VERDICT (REJECT) stands, and it
+stays in the corpus unchanged. **ONE stream is ADDED:** `iiia1-repeat-no-first` (8 bytes, sha256 4a15963e…), the same header with
+the code 1 (symbol 16) first. Generator `corpus/gen_addendum.py`, manifest `corpus/data/ADDENDUM-A1.tsv` (tsv digest 83175889…),
+`--check` rc 0 and red rc 1 on an altered byte. The pinned 313 files and their digest cc18ad46… are unchanged (`gen_corpus.py
+--check` rc 0 after the addendum). **X5's population is 313 + 1 = 314.** D1's REASON prediction is scored on the added stream; on
+accept/reject it is one more input like any other.

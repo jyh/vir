@@ -26,3 +26,5 @@ import VIRDeflate
 #print axioms VIRDeflate.Run.iii_cl_incomplete_inflateLit
 #print axioms VIRDeflate.Run.iii_repeat_no_first_inflate
 #print axioms VIRDeflate.Run.iii_repeat_no_first_inflateLit
+#print axioms VIRDeflate.Run.iiia1_repeat_no_first_inflate
+#print axioms VIRDeflate.Run.iiia1_repeat_no_first_inflateLit
