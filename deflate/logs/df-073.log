@@ -1,0 +1,369 @@
+saltqueue: ticket P2 seat=root pid=68407
+⚠ [2973/3017] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2977/3017] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [2984/3017] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [2988/3017] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [2994/3017] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [2997/3017] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [3000/3017] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3002/3017] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3004/3017] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [3005/3017] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [3007/3017] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [3008/3017] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [3009/3017] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3012/3017] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3017/3017] Built VIRDeflate.Step (19s)
+warning: VIRDeflate/Step.lean:129:28: 'all_goals (push_cast; ring_nf)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Step.lean:129:38: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRDeflate/Step.lean:135:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRDeflate/Step.lean:152:61: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Step.lean:152:71: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRDeflate/Step.lean:388:83: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:392:83: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:392:112: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:399:83: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:399:112: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:495:42: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep,
+  ̲  ̲ ̲ ̲ ̲ ̲Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit, hik, hia, hiw, hir, Atom.eval,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY,
+  ̲  ̲ ̲ ̲ ̲ ̲cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0, htL, ht0, hL1, hL2, hL15,
+  ̲ h̵L̵0̵,̵  ̲ ̲ ̲ ̲hL0', hLk, hLa, hLw, hLr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:502:42: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep,
+  ̲  ̲ ̲ ̲ ̲ ̲Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit, hik, hia, hiw, hir, Atom.eval,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY,
+  ̲  ̲ ̲ ̲ ̲ ̲cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0, htL, ht0, hL1, hL2, hL15,
+  ̲ h̵L̵0̵,̵  ̲ ̲ ̲ ̲hL0', hLk, hLa, hLw, hLr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:521:34: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, hnlt,
+      Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲hw.reg, h1, h2, h15,
+  ̵  ̵ ̵ ̵Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵cBY, cBI, cN, cMODE, cREASON, rTRUNC, mREJECT,
+      show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (15 : Int) < L by omega,
+      show (14 : Int) < L by omega, show (̵0 :̵ ̵I̵n̵t̵)̵ ̵< L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:572:36: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrT, hdrN, reqN, reqH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲Tm.subst, Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲Atom.eval, Atom.evalL, cK, cACC, cWT, cRET, cMODE,
+  ̵  ̵ ̵ ̵mREAD, mHDRB, show (2068 : Int) < L by omega,
+  ̲  ̲ ̲ ̲show (2069 : Int) < L by omega, show (2070 : Int) < L by omega,
+  ̵  ̵ ̵ ̵show (2071 : Int) < L by omega,
+  ̲ s̵h̵o̵w̵ (̵0̵ :̵ I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:586:4: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrbT, hdrbN, reqN, reqH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲Tm.subst, Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲hw.reg, hia, Atom.eval, Atom.evalL, cK, cACC, cWT,
+  ̵  ̵ ̵ ̵cRET, cMODE, cBF, mREAD, mHDRD,
+  ̲  ̲ ̲ ̲show (2068 : Int) < L by omega, show (2069 : Int) < L by omega,
+  ̵  ̵ ̵ ̵show (2070 : Int) < L by omega,
+  ̲  ̲ ̲ ̲show (2071 : Int) < L by omega, show (4 : Int) < L by omega,
+  ̵  ̵ ̵ ̵show (̵0 :̵ ̵I̵n̵t̵)̵ ̵< L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:608:38: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst,
+  ̵  ̵ ̵ ̵ ̵ ̵Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲ ̲ ̲hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+  ̵  ̵ ̵ ̵ ̵ ̵pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, cACC, cMODE, mSHDR,
+  ̵  ̵ ̵ ̵ ̵ ̵show (2069 : Int) < L by omega,
+  ̲ s̵h̵o̵w̵ (̵0̵ :̵ I̵n̵t̵)̵ <̵ L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:614:68: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst,
+  ̵  ̵ ̵ ̵ ̵ ̵Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲ ̲ ̲hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+  ̵  ̵ ̵ ̵ ̵ ̵pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, cACC, cMODE, cFILL, mFIXLENS,
+  ̵  ̵ ̵ ̵ ̵ ̵show (2069 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (10 : Int) < L by omega, show (̵0 :̵ ̵I̵n̵t̵)̵ ̵< L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:620:38: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst,
+  ̵  ̵ ̵ ̵ ̵ ̵Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲ ̲ ̲hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+  ̵  ̵ ̵ ̵ ̵ ̵pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, cACC, cMODE, mDHDR,
+  ̵  ̵ ̵ ̵ ̵ ̵show (2069 : Int) < L by omega,
+  ̲ s̵h̵o̵w̵ (̵0̵ :̵ I̵n̵t̵)̵ <̵ L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Step.lean:624:66: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, hdrdT, hdrdN, hdrdH, h0, h1, h2, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲List.findIdx.go, Tm.subst,
+  ̵  ̵ ̵ ̵Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load,
+  ̲  ̲ ̲ ̲Store.store, hw.reg, hia, Atom.eval, Atom.evalL,
+  ̵  ̵ ̵ ̵constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, cREASON, rBTYPE, mREJECT,
+      show (2069 : Int) < L by omega, show (14 : Int) < L by omega, show (̵0 :̵ ̵I̵n̵t̵)̵ ̵< L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (3017 jobs).
+saltbuild EXIT=0

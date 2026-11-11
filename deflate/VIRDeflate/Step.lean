@@ -520,4 +520,107 @@ theorem readbit_trunc {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : W
     show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (15 : Int) < L by omega,
     show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
 
+/-! ## `HDR`, `HDRB`, `HDRD` (S-8): the block header as two `READ` fields, then the dispatch on BTYPE -/
+
+def cBF : Int := 4
+def cFILL : Int := 10
+def mHDRB : Int := 3
+def mHDRD : Int := 4
+def mSHDR : Int := 5
+def mFIXLENS : Int := 6
+def mDHDR : Int := 7
+def rBTYPE : Int := 2
+
+/-- Request a `READ` field of `k` bits returning to mode `rt`, then give the world back (from capability `w0`). -/
+def reqN (w0 : String) (k rt : Int) : NT :=
+  .op "q1" tcap .store [.v w0, .i cK, .i k] <|
+  .op "q2" tcap .store [.v "q1", .i cACC, .i 0] <|
+  .op "q3" tcap .store [.v "q2", .i cWT, .i 1] <|
+  .op "q4" tcap .store [.v "q3", .i cRET, .i rt] <|
+  .op "q5" tcap .store [.v "q4", .i cMODE, .i mREAD] (.ret (.v "q5"))
+
+/-- `HDR`: request BFINAL (1 bit), returning to `HDRB`. -/
+def hdrN : NT := reqN "w" 1 mHDRB
+/-- `HDRB`: BFINAL is in acc; keep it, then request BTYPE (2 bits), returning to `HDRD`. -/
+def hdrbN : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "w1" tcap .store [.v "w", .i cBF, .v "a"] (reqN "w1" 2 mHDRD)
+/-- `HDRD`: BTYPE is in acc: 0 → SHDR, 1 → FIXLENS (fill index 0), 2 → DHDR, otherwise "invalid block type", REJECT. -/
+def hdrdN : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .ite (.p2 .eq (.v "a") (.i 0)) (.op "w1" tcap .store [.v "w", .i cMODE, .i mSHDR] (.ret (.v "w1"))) <|
+  .ite (.p2 .eq (.v "a") (.i 1))
+    (.op "w1" tcap .store [.v "w", .i cFILL, .i 0] (.op "w2" tcap .store [.v "w1", .i cMODE, .i mFIXLENS] (.ret (.v "w2")))) <|
+  .ite (.p2 .eq (.v "a") (.i 2)) (.op "w1" tcap .store [.v "w", .i cMODE, .i mDHDR] (.ret (.v "w1"))) <|
+  .op "w1" tcap .store [.v "w", .i cREASON, .i rBTYPE] (.op "w2" tcap .store [.v "w1", .i cMODE, .i mREJECT] (.ret (.v "w2")))
+
+def hdrT : Tm₂ := hdrN.c ["w"]
+def hdrbT : Tm₂ := hdrbN.c ["w"]
+def hdrdT : Tm₂ := hdrdN.c ["w"]
+
+/-- The cells a field request writes: k, acc = 0, wt = 1, ret, mode = READ. -/
+def reqH (H : Finmap (fun _ : Int => Int)) (p k rt : Int) : Finmap (fun _ : Int => Int) :=
+  ((((H.insert (p + 2068) k).insert (p + 2069) 0).insert (p + 2070) 1).insert (p + 2071) rt).insert (p + 0) 2
+
+/-- **`HDR`, one step:** it requests one bit returning to `HDRB`. -/
+theorem hdr_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L) :
+    Steps₂ (closeAt p hdrT, σ) (.ret (.const (.cap p)), ⟨reqH σ.H p 1 3, σ.R⟩) := by
+  refine steps_run 10 ?_
+  simp [closeAt, hdrT, hdrN, reqN, reqH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst,
+    Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, cK, cACC, cWT, cRET, cMODE,
+    mREAD, mHDRB, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega,
+    show (2071 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`HDRB`, one step:** BFINAL (acc) is kept in its cell, and two bits are requested returning to `HDRD`. -/
+theorem hdrb_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a : Int) (ha : f cACC = a) :
+    Steps₂ (closeAt p hdrbT, σ) (.ret (.const (.cap p)), ⟨reqH (σ.H.insert (p + 4) a) p 2 4, σ.R⟩) := by
+  simp only [cACC] at ha
+  have hia := hw.cell 2069 (by decide) (by omega)
+  rw [ha] at hia
+  refine steps_run 10 ?_
+  simp [closeAt, hdrbT, hdrbN, reqN, reqH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst,
+    Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, hia, Atom.eval, Atom.evalL, cK, cACC, cWT,
+    cRET, cMODE, cBF, mREAD, mHDRD, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega,
+    show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (4 : Int) < L by omega,
+    show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- The cells `HDRD` writes, by BTYPE. -/
+def hdrdH (H : Finmap (fun _ : Int => Int)) (p a : Int) : Finmap (fun _ : Int => Int) :=
+  if a = 0 then H.insert (p + 0) 5
+  else if a = 1 then (H.insert (p + 10) 0).insert (p + 0) 6
+  else if a = 2 then H.insert (p + 0) 7
+  else (H.insert (p + 14) 2).insert (p + 0) 99
+
+/-- **`HDRD`, one step:** the dispatch on BTYPE (acc): stored, fixed (fill index 0), dynamic, or "invalid block type". -/
+theorem hdrd_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a : Int) (ha : f cACC = a) :
+    Steps₂ (closeAt p hdrdT, σ) (.ret (.const (.cap p)), ⟨hdrdH σ.H p a, σ.R⟩) := by
+  simp only [cACC] at ha
+  have hia := hw.cell 2069 (by decide) (by omega)
+  rw [ha] at hia
+  refine steps_run 12 ?_
+  by_cases h0 : a = 0
+  · subst h0
+    simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+      pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, mSHDR,
+      show (2069 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+  by_cases h1 : a = 1
+  · subst h1
+    simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+      pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, cFILL, mFIXLENS,
+      show (2069 : Int) < L by omega, show (10 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+  by_cases h2 : a = 2
+  · subst h2
+    simp [closeAt, hdrdT, hdrdN, hdrdH, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, hia, Atom.eval, Atom.evalL, constsOf, S₂,
+      pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, mDHDR,
+      show (2069 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+  simp [closeAt, hdrdT, hdrdN, hdrdH, h0, h1, h2, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+    Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, hia, Atom.eval, Atom.evalL,
+    constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, cACC, cMODE, cREASON, rBTYPE, mREJECT,
+    show (2069 : Int) < L by omega, show (14 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
 end VIRDeflate.Step
