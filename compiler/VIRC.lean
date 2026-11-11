@@ -13,3 +13,4 @@ import VIRC.Lower2
 import VIRC.Layout
 import VIRC.Table
 import VIRC.Sim2
+import VIRC.S2

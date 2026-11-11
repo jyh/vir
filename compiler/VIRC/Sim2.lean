@@ -956,4 +956,28 @@ theorem step_case {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S�
           by simp [stepW, wo]; exact htake, .inl (.run (Γl := τ₂ :: Γl) ⟨e₂, τ₂ :: Γt, false :: Δ, _, rfl, rfl, k₂, h₂,
             by simpa using hw.2, by simpa using hag.cons τ₂, hf.2, hok.2, .cons r' he⟩ hfr hl hm)⟩
 
+/-! ## Part 8: one step, any construct. -/
+theorem sim2_step {T lay τfin} (hT : T.length < 2 ^ 64) {c ρ k σ Wst} (h : SRel T lay τfin (.run c ρ k, σ) Wst) :
+    (stepIR (.run c ρ k, σ) = none ∧ WStops T Wst) ∨ ∃ I', stepIR (.run c ρ k, σ) = some I' ∧ WStepOK T lay τfin I' Wst := by
+  cases h with
+  | run hc hfr hl hm =>
+    obtain ⟨e, Γt, Δ, t, rfl, rfl, hk, hty, hw, hag, hf, hok, he⟩ := hc
+    cases hty with
+    | ret _ ha =>
+      simp only [Tm.wfB] at hw; simp only [Tm.fnOk] at hf; simp only [Tm.ok2] at hok; simp only [lower2T] at hk ⊢
+      exact .inr (step_ret hT ha hw hag he hf hok hk hfr hl hm)
+    | retCap hg _ =>
+      rename_i n
+      simp only [Tm.wfB, Atom.wfB, decide_eq_true_eq] at hw
+      simp only [lower2T, lower2A]
+      exact .inr (step_retCap hg hw hag he hfr hl hm)
+    | letE _ _ h₁ h₂ => exact .inr (step_letE h₁ h₂ hw hag he hf hok hk hfr hl hm)
+    | alloc _ _ => simp [Tm.ok2] at hok
+    | load hg _ ha he' => exact step_load hT hg ha he' hw hag he hf hok hk hfr hl hm
+    | store hg _ ha₁ ha₂ he' => exact step_store hT hg ha₁ ha₂ he' hw hag he hf hok hk hfr hl hm
+    | free _ _ _ => simp [Tm.ok2] at hok
+    | app _ h₁ h₂ => exact .inr (step_app hT h₁ h₂ hw hag he hf hok hk hfr hl hm)
+    | ite h h₁ h₂ => exact .inr (step_ite hT h h₁ h₂ hw hag he hf hok hk hfr hl hm)
+    | case h h₁ h₂ => exact .inr (step_case hT h h₁ h₂ hw hag he hf hok hk hfr hl hm)
+
 end VIRC

@@ -1,4 +1,38 @@
-# Compiler S2: layout to 64-bit words, IN PROGRESS (2026-11-11, 61st vir head)
+# Compiler S2: layout to 64-bit words, PROVED (2026-11-11, 61st vir head)
+
+**Theorem `VIRC.s2_refines`** (`VIRC/S2.lean`). `#print axioms` gives propext · Classical.choice · Quot.sound
+(`logs/s2-audit-001.log`, `saltbuild EXIT=0`). The `sorryAx` control is red (`logs/s2-audit-control-001.log`).
+
+It covers a ⊢₂-typed program accepted by C2 and S2's predicate: closed below its caller context Γ₀, no alloc/free, constants in
+range, a code table under 2⁶⁴ entries, caller parameters related (`EnvRel`), and a layout satisfying the premise
+(`Layout`, `MemRel`). For such a program:
+1. an IR run that FINISHES with v is matched by a word run that finishes with words related to v, or that reaches OVERFLOW;
+2. an IR run that is STUCK is matched by a word run that reaches the FAULT exit or the OVERFLOW exit;
+3. n IR steps are matched by exactly n word steps, or by an earlier stop at OVERFLOW. The simulation is lock-step.
+
+**On no run does the word machine finish with an unrelated value.**
+
+**Mutant, red, and it tests C4 (b) directly.** `mutants/Word-wrap.lean` removes the range check (`chk` always returns the
+wrapped word).
+- Built alone, it fails at the concrete check `run_ovf` (`logs/s2-mutant-wrap.log`, EXIT=1).
+- Built with that one check removed, so that the build reaches the theorem, it fails in the proof, at `chk_out` in
+  `VIRC/Sim2.lean` (`logs/s2-mutant-wrap-thm.log`, EXIT=1).
+
+Both originals were restored, and `s2-041` rebuilt the tree green.
+
+**Builds.** 41 to the first green audit (`s2-001` … `s2-040`, then `s2-audit-001`), against the plan's §4 guess of ~40 for S2.
+All `s2-*` logs: 47, adding a probe, three mutant runs, a rebuild and the control. No amend-23 row predicts S2's build count, so
+this is a reading, not a score. **K6 HOLDS so far**: no file states a layout lemma about one program.
+
+## Limits (they ride with the verdict)
+- S2 relates S1's IR run to the word run. The COMPOSITION into one statement about the source term (S1 ∘ S2) is **not yet
+  stated**. It needs S1's simulation started from an environment of caller parameters, which is `TRel.subst` on the program's
+  free capability variables, and is the next act.
+- The word memory is word-granular (`W → W` at cell addresses). The byte view (x86lean's `Mem`, 8 bytes per cell) is S3's bridge.
+- The code-table bound (< 2⁶⁴ entries) and the layout premise are HYPOTHESES the caller discharges. They are not checked by the
+  compiler.
+- The fault clause is the corrected one (FAULT or OVERFLOW). See the correction below, written before the theorem.
+
 
 Forks are ruled in `DECLARATIONS-S2.md`: S2-R (a) typed flattening, S2-A (a) caller regions, S2-M (a) 8-byte cells, S2-C two-word
 caps, and C4 (b), checked arithmetic with an overflow exit.
@@ -49,7 +83,7 @@ the word machine stops at OVF first. The clause will be stated as **"… reaches
 declaration's third clause (*OVF only where an int leaves the range*) is what that disjunct means, and **no clause allows a wrong
 finished value**. The declaration is left as written, and this is the record of the change.
 
-## OWED: the step simulation (the next head's first act), specified
+## The step simulation, as it was specified before it was built (DONE: `sim2_step`, `s2_run`)
 - **State relation** `SRel T lay (I : St × Store) (Wst : WSt × WMem)`:
   - `run`: ∃ e Γl Γt Δ τ t with `c = lowerT e`, `wc = (lower2T Γl e t).1`, `KeepsFrom t.length (lower2T Γl e t).2 T`,
     `HasType₂ Γt Δ e τ`, `Tm.wfB Γl.length e`, `Agree Γl.length Γl Γt`, `fnOk e`, `ok2 e` and `EnvRel T lay σ Γl ρ ρw`.
