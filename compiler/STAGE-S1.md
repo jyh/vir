@@ -36,10 +36,13 @@ would otherwise contradict the fault. C2 is used in exactly one place: a closed 
 rebuilt it green.
 
 ## Limits (they ride with the verdict)
-- S1 is a FORWARD simulation. The converse, that every IR run of `lowerT e` is matched by ⟶₂, was declared as "a corollary,
-  stated beside it". It is **not yet stated or proved**, and it is owed before S2 composes. Both relations are deterministic
-  (`stepIR` is a function; ⟶₂ is deterministic by inspection), but L2's determinism is not a theorem in `VIRL2` at master
-  1189b49, so the corollary is not free.
+- **The converse is PROVED (`VIRC.s1_converse`, `VIRC/Converse.lean`, `logs/s1c-audit-001.log`, standard axioms).** Every IR run
+  of `lowerT e` that FINISHES at `done v` with store σ′ is matched by a ⟶₂ run to `ret a` with ⟨a⟩ = w, `valOf w = v` and the same
+  σ′. It rests on `step₂_det` (⟶₂ is deterministic, proved here from L1's `stepFn_complete`; L2 is not edited) and on the IR being
+  a function. Its builds are `s1c-*`: 2 builds and 1 audit, reported BESIDE K1 and never folded into it.
+- **A finding against this arm's own declaration.** `DECLARATIONS-S1.md` says that logs after `s1-audit-001` are named `s2-*`.
+  Four were named `s1-*` instead: the control, the mutant, `s1-009` (the C2 witnesses) and `s1-audit-002`. That is why K1 is
+  reported as 9 (the declared window) with 13 beside it, and not as one figure.
 - IR values are still L2 values (`valOf`), not words. The 64-bit gap and fork C4 belong to S2.
 - Typing plays no part. The theorem holds for every closed C2 term, typed or not. A "finished" run is one ending in
   `ret a`, and the clause asks that a evaluate. For ⊢₂-typed programs that is L2's safety theorem, not S1's.
