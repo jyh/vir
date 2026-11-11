@@ -75,3 +75,5 @@ accept/reject it is one more input like any other.
     never as D1's.
   - Reasons are tabulated, never scored.
   - A positive control alters one oracle output in memory and must raise the disagreement count by exactly one.
+- ⚠️ **CORRECTION (after run 1, 14:15):** the population is **313**, not 314. The 313 pinned FILES include `ii-seed-raw`, which is
+  not a stream, so the streams are 312 + A1's 1. The run counted it correctly (`x5/X5-RUN-1.md`). The line above is left as written.
