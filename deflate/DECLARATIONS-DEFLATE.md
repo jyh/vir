@@ -198,3 +198,37 @@ HCLEN, the 3-bit code-length lengths, every extra-bits field) is read by `READ`,
   sets it from its own path. BUILD's own phases, and S4's `.strict`/`.dist` variants, get their line before BUILD's code.
 - **What would show this wrong:** a fixed length written outside lengths[0..318); a BUILD that reads the split from anything
   but cell 7.
+
+### S-10 (amendment 4, 2026-11-11, the 63rd head). DECLARED before any BUILD or DECODE code: S4's construction one cell per step, and `decode` one bit per step.
+**Code tables.** Three, by TARGET t (0 = CL, 1 = L, 2 = D), each 352 cells at `TB(t) = IN + n + OUTMAX + 318 + 19 + 352·t`:
+`count[16] · first[16] · offs[16] · slot[16] · syms[288]`. `syms` holds the symbols in S4's order (by length, then index), so
+S4's `syms[ℓ][j]` is `syms[offs[ℓ] + j]`; `slot` is the next free position per length while the code is built. (S-1 named
+count · first · syms only; `offs` and `slot` are what a flat `syms` needs, R-b forbidding a per-length array of arrays.)
+**Sources.** CL: the 19 cells at `IN + n + OUTMAX + 318`; L: lengths[0 .. HLIT); D: lengths[HLIT .. HLIT + HDIST).
+**BUILD cells (cursor-2):** 2073 DYN (1 in a dynamic block, 0 in a fixed one) · 2074 TGT · 2075 code · 2076 left · 2077 rest
+(Σ count[2..15]) · 2078 total (Σ count[1..15]). Phase in cell 12, index j in cell 13.
+**BUILD, by phase, ONE cell per step:**
+- 0 ZERO: j < 16: count[j] := 0. At 16 → phase 1, j := 0.
+- 1 COUNT: j < N: ℓ := src[j]; if ℓ ≠ 0, count[ℓ] += 1. At N → phase 2, j := 1, code := 0, first[0] := 0, offs[0] := 0.
+  (S4's bl_count[0] := 0 holds because length 0 is never counted.)
+- 2 NEXT: j ≤ 15: code := 2·(code + count[j−1]); first[j] := code; offs[j] := offs[j−1] + count[j−1]; slot[j] := offs[j].
+  At 16 → CHK = 1: phase 3, j := 1, left := 1, rest := 0, total := 0; CHK = 0: phase 4, j := 0.
+- 3 LEFT (S4's checks, in S4's order): j ≤ 15: left' := 2·left − count[j]; left' < 0 → reason "over-subscribed", REJECT; else
+  left := left', total += count[j], and rest += count[j] when j ≥ 2. At 16: exempt := by the variant — normal: count[1] = 1 ∧
+  rest = 0; strict: false; dist: (count[1] = 1 ∧ rest = 0) ∨ total = 0. left > 0 ∧ ¬exempt → reason "incomplete", REJECT;
+  else phase 4, j := 0.
+- 4 SYMS: j < N: ℓ := src[j]; if ℓ ≠ 0, syms[slot[ℓ]] := j and slot[ℓ] += 1. At N, by TGT: CL → mode LENS (its line before
+  its code); L → TGT := 2, phase 0, j := 0 (still BUILD); D → mode SYM.
+- The variant by TGT: CL strict; L normal; D dist when DYN = 1, normal when DYN = 0 (S5's `fixedCodes lit` calls `code` with
+  the default mode for both tables).
+**FIXLENS's hand-off gains TGT := 1 and DYN := 0** (it is re-proved; nothing else in it changes). DHDR's path sets DYN := 1 and
+CHK := 1.
+**DECODE (S4's `decodeGo`, MSB-first), ONE bit per step.** Cursor-3, 5 cells at `X = IN + n + OUTMAX + 1393` (after the code
+tables): X+0 ℓ · X+1 v · X+2 TGT · X+3 ret · X+4 sym. A mode that decodes writes ℓ := 1, v := 0, TGT, ret, and sets mode :=
+DECODE. One step: byte ≥ n → reason "truncated", REJECT. Else read bit x exactly as READ does (input byte, table cell,
+cursor advanced with a carry), v' := 2·v + x, f := first[ℓ], c := count[ℓ] of TB(TGT); f ≤ v' < f + c → sym :=
+syms[offs[ℓ] + v' − f], mode := ret; else ℓ = 15 → reason "invalid code", REJECT (decodeGo's fuel 0 reads no bit); else
+ℓ += 1, v := v'.
+**S-8's falsifier is amended:** "a mode other than READ **or DECODE** that loads from the bit table".
+**What would show this wrong:** a build phase with more than one cell written per step beyond its counters; a check made in an
+order other than S4's; a decode that reads a bit after ℓ = 15 fails.
