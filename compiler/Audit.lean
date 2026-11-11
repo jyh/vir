@@ -8,3 +8,4 @@ import VIRC
 #print axioms VIRC.inferT_sound
 #print axioms VIRC.rejects_alloc
 #print axioms VIRC.run_ovf
+#print axioms VIRC.compile_refines

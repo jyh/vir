@@ -25,9 +25,16 @@ All `s2-*` logs: 47, adding a probe, three mutant runs, a rebuild and the contro
 this is a reading, not a score. **K6 HOLDS so far**: no file states a layout lemma about one program.
 
 ## Limits (they ride with the verdict)
-- S2 relates S1's IR run to the word run. The COMPOSITION into one statement about the source term (S1 ∘ S2) is **not yet
-  stated**. It needs S1's simulation started from an environment of caller parameters, which is `TRel.subst` on the program's
-  free capability variables, and is the next act.
+- **S1 ∘ S2 is STATED and PROVED: `VIRC.compile_refines` (`VIRC/Compose.lean`, `logs/s2c-audit-001.log`, standard axioms).**
+  It is ONE statement about the SOURCE program with its caller parameters instantiated (`instL 0 vs e`):
+  - a ⟶₂ run that finishes with `ret a`, ⟨a⟩ = w, is matched by a word run finishing with words related to w's image, or by
+    OVERFLOW;
+  - a ⟶₂ fault is matched by FAULT or OVERFLOW;
+  - n ⟶₂ steps are matched by ≥ n word steps, or by OVERFLOW.
+
+  Logs `s2c-*`: 3 builds and 1 audit, beside S2's count. **Still owed: the CONVERSE of S2** (a word run that finishes implies the
+  IR run finishes). It needs the IR to be total on typed states, which `sim2_step`'s two branches already give, plus determinism
+  of `stepW`, which holds because it is a function.
 - The word memory is word-granular (`W → W` at cell addresses). The byte view (x86lean's `Mem`, 8 bytes per cell) is S3's bridge.
 - The code-table bound (< 2⁶⁴ entries) and the layout premise are HYPOTHESES the caller discharges. They are not checked by the
   compiler.
