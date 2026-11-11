@@ -156,3 +156,31 @@ give: `8 · input[byte] + bit`.
   cursor gains the two counters.
 - **D3 is unaffected in kind:** the TABLE prefix is 2,048 steps, independent of the input. A termination measure must count
   it, and it does not involve the input cursor.
+
+### S-8 (amendment 2 to the step declaration, 2026-11-11, the 63rd head). DECLARED before any code for the modes it touches. Step.lean holds TABLE only (`table_step`).
+**A mode is ADDED: `READ`, the bit-serial reader.** Every bit a mode needs LSB-first (BFINAL, BTYPE, LEN, NLEN, HLIT, HDIST,
+HCLEN, the 3-bit code-length lengths, every extra-bits field) is read by `READ`, ONE bit per step:
+- cursor-2 cells hold k (bits left, ≥ 1 on entry), acc, wt (the weight of the next bit, 1 on entry) and ret (the mode to return to);
+- one step: if byte < n then load v = input[byte], load x = table[8·v + bit], advance (byte, bit) with a carry, acc += x·wt,
+  wt := 2·wt, k := k − 1, and when k reaches 0 set mode := ret; else reason := "truncated", mode := REJECT.
+- A mode that needs a field writes (k, acc = 0, wt = 1, ret = its continuation mode) and sets mode := READ. The field is in
+  acc when ret runs.
+- **Consequences, stated so that they are not found in a proof:** HDR reads BFINAL and BTYPE as TWO fields, not one
+  3-bit field (splitting acc into acc mod 2 and acc div 2 has no primitive under R-c): `HDR` requests 1 bit with ret
+  `HDRB`, `HDRB` stores BFINAL and requests 2 bits with ret `HDRD`, `HDRD` dispatches on BTYPE: 0 → SHDR, 1 → FIXLENS, 2 → DHDR,
+  3 → reason "invalid block type", REJECT). SHDR, DHDR, CLREAD, LENS and SYM likewise split at each field. Huffman DECODE
+  (MSB-first, S-3) is NOT covered by this amendment; it gets its own line before its code.
+- **`FIXLENS` is ADDED** (S-2 says "Fixed blocks reach BUILD with the S5 lengths written by the step itself" and named no mode
+  that writes them): ONE S5 length per step into the lengths area, by the fill index, then BUILD.
+- **Why:** with bit reads inline, each mode's lemma branches on truncation and on the bit carry at every read (3 reads in HDR
+  alone are 27 paths before the dispatch). With READ, the truncation and carry case split is proved ONCE (`readbit_step`,
+  `readbit_trunc`) and every other mode is a straight-line `simp` run with no bit read in it.
+- **Layout:** cursor-2, 12 cells, sits after the bit table; the input moves after it.
+  `[ cursor 0..17 | TB, TI (18, 19) | bit table 20..2067 | cursor-2 2068..2079 | input 2080.. n | output | lengths | code tables ]`.
+  Cursor cells: 0 mode · 1 byte · 2 bit · 3 m · 4 BFINAL · 5 pending · 6 distance · 7 HLIT · 8 HDIST · 9 HCLEN · 10 fill ·
+  11 last · 12 phase · 13 index · 14 reason · 15 n · 16 OUTMAX · 17 the literal-reading flag. Cursor-2: 2068 k · 2069 acc ·
+  2070 wt · 2071 ret; 2072–2079 reserved.
+- **D3:** READ adds one step per bit read; the measure still bounds it by 8·n plus a constant per field.
+  **D4:** unaffected (every table cell is still computed by `BITc` in TABLE).
+- **What would show this amendment wrong:** a mode other than READ that loads from the bit table; a field read whose value
+  is not acc at its ret mode.
