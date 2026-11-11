@@ -608,4 +608,106 @@ theorem EnvRel.transport {T lay} {σ σ' : Store} (hR : σ'.R = σ.R) : ∀ {Γ 
   | _, _, _, .nil => .nil
   | _, _, _, .cons h hs => .cons (h.transport hR) (EnvRel.transport hR hs)
 
+/-! ## Part 6: the state relation. -/
+/-- IR code `c` and word code `wc` are the two lowerings of ONE typed, accepted source term, in related environments. -/
+def CodeRel (T : Table) (lay : Int → W) (σ : Store) (Γl : Ctx S₂) (ρ : List VIRC.Val) (ρw : List W) (c : Code)
+    (wc : WCode) (τ : Ty₂) : Prop :=
+  ∃ e Γt Δ t, c = lowerT e ∧ wc = (lower2T Γl e t).1 ∧ KeepsFrom t.length (lower2T Γl e t).2 T ∧
+    HasType₂ Γt Δ e τ ∧ Tm.wfB Γl.length e = true ∧ Agree Γl.length Γl Γt ∧ Tm.fnOk e = true ∧ Tm.ok2 e = true ∧
+    EnvRel T lay σ Γl ρ ρw
+
+theorem CodeRel.transport {T lay} {σ σ' : Store} (hR : σ'.R = σ.R) {Γl ρ ρw c wc τ}
+    (h : CodeRel T lay σ Γl ρ ρw c wc τ) : CodeRel T lay σ' Γl ρ ρw c wc τ := by
+  obtain ⟨e, Γt, Δ, t, h1, h2, h3, h4, h5, h6, h7, h8, h9⟩ := h
+  exact ⟨e, Γt, Δ, t, h1, h2, h3, h4, h5, h6, h7, h8, h9.transport hR⟩
+
+/-- The frame stacks: each frame, given a related result of its input type, continues as related code of its output type. -/
+inductive FRel2 (T : Table) (lay : Int → W) (σ : Store) : Ty₂ → List Frame → List (WCode × List W) → Ty₂ → Prop where
+  | nil {τ} : FRel2 T lay σ τ [] [] τ
+  | cons {τin τout τfin : Ty₂} {c : Code} {ρ : List VIRC.Val} {wc : WCode} {ρw : List W} {k kw} :
+      (∀ v ws, VRel T lay σ τin v ws → ∃ Γl, CodeRel T lay σ Γl (v :: ρ) (ws ++ ρw) c wc τout) →
+      FRel2 T lay σ τout k kw τfin → FRel2 T lay σ τin ((c, ρ) :: k) ((wc, ρw) :: kw) τfin
+
+theorem FRel2.transport {T lay} {σ σ' : Store} (hR : σ'.R = σ.R) : ∀ {τ k kw τfin},
+    FRel2 T lay σ τ k kw τfin → FRel2 T lay σ' τ k kw τfin
+  | _, _, _, _, .nil => .nil
+  | _, _, _, _, .cons hf hs => .cons (fun v ws hv => by
+      obtain ⟨Γl, h⟩ := hf v ws (hv.transport hR.symm)
+      exact ⟨Γl, h.transport hR⟩) (FRel2.transport hR hs)
+
+/-- IR state against word state, for a run whose final type is τfin. -/
+inductive SRel (T : Table) (lay : Int → W) (τfin : Ty₂) : St × Store → WSt × WMem → Prop where
+  | run {c ρ k σ wc ρw kw m τ Γl} : CodeRel T lay σ Γl ρ ρw c wc τ → FRel2 T lay σ τ k kw τfin →
+      Layout σ lay → MemRel lay σ m → SRel T lay τfin (.run c ρ k, σ) (.run wc ρw kw, m)
+  | done {v σ ws m} : VRel T lay σ τfin v ws → SRel T lay τfin (.done v, σ) (.done ws, m)
+
+/-! ## Part 7: the steps, one construct at a time. Each: the IR steps, and the word machine steps to a related state or to `ovf`. -/
+def WStepOK (T : Table) (lay : Int → W) (τfin : Ty₂) (I' : St × Store) (Wst : WSt × WMem) : Prop :=
+  ∃ W', stepW T Wst = some W' ∧ (SRel T lay τfin I' W' ∨ W'.1 = .ovf)
+
+/-- Where a `ret` goes in the IR: finish, or resume the top frame with the value pushed. -/
+def popIR (v : VIRC.Val) (σ : Store) : List Frame → St × Store
+  | [] => (.done v, σ)
+  | (c, ρ') :: k' => (.run c (v :: ρ') k', σ)
+
+theorem stepIR_ret {o : Opd} {ρ : List VIRC.Val} {k : List Frame} {σ : Store} {v : VIRC.Val} (ev : Opd.eval ρ o = some v) :
+    stepIR (.run (.ret o) ρ k, σ) = some (popIR v σ k) := by
+  cases k with
+  | nil => simp [stepIR, ev, popIR]
+  | cons fr k' => obtain ⟨c', ρ'⟩ := fr; simp [stepIR, ev, popIR]
+
+theorem ret_out {T lay τfin σ m} {ρw : List W} {o : WOpd} {v : VIRC.Val} {τ k kw}
+    (hfr : FRel2 T lay σ τ k kw τfin) (hl : Layout σ lay) (hm : MemRel lay σ m)
+    (wo : WOut T lay σ ρw o τ v) : WStepOK T lay τfin (popIR v σ k) (.run (.ret o) ρw kw, m) := by
+  cases hfr with
+  | nil =>
+    rcases wo with wo | ⟨ws, wo, r⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wo], .inr rfl⟩
+    · exact ⟨(.done ws, m), by simp [stepW, wo], .inl (.done r)⟩
+  | cons hf' hrest =>
+    rename_i c ρ' wc ρw' k' kw'
+    rcases wo with wo | ⟨ws, wo, r⟩
+    · exact ⟨(.ovf, m), by simp [stepW, wo], .inr rfl⟩
+    · obtain ⟨Γl', hc⟩ := hf' v ws r
+      exact ⟨(.run wc (ws ++ ρw') kw', m), by simp [stepW, wo], .inl (.run hc hrest hl hm)⟩
+
+theorem step_ret {T lay τfin σ m} (hT : T.length < 2 ^ 64) {Γl Γt : Ctx S₂} {t : Table} {a : Atom₂} {τ : Ty₂}
+    {ρ ρw k kw} (hty : HasTypeA₂ Γt a τ) (hw : Atom.wfB Γl.length a = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Atom.fnOk a = true) (hok : Atom.ok2 a = true)
+    (hk : KeepsFrom t.length (lower2A Γl a t).2 T) (hfr : FRel2 T lay σ τ k kw τfin) (hl : Layout σ lay)
+    (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (.ret (lowerA a)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (.ret (lower2A Γl a t).1) ρw kw, m) := by
+  obtain ⟨v, ev, -, wo⟩ := opd_sim hT t hty hw hag he hf hok hk
+  exact ⟨_, stepIR_ret ev, ret_out hfr hl hm wo⟩
+
+theorem step_retCap {T lay τfin σ m} {Γl Γt : Ctx S₂} {n : Nat} {ρ ρw k kw}
+    (hg : Γt[n]? = some tcap) (hw : n < Γl.length) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hfr : FRel2 T lay σ tcap k kw τfin) (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (.ret (lowerA (.var n))) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (.ret (varSlice Γl n)) ρw kw, m) := by
+  have hg' : Γl[n]? = some tcap := by rw [hag n hw]; exact hg
+  obtain ⟨v, ws, h1, h2, h3⟩ := he.lookup hg'
+  have wo : WOut T lay σ ρw (varSlice Γl n) tcap v := .inr ⟨ws, h3, h2⟩
+  exact ⟨_, stepIR_ret (by simpa [lowerA, Opd.eval] using h1), ret_out hfr hl hm wo⟩
+
+theorem step_letE {T lay τfin σ m} {Γl Γt : Ctx S₂} {Δ₁ Δ₂ : List Bool} {t : Table} {τ₁ τ : Ty₂} {e₁ e₂ : Tm₂}
+    {ρ ρw k kw}
+    (h₁ : HasType₂ Γt Δ₁ e₁ τ₁) (h₂ : HasType₂ (τ₁ :: Γt) Δ₂ e₂ τ)
+    (hw : Tm.wfB Γl.length (.letE τ₁ e₁ e₂) = true) (hag : Agree Γl.length Γl Γt)
+    (he : EnvRel T lay σ Γl ρ ρw) (hf : Tm.fnOk (.letE τ₁ e₁ e₂) = true) (hok : Tm.ok2 (.letE τ₁ e₁ e₂) = true)
+    (hk : KeepsFrom t.length (lower2T Γl (.letE τ₁ e₁ e₂) t).2 T) (hfr : FRel2 T lay σ τ k kw τfin)
+    (hl : Layout σ lay) (hm : MemRel lay σ m) :
+    ∃ I', stepIR (.run (lowerT (.letE τ₁ e₁ e₂)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (.run (lower2T Γl (.letE τ₁ e₁ e₂) t).1 ρw kw, m) := by
+  simp only [Tm.wfB, Bool.and_eq_true] at hw; simp only [Tm.fnOk, Bool.and_eq_true] at hf
+  simp only [Tm.ok2, Bool.and_eq_true] at hok
+  simp only [lower2T] at hk ⊢
+  refine ⟨(.run (lowerT e₁) ρ ((lowerT e₂, ρ) :: k), σ), by simp [lowerT, stepIR], _, rfl,
+    .inl (.run (Γl := Γl) (τ := τ₁) ?_ (.cons (τin := τ₁) ?_ hfr) hl hm)⟩
+  · exact ⟨e₁, Γt, Δ₁, t, rfl, rfl, KeepsFrom.of_keeps (lower2T_keeps _ e₂ _) hk, h₁, hw.1, hag, hf.1, hok.1, he⟩
+  · intro v ws hv
+    exact ⟨τ₁ :: Γl, e₂, τ₁ :: Γt, Δ₂, _, rfl, rfl, hk.mono (lower2T_keeps Γl e₁ t).1, h₂, by simpa using hw.2,
+      by simpa using hag.cons τ₁, hf.2, hok.2, .cons hv he⟩
+
 end VIRC

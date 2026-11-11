@@ -1,0 +1,419 @@
+saltqueue: ticket P2 seat=root pid=3062
+⚠ [4/612] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [621/766] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [625/766] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/766] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [732/766] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [735/766] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [737/766] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [739/766] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [740/766] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [742/766] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [743/766] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [744/766] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [747/766] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [763/766] Replayed VIRC.Sim
+warning: VIRC/Sim.lean:22:41: '(simp only [Atom.var.injEq]; omega)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRC/Sim.lean:22:41: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRC/Sim.lean:197:87: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRC/Sim.lean:345:28: 'exact ⟨_, h1.symm⟩' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRC/Sim.lean:346:31: 'exact ⟨_, h1.symm⟩' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [764/766] Replayed VIRC.S1
+warning: VIRC/S1.lean:146:29: This simp argument is unused:
+  S₂
+
+Hint: Omit it from the simp argument list.
+  simp [S̵₂̵,̵ ̵Const.toBool] at hb
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRC/S1.lean:151:29: This simp argument is unused:
+  S₂
+
+Hint: Omit it from the simp argument list.
+  simp [S̵₂̵,̵ ̵Const.toBool] at hb
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [766/766] Building VIRC.Sim2 (3.8s)
+trace: .> LEAN_PATH=~/fleet/vir/compiler/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/compiler/VIRC/Sim2.lean -o ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim2.olean -i ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim2.ilean -c ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim2.c --setup ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim2.setup.json --json
+warning: VIRC/Sim2.lean:65:59: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRC/Sim2.lean:204:12: This simp argument is unused:
+  List.take_append_of_le_length
+
+Hint: Omit it from the simp argument list.
+  s̵i̵m̵p̵ ̵[̵L̵i̵s̵t̵.̵t̵a̵k̵e̵_̵a̵p̵p̵e̵n̵d̵_̵o̵f̵_̵l̵e̵_̵l̵e̵n̵g̵t̵h̵,̵ ̵h̵l̵]̵s̲i̲m̲p̲ ̲[̲h̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRC/Sim2.lean:592:8: This simp argument is unused:
+  List.getElem?_take
+
+Hint: Omit it from the simp argument list.
+  simp [List.getElem?_t̵a̵k̵e̵,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵drop] at h0 h1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRC/Sim2.lean:651:30: Invalid match expression: The type of pattern variable 'ρ' contains metavariables:
+  ?m.29
+error: VIRC/Sim2.lean:664:16: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+ρw : List W
+o : WOpd
+v : Val
+τ : Ty₂
+hl : Layout σ lay
+hm : MemRel lay σ m
+τout✝ : Ty₂
+c✝ : Code
+ρ✝ : List Val
+wc✝ : WCode
+ρw✝ : List W
+k✝ : List Frame
+kw✝ : List (WCode × List W)
+hf' : ∀ (v : Val) (ws : List W), VRel T lay σ τ v ws → ∃ Γl, CodeRel T lay σ Γl (v :: ρ✝) (ws ++ ρw✝) c✝ wc✝ τout✝
+ρ : ?m.33
+hrest : FRel2 T lay σ τout✝ k✝ kw✝ τfin
+ws : List W
+wo : evalW ρw o = WRes.ok ws
+r : VRel T lay σ τ v ws
+Γl' : Ctx S₂
+hc : CodeRel T lay σ Γl' (v :: ρ✝) (ws ++ ρw✝) c✝ wc✝ τout✝
+⊢ (WSt.run wc✝ (ws ++ ρw✝) kw✝, m) = ?m.272
+error: VIRC/Sim2.lean:675:43: Unknown identifier `ret_out`
+error: VIRC/Sim2.lean:675:21: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+hT : List.length T < 2 ^ 64
+Γl Γt : Ctx S₂
+t : Table
+a : Atom₂
+τ : Ty₂
+ρ : List Val
+ρw : List W
+kw : List (WCode × List W)
+hty : HasTypeA₂ Γt a τ
+hw : Atom.wfB (List.length Γl) a = true
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hf : Atom.fnOk a = true
+hok : Atom.ok2 a = true
+hk : KeepsFrom (List.length t) (lower2A Γl a t).2 T
+hl : Layout σ lay
+hm : MemRel lay σ m
+v : Val
+ev : Opd.eval ρ (lowerA a) = some v
+wo : WOut T lay σ ρw (lower2A Γl a t).1 τ v
+hfr : FRel2 T lay σ τ [] kw τfin
+⊢ (St.done v, σ) = ?m.105
+error: VIRC/Sim2.lean:676:73: Unknown identifier `ret_out`
+error: VIRC/Sim2.lean:676:51: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+hT : List.length T < 2 ^ 64
+Γl Γt : Ctx S₂
+t : Table
+a : Atom₂
+τ : Ty₂
+ρ : List Val
+ρw : List W
+kw : List (WCode × List W)
+hty : HasTypeA₂ Γt a τ
+hw : Atom.wfB (List.length Γl) a = true
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hf : Atom.fnOk a = true
+hok : Atom.ok2 a = true
+hk : KeepsFrom (List.length t) (lower2A Γl a t).2 T
+hl : Layout σ lay
+hm : MemRel lay σ m
+v : Val
+ev : Opd.eval ρ (lowerA a) = some v
+wo : WOut T lay σ ρw (lower2A Γl a t).1 τ v
+k' : List Frame
+c' : Code
+ρ' : List Val
+hfr : FRel2 T lay σ τ ((c', ρ') :: k') kw τfin
+⊢ (St.run c' (v :: ρ') k', σ) = ?m.134
+error: VIRC/Sim2.lean:687:61: Unknown identifier `ret_out`
+error: VIRC/Sim2.lean:687:21: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+Γl Γt : Ctx S₂
+n : ℕ
+ρ : List Val
+ρw : List W
+kw : List (WCode × List W)
+hg : Γt[n]? = some tcap
+hw : n < List.length Γl
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hl : Layout σ lay
+hm : MemRel lay σ m
+hg' : Γl[n]? = some tcap
+v : Val
+ws : List W
+h1 : ρ[n]? = some v
+h2 : VRel T lay σ tcap v ws
+h3 : evalW ρw (varSlice Γl n) = WRes.ok ws
+wo : WOut T lay σ ρw (varSlice Γl n) tcap v
+hfr : FRel2 T lay σ tcap [] kw τfin
+⊢ (St.done v, σ) = ?m.112
+error: VIRC/Sim2.lean:689:77: Unknown identifier `ret_out`
+error: VIRC/Sim2.lean:689:37: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+Γl Γt : Ctx S₂
+n : ℕ
+ρ : List Val
+ρw : List W
+kw : List (WCode × List W)
+hg : Γt[n]? = some tcap
+hw : n < List.length Γl
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hl : Layout σ lay
+hm : MemRel lay σ m
+hg' : Γl[n]? = some tcap
+v : Val
+ws : List W
+h1 : ρ[n]? = some v
+h2 : VRel T lay σ tcap v ws
+h3 : evalW ρw (varSlice Γl n) = WRes.ok ws
+wo : WOut T lay σ ρw (varSlice Γl n) tcap v
+k' : List Frame
+c' : Code
+ρ' : List Val
+hfr : FRel2 T lay σ tcap ((c', ρ') :: k') kw τfin
+⊢ (St.run c' (v :: ρ') k', σ) = ?m.141
+error: VIRC/Sim2.lean:703:13: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+Γl Γt : Ctx S₂
+Δ₁ Δ₂ : List Bool
+t : Table
+τ₁ τ : Ty₂
+e₁ e₂ : Tm₂
+ρ : List Val
+ρw : List W
+k : List Frame
+kw : List (WCode × List W)
+h₁ : HasType₂ Γt Δ₁ e₁ τ₁
+h₂ : HasType₂ (τ₁ :: Γt) Δ₂ e₂ τ
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hk : KeepsFrom (List.length t) (lower2T (τ₁ :: Γl) e₂ (lower2T Γl e₁ t).2).2 T
+hfr : FRel2 T lay σ τ k kw τfin
+hl : Layout σ lay
+hm : MemRel lay σ m
+hw : Tm.wfB (List.length Γl) e₁ = true ∧ Tm.wfB (List.length Γl + 1) e₂ = true
+hf : Tm.fnOk e₁ = true ∧ Tm.fnOk e₂ = true
+hok : Tm.ok2 e₁ = true ∧ Tm.ok2 e₂ = true
+⊢ lowerT e₁ = ?m.68 ∧ ρ = ?m.69 ∧ lowerT e₂ = ?m.85 ∧ ρ = ?m.86
+error: VIRC/Sim2.lean:699:81: unsolved goals
+T : Table
+lay : ℤ → W
+τfin : Ty₂
+σ : Store
+m : WMem
+Γl Γt : Ctx S₂
+Δ₁ Δ₂ : List Bool
+t : Table
+τ₁ τ : Ty₂
+e₁ e₂ : Tm₂
+ρ : List Val
+ρw : List W
+k : List Frame
+kw : List (WCode × List W)
+h₁ : HasType₂ Γt Δ₁ e₁ τ₁
+h₂ : HasType₂ (τ₁ :: Γt) Δ₂ e₂ τ
+hag : Agree (List.length Γl) Γl Γt
+he : EnvRel T lay σ Γl ρ ρw
+hk : KeepsFrom (List.length t) (lower2T (τ₁ :: Γl) e₂ (lower2T Γl e₁ t).2).2 T
+hfr : FRel2 T lay σ τ k kw τfin
+hl : Layout σ lay
+hm : MemRel lay σ m
+hw : Tm.wfB (List.length Γl) e₁ = true ∧ Tm.wfB (List.length Γl + 1) e₂ = true
+hf : Tm.fnOk e₁ = true ∧ Tm.fnOk e₂ = true
+hok : Tm.ok2 e₁ = true ∧ Tm.ok2 e₂ = true
+⊢ ∃ I',
+    stepIR (St.run (lowerT (Tm.letE τ₁ e₁ e₂)) ρ k, σ) = some I' ∧
+      WStepOK T lay τfin I' (WSt.run ((lower2T Γl e₁ t).1.letE (lower2T (τ₁ :: Γl) e₂ (lower2T Γl e₁ t).2).1) ρw kw, m)
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRC.Sim2
+error: build failed
+saltbuild EXIT=1
