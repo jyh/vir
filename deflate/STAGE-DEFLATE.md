@@ -249,7 +249,30 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       and READ's return mode one READ is requested with (a value outside would be a fixed point that is neither DONE nor
       REJECT: Safety would be FALSE, not merely unproved), and HLIT ≤ 288, HDIST ≤ 32, HCLEN ≤ 19. **`Φ_init`: Φ of the
       initial world IS `Nbound n OUTMAX`.** df-105/106 were a `let`-bound `initCell` that `split_ifs` could not see through
-      and a tactic after a closed goal. The audit file is regenerated from VIRDeflate.lean's imports: the
+      and a tactic after a closed goal.
+    - Preservation machinery (df-108/109): `reqF_eq` / `InvG.req` (a READ request keeps InvG), `upd_eq` / `InvG.upd` (a
+      write to a SCRATCH cell — 4, 5, 6, 10–14, 2068–2070, 2072–2078 — keeps it). `safe_hdr'`, `safe_hdrb`, `safe_slen`,
+      `safe_dhdr`: stepS, next world, InvG kept, Φ lower.
+    - **The per-mode invariant `InvM`, DESIGNED (64th head) and NOT yet in code — the plan the next rows execute:**
+      - `facts md f`, per mode, from each Step.lean lemma's premises: SNLEN pend ≥ 0 · SCOPY 0 ≤ pend, by + pend ≤ n,
+        m + pend ≤ OUTMAX · FIXLENS 0 ≤ fill ≤ 318 · CLREAD 0 ≤ i ≤ 19, 4 ≤ HCLEN · CLPUT 0 ≤ i < 19 · LENS 0 ≤ fl ≤
+        HLIT + HDIST, HLIT ≤ 286, HDIST ≤ 30, sane 0 · LSYM the same with fl < HLIT + HDIST · LREP fl as LENS, pend ≥ 0,
+        0 ≤ last ≤ 15 · REP 0 ≤ pend, fl + pend ≤ HLIT + HDIST, 0 ≤ last ≤ 15 (REP writes `last` into the lengths, and
+        InvG keeps every length in [0, 15]) · SYM, SYMD, LENX, DSTD, DSTX: sane 1 ∧ sane 2, pend ≥ 0 from LENX on (a
+        negative pend would make COPY run past OUTMAX: Safety would be false) · COPY also dist ≤ m and m + pend ≤ OUTMAX ·
+        BUILD: phase 0–4 with its index range, tgt ∈ {0,1,2}, tbb = LB + 337 + 352·tgt, (sb, nn) = (LB, HLIT),
+        (LB + HLIT, HDIST) or (LB + 318, 19), and the fold invariant of its phase (below).
+      - READ carries `facts rt` and `1 ≤ k, 1 ≤ wt, 0 ≤ acc < wt, wt·2^k ≤ kcap rt`; a return mode has `0 ≤ acc < kcap md`
+        (kcap: HDRB 2, HDRD 4, SLEN/SNLEN 2^16, DH2/DH3 32, DH4 16, CLPUT 8, LENX 32, DSTX 2^13, LREP 128). That is what
+        gives HLIT ≤ 288, HDIST ≤ 32, HCLEN ≤ 19 and CL lengths ≤ 7.
+      - DECODE carries `facts rt`, t ∈ {0,1,2} paired with rt (0 LSYM, 1 SYMD, 2 DSTD), 1 ≤ l ≤ 15 and `sane t`;
+        `sane t` = for l ∈ 1..15, counts and offsets ≥ 0 with offset + count ≤ 288. Every syms cell of all three tables
+        is in [0, 288) (a global conjunct: BUILD writes j < nn ≤ 288).
+      - BUILD's fold invariants, with cnt(a, b, l) = #{j ∈ [a, b) : length[sb + j] = l}: ZERO counts below j are 0 ·
+        COUNT count[l] = cnt(0, j, l), count[0] = 0 · NEXT count[l] = cnt(0, nn, l) and offset[l] = Σ_{l'<l} count[l']
+        below j (offset[0] = tbb + 32 is never written, so it stays 0) · SYMS next[l] + cnt(j, nn, l) ≤ 288 with
+        next[l] ≥ 0 — so the symbol being placed has next[l] < 288 (build_syms_cell's premise). After SYMS: `sane tgt`.
+      - LOC < 4096 for READ's return modes needs CLPUT's and LREP's fill ≥ 0 — carried in `facts rt`. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
