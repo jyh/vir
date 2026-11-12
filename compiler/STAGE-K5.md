@@ -95,3 +95,12 @@
   Audit k5-audit-005: 39 rows, all within propext / Classical.choice / Quot.sound, 0 sorryAx.
   **OWED, in order:** `Mag_step` (preservation over the 28 modes, Addenda 4–5's clauses), then `deflate_inrange` (Dispatch's
   `step_inR` + the 28 wrappers, over Safety's reachable worlds), then K5-3.
+- **`step_inrange` PROVED (69th head, vir 14e1a31, k5p-078; k5/K5/InRange.lean):** DEFLATE's step term is in range on every world
+  with `Inv ∧ Mag`, n, OUTMAX < 2³², bytes < 256 (Dispatch's `step_inR` + the 28 wrappers; mode lookup by `rfl` per key — `simp`
+  cannot reduce `List.lookup` on Int keys past the head). Audit k5-audit-006 40 rows within the three.
+  **⇒ K5-2's ONLY open premise is now `Mag_step`.**
+- **`Mag_step` begun (k5/K5/MagStep.lean, k5p-080):** `world_uniq` (one store ⇒ one cell function on the region), `Mag_congr`,
+  `Mag_of_explicit` (the per-mode form: the mode's explicit step pins `stepS`'s store), and the first mode, **SLEN** (the step
+  that MAKES P1). **Route for the other 27:** per mode, the explicit store from Safety's `safe_*` (5 exist) or from Step.lean's
+  `<mode>_step` via `stepS_of_mode` exactly as the mode's `safeI_*` builds it, then the 9 clauses of the explicit cell function
+  (most are vacuous by the new mode; the frame is `Function.update_apply` away from the written cells).
