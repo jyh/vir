@@ -2754,6 +2754,87 @@ theorem offOf_nonneg {f : Int → Int} {tbb : Int} (hc : ∀ l : Nat, 1 ≤ l �
   | zero => simp [offOf]
   | succ l ih => simp only [offOf]; split_ifs <;> [simpa using ih (by omega); linarith [ih (by omega), hc l (by omega) (by omega)]]
 
+/-! ## BUILD assembled: ZERO, COUNT and NEXT -/
+
+theorem bset_far {n om : Nat} {t : Int} (ht : 0 ≤ t ∧ t ≤ 2) (c : Int) (h : bset (tbase n om t) c) :
+    c ≠ X0 n om + 5 ∧ c ≠ X0 n om + 6 ∧ c ≠ X0 n om + 7 ∧ c ≠ X0 n om + 8 ∧ c ≠ cTGT ∧ c ≠ cCHK ∧ c ≠ cDYN ∧
+      c ≠ cHLIT ∧ c ≠ cHDIST ∧ c ≠ cBF ∧ c ≠ cFILL ∧ (c < LB0 n om ∨ LB0 n om + 337 ≤ c) := by
+  unfold bset tbase LB0 at h; unfold X0 cTGT cCHK cDYN cHLIT cHDIST cBF cFILL LB0; omega
+
+/-- **ZERO, COUNT, NEXT:** the table's counts are `bl_count`, its firsts are `next_code`, and its offsets and slots are
+the prefix sums, all at the moment NEXT reaches j = 16. -/
+theorem build_prefix {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
+    {σ : Store} {f : Int → Int} {st : St} (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st)
+    (hm : f cMODE = mBUILD) (hph : f cPHASE = 0) (hj : f cINDEX = 0) (hnn : f (X0 b.size om + 6) = lens.size)
+    (hsrc : ∀ i : Nat, i < lens.size → f (f (X0 b.size om + 5) + i) = lens.getD i 0) :
+    ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st ∧ f' cMODE = mBUILD ∧
+      f' cPHASE = 2 ∧ f' cINDEX = 16 ∧ Keeps (L0 b.size om) f f' (bset (f (X0 b.size om + 7))) ∧
+      f' (f (X0 b.size om + 7)) = 0 ∧
+      (∀ l : Nat, 1 ≤ l → l ≤ 15 → f' (f (X0 b.size om + 7) + l) = blCount lens l ∧
+        f' (f (X0 b.size om + 7) + 16 + l) = (nextCodes lens).getD l 0 ∧
+        f' (f (X0 b.size om + 7) + 32 + l) = offOf f' (f (X0 b.size om + 7)) l ∧
+        f' (f (X0 b.size om + 7) + 48 + l) = offOf f' (f (X0 b.size om + 7)) l) := by
+  have hB := buildInv_of hR hm
+  obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+  set tbb := f (X0 b.size om + 7) with htbbd
+  set sb := f (X0 b.size om + 5) with hsbd
+  have far := bset_far (n := b.size) (om := om) ⟨ht0, ht2⟩
+  have hX : ∀ c, X0 b.size om ≤ c → c < L0 b.size om → True := fun _ _ _ => trivial
+  obtain ⟨σ1, f1, hR1, hw1, hRe1, hm1, hp1, hj1, hk1⟩ := zero_run (lit := lit) hb (16 - 0) σ f st hw hR hm hph (by rw [hj]; rfl)
+  rw [← htbbd] at hk1
+  have kk1 : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset tbb c → f1 c = f c := hk1
+  have e7 : f1 (X0 b.size om + 7) = tbb := by
+    rw [kk1 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).2.2.1 rfl)]
+  have e5 : f1 (X0 b.size om + 5) = sb := by
+    rw [kk1 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).1 rfl)]
+  have e6 : f1 (X0 b.size om + 6) = lens.size := by
+    rw [kk1 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).2.1 rfl)]; exact hnn
+  obtain ⟨σ2, f2, hR2, hw2, hRe2, hm2, hp2, hj2, hc2, hk2⟩ :=
+    count_run (lit := lit) hb (lens.size - 0) σ1 f1 st hw1 hRe1 hm1 hp1 (by rw [hj1, e6]; simp)
+  rw [e7] at hk2
+  have kk2 : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset tbb c → f2 c = f1 c := hk2
+  have e7' : f2 (X0 b.size om + 7) = tbb := by
+    rw [kk2 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).2.2.1 rfl), e7]
+  -- the counts at the start of NEXT
+  have hB2 := buildInv_of hRe2 hm2
+  obtain ⟨-, -, -, -, -, -, hn2, -, -⟩ := hB2
+  obtain ⟨-, -, hz2, -, hcnt2, -⟩ := hn2 (by omega) (by omega)
+  rw [e7'] at hz2 hcnt2
+  have src2 : ∀ i : Nat, i < lens.size → f2 (sb + i) = lens.getD i 0 := fun i hi => by
+    rw [kk2 _ (by unfold LB0 at hsb0; omega) (by unfold LB0 L0 at *; omega)
+      (fun h => by have := (far _ (htb ▸ h)).2.2.2.2.2.2.2.2.2.2.2; unfold LB0 at *; omega),
+      kk1 _ (by unfold LB0 at hsb0; omega) (by unfold LB0 L0 at *; omega)
+      (fun h => by have := (far _ (htb ▸ h)).2.2.2.2.2.2.2.2.2.2.2; unfold LB0 at *; omega)]
+    exact hsrc i hi
+  have e52 : f2 (X0 b.size om + 5) = sb := by
+    rw [kk2 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).1 rfl), e5]
+  have e62 : f2 (X0 b.size om + 6) = lens.size := by
+    rw [kk2 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).2.1 rfl), e6]
+  rw [e52, e62] at hcnt2
+  have hcb2 : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f2 (tbb + l) = blCount lens l := fun l h1 h2 => by
+    rw [hcnt2 l (by omega) (by omega)]; simp only [Int.toNat_natCast]
+    exact_mod_cast cnt_blCount src2 l (by omega)
+  obtain ⟨σ3, f3, hR3, hw3, hRe3, hm3, hp3, hj3, e73, hcs3, hfs3, hk3⟩ :=
+    next_run (lit := lit) hb 15 σ2 f2 st 1 hw2 hRe2 hm2 hp2 hj2 le_rfl rfl (by rw [hc2]; rfl) (fun l h1 h2 => by omega)
+  rw [e7'] at e73 hcs3 hfs3 hk3
+  refine ⟨σ3, f3, hR1.trans (hR2.trans hR3), hw3, hRe3, hm3, hp3, hj3, ?_, ?_, fun l h1 h2 => ⟨?_, ?_, ?_⟩⟩
+  · exact (hk1.trans hk2 (fun c h => h)).trans hk3 (fun c h => h)
+  · have h0 := hcs3 0 (by norm_num); simp only [Nat.cast_zero, add_zero] at h0; rw [h0]; simpa using hz2
+  · rw [hcs3 l (by omega)]; exact hcb2 l h1 h2
+  · rw [hfs3 l h1 h2, nextCodes_ncode lens l h2]
+    apply ncode_congr
+    intro i hi
+    by_cases h0 : i = 0
+    · subst h0; simpa [blCount] using hz2
+    · exact hcb2 i (by omega) (by omega)
+  · -- offsets and slots, from the invariant at j = 16
+    have hB3 := buildInv_of hRe3 hm3
+    obtain ⟨-, -, -, -, -, -, hn3, -, -⟩ := hB3
+    obtain ⟨-, -, -, -, -, hoff3⟩ := hn3 (by omega) (by omega)
+    rw [e73] at hoff3
+    have := hoff3 l (by omega) (by rw [if_pos hp3, hj3]; omega)
+    simpa using this
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
