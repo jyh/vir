@@ -1,0 +1,5 @@
+saltqueue: ticket P2 seat=root pid=59948
+'K5.build_left_end_inR' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K5.ble_p00' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K5.ble_p23' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0
