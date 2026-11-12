@@ -289,4 +289,55 @@ structure InvM (f : Int → Int) : Prop where
 /-- **Safety's invariant:** the global part and the per-mode part. -/
 def Inv (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) : Prop := InvG b om lit f ∧ InvM f
 
+/-! ## The initial world satisfies the invariant -/
+
+theorem initCell_tail (b : Array Nat) (om : Nat) (lit : Bool) (i : Int) (h0 : 2080 + b.size ≤ i)
+    (h1 : i < X0 b.size om + 16) : initCell b om lit i = 0 := by
+  unfold initCell
+  dsimp only
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+    if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+
+theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCell b om lit) := by
+  have z : ∀ i : Int, 0 ≤ i → i < 2080 → i ≠ 15 → i ≠ 16 → i ≠ 17 → i ≠ 2079 → initCell b om lit i = 0 :=
+    fun i a b' c d e g => initCell_zero b om lit i a b' c d e g
+  have e15 : initCell b om lit cN = b.size := by simp [initCell, cN]
+  have e16 : initCell b om lit cOUTMAX = om := by simp [initCell, cOUTMAX]
+  have e0 : initCell b om lit cMODE = 0 := z _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
+  refine ⟨{
+    n_eq := e15
+    om_eq := e16
+    x_eq := by simp [initCell, cX]
+    lit_eq := by simp [initCell, cLIT]
+    input := fun _ _ _ => rfl
+    ro := fun _ _ _ => rfl
+    lens := fun j h1 h2 => by
+      rw [initCell_tail b om lit _ (by omega) (by unfold X0; omega)]; omega
+    tb_rng := fun _ => by
+      rw [z cTB (by decide) (by decide) (by decide) (by decide) (by decide) (by decide),
+        z cTI (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega
+    bits := fun c h1 h2 h3 => by
+      rw [e0, z cTB (by decide) (by decide) (by decide) (by decide) (by decide) (by decide),
+        z cTI (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)] at h3
+      simp [mTABLE] at h3; omega
+    by_rng := by rw [z cBY (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega
+    bi_rng := by rw [z cBI (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega
+    by_end := fun _ => z cBI (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
+    m_rng := by rw [z cM (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega
+    mode_ok := by rw [e0]; decide
+    read_rt := fun h => by rw [e0] at h; simp [mREAD] at h
+    hdr_rng := by
+      rw [z cHLIT (by decide) (by decide) (by decide) (by decide) (by decide) (by decide),
+        z cHDIST (by decide) (by decide) (by decide) (by decide) (by decide) (by decide),
+        z cHCLEN (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega }, {
+    syms := fun t q h1 h2 h3 h4 => by
+      simp only [tbase, LBf, e15, e16]
+      rw [initCell_tail b om lit _ (by omega) (by unfold X0; omega)]; omega
+    cur := by rw [e0]; simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM,
+      mSYMD, mLENX, mDSTD, mDSTX, mCOPY]
+    read := fun h => by rw [e0] at h; simp [mREAD] at h
+    ret := fun h => by rw [e0] at h; simp [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
+    dec := fun h => by rw [e0] at h; simp [mDECODE] at h
+    sym := fun h => by rw [e0] at h; simp [mSYMD, mDSTD, mLSYM] at h }⟩
+
 end VIRDeflate.Step
