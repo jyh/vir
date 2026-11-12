@@ -18,3 +18,4 @@ import K5.Mag
 import K5.SafeBuild
 import K5.InRange
 import K5.MagStep
+import K5.MagBuild
