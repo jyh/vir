@@ -369,6 +369,41 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
+  - **Correctness by simulation, `VIRDeflate/Correct.lean` (STATUS 293 (c); 66th head, 2026-11-12; S-18 declared first, vir
+    bef0697).** Shape (S-18): a FORWARD simulation plus determinism; no backward simulation.
+    - **The outer argument** (df-175): `iterS_add`, `stepS_fixed` (DONE/REJECT fixed on a world), `reach_inv` (every store
+      reached from `initStore` is a world with Safety's `Inv`), `term_unique`, **`correct_of_fwd : FwdStmt → CorrectStmt`**.
+    - **TABLE to HDR** (df-177): `init_to_hdr` — all 2,048 bit-table cells equal D4's `bitAt` (S1's bit by `bitAt_eq`).
+    - **R and the triple toolkit** (df-182, df-183): `Rel` (Inv, the bit table, 8·byte + bit = pos, the output cells);
+      `Sim A pre post` with `bind`, `step`, `reach`, `pure`, `reject`, `get`, `read`, `ite`, `measure`, `align'`, `set'`.
+    - **Field reads**: `read_sim` (READ ↔ `bitsGo`), `bits_sim'`, `bitsK_sim` (S's `bits 0` reads nothing; the step skips
+      READ). **Header**: `hdr_next`, `hdrb_next`, `hdrd_next`; **`blocks_sim`** (S2's loop given the three bodies, df-186);
+      **`fwd_of_bodies`, `correct_of_bodies`** (df-191).
+    - **Stored, `stored_sim`** (df-205): `nlen_check` (S3's `nlen ≠ len ^^^ 0xFFFF` is the step's `nlen + len ≠ 65535` on
+      16-bit fields, by `BitVec.xor_allOnes`), SHDR/SLEN/SNLEN, `scopy_run` (one byte per step = S3's one `extract`).
+    - **Codes by decode behaviour**: `TblRel` (count = `blCount`, first = `nextCodes`, syms[offs + j] = `symsOf`, offs
+      bounds), `decode_one`, **`decode_sim`** (DECODE ↔ `decodeGo` against `assign lens`, df-212).
+    - **S7's loop, `huff_sim`** (df-231): SYM, SYMD (`symd_next`), LENX, DSTD, DSTX, `copy_run` (= S7's `copyBack`),
+      the read-only tables (`InvG.roVal`).
+    - **BUILD ↔ S4's `code`, `build_tbl`** (df-273): ZERO, COUNT (progress only: Safety's `buildInv` gives the counts),
+      `next_run` (first = `ncode` over the counts; `nextCodes_ncode`), `left_run` (Kraft's `left` = `leftF` =
+      `leftAfter`), `syms_run` (symbol j at offs[ℓ] + rank, disjoint runs by `offOf_le`), `exempt_iff` (S4's normal,
+      strict and dist exemptions = `bExempt` over the counts), `go_code`, `build_end_next`.
+    - **The fixed block, `fixed_sim`, both readings** (df-289): `fixlens_run` (S5's 318 lengths), `fix_handoff`,
+      `fix_toSym`, `code_Sim` (twice, under the literal reading), `huff_Sim`.
+    - **⇒ `correct_of_dynamic`** (df-290): `CorrectStmt` follows from ONE remaining triple, S6's `dynamic` from DHDR
+      (`BodySim … dynamic mDHDR`). Owed for it: DHDR/DH2–DH4, `readCL` ↔ CLREAD/CLPUT (with S-14's zero-fill), the CL
+      build (`build_tbl`, VAR strict), `lensLoop` ↔ LENS/LSYM/LREP/REP, the L and D builds (`build_tbl`, `build_end_next`)
+      and `huff_Sim`.
+    - **Audit df-audit-030: 576 #print rows, every one within the standard three, 0 sorryAx** (axiom_gate reads 569
+      distinct names: its parse folds primed names such as `offOf_congr'`, `Sim.align'`); `correct_of_dynamic`,
+      `fixed_sim`, `stored_sim`, `huff_sim`, `build_tbl` each carry propext · Classical.choice · Quot.sound. Positive
+      control df-audit-control-004 shows `sorryAx`. df-audit-029 failed on a stale root olean (built only the module).
+    - **Builds df-175 … df-291**, the failures all elaboration in new code. **No program defect was found** in this
+      shift: every machine REJECT matched an S rejection and every acceptance matched S's output. LIMITS: reasons are
+      not compared (S-18 leaves them out); one frame lemma was too coarse and was refined, not a program fact
+      (`TblRel.keep` → `keep'`: the D build writes table 2 while L's table 1 must survive); no mutant against Correct.lean.
+
 ## Findings, recorded before X5 (no oracle has run)
 1. **DEFLATE-E1** (`errata/ERRATA-DEFLATE.md`), found by READING S while transcribing it, before any build of Spec.lean.
    - S5 builds FIXED_D through S4's `code`. 30 symbols of length 5 are incomplete, so S read literally REJECTS every
