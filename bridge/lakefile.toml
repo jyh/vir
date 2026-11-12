@@ -1,0 +1,17 @@
+name = "bridge"
+defaultTargets = ["VIRBridge"]
+
+# O95, STATUS-vir 286 (compiler/DECLARATIONS-S3-bridge.md, B-5): S3's word-memory ↔ byte-memory bridge, vir's half. A SEPARATE
+# project, so compiler/'s counts (K1) stay put. x86lean by git at a pinned sha (the compose/ precedent: a public repo, never a path
+# into a working tree); compiler by path. Packages APFS-cloned from compiler/, manifest by edit; never a bare lake update.
+[[require]]
+name = "x86lean"
+git = "https://github.com/jyh/x86lean"
+rev = "5f2231f43785d12a5420f9064173579609d9866e"
+
+[[require]]
+name = "compiler"
+path = "../compiler"
+
+[[lean_lib]]
+name = "VIRBridge"

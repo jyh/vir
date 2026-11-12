@@ -1,0 +1,230 @@
+saltqueue: ticket P2 seat=root pid=69633
+⚠ [5/763] Replayed X86.Value
+warning: X86/Value.lean:266:10: This simp argument is unused:
+  writeView_getLsbD_b
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵b̵,̵ ̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵[̲w̲r̲i̲t̲e̲V̲i̲e̲w̲_̲g̲e̲t̲L̲s̲b̲D̲_̲w̲,̲ writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:31: This simp argument is unused:
+  writeView_getLsbD_w
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵ ̵writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:52: This simp argument is unused:
+  writeView_q
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, writeView_getLsbD_w, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵q̵,̵ ̵hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [11/763] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [627/763] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [631/763] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [735/763] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [738/763] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [741/763] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [743/763] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [745/763] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [746/763] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [748/763] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [749/763] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [750/763] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [753/763] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [761/763] Building VIRBridge.Mem (1.0s)
+trace: .> LEAN_PATH=~/fleet/vir/bridge/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/packages/x86lean/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/bridge/VIRBridge/Mem.lean -o ~/fleet/vir/bridge/.lake/build/lib/lean/VIRBridge/Mem.olean -i ~/fleet/vir/bridge/.lake/build/lib/lean/VIRBridge/Mem.ilean -c ~/fleet/vir/bridge/.lake/build/ir/VIRBridge/Mem.c --setup ~/fleet/vir/bridge/.lake/build/ir/VIRBridge/Mem.setup.json --json
+error: VIRBridge/Mem.lean:39:76: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (Mem.write ?m ?a ?v).read ?a
+in the target expression
+  (m.write a (BitVec.setWidth 8 v)).read (a + 0#64) = BitVec.setWidth 8 (v >>> (8 * 0))
+
+case zero
+m : Mem
+n : ℕ
+a v : BitVec 64
+hn : n + 1 ≤ 8
+hk : 0 < n + 1
+⊢ (m.write a (BitVec.setWidth 8 v)).read (a + 0#64) = BitVec.setWidth 8 (v >>> (8 * 0))
+error: VIRBridge/Mem.lean:43:65: Unknown constant `BitVec.ushiftRight_ushiftRight`
+error: VIRBridge/Mem.lean:56:8: Unknown constant `BitVec.ushiftRight_ushiftRight`
+error: VIRBridge/Mem.lean:54:62: unsolved goals
+m : Mem
+n : ℕ
+a v : BitVec 64
+h : ∀ k < n + 1, m.read (a + BitVec.ofNat 64 k) = BitVec.setWidth 8 (v >>> (8 * k))
+i : ℕ
+h0 : m.read a = BitVec.setWidth 8 v
+k : ℕ
+hk : k < n
+⊢ BitVec.setWidth 8 (v >>> (8 * (k + 1))) = BitVec.setWidth 8 (v >>> 8 >>> (8 * k))
+error: VIRBridge/Mem.lean:62:6: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ b ≤ 7
+where
+ b := ↑i
+error: VIRBridge/Mem.lean:65:6: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 8
+where
+ b := ↑i
+warning: VIRBridge/Mem.lean:53:54: This simp argument is unused:
+  BitVec.ofNat_eq_ofNat
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.mul_zero, BitVec.ushiftRight_zero, B̵i̵t̵V̵e̵c̵.̵o̵f̵N̵a̵t̵_̵e̵q̵_̵o̵f̵N̵a̵t̵,̵ ̵BitVec.add_zero] at h0
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRBridge.Mem
+error: build failed
+saltbuild EXIT=1
