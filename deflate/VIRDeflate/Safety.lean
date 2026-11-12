@@ -558,4 +558,115 @@ theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 �
   revert hf
   repeat' (first | apply ite_imp | (intro h; tauto))
 
+/-! ## A READ request keeps the per-mode invariant -/
+
+theorem watch_reqF (f : Int → Int) (k rt : Int) : Watch f (reqF f k rt) := by
+  refine ⟨fun i hi => (reqF_eq f k rt i (by omega)).symm, fun c hc => ?_⟩
+  simp only [watched, List.mem_cons, List.mem_nil_iff, or_false] at hc
+  rw [reqF_eq f k rt c (by omega)]
+
+theorem watch_upd (f : Int → Int) {i : Int} (hi : i < 2080) (hw : i ∉ watched) (v : Int) : Watch f (Function.update f i v) := by
+  refine ⟨fun j hj => (upd_eq f v (by omega)).symm, fun c hc => ?_⟩
+  rw [upd_eq f v (by rintro rfl; exact hw hc)]
+
+def SymsOK (n om : Nat) (f : Int → Int) : Prop :=
+  ∀ t q : Int, 0 ≤ t → t ≤ 2 → 0 ≤ q → q < 288 → 0 ≤ f (tbase n om t + 64 + q) ∧ f (tbase n om t + 64 + q) < 288
+
+theorem SymsOK.upd {n om : Nat} {f : Int → Int} (h : SymsOK n om f) {i : Int} (hi : i < 2080) (v : Int) :
+    SymsOK n om (Function.update f i v) := by
+  intro t q h1 h2 h3 h4
+  rw [upd_eq f v (by unfold tbase LB0; omega)]; exact h t q h1 h2 h3 h4
+
+theorem InvM.req {n om : Nat} {f : Int → Int} (h : SymsOK n om f) (hhl : 0 ≤ f cHLIT) {k rt : Int}
+    (hf : facts n om rt f) (hk : 1 ≤ k) (hcap : 2 ^ k.toNat ≤ kcap rt) : InvM n om (reqF f k rt) where
+  syms t q h1 h2 h3 h4 := by
+    rw [reqF_eq f k rt _ (by unfold tbase LB0; omega)]; exact h t q h1 h2 h3 h4
+  cur := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]]
+    simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD,
+      mDSTX, mCOPY]
+  read _ := by
+    have hr : reqF f k rt cRET = rt := by simp [reqF, cRET, Function.update_apply]
+    have hK : reqF f k rt cK = k := by simp [reqF, cK, Function.update_apply]
+    have hA : reqF f k rt cACC = 0 := by simp [reqF, cACC, Function.update_apply]
+    have hW : reqF f k rt cWT = 1 := by simp [reqF, cWT, Function.update_apply]
+    rw [hr, hK, hA, hW]
+    exact ⟨facts_congr (watch_reqF f k rt) hhl hf, hk, le_refl _, le_refl _, by norm_num, by simpa using hcap⟩
+  ret hm := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm
+    simp [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at hm
+  dec hm := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mDECODE] at hm
+  sym hm := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSYMD, mDSTD, mLSYM] at hm
+
+/-- A write to a cell below 2080 that no part of the invariant watches keeps `InvM`, unless it is the mode or a cell the
+mode's READ/DECODE relation reads (0, 2068–2071, and X's cells are ≥ 2080). -/
+theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f cHLIT) {i : Int} (hi : i < 2080)
+    (hw : i ∉ watched) (h0 : i ≠ 0) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
+  have W := watch_upd f hi hw v
+  have u : ∀ c : Int, c ≠ i → Function.update f i v c = f c := fun c hc => upd_eq f v hc
+  have hm : Function.update f i v cMODE = f cMODE := u _ (by unfold cMODE; omega)
+  exact {
+  syms := fun t q h1 h2 h3 h4 => by rw [u _ (by unfold tbase LB0; omega)]; exact h.syms t q h1 h2 h3 h4
+  cur := by rw [hm]; exact facts_congr W hhl h.cur
+  read := fun hm' => by
+    rw [hm] at hm'
+    obtain ⟨a, b, c, d, e, g⟩ := h.read hm'
+    rw [u cRET (by unfold cRET; omega), u cK (by unfold cK; omega), u cWT (by unfold cWT; omega), u cACC (by unfold cACC; omega)]
+    exact ⟨facts_congr W hhl a, b, c, d, e, g⟩
+  ret := fun hm' => by
+    rw [hm] at hm' ⊢; rw [u cACC (by unfold cACC; omega)]; exact h.ret hm'
+  dec := fun hm' => by
+    rw [hm] at hm'
+    obtain ⟨a, b, c, d, e⟩ := h.dec hm'
+    have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
+    rw [u (X0 n om + 3) (by omega), u (X0 n om) (by omega), u (X0 n om + 2) (by omega)]
+    refine ⟨facts_congr W hhl a, b, c, d, ?_⟩
+    rcases d with ⟨d1, _⟩ | ⟨d1, _⟩ | ⟨d1, _⟩ <;> rw [d1] at e ⊢ <;> exact sane_congr W.1 (by norm_num) e
+  sym := fun hm' => by
+    rw [hm] at hm'
+    have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
+    rw [u (X0 n om + 4) (by omega)]; exact h.sym hm' }
+
+/-! ## The request modes, with the full invariant -/
+
+theorem safeI_hdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mHDR) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨a, b', c, d⟩ := safe_hdr' (b := b) (om := om) (lit := lit) hw hL hi.1 hm
+  exact ⟨_, _, a, b', ⟨c, InvM.req hi.2.syms hi.1.hdr_rng.1 (by simp [facts, mHDRB, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT,
+    mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRB])⟩, d⟩
+
+theorem safeI_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mDHDR) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨a, b', c, d⟩ := safe_dhdr (b := b) (om := om) (lit := lit) hw hL hi.1 hm
+  exact ⟨_, _, a, b', ⟨c, InvM.req hi.2.syms hi.1.hdr_rng.1 (by simp [facts, mDH2, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT,
+    mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mDH2, mHDRB, mHDRD,
+    mSLEN, mSNLEN])⟩, d⟩
+
+theorem safeI_hdrb {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mHDRB) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨a, b', c, d⟩ := safe_hdrb (b := b) (om := om) (lit := lit) hw hL hi.1 hm
+  have hu := SymsOK.upd (n := b.size) (om := om) hi.2.syms (i := 4) (by norm_num) (f cACC)
+  exact ⟨_, _, a, b', ⟨c, InvM.req hu (by rw [upd_eq _ _ (by unfold cHLIT; omega)]; exact hi.1.hdr_rng.1)
+    (by simp [facts, mHDRD, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX,
+      mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRD, mHDRB])⟩, d⟩
+
+theorem safeI_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mSLEN) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨a, b', c, d⟩ := safe_slen (b := b) (om := om) (lit := lit) hw hL hi.1 hm
+  have hacc := hi.2.ret (by rw [hm]; decide)
+  have hu := SymsOK.upd (n := b.size) (om := om) hi.2.syms (i := 5) (by norm_num) (f cACC)
+  exact ⟨_, _, a, b', ⟨c, InvM.req hu (by rw [upd_eq _ _ (by unfold cHLIT; omega)]; exact hi.1.hdr_rng.1)
+    (by simp [facts, mSNLEN, cPEND]; exact hacc.1) (by norm_num)
+    (by simp [kcap, mSNLEN, mSLEN, mHDRB, mHDRD])⟩, d⟩
+
 end VIRDeflate.Step

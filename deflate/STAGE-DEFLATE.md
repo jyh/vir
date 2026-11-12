@@ -282,7 +282,13 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       World's cell 0 is not rewritten by `simp`; `rw [show p + 0 = p by omega]` was.
     - **`Φ_nonneg : PhiNonneg` (df-116)**, from InvG's ranges and each mode's `facts` (`LOC_nonneg`; BUILD by `build_nonneg`
       from `buildInv`'s phase ranges). ⇒ **`safety_of_stepSafe : StepSafe → SafetyStmt`.** Safety is now exactly the 28
-      per-mode cases. The audit file is regenerated from VIRDeflate.lean's imports: the
+      per-mode cases.
+    - **The per-mode cases, with the full invariant (df-118 … df-124):** the invariant re-parametrized by (n, OUTMAX)
+      before any per-mode proof rested on it (tables and X are constants of the world, not reads of its cells); congruence
+      (`Watch`, `facts_congr`, `buildInv_congr`: facts read only cursor cells 1, 3, 5–13, 15, 16, 2074 and cells ≥ 2080);
+      `InvM.req` (a READ request, from the syms part alone), `InvM.upd` (a write to an unwatched cell), `SymsOK.upd`.
+      **`safeI_hdr`, `safeI_hdrb`, `safeI_slen`, `safeI_dhdr`: 4 of the 28 cases DONE** (SLEN's uses the return mode's
+      acc bound: LEN = acc ≥ 0 becomes SNLEN's pend). 24 owed, then `StepSafe` by cases on the mode. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
