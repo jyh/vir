@@ -10,3 +10,4 @@ import VIRDeflate.Typing
 import VIRDeflate.Fit
 import VIRDeflate.Measure
 import VIRDeflate.Safety
+import VIRDeflate.Correct

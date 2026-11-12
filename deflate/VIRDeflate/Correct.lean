@@ -1,0 +1,148 @@
+/-
+OBJECT-DEFLATE under X1 (a): CORRECTNESS by simulation (STATUS-vir 293 (c); DECLARATIONS-DEFLATE.md S-18, declared before
+this file existed).
+
+S-18's shape: a FORWARD simulation plus DETERMINISM. This first piece is the outer argument, checked before any triple:
+- `iterS` composes (`iterS_add`), DONE and REJECT are fixed points of `stepS` on a world (`stepS_fixed`);
+- every store the iteration reaches from `initStore` is a world satisfying Safety's `Inv` (`reach_inv`);
+- so two terminal stores reached from `initStore` are equal (`term_unique`);
+- so `CorrectStmt` follows from the forward statement `FwdStmt` alone (`correct_of_fwd`).
+-/
+import VIRDeflate.Safety
+
+namespace VIRDeflate.Step
+open VIRL1 VIRL2
+
+/-! ## The iteration composes -/
+
+theorem iterS_add (p : Int) : ∀ (j k : Nat) (σ : Store), iterS p (j + k) σ = (iterS p j σ).bind (iterS p k)
+  | 0, k, σ => by simp [iterS]
+  | j + 1, k, σ => by
+    rw [show j + 1 + k = (j + k) + 1 by omega]
+    simp only [iterS]
+    cases stepS p σ with
+    | none => rfl
+    | some σ1 => simp only [Option.bind_some]; exact iterS_add p j k σ1
+
+/-- `Reach p σ σ'`: the iteration from σ reaches σ' (S-18). -/
+def Reach (p : Int) (σ σ' : Store) : Prop := ∃ k, iterS p k σ = some σ'
+
+theorem Reach.refl (p : Int) (σ : Store) : Reach p σ σ := ⟨0, rfl⟩
+
+theorem Reach.trans {p : Int} {σ₁ σ₂ σ₃ : Store} (h₁ : Reach p σ₁ σ₂) (h₂ : Reach p σ₂ σ₃) : Reach p σ₁ σ₃ := by
+  obtain ⟨j, hj⟩ := h₁
+  obtain ⟨k, hk⟩ := h₂
+  exact ⟨j + k, by rw [iterS_add, hj]; simpa using hk⟩
+
+theorem Reach.step {p : Int} {σ σ' : Store} (h : stepS p σ = some σ') : Reach p σ σ' := ⟨1, by simp [iterS, h]⟩
+
+/-! ## DONE and REJECT are fixed points of `stepS` -/
+
+theorem stepS_fixed {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 0 < L)
+    (ht : f cMODE = mDONE ∨ f cMODE = mREJECT) : stepS p σ = some σ := by
+  obtain ⟨k₁, hk₁, h₁⟩ := step_dispatchN hw hL (f cMODE) rfl
+  have hn : modes.lookup (f cMODE) = none := by
+    rcases ht with h | h <;> rw [h] <;> rfl
+  rw [hn] at h₁
+  have hrun := run₂_of_stepsN h₁ rfl KSTEP (by simp only [KSTEP]; omega)
+  unfold stepS
+  rw [hrun]
+  simp [capA]
+
+theorem iterS_fixed {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 0 < L)
+    (ht : f cMODE = mDONE ∨ f cMODE = mREJECT) : ∀ k, iterS p k σ = some σ
+  | 0 => rfl
+  | k + 1 => by simp [iterS, stepS_fixed hw hL ht, iterS_fixed hw hL ht k]
+
+/-! ## Every reached store is a world with the invariant -/
+
+theorem reach_inv (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (hb : ∀ x ∈ b, x < 256) :
+    ∀ (k : Nat) (σ₀ σ : Store) (f₀ : Int → Int), World σ₀ p (L0 b.size om) f₀ → Inv b om lit f₀ →
+      iterS p k σ₀ = some σ → ∃ f, World σ p (L0 b.size om) f ∧ Inv b om lit f := by
+  have hL : 0 < L0 b.size om := by unfold L0; omega
+  intro k
+  induction k with
+  | zero =>
+    intro σ₀ σ f₀ hw hi h
+    simp only [iterS, Option.some.injEq] at h
+    exact ⟨f₀, h ▸ hw, hi⟩
+  | succ k ih =>
+    intro σ₀ σ f₀ hw hi h
+    by_cases ht : f₀ cMODE = mDONE ∨ f₀ cMODE = mREJECT
+    · simp only [iterS, stepS_fixed hw hL ht, Option.bind_some] at h
+      exact ih σ₀ σ f₀ hw hi h
+    · push Not at ht
+      obtain ⟨σ', f', hst, hw', hi', _⟩ := stepSafe b om lit p σ₀ f₀ hb hw hi ht.1 ht.2
+      simp only [iterS, hst, Option.bind_some] at h
+      exact ih σ' σ f' hw' hi' h
+
+theorem init_reach_inv (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (hb : ∀ x ∈ b, x < 256) (k : Nat) (σ : Store)
+    (h : iterS p k (initStore b om lit p) = some σ) : ∃ f, World σ p (L0 b.size om) f ∧ Inv b om lit f :=
+  reach_inv b om lit p hb k _ σ _ (initStore_world b om lit p) (Inv_init b om lit) h
+
+def Terminal (p : Int) (σ : Store) : Prop := modeOf p σ = mDONE ∨ modeOf p σ = mREJECT
+
+/-- **(Det)** Two terminal stores reached from `initStore` are the same store. -/
+theorem term_unique (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (hb : ∀ x ∈ b, x < 256) {j k : Nat}
+    {σ₁ σ₂ : Store} (h₁ : iterS p j (initStore b om lit p) = some σ₁) (t₁ : Terminal p σ₁)
+    (h₂ : iterS p k (initStore b om lit p) = some σ₂) (t₂ : Terminal p σ₂) : σ₁ = σ₂ := by
+  have hL : 0 < L0 b.size om := by unfold L0; omega
+  -- the earlier one is a fixed point, so the later one is it
+  have key : ∀ {j k : Nat} {σ₁ σ₂ : Store}, j ≤ k → iterS p j (initStore b om lit p) = some σ₁ → Terminal p σ₁ →
+      iterS p k (initStore b om lit p) = some σ₂ → σ₁ = σ₂ := by
+    intro j k σ₁ σ₂ hjk h₁ t₁ h₂
+    obtain ⟨f₁, hw₁, _⟩ := init_reach_inv b om lit p hb j σ₁ h₁
+    have ht : f₁ cMODE = mDONE ∨ f₁ cMODE = mREJECT := by
+      unfold Terminal at t₁; rwa [modeOf_world hw₁ hL] at t₁
+    rw [show k = j + (k - j) by omega, iterS_add, h₁, Option.bind_some, iterS_fixed hw₁ hL ht] at h₂
+    exact Option.some.inj h₂
+  rcases le_total j k with h | h
+  · exact key h h₁ t₁ h₂
+  · exact (key h h₂ t₂ h₁).symm
+
+/-! ## CorrectStmt from the forward statement -/
+
+/-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
+def FwdStmt : Prop :=
+  ∀ (b : Array Nat) (om : Nat) (lit : Bool) (p : Int), (∀ x ∈ b, x < 256) →
+    (∀ o, run lit b om = .ok o →
+      ∃ k σ', iterS p k (initStore b om lit p) = some σ' ∧ modeOf p σ' = mDONE ∧ outOf p b.size σ' = o) ∧
+    (∀ r, run lit b om = .error r →
+      ∃ k σ', iterS p k (initStore b om lit p) = some σ' ∧ modeOf p σ' = mREJECT)
+
+theorem mDONE_ne_mREJECT : mDONE ≠ mREJECT := by decide
+
+/-- **CORRECTNESS from the forward simulation and determinism (S-18).** -/
+theorem correct_of_fwd (hf : FwdStmt) : CorrectStmt := by
+  intro b om lit p hb
+  obtain ⟨hok, herr⟩ := hf b om lit p hb
+  constructor
+  · intro o
+    constructor
+    · rintro ⟨k, σ', hit, hm, ho⟩
+      cases hr : run lit b om with
+      | ok o' =>
+        obtain ⟨k', σ'', hit', hm', ho'⟩ := hok o' hr
+        have := term_unique b om lit p hb hit (Or.inl hm) hit' (Or.inl hm')
+        subst this
+        rw [← ho, ← ho']
+      | error r =>
+        obtain ⟨k', σ'', hit', hm'⟩ := herr r hr
+        have := term_unique b om lit p hb hit (Or.inl hm) hit' (Or.inr hm')
+        subst this
+        exact absurd (hm.symm.trans hm') mDONE_ne_mREJECT
+    · intro hr
+      exact (hok o hr).imp fun k ⟨σ', hit, hm, ho⟩ => ⟨σ', hit, hm, ho⟩
+  · constructor
+    · rintro ⟨k, σ', hit, hm⟩
+      cases hr : run lit b om with
+      | ok o' =>
+        obtain ⟨k', σ'', hit', hm', _⟩ := hok o' hr
+        have := term_unique b om lit p hb hit (Or.inr hm) hit' (Or.inl hm')
+        subst this
+        exact absurd (hm'.symm.trans hm) mDONE_ne_mREJECT
+      | error r => exact ⟨r, rfl⟩
+    · rintro ⟨r, hr⟩
+      exact herr r hr
+
+end VIRDeflate.Step
