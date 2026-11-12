@@ -279,7 +279,10 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       `iter_reach`; the initial world's Φ is the bound) is PROVED. What remains of Safety is exactly its two premises:
       `StepSafe` (every non-terminal mode: stepS, next world, Inv kept, Φ lower — the 28 per-mode cases) and `PhiNonneg`.
       df-111 (EXIT=1): `split_ifs` over `initCell` timed out; an explicit `if_neg` chain replaced it. df-113/114: `p + 0` in
-      World's cell 0 is not rewritten by `simp`; `rw [show p + 0 = p by omega]` was. The audit file is regenerated from VIRDeflate.lean's imports: the
+      World's cell 0 is not rewritten by `simp`; `rw [show p + 0 = p by omega]` was.
+    - **`Φ_nonneg : PhiNonneg` (df-116)**, from InvG's ranges and each mode's `facts` (`LOC_nonneg`; BUILD by `build_nonneg`
+      from `buildInv`'s phase ranges). ⇒ **`safety_of_stepSafe : StepSafe → SafetyStmt`.** Safety is now exactly the 28
+      per-mode cases. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)

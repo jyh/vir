@@ -388,4 +388,78 @@ theorem safety_of_step (hs : StepSafe) (hnn : PhiNonneg) : SafetyStmt := by
     (initCell b om lit) (initStore_world b om lit p) (Inv_init b om lit) (by rw [Φ_init])
   exact ⟨j, σ', hj, hit, hm⟩
 
+/-! ## Φ ≥ 0 on the invariant -/
+
+theorem build_nonneg {f : Int → Int} (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 ∧ 0 ≤ f cHDIST ∧ f cHDIST ≤ 32 ∧ 0 ≤ f cHCLEN ∧ f cHCLEN ≤ 19)
+    (hb : buildInv f) :
+    0 ≤ bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) +
+      (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) := by
+  obtain ⟨ht0, ht2, _, htg, h0, h1, h23, h4, hph⟩ := hb
+  have hnn : 0 ≤ f (f cX + 6) := by
+    rcases htg with ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ <;> rw [h] <;> omega
+  have hrem : 0 ≤ bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) := by
+    unfold bRem
+    rcases hph with h | h | h | h | h
+    · have := h0 h; simp [h]; omega
+    · have := h1 h; simp [h]; omega
+    · have := h23 (by omega) (by omega); simp [h]; omega
+    · have := h23 (by omega) (by omega); simp [h]; omega
+    · have := h4 h; simp [h]; omega
+  have hcont : 0 ≤ (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) := by
+    unfold chainLD bfull; split_ifs <;> omega
+  omega
+
+theorem LOC_nonneg {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg : InvG b om lit f) (hm : InvM f) :
+    0 ≤ LOC f := by
+  have hr := hg.hdr_rng
+  by_cases hb : f cMODE = mBUILD
+  · have hc := hm.cur
+    rw [hb] at hc
+    simp only [facts, mBUILD, mSNLEN, mSCOPY, mFIXLENS] at hc
+    simp only [show ¬ ((11 : Int) = 9) by decide, show ¬ ((11 : Int) = 10) by decide, show ¬ ((11 : Int) = 6) by decide,
+      if_false, if_true] at hc
+    unfold LOC
+    simp only [hb, mBUILD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD,
+      mHDRD, mFIXLENS]
+    simp only [show ¬ ((11 : Int) = 1 ∨ (11 : Int) = 3 ∨ (11 : Int) = 5 ∨ (11 : Int) = 8 ∨ (11 : Int) = 7 ∨ (11 : Int) = 20 ∨
+      (11 : Int) = 21 ∨ (11 : Int) = 13 ∨ (11 : Int) = 16) by decide,
+      show ¬ ((11 : Int) = 15 ∨ (11 : Int) = 10 ∨ (11 : Int) = 19) by decide, show ¬ ((11 : Int) = 9 ∨ (11 : Int) = 18) by decide,
+      show ¬ ((11 : Int) = 17) by decide, show ¬ ((11 : Int) = 4) by decide, show ¬ ((11 : Int) = 6) by decide, if_false, if_true]
+    exact build_nonneg hr hc
+  · have hc := hm.cur
+    have hmode := hg.mode_ok
+    simp only [validModes, List.mem_cons, List.mem_nil_iff, or_false] at hmode
+    rcases hmode with h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h |
+      h | h | h <;> rw [h] at hc hb <;>
+    simp [LOC, h, facts, bfull, chainLD, locFIX, locCL, mTABLE, mHDR, mREAD, mHDRB, mHDRD, mSHDR, mFIXLENS, mDHDR, mSLEN,
+      mSNLEN, mSCOPY, mBUILD, mLENS, mSYM, mDECODE, mSYMD, mLENX, mDSTD, mDSTX, mCOPY, mDH2, mDH3, mDH4, mCLREAD, mCLPUT,
+      mLSYM, mLREP, mREP, mDONE, mREJECT] at hc hb ⊢ <;>
+    (try split_ifs) <;> omega
+
+theorem Φ_nonneg : PhiNonneg := by
+  intro b om lit f ⟨hg, hm⟩
+  have hl := LOC_nonneg hg hm
+  have hby := hg.by_rng
+  have hbi := hg.bi_rng
+  have hbe := hg.by_end
+  have hmr := hg.m_rng
+  have hn := hg.n_eq
+  have hom := hg.om_eq
+  have htbl : 0 ≤ TBL f := by
+    unfold TBL; split_ifs with h
+    · have := hg.tb_rng h; omega
+    · omega
+  have hbits : 0 ≤ BITS f := by
+    unfold BITS
+    by_cases he : f cBY = b.size
+    · have := hbe he; omega
+    · omega
+  have hout : 0 ≤ OUT f := by unfold OUT; omega
+  unfold Φ mW
+  have : 0 ≤ TBL f + BITS f + OUT f := by omega
+  positivity
+
+/-- **SAFETY reduces to the 28 per-mode cases:** `StepSafe` alone. -/
+theorem safety_of_stepSafe (hs : StepSafe) : SafetyStmt := safety_of_step hs Φ_nonneg
+
 end VIRDeflate.Step
