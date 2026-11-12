@@ -1771,4 +1771,43 @@ theorem safeI_sym {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
   have hTf : TBL f = 0 := by unfold TBL; rw [if_neg hnt]
   unfold Φ mW; rw [t1, t2, t3, t4, hLf, hTf]; omega
 
+theorem safeI_lenx {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mLENX) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mLENX, lenxN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mLENX, lenxN) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hx := hi.1.x_eq
+  have hc := hi.2.cur
+  rw [hm] at hc; simp only [facts, mLENX, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM,
+    mSYMD, mDSTD, mDSTX] at hc
+  norm_num at hc
+  have hacc := hi.2.ret (by rw [hm]; decide)
+  set g := Function.update f 5 (f cPEND + f cACC) with hg
+  have hsg : ∀ t : Int, 0 ≤ t → t ≤ 2 → sane b.size om f t → sane b.size om g t := fun t a b' h =>
+    sane_congr (fun i h1 _ => (upd_eq f _ (by omega)).symm) a b' h
+  have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+    (lenx_step hw hL (X0 b.size om) (f cACC) (f cPEND) hx (by unfold X0; omega) (by unfold X0 L0; omega) rfl rfl)
+  have hgw := (hw.store (i := 5) (by norm_num) (by omega) (v := f cPEND + f cACC)).dreq (X := X0 b.size om)
+    (by unfold X0; omega) (by unfold X0 L0; omega) 2 17
+  have hnt' : g cMODE ≠ mTABLE := by rw [hg, upd_eq _ _ (by unfold cMODE; omega)]; exact hnt
+  refine ⟨_, _, hS, hgw, ⟨(hi.1.upd (by unfold scratch; omega) _).dreq hnt' 2 17,
+    InvM.dreq (SymsOK.upd hi.2.syms (by norm_num) _) (by rw [upd_eq _ _ (by unfold cHLIT; omega)]; exact hi.1.hdr_rng.1)
+      (Or.inr (Or.inr ⟨rfl, rfl⟩))
+      (by simp only [facts, mDSTD, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD,
+            mLENX]
+          norm_num
+          refine ⟨hsg 1 (by norm_num) (by norm_num) hc.1, hsg 2 (by norm_num) (by norm_num) hc.2.1, ?_⟩
+          simp [cPEND] at hc ⊢; rw [hm] at hacc; omega)
+      (hsg 2 (by norm_num) (by norm_num) hc.2.1)⟩, Or.inl ?_⟩
+  obtain ⟨t1, t2, t3, t4⟩ := dreq_TBO (b := b) (om := om) (g := g) 2 17
+  have hB : BITS g = BITS f := by
+    unfold BITS; rw [hg, upd_eq _ _ (by unfold cN; omega), upd_eq _ _ (by unfold cBY; omega), upd_eq _ _ (by unfold cBI; omega)]
+  have hO : OUT g = OUT f := by unfold OUT; rw [hg, upd_eq _ _ (by unfold cOUTMAX; omega), upd_eq _ _ (by unfold cM; omega)]
+  have hLf : LOC f = 1 := by unfold LOC; rw [hm]; simp [mLENX, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM]
+  have hTf : TBL f = 0 := by unfold TBL; rw [if_neg hnt]
+  unfold Φ mW; rw [t1, t2, t3, t4, hB, hO, hLf, hTf]; omega
+
 end VIRDeflate.Step
