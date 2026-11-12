@@ -1,0 +1,100 @@
+saltqueue: ticket P2 seat=root pid=49209
+saltqueue: QUEUED behind 2 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     359s       math         34749
+  P2     335s       math         42169
+  P2     303s       root         49209
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     662s       math         34749
+  P2     637s       math         42169
+  P2     605s       root         49209
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     963s       math         34749
+  P2     939s       math         42169
+  P2     907s       root         49209
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     1265s      math         34749
+  P2     1241s      math         42169
+  P2     1209s      root         49209
+saltqueue: still queued (1500s) —
+  CLASS  AGE        SEAT         PID
+  P2     1567s      math         34749
+  P2     1543s      math         42169
+  P2     1511s      root         49209
+saltqueue: still queued (1800s) —
+  CLASS  AGE        SEAT         PID
+  P2     1868s      math         34749
+  P2     1844s      math         42169
+  P2     1812s      root         49209
+saltqueue: still queued (2100s) —
+  CLASS  AGE        SEAT         PID
+  P2     2170s      math         34749
+  P2     2146s      math         42169
+  P2     2114s      root         49209
+saltqueue: still queued (2400s) —
+  CLASS  AGE        SEAT         PID
+  P2     2472s      math         34749
+  P2     2448s      math         42169
+  P2     2416s      root         49209
+saltqueue: HEAD OF QUEUE after 2605s — attempting acquisition
+probes/TypeProbe.lean:43:58: error: unsolved goals
+case refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2
+⊢ HasTypeA₂ [Ty.prod tint tint, tint, tint, tint, tint, tint, tint, tint, tint, tint, tcap]
+    (Atom.var
+        (bif "nb" == "nb" then 0
+        else
+          bif "rt" == "nb" then 0 + 1
+          else
+            bif "wt" == "nb" then 0 + 1 + 1
+            else
+              bif "acc" == "nb" then 0 + 1 + 1 + 1
+              else
+                bif "k" == "nb" then 0 + 1 + 1 + 1 + 1
+                else
+                  bif "x" == "nb" then 0 + 1 + 1 + 1 + 1 + 1
+                  else
+                    bif "v" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1
+                    else
+                      bif "n" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                      else
+                        bif "bi" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                        else
+                          bif "by" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                          else
+                            bif "w" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                            else 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1)).fst
+    tint
+
+case refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_2.refine_3.refine_2
+⊢ HasTypeA₂ [tcap, Ty.prod tint tint, tint, tint, tint, tint, tint, tint, tint, tint, tint, tcap]
+    (Atom.var
+        (bif "w1" == "nb" then 0
+        else
+          bif "nb" == "nb" then 0 + 1
+          else
+            bif "rt" == "nb" then 0 + 1 + 1
+            else
+              bif "wt" == "nb" then 0 + 1 + 1 + 1
+              else
+                bif "acc" == "nb" then 0 + 1 + 1 + 1 + 1
+                else
+                  bif "k" == "nb" then 0 + 1 + 1 + 1 + 1 + 1
+                  else
+                    bif "x" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1
+                    else
+                      bif "v" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                      else
+                        bif "n" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                        else
+                          bif "bi" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                          else
+                            bif "by" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                            else
+                              bif "w" == "nb" then 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+                              else 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1)).snd
+    tint
+saltbuild EXIT=1

@@ -186,6 +186,11 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     `Prop` definitions with no proof. ⚠️ Declared against myself: `KSTEP` is a constant I chose. If any mode's longest path
     under the dispatch exceeded it, `stepS` would read a correct step as a fault and Safety would be unprovable rather than
     false; the proof must show every mode's path is shorter (the longest measured run bound in a mode lemma is 60).
+  - **Typing probe for row 293 (a)** (df-probe-004, `probes/TypeProbe.lean`, not in the library): with l3's `l3ty` tactic
+    copied (l3 is not a dependency, S-4) and pairs/projections added, `hdr_typed : HasType₂ [tcap] [true] hdrT tcap` PASSES;
+    `read_typed` stops only at variable indices left as unreduced `bif "nb" == "nb"` string tests. l3 cleared exactly that with
+    `String.reduceBEq`, `cond_true`, `cond_false` in its simp set. ⇒ Typing the step is priced as mechanical; the one new piece is
+    a weakening for `BITc` (typed at []) under TABLE's context.
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -232,7 +237,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-165 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001/002).
+166 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001…004).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
