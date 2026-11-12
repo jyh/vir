@@ -127,6 +127,10 @@ theorem srcInRange_step {c : Config} (hb : headB c.1 = true) (hs : (stepFn₂ c.
   simp only [run₂C, stepFn₂C, hb, if_true, hc']
   exact h
 
+/-- The range fact as a conditional rewrite: a trace's `simp (disch := omega)` discharges it from the bounds in context. -/
+theorem inRange_eq {x : Int} (h1 : -9223372036854775808 ≤ x) (h2 : x < 9223372036854775808) : inRange x = true := by
+  simp only [inRange, decide_eq_true_eq]; exact ⟨h1, h2⟩
+
 /-- The form a mode trace takes: a checked run that reaches `ret ⟨p⟩`. -/
 theorem srcInRange_of_runC {k : Nat} {c : Config} {p : Int} {σ' : Store}
     (h : run₂C k c = (.ret (.const (.cap p)), σ')) : SrcInRange c :=

@@ -1,0 +1,511 @@
+saltqueue: ticket P2 seat=root pid=51845
+probes/ReadOmega.lean:69:10: error: Tactic `simp` failed with a nested error:
+(deterministic) timeout at `whnf`, maximum number of heartbeats (1000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+probes/ReadOmega.lean:63:4: error: (deterministic) timeout at `«tactic execution»`, maximum number of heartbeats (1000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+probes/ReadOmega.lean:58:45: warning: This simp argument is unused:
+  closeAt
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, c̵l̵o̵s̵e̵A̵t̵,̵ ̵readT, readN, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, hk1, hlt,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit, hik,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:58:54: warning: This simp argument is unused:
+  readT
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, r̵e̵a̵d̵T̵,̵ ̵readN, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, hk1, hlt,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit, hik,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:58:61: warning: This simp argument is unused:
+  readN
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, r̵e̵a̵d̵N̵,̵ ̵NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, hk1, hlt,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit, hik,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:58:68: warning: This simp argument is unused:
+  NT.c
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, N̵T̵.̵c̵,̵ ̵NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, hk1, hlt,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit, hik,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:60:109: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h15, hiv, hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, h̵L̵0̵,̵ ̵hL0', hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:33: warning: This simp argument is unused:
+  inRange_eq
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [̵i̵n̵R̵a̵n̵g̵e̵_̵e̵q̵,̵ ̵c̵l̵o̵s̵e̵A̵t̵,̵[̲c̲l̲o̲s̲e̲A̲t̲,̲ readT, readN, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, h7', hk1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:45: warning: This simp argument is unused:
+  closeAt
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, c̵l̵o̵s̵e̵A̵t̵,̵ ̵readT, readN, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, h7', hk1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:54: warning: This simp argument is unused:
+  readT
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, r̵e̵a̵d̵T̵,̵ ̵readN, NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, h7', hk1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:61: warning: This simp argument is unused:
+  readN
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, r̵e̵a̵d̵N̵,̵ ̵NT.c, NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, h7', hk1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:68: warning: This simp argument is unused:
+  NT.c
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, N̵T̵.̵c̵,̵ ̵NA.c, List.idxOf, List.findIdx,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, h7', hk1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2, h15, hiv, hit,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:182: warning: This simp argument is unused:
+  h7'
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7̵'̵,̵ ̵h̵k1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:187: warning: This simp argument is unused:
+  hk1
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk̵1̵,̵ ̵h̵lt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1, h2,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:206: warning: This simp argument is unused:
+  stepFn
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, s̵t̵e̵p̵F̵n̵,̵ ̵opStep, Store.load, Store.store, hw.reg, h1, h2, h15,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hiv, hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:268: warning: This simp argument is unused:
+  hiv
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv̵,̵ ̵h̵i̵t, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:273: warning: This simp argument is unused:
+  hit
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit̵,̵ ̵h̵i̵k, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:278: warning: This simp argument is unused:
+  hik
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik̵,̵ ̵h̵i̵a,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:69:283: warning: This simp argument is unused:
+  hia
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵h̵i̵w, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:70:12: warning: This simp argument is unused:
+  hiw
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw̵,̵ ̵h̵i̵r, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:70:17: warning: This simp argument is unused:
+  hir
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, h̵i̵r̵,̵ ̵Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:70:108: warning: This simp argument is unused:
+  Const.toBool
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, C̵o̵n̵s̵t̵.̵t̵o̵B̵o̵o̵l̵,̵headB, aInR, aInRL, cInR, Tm.subst, Atom.subst,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r7, r8,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:73: warning: This simp argument is unused:
+  hiL
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL̵,̵ ̵h̵i̵0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:78: warning: This simp argument is unused:
+  hi0
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi̵0̵,̵ ̵h̵tL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:83: warning: This simp argument is unused:
+  htL
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL̵,̵ ̵h̵t̵0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:88: warning: This simp argument is unused:
+  ht0
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht̵0̵,̵ ̵h̵L1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:109: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0,̵ ̵h̵L̵0̵',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:71:114: warning: This simp argument is unused:
+  hL0'
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, h̵L̵0̵'̵,̵hLk, hLa,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:12: warning: This simp argument is unused:
+  hLk
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk̵,̵ ̵h̵L̵a,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLw, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:17: warning: This simp argument is unused:
+  hLa
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', ̲h̲L̲k̲,̲
+              hLk̵,̵ ̵h̵L̵a̵,̵ ̵h̵L̵w, hLr, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:22: warning: This simp argument is unused:
+  hLw
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw̵,̵ ̵h̵L̵r, r7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:27: warning: This simp argument is unused:
+  hLr
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, h̵L̵r,̵ ̵r̵7, r8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:32: warning: This simp argument is unused:
+  r7
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', ̲h̲L̲k̲,̲
+              hLk̵,̵ ̵h̵L̵a, hLw, hLr, r7̵,̵ ̵r̵8, r9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:36: warning: This simp argument is unused:
+  r8
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0', ̲h̲L̲k̲,̲
+              hLk̵,̵ ̵h̵L̵a, hLw, hLr, r7, r8̵,̵ ̵r̵9, r10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:40: warning: This simp argument is unused:
+  r9
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9̵,̵ ̵r̵10]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadOmega.lean:72:44: warning: This simp argument is unused:
+  r10
+
+Hint: Omit it from the simp argument list.
+  simp (disch := omega) [inRange_eq, closeAt, readT, readN, NT.c, NA.c, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.findIdx, List.findIdx.go, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲cREASON, h7', hk1, hlt, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg, h1,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲h2, h15, hiv, hit, hik, hia,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵headB, aInR, aInRL, cInR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0, hL0',
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hLk,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲hLa, hLw, hLr, r7, r8, r9,̵ ̵r̵1̵0̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1
