@@ -2642,6 +2642,81 @@ theorem left_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : 
     · rw [ag _ (by decide) (by unfold cPHASE; omega)]; simp [cPHASE, Function.update_apply]
     · rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX, Function.update_apply]
 
+/-! ## S4's exemptions, against the machine's `bExempt` -/
+
+theorem restS_zero {c : Nat → Int} (hc : ∀ l, 0 ≤ c l) : ∀ k, restS c k = 0 ↔ ∀ l, 2 ≤ l → l ≤ k → c l = 0 := by
+  have hnn : ∀ k, 0 ≤ restS c k := by
+    intro k; induction k with
+    | zero => simp [restS]
+    | succ k ih => simp only [restS]; split_ifs <;> linarith [hc (k + 1)]
+  intro k
+  induction k with
+  | zero => simp [restS]; intro l h1 h2; omega
+  | succ k ih =>
+    simp only [restS]
+    constructor
+    · intro h l h1 h2
+      have := hnn k
+      by_cases hl : l = k + 1
+      · subst hl; rw [if_pos h1] at h; linarith [hc (k + 1)]
+      · have h' : restS c k = 0 := by split_ifs at h <;> linarith [hc (k + 1)]
+        exact ih.mp h' l h1 (by omega)
+    · intro h
+      rw [ih.mpr (fun l h1 h2 => h l h1 (by omega))]
+      split_ifs with h2
+      · simp [h (k + 1) h2 le_rfl]
+      · simp
+
+theorem totS_zero {c : Nat → Int} (hc : ∀ l, 0 ≤ c l) : ∀ k, totS c k = 0 ↔ ∀ l, 1 ≤ l → l ≤ k → c l = 0 := by
+  have hnn : ∀ k, 0 ≤ totS c k := by
+    intro k; induction k with
+    | zero => simp [totS]
+    | succ k ih => simp only [totS]; linarith [hc (k + 1)]
+  intro k
+  induction k with
+  | zero => simp [totS]; intro l h1 h2; omega
+  | succ k ih =>
+    simp only [totS]
+    constructor
+    · intro h l h1 h2
+      have := hnn k
+      have := hc (k + 1)
+      by_cases hl : l = k + 1
+      · subst hl; linarith
+      · exact ih.mp (by linarith) l h1 (by omega)
+    · intro h
+      rw [ih.mpr (fun l h1 h2 => h l h1 (by omega)), h (k + 1) (by omega) le_rfl]; simp
+
+theorem oneSym_iff (lens : Array Nat) :
+    oneSymbolLenOne lens = true ↔ blCount lens 1 = 1 ∧ ∀ l, 2 ≤ l → l ≤ 15 → blCount lens l = 0 := by
+  unfold oneSymbolLenOne
+  simp only [Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true, List.mem_range'_1]
+  constructor
+  · rintro ⟨h1, h2⟩; exact ⟨h1, fun l a b => h2 l ⟨a, by omega⟩⟩
+  · rintro ⟨h1, h2⟩; exact ⟨h1, fun l ⟨a, b⟩ => h2 l a (by omega)⟩
+
+theorem allZero_iff (lens : Array Nat) (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15) :
+    lens.all (· = 0) = true ↔ ∀ l, 1 ≤ l → l ≤ 15 → blCount lens l = 0 := by
+  rw [Array.all_eq_true]
+  constructor
+  · intro h l h1 _
+    rw [blCount_eq _ _ (by omega)]
+    simp only [symsL, List.length_eq_zero_iff, List.filter_eq_nil_iff, List.mem_range, decide_eq_true_eq]
+    intro i hi he
+    have := h i hi
+    simp [Array.getD, hi] at he
+    simp at this; omega
+  · intro h i hi
+    have hv := h15 i hi
+    by_contra hne
+    simp at hne
+    have hpos : blCount lens (lens.getD i 0) ≠ 0 := by
+      rw [blCount_eq _ _ (by simp [Array.getD, hi]; omega)]
+      simp only [symsL, ne_eq, List.length_eq_zero_iff, List.filter_eq_nil_iff, List.mem_range, decide_eq_true_eq,
+        not_forall, not_not]
+      exact ⟨i, hi, rfl⟩
+    exact hpos (h _ (by simp [Array.getD, hi]; omega) hv)
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
