@@ -1818,6 +1818,137 @@ theorem HFrame.of_keeps {n om : Nat} {bf : Int} {lensL lensD : Array Nat} {F : N
     h.2.1.keep (by norm_num) hk (fun c hc => (hS c hc).2), h.2.2.1.keep (by norm_num) hk (fun c hc => (hS c hc).2),
     by have := h.2.2.2; omega⟩
 
+theorem symdSet_out {n om : Nat} (m : Nat) (hm : m ≤ om) (c : Int) (h : symdSet n om m c) :
+    c ≠ 4 ∧ (c < tbase n om 0 ∨ X0 n om ≤ c) := by
+  unfold symdSet IN at h; unfold tbase LB0 X0; omega
+
+/-- **S7's loop is simulated** (S-18's `huffLoop` row): from SYM, with both tables related to their lengths. -/
+theorem huff_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int)
+    (lensL lensD : Array Nat) :
+    ∀ fuel, Sim b om p (huffLoop (assign lensL) (assign lensD) fuel)
+      (fun f st => (Rel b om lit f st ∧ f cMODE = mSYM) ∧ HFrame b.size om bf lensL lensD fuel f st)
+      (fun _ f st => Rel b om lit f st ∧ f cMODE = endMode bf) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro fuel
+  induction fuel with
+  | zero => rintro σ f st hw ⟨_, _, _, _, h⟩; omega
+  | succ fuel ih =>
+    simp only [huffLoop]
+    refine Sim.step (pre' := fun f st => (DecReady b om lit f st 1 mSYMD ∧ TblRel b.size om f 1 lensL) ∧
+      HFrame b.size om bf lensL lensD (fuel + 1) f st) ?_ ?_
+    · rintro σ f st hw ⟨⟨hR, hm⟩, hF⟩
+      obtain ⟨σ1, f1, hS, hw1, hD, hk⟩ := sym_next hb hw hR hm
+      have hF1 := hF.of_keeps (st' := st) hk (fun c hc => by unfold decReqSet at hc; unfold tbase LB0 X0 at *; omega) le_rfl
+      exact ⟨σ1, f1, hS, hw1, ⟨hD, hF1.2.1⟩, hF1⟩
+    refine Sim.bind (decode_Sim hb lensL 1 mSYMD (HFrame b.size om bf lensL lensD (fuel + 1))
+      (HFrame b.size om bf lensL lensD fuel) (fun f st f' st' hq hk hlt hin => ?_)) (fun s => ?_)
+    · have := hq.of_keeps (st' := st') hk (fun c hc => ⟨by unfold decSet X0 at hc; omega, decSet_out _ _ c hc⟩) hlt.le
+      exact ⟨this.1, this.2.1, this.2.2.1, by have := hq.2.2.2; omega⟩
+    refine Sim.step (pre' := fun f st => HFrame b.size om bf lensL lensD fuel f st ∧
+        (s < 256 → st.out.size = om → f cMODE = mREJECT) ∧
+        (s < 256 → st.out.size ≠ om → Rel b om lit f ⟨st.pos, st.out.push s⟩ ∧ f cMODE = mSYM) ∧
+        (s = 256 → Rel b om lit f st ∧ f cMODE = endMode bf) ∧
+        (256 < s → s ≤ 285 → Rel b om lit f st ∧ f cPEND = LBASE.getD (s - 257) 0 ∧
+          KReady f (LEXTRA.getD (s - 257) 0) mLENX) ∧
+        (285 < s → f cMODE = mREJECT)) ?_ ?_
+    · rintro σ f st hw ⟨hR, hm, hs, hF⟩
+      have hmr : st.out.size ≤ om := by have := hR.m; have := hR.inv.1.m_rng; omega
+      obtain ⟨σ1, f1, hS, hw1, hk, a1, a2, a3, a4, a5⟩ := symd_next hb hw hR hm s hs
+      have hF1 := hF.of_keeps (st' := st) hk (symdSet_out _ hmr) le_rfl
+      exact ⟨σ1, f1, hS, hw1, hF1, a1, a2, fun h => by rw [← hF.1]; exact a3 h, a4, a5⟩
+    refine Sim.ite (fun h1 => ?_) (fun h1 => Sim.ite (fun h2 => ?_) (fun h2 => Sim.ite (fun h3 => ?_) (fun h3 => ?_)))
+    · -- a literal
+      refine Sim.read (Sim.get (fun s0 => Sim.ite (fun ho => Sim.reject_bind ?_) (fun ho => ?_)))
+      · rintro σ f st hw ⟨⟨_, a1, _⟩, rfl⟩
+        exact ⟨σ, f, Reach.refl p σ, hw, a1 h1 ho⟩
+      refine Sim.bind (mid := fun _ f st => (Rel b om lit f st ∧ f cMODE = mSYM) ∧
+        HFrame b.size om bf lensL lensD fuel f st) (Sim.set' ?_) (fun _ => ih)
+      rintro σ f st hw ⟨⟨hF, _, a2, _⟩, rfl⟩
+      obtain ⟨hR1, hm1⟩ := a2 h1 ho
+      exact ⟨σ, f, Reach.refl p σ, hw, ⟨hR1, hm1⟩, hF⟩
+    · -- the end of the block
+      exact Sim.pure (fun f st ⟨_, _, _, a3, _⟩ => a3 h2)
+    · -- a length
+      have hs1 : 256 < s := by omega
+      refine Sim.bind (bitsK_sim (lit := lit) hb (LEXTRA.getD (s - 257) 0) mLENX
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0)
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0)
+        (fun _ _ h => h) (fun f st f' st' hq hk _ hlt _ => ⟨hq.1.of_keeps hk
+          (fun c hc => by unfold rdSet at hc; unfold tbase LB0 X0; omega) hlt.le,
+          by rw [hk cPEND (by decide) (by unfold cPEND L0; omega) (by unfold rdSet cPEND; omega)]; exact hq.2⟩) |>.mono
+        (fun f st ⟨hF, _, _, _, a4, _⟩ => ⟨⟨(a4 hs1 h3).1, (a4 hs1 h3).2.2⟩, hF, (a4 hs1 h3).2.1⟩)
+        (fun _ _ _ h => h)) (fun x => ?_)
+      refine Sim.step (pre' := fun f st => (DecReady b om lit f st 2 mDSTD ∧ TblRel b.size om f 2 lensD) ∧
+        (HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0 + x)) ?_ ?_
+      · rintro σ f st hw ⟨hR, hm, ha, hF, hp⟩
+        obtain ⟨σ1, f1, hS, hw1, hD, hp1, hk⟩ := lenx_next hb hw hR hm
+        have hF1 := hF.of_keeps (st' := st) hk (fun c hc => by simp only [decReqSet, X0] at hc; unfold tbase LB0 X0; omega)
+          le_rfl
+        exact ⟨σ1, f1, hS, hw1, ⟨hD, hF1.2.2.1⟩, hF1, by rw [hp1, hp, ha]⟩
+      refine Sim.bind (decode_Sim hb lensD 2 mDSTD
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0 + x)
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0 + x)
+        (fun f st f' st' hq hk hlt _ => ⟨hq.1.of_keeps hk (fun c hc => ⟨by unfold decSet X0 at hc; omega,
+          decSet_out _ _ c hc⟩) hlt.le,
+          by rw [hk cPEND (by decide) (by unfold cPEND L0; omega) (by unfold decSet X0 cPEND; omega)]; exact hq.2⟩))
+        (fun d => ?_)
+      refine Sim.step (pre' := fun f st => (30 ≤ d → f cMODE = mREJECT) ∧
+        (d < 30 → (Rel b om lit f st ∧ KReady f (DEXTRA.getD d 0) mDSTX) ∧ (HFrame b.size om bf lensL lensD fuel f st ∧
+          f cPEND = LBASE.getD (s - 257) 0 + x ∧ f cDIST = DBASE.getD d 0))) ?_ ?_
+      · rintro σ f st hw ⟨hR, hm, hd, hF, hp⟩
+        obtain ⟨σ1, f1, hS, hw1, r1, r2⟩ := dstd_next hb hw hR hm d hd
+        refine ⟨σ1, f1, hS, hw1, r1, fun h => ?_⟩
+        obtain ⟨hR1, hd1, hK, hk⟩ := r2 h
+        exact ⟨⟨hR1, hK⟩, hF.of_keeps hk (fun c hc => by unfold tbase LB0 X0; omega) le_rfl,
+          by rw [hk cPEND (by decide) (by unfold cPEND L0; omega) (by unfold cPEND; omega)]; exact hp, hd1⟩
+      refine Sim.ite (fun h30 => Sim.reject_bind (fun σ f st hw ⟨r1, _⟩ => ⟨σ, f, Reach.refl p σ, hw, r1 h30⟩))
+        (fun h30 => ?_)
+      have hd30 : d < 30 := by omega
+      refine Sim.bind ((bitsK_sim (lit := lit) hb (DEXTRA.getD d 0) mDSTX
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0 + x ∧
+          f cDIST = DBASE.getD d 0)
+        (fun f st => HFrame b.size om bf lensL lensD fuel f st ∧ f cPEND = LBASE.getD (s - 257) 0 + x ∧
+          f cDIST = DBASE.getD d 0)
+        (fun _ _ h => h) (fun f st f' st' hq hk _ hlt _ => ⟨hq.1.of_keeps hk
+          (fun c hc => by unfold rdSet at hc; unfold tbase LB0 X0; omega) hlt.le,
+          by rw [hk cPEND (by decide) (by unfold cPEND L0; omega) (by unfold rdSet cPEND; omega)]; exact hq.2.1,
+          by rw [hk cDIST (by decide) (by unfold cDIST L0; omega) (by unfold rdSet cDIST; omega)]; exact hq.2.2⟩)).mono
+        (fun f st ⟨_, r2⟩ => r2 hd30) (fun _ _ _ h => h)) (fun y => ?_)
+      refine Sim.step (pre' := fun f st =>
+        (DBASE.getD d 0 + y > st.out.size → f cMODE = mREJECT) ∧
+        (¬ DBASE.getD d 0 + y > st.out.size → st.out.size + (LBASE.getD (s - 257) 0 + x) > om → f cMODE = mREJECT) ∧
+        (¬ DBASE.getD d 0 + y > st.out.size → ¬ st.out.size + (LBASE.getD (s - 257) 0 + x) > om →
+          Rel b om lit f st ∧ f cMODE = mCOPY ∧ f cDIST = (DBASE.getD d 0 + y : Nat) ∧
+          f cPEND = (LBASE.getD (s - 257) 0 + x : Nat) ∧ HFrame b.size om bf lensL lensD fuel f st)) ?_ ?_
+      · rintro σ f st hw ⟨hR, hm, ha, hF, hp, hdist⟩
+        obtain ⟨σ1, f1, hS, hw1, r1, r2, r3⟩ := dstx_next hb hw hR hm
+        have hM := hR.m
+        have hO := hR.inv.1.om_eq
+        refine ⟨σ1, f1, hS, hw1, fun h => r1 (by rw [hM, hdist, ha]; push_cast; omega),
+          fun h h' => r2 (by rw [hM, hdist, ha]; push_cast; omega) (by rw [hO, hM, hp]; push_cast; omega),
+          fun h h' => ?_⟩
+        obtain ⟨hR1, hm1, hd1, hk⟩ := r3 (by rw [hM, hdist, ha]; push_cast; omega) (by rw [hO, hM, hp]; push_cast; omega)
+        exact ⟨hR1, hm1, by rw [hd1, hdist, ha]; push_cast; ring,
+          by rw [hk cPEND (by decide) (by unfold cPEND L0; omega) (by unfold cPEND; omega), hp]; push_cast; ring,
+          hF.of_keeps hk (fun c hc => by unfold tbase LB0 X0; omega) le_rfl⟩
+      refine Sim.read (Sim.get (fun s0 => Sim.ite (fun hfar => Sim.reject_bind ?_)
+        (fun hfar => Sim.ite (fun hov => Sim.reject_bind ?_) (fun hov => ?_))))
+      · rintro σ f st hw ⟨⟨r1, _⟩, rfl⟩
+        exact ⟨σ, f, Reach.refl p σ, hw, r1 hfar⟩
+      · rintro σ f st hw ⟨⟨_, r2, _⟩, rfl⟩
+        exact ⟨σ, f, Reach.refl p σ, hw, r2 hfar hov⟩
+      refine Sim.bind (mid := fun _ f st => (Rel b om lit f st ∧ f cMODE = mSYM) ∧
+        HFrame b.size om bf lensL lensD fuel f st) (Sim.set' ?_) (fun _ => ih)
+      rintro σ f st hw ⟨⟨_, _, r3⟩, rfl⟩
+      obtain ⟨hR, hm, hd, hp, hF⟩ := r3 hfar hov
+      have hd1 := dbase_pos d hd30
+      obtain ⟨σ', f', hR', hw', hRel, hmo, hk⟩ := copy_run hb (DBASE.getD d 0 + y) (by omega)
+        (LBASE.getD (s - 257) 0 + x) σ f st hw hR hm hp hd (by omega) (by simp only at hov; omega)
+      exact ⟨σ', f', hR', hw', ⟨hRel, hmo⟩, hF.of_keeps hk (fun c hc => by
+        have := hR.m; have := hR.inv.1.m_rng
+        unfold copySet IN at hc; unfold tbase LB0 X0; omega) le_rfl⟩
+    · exact Sim.reject (fun σ f st hw ⟨_, _, _, _, _, a5⟩ => ⟨σ, f, Reach.refl p σ, hw, a5 (by omega)⟩)
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
