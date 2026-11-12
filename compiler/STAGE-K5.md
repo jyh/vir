@@ -86,3 +86,12 @@
   cCODE/cLEFT/cREST/cTOTAL 2 each (BUILD); X and X+1: l.1509/1510 (DECODE) and l.1698/1699 (reqDecN) — the reqDecN X store has a
   PARAMETER target `.v w0` that a `.v "…"` needle misses (found by the second needle shape the addendum names). Consistent with
   the addendum: no unlisted write to a `Mag` cell.
+- **ALL 28 MODES IN RANGE AT THE SAFETY LEVEL (69th head).** 22 from `Inv` alone (Safe1–4, SafeRead, TABLE); 6 from `Inv ∧ Mag`
+  (k5/K5/Mag.lean: SNLEN LENX DSTX LREP DECODE; k5/K5/SafeBuild.lean: BUILD, one theorem per phase), n, OUTMAX < 2³². Two BUILD paths
+  had NO trace and are now traced (k5/K5/BuildZero.lean): phase 0's cell path (`build_zero_cell_inR`, k5p-069) and phase 4 with a
+  source length of 0 (`build_syms_skip_inR`, k5p-073: `build_syms_cell_inR` takes slot[0]'s range unconditionally, and slot[0] is
+  bounded by nothing). **⇒ the 11:0x claim "every mode has its trace" was FALSE; it is corrected on the bus.** The wrappers are the
+  coverage check that caught both: a mode's wrapper compiles only if every path of the mode reaches a trace.
+  Audit k5-audit-005: 39 rows, all within propext / Classical.choice / Quot.sound, 0 sorryAx.
+  **OWED, in order:** `Mag_step` (preservation over the 28 modes, Addenda 4–5's clauses), then `deflate_inrange` (Dispatch's
+  `step_inR` + the 28 wrappers, over Safety's reachable worlds), then K5-3.
