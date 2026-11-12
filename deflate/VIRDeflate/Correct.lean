@@ -2882,6 +2882,64 @@ theorem exempt_iff (lens : Array Nat) (md : Mode) (h15 : ∀ i, i < lens.size �
     simp only [varOf, bExempt, Bool.or_eq_true]; rw [hone, hall]
     by_cases h1 : cf 1 = 1 <;> by_cases h2 : restS cf 15 = 0 <;> by_cases h3 : totS cf 15 = 0 <;> simp [h1, h2, h3]
 
+/-- What a finished build leaves (before its end step): R, still BUILD at phase 4 with j = N, the table related to the
+lengths, and nothing outside the build's own cells touched. -/
+def Built (b : Array Nat) (om : Nat) (lit : Bool) (lens : Array Nat) (f f' : Int → Int) (st : St) : Prop :=
+  Rel b om lit f' st ∧ f' cMODE = mBUILD ∧ f' cPHASE = 4 ∧ f' cINDEX = lens.size ∧
+    TblRel b.size om f' (f cTGT) lens ∧ Keeps (L0 b.size om) f f' (bset (f (X0 b.size om + 7)))
+
+/-- **SYMS to the table relation**, from SYMS at j = 0 with the counts, firsts, offsets and slots in place. -/
+theorem syms_finish {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
+    {σ : Store} {f₀ f : Int → Int} {st : St} (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st)
+    (hm : f cMODE = mBUILD) (hph : f cPHASE = 4) (hj : f cINDEX = 0)
+    (h7 : f (X0 b.size om + 7) = f₀ (X0 b.size om + 7)) (htg : f cTGT = f₀ cTGT)
+    (h5 : f (X0 b.size om + 5) = f₀ (X0 b.size om + 5)) (h6 : f (X0 b.size om + 6) = lens.size)
+    (hsrc : ∀ i : Nat, i < lens.size → f (f (X0 b.size om + 5) + i) = lens.getD i 0)
+    (hcnt : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f (f (X0 b.size om + 7) + l) = blCount lens l)
+    (hfst : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f (f (X0 b.size om + 7) + 16 + l) = (nextCodes lens).getD l 0)
+    (hoff : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f (f (X0 b.size om + 7) + 32 + l) = offOf f (f (X0 b.size om + 7)) l ∧
+      f (f (X0 b.size om + 7) + 48 + l) = offOf f (f (X0 b.size om + 7)) l)
+    (hk0 : Keeps (L0 b.size om) f₀ f (bset (f₀ (X0 b.size om + 7)))) :
+    ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Built b om lit lens f₀ f' st := by
+  have hB := buildInv_of hR hm
+  obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+  set tbb := f (X0 b.size om + 7) with htbbd
+  have hsane : ∀ l : Int, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbb + l) ∧ 0 ≤ f (tbb + 32 + l) ∧
+      f (tbb + 32 + l) + f (tbb + l) ≤ 288 := by
+    have := (hB.2.2.2.2.2.2.2.1 hph).2.2.1; unfold sane at this; rw [← htb] at this; exact this
+  set o : Nat → Int := fun l => offOf f tbb l with hod
+  have hcnn : ∀ l : Nat, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbb + l) := fun l h1 h2 => by rw [hcnt l h1 h2]; positivity
+  have hdis : ∀ l l' : Nat, 1 ≤ l → l < l' → l' ≤ 15 → o l + blCount lens l ≤ o l' := fun l l' h1 h2 h3 => by
+    have := offOf_le hcnn l l' h1 h2 (by omega); rw [hcnt l h1 (by omega)] at this; exact this
+  have hob : ∀ l : Nat, 1 ≤ l → l ≤ 15 → 0 ≤ o l ∧ o l + blCount lens l ≤ 288 := fun l h1 h2 => by
+    obtain ⟨s0, s1, s2⟩ := hsane l (by omega) (by omega)
+    have e1 := (hoff l h1 h2).1
+    have e2 := hcnt l h1 h2
+    rw [e1] at s1 s2; rw [e2] at s2
+    exact ⟨s1, s2.trans_eq' (by ring)⟩
+  obtain ⟨σ', f', hR', hw', hRe', hm', hp', hj', hsy', hk'⟩ :=
+    syms_run (lit := lit) hb tbb (f (X0 b.size om + 5)) lens o hdis hob lens.size σ f st 0 hw hR hm hph hj (by simp)
+      rfl rfl h6 hsrc (fun l h1 h2 => by simp [filt, (hoff l h1 h2).2, hod]) (fun l h1 h2 i hi => by simp [filt] at hi)
+  have kk : ∀ c : Int, 0 ≤ c → c < L0 b.size om → (c < tbb + 48 ∨ tbb + 352 ≤ c) → c ≠ 13 → f' c = f c :=
+    fun c h0 h1 a b' => hk' c h0 h1 (by omega)
+  have htL : tbb + 352 ≤ L0 b.size om := by rw [htb]; unfold tbase LB0 L0; omega
+  have ht0' : 2417 ≤ tbb := by rw [htb]; unfold tbase LB0; omega
+  refine ⟨σ', f', hR', hw', hRe', hm', hp', hj', ?_, ?_⟩
+  · rw [← htg]; unfold TblRel; rw [← htb]
+    intro l h1 h2
+    have e32 : f' (tbb + 32 + l) = o l := by rw [kk _ (by omega) (by omega) (by omega) (by omega), (hoff l h1 h2).1]
+    refine ⟨by rw [kk _ (by omega) (by omega) (by omega) (by omega)]; exact hcnt l h1 h2,
+      by rw [kk _ (by omega) (by omega) (by omega) (by omega)]; exact hfst l h1 h2, fun j hj => ?_,
+      by rw [e32]; exact (hob l h1 h2).1, by rw [e32]; exact (hob l h1 h2).2⟩
+    rw [e32]
+    have hlen : (filt lens l lens.size).length = blCount lens l := by rw [filt_full, ← blCount_eq _ _ (by omega)]
+    have := hsy' l h1 h2 j (by omega)
+    have hj' : j < (symsL lens l).length := by rw [← filt_full]; omega
+    rw [this, symsOf_eq, List.getElem_of_eq (filt_full lens l)]
+    simp [Array.getD, hj']
+  · rw [← h7]
+    exact hk0.trans (fun c h0 h1 hc => hk' c h0 h1 (by unfold bset at hc; omega)) (fun c h => by rw [h7] at *; exact h)
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
