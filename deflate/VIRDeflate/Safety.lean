@@ -241,7 +241,7 @@ def buildInv (n om : Nat) (f : Int → Int) : Prop :=
   let hl := f cHLIT
   let hd := f cHDIST
   0 ≤ tg ∧ tg ≤ 2 ∧ tbb = tbase n om tg ∧
-  ((tg = 0 ∧ sb = LB0 n om + 318 ∧ nn = 19 ∧ hl ≤ 286 ∧ hd ≤ 30) ∨
+  ((tg = 0 ∧ sb = LB0 n om + 318 ∧ nn = 19 ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ f cFILL = 0) ∨
    (tg = 1 ∧ sb = LB0 n om ∧ nn = hl ∧ hl + hd ≤ 318 ∧ 0 ≤ hd) ∨
    (tg = 2 ∧ sb = LB0 n om + hl ∧ nn = hd ∧ hl + hd ≤ 318 ∧ 0 ≤ hd ∧ sane n om f 1)) ∧
   (ph = 0 → 0 ≤ j ∧ j ≤ 16 ∧ ∀ l : Int, 0 ≤ l → l < j → f (tbb + l) = 0) ∧
@@ -509,9 +509,10 @@ theorem buildInv_congr {n om : Nat} {f g : Int → Int} (hw : Watch n om f g) (h
   have e74 := hc 2074 (by decide)
   have e7c := hc 7 (by decide)
   have e8c := hc 8 (by decide)
+  have e10c := hc 10 (by decide)
   unfold buildInv at hb ⊢
-  simp only [cPHASE, cINDEX, cTGT, cHLIT, cHDIST] at hb ⊢ hhl
-  rw [← e5, ← e6, ← e7, ← e12, ← e13, ← e74, ← e7c, ← e8c]
+  simp only [cPHASE, cINDEX, cTGT, cHLIT, cHDIST, cFILL] at hb ⊢ hhl
+  rw [← e5, ← e6, ← e7, ← e12, ← e13, ← e74, ← e7c, ← e8c, ← e10c]
   obtain ⟨ht0, ht2, htb, htg, h0, h1, h23, h4, hph⟩ := hb
   have htb2 : (2080 : Int) ≤ f (X0 n om + 7) := by rw [htb]; unfold tbase LB0; omega
   have htbX : f (X0 n om + 7) + 64 ≤ X0 n om := by rw [htb]; unfold tbase LB0 X0; omega
@@ -2126,6 +2127,8 @@ theorem safeI_clread {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : I
         (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega)
       have eHD : g cHDIST = f cHDIST := u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega)
         (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+      have eF0 : g cFILL = 0 := by
+        show g 10 = 0; rw [hg, upd_eq _ _ (by omega), hg', Function.update_self]
       have hG : InvG b om lit g := by
         have h1 := ((((hi.1.upd (i := 2074) (by unfold scratch; omega) 0).xc (i := X0 b.size om + 5) (by omega) (by omega)
           (2080 + b.size + om + 318)).xc (i := X0 b.size om + 6) (by omega) (by omega) 19).xc (i := X0 b.size om + 7) (by omega) (by omega)
@@ -2142,7 +2145,7 @@ theorem safeI_clread {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : I
           show ¬ (mBUILD = mFIXLENS) by decide, if_false, if_true]
         unfold buildInv
         exact ⟨by simp [e74], by simp [e74], by rw [e7, e74]; unfold tbase LB0; ring,
-          Or.inl ⟨e74, by simp only [e5, LB0], e6, by rw [eHL]; exact hhl, by rw [eHD]; exact hhd⟩,
+          Or.inl ⟨e74, by simp only [e5, LB0], e6, by rw [eHL]; exact hhl, by rw [eHD]; exact hhd, eF0⟩,
           fun _ => ⟨by simp [e13], by simp [e13], fun l _ b' => by rw [e13] at b'; omega⟩,
           fun h => by rw [e12] at h; norm_num at h, fun h _ => by rw [e12] at h; norm_num at h,
           fun h => by rw [e12] at h; norm_num at h, Or.inl e12⟩
@@ -3451,5 +3454,134 @@ theorem stepSafe_of (hbuild : ModeSafe mBUILD) : StepSafe := by
 theorem safety_of_build (hbuild : ModeSafe mBUILD) : SafetyStmt :=
   safety_of_stepSafe (stepSafe_of hbuild)
 
+
+/-! ## BUILD: helpers (the counting lemmas, the build's parameters, a table write, the mode staying BUILD) -/
+
+theorem facts_build {n om : Nat} {f : Int → Int} : facts n om mBUILD f = buildInv n om f := by
+  simp only [facts, show ¬ (mBUILD = mSNLEN) by decide, show ¬ (mBUILD = mSCOPY) by decide,
+    show ¬ (mBUILD = mFIXLENS) by decide, if_false, if_true]
+
+theorem LOC_build {f : Int → Int} (hm : f cMODE = mBUILD) :
+    LOC f = bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) +
+      (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) := by
+  unfold LOC; rw [hm]
+  simp only [mBUILD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD,
+    mHDRD, mFIXLENS]
+  simp only [show ¬ ((11 : Int) = 1 ∨ (11 : Int) = 3 ∨ (11 : Int) = 5 ∨ (11 : Int) = 8 ∨ (11 : Int) = 7 ∨ (11 : Int) = 20 ∨
+      (11 : Int) = 21 ∨ (11 : Int) = 13 ∨ (11 : Int) = 16) by decide,
+    show ¬ ((11 : Int) = 15 ∨ (11 : Int) = 10 ∨ (11 : Int) = 19) by decide, show ¬ ((11 : Int) = 9 ∨ (11 : Int) = 18) by decide,
+    show ¬ ((11 : Int) = 17) by decide, show ¬ ((11 : Int) = 4) by decide, show ¬ ((11 : Int) = 6) by decide, if_false, if_true]
+
+/-- The build's parameters, from its invariant and the header's ranges. -/
+theorem bp {n om : Nat} {f : Int → Int} (hb : buildInv n om f)
+    (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 ∧ 0 ≤ f cHDIST ∧ f cHDIST ≤ 32 ∧ 0 ≤ f cHCLEN ∧ f cHCLEN ≤ 19) :
+    0 ≤ f cTGT ∧ f cTGT ≤ 2 ∧ f (X0 n om + 7) = tbase n om (f cTGT) ∧ LB0 n om ≤ f (X0 n om + 5) ∧
+      0 ≤ f (X0 n om + 6) ∧ f (X0 n om + 5) + f (X0 n om + 6) ≤ LB0 n om + 337 ∧ f (X0 n om + 6) ≤ 288 := by
+  obtain ⟨ht0, ht2, htb, htg, -⟩ := hb
+  refine ⟨ht0, ht2, htb, ?_⟩
+  rcases htg with ⟨_, h5, h6, _⟩ | ⟨_, h5, h6, h7, _⟩ | ⟨_, h5, h6, h7, h8, _⟩ <;> rw [h5, h6] <;> omega
+
+/-- #{j < k : length = l} grows by at most one per index, and over all l in [1, m) by at most one per index. -/
+def sc (f : Int → Int) (sb : Int) (N : Nat) : Nat → Nat
+  | 0 => 0
+  | m + 1 => sc f sb N m + (if m = 0 then 0 else cnt f sb m N)
+
+theorem cnt_le_succ (f : Int → Int) (sb l : Int) (k : Nat) : cnt f sb l k ≤ cnt f sb l (k + 1) := by
+  simp only [cnt]; omega
+
+theorem cnt_mono (f : Int → Int) (sb l : Int) {k k' : Nat} (h : k ≤ k') : cnt f sb l k ≤ cnt f sb l k' := by
+  induction h with
+  | refl => exact le_refl _
+  | step _ ih => exact le_trans ih (cnt_le_succ f sb l _)
+
+theorem sc_succN (f : Int → Int) (sb : Int) (N : Nat) :
+    ∀ m : Nat, sc f sb (N + 1) m = sc f sb N m + (if 1 ≤ f (sb + N) ∧ f (sb + N) < m then 1 else 0)
+  | 0 => by simp only [sc]; push_cast; split_ifs <;> omega
+  | m + 1 => by
+    simp only [sc, sc_succN f sb N m, cnt]
+    push_cast
+    split_ifs <;> omega
+
+theorem sc_le (f : Int → Int) (sb : Int) (m : Nat) : ∀ N : Nat, sc f sb N m ≤ N
+  | 0 => by
+    induction m with
+    | zero => simp [sc]
+    | succ m ih => simp only [sc, cnt]; split_ifs <;> omega
+  | N + 1 => by rw [sc_succN]; have := sc_le f sb m N; split_ifs <;> omega
+
+theorem sc_mono (f : Int → Int) (sb : Int) (N : Nat) {m m' : Nat} (h : m ≤ m') : sc f sb N m ≤ sc f sb N m' := by
+  induction h with
+  | refl => exact le_refl _
+  | step _ ih => exact le_trans ih (by simp only [sc]; omega)
+
+/-- With count cells holding the counts, `offOf` is `sc`. -/
+theorem offOf_sc {f : Int → Int} {tbb sb : Int} {N : Nat}
+    (hc : ∀ l : Int, 1 ≤ l → l ≤ 15 → f (tbb + l) = cnt f sb l N) : ∀ m : Nat, m ≤ 16 → offOf f tbb m = sc f sb N m
+  | 0, _ => rfl
+  | m + 1, hm => by
+    simp only [offOf, sc]
+    rw [offOf_sc hc m (by omega)]
+    by_cases h0 : m = 0
+    · subst h0; simp
+    · rw [if_neg h0, if_neg h0, hc m (by omega) (by omega)]; push_cast; ring
+
+/-- **The counting bound:** with the counts in place, offset[l] + count[l] ≤ N for every length l in [1, 15]. -/
+theorem off_cnt_le {f : Int → Int} {tbb sb : Int} {N : Nat}
+    (hc : ∀ l : Int, 1 ≤ l → l ≤ 15 → f (tbb + l) = cnt f sb l N) (l : Int) (h1 : 1 ≤ l) (h15 : l ≤ 15) :
+    offOf f tbb l.toNat + cnt f sb l N ≤ N := by
+  obtain ⟨m, rfl⟩ : ∃ m : Nat, l = m := ⟨l.toNat, by omega⟩
+  rw [show (m : Int).toNat = m by omega, offOf_sc hc m (by omega)]
+  have h1' : sc f sb N (m + 1) = sc f sb N m + cnt f sb m N := by simp only [sc]; rw [if_neg (by omega)]
+  have := sc_le f sb (m + 1) N
+  push_cast; omega
+
+/-- A write to the code tables (LB0 + 337 … X − 1) keeps the global invariant. -/
+theorem InvG.tw {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) {c : Int}
+    (h0 : 2080 + b.size + om + 337 ≤ c) (h1 : c < X0 b.size om) (v : Int) : InvG b om lit (Function.update f c v) := by
+  have hX : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+  have u : ∀ d : Int, d ≠ c → Function.update f c v d = f d := fun d hd => upd_eq f v hd
+  exact {
+  n_eq := by rw [u _ (by unfold cN; omega)]; exact h.n_eq
+  om_eq := by rw [u _ (by unfold cOUTMAX; omega)]; exact h.om_eq
+  x_eq := by rw [u _ (by unfold cX; omega)]; exact h.x_eq
+  lit_eq := by rw [u _ (by unfold cLIT; omega)]; exact h.lit_eq
+  input := fun j a b' => by rw [u _ (by omega)]; exact h.input j a b'
+  ro := fun j a b' => by rw [u _ (by omega)]; exact h.ro j a b'
+  lens := fun j a b' => by rw [u _ (by omega)]; exact h.lens j a b'
+  tb_rng := fun hm => by
+    rw [u _ (by unfold cMODE; omega)] at hm
+    rw [u _ (by unfold cTB; omega), u _ (by unfold cTI; omega)]; exact h.tb_rng hm
+  bits := fun d a b' h3 => by
+    rw [u _ (by unfold cMODE; omega), u _ (by unfold cTB; omega), u _ (by unfold cTI; omega)] at h3
+    rw [u _ (by unfold BT; omega)]; exact h.bits d a b' h3
+  by_rng := by rw [u _ (by unfold cBY; omega)]; exact h.by_rng
+  bi_rng := by rw [u _ (by unfold cBI; omega)]; exact h.bi_rng
+  by_end := by rw [u _ (by unfold cBY; omega), u _ (by unfold cBI; omega)]; exact h.by_end
+  m_rng := by rw [u _ (by unfold cM; omega)]; exact h.m_rng
+  mode_ok := by rw [u _ (by unfold cMODE; omega)]; exact h.mode_ok
+  read_rt := fun hm => by
+    rw [u _ (by unfold cMODE; omega)] at hm; rw [u _ (by unfold cRET; omega)]; exact h.read_rt hm
+  hdr_rng := by
+    rw [u _ (by unfold cHLIT; omega), u _ (by unfold cHDIST; omega), u _ (by unfold cHCLEN; omega)]; exact h.hdr_rng }
+
+/-- The mode stays BUILD: the per-mode invariant is the symbol cells and `buildInv`. -/
+theorem InvM.bld {n om : Nat} {g : Int → Int} (hs : SymsOK n om g) (hgM : g cMODE = mBUILD) (hb : buildInv n om g) :
+    InvM n om g := {
+  syms := hs
+  cur := by rw [hgM, facts_build]; exact hb
+  read := fun h => by rw [hgM] at h; simp [mBUILD, mREAD] at h
+  ret := fun h => by
+    rw [hgM] at h; simp [mBUILD, readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
+  dec := fun h => by rw [hgM] at h; simp [mBUILD, mDECODE] at h
+  sym := fun h => by rw [hgM] at h; simp [mBUILD, mSYMD, mDSTD, mLSYM] at h
+  scopy := fun h => by rw [hgM] at h; simp [mBUILD, mSCOPY] at h
+  ralign := fun h => by rw [hgM] at h; simp [mBUILD, mREAD] at h
+  align := fun h => by rw [hgM] at h; simp [mBUILD, mSLEN, mSNLEN, mSCOPY] at h }
+
+/-- LOC drops when only the phase and index move (the target, the header and nn unchanged). -/
+theorem LOC_build_lt {f g : Int → Int} (hm : f cMODE = mBUILD) (hgm : g cMODE = mBUILD) (eT : g cTGT = f cTGT)
+    (eHL : g cHLIT = f cHLIT) (eHD : g cHDIST = f cHDIST) (eX : g cX = f cX) (e6 : g (f cX + 6) = f (f cX + 6))
+    (hlt : bRem (g cPHASE) (g cINDEX) (f (f cX + 6)) < bRem (f cPHASE) (f cINDEX) (f (f cX + 6))) : LOC g < LOC f := by
+  rw [LOC_build hm, LOC_build hgm, eT, eHL, eHD, eX, e6]; omega
 
 end VIRDeflate.Step

@@ -336,6 +336,11 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       StepSafe` and `safety_of_build : ModeSafe mBUILD → SafetyStmt` proved.** df-163 rebuilt the root; **df-audit-027:
       402 #print rows, every one within the standard three** (axiom_gate reads 401 distinct names: it parses `safe_hdr'`
       and `safe_hdr` as one, as it did in df-audit-026's 338 for 339 — a limit of the gate's name parse, both rows read).
+    - **A fourth invariant defect, found writing BUILD's CL end before its proof (65th head):** `buildInv`'s CL disjunct
+      never recorded `fill`, yet the CL build ends in LENS, whose facts need 0 ≤ fill ≤ HLIT + HDIST. CLREAD sets fill := 0
+      and BUILD never writes cell 10. Added `f cFILL = 0` to the tg = 0 disjunct (buildInv_congr carries cell 10; CLREAD's
+      end supplies it). With BUILD's helper layer (`facts_build`, `LOC_build`, `bp`, the counting lemmas `sc`, `sc_succN`,
+      `sc_le`, `offOf_sc`, **`off_cnt_le` : offset[l] + count[l] ≤ N**, `InvG.tw`, `InvM.bld`, `LOC_build_lt`): df-164 EXIT=0.
     - **BUILD, the one premise left (`stepSafe_of : ModeSafe mBUILD → StepSafe`, `safety_of_build`): the plan.** Twelve
       step lemmas in Step.lean (build_zero_cell/end, build_count_cell/end, build_next_cell/end, build_left_cell/end,
       build_syms_cell, build_syms_end_cl/l/d), each against `buildInv`'s phase clause. Owed lemmas, by phase:
