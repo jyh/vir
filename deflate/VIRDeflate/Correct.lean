@@ -3330,17 +3330,17 @@ theorem huff_Sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
 
 /-- S4's `code`, in the triple form, from a BUILD start (CHK = 1). -/
 theorem code_Sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
-    (md : Mode) (f₀ : Int → Int) (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15) :
+    (md : Mode) (f₀ : Int → Int) (st₀ : St) (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15) :
     Sim b om p (code lens md)
-      (fun f st => f = f₀ ∧ Rel b om lit f st ∧ f cMODE = mBUILD ∧ f cPHASE = 0 ∧ f cINDEX = 0 ∧
+      (fun f st => f = f₀ ∧ st = st₀ ∧ Rel b om lit f st ∧ f cMODE = mBUILD ∧ f cPHASE = 0 ∧ f cINDEX = 0 ∧
         f (X0 b.size om + 6) = lens.size ∧ (∀ i : Nat, i < lens.size → f (f (X0 b.size om + 5) + i) = lens.getD i 0) ∧
         f cCHK = 1 ∧ f (X0 b.size om + 8) = varOf md)
-      (fun C f' st' => C = assign lens ∧ Built b om lit lens f₀ f' st') := by
-  rintro σ f st hw ⟨rfl, hR, hm, hph, hj, hnn, hsrc, hchk, hvar⟩
+      (fun C f' st' => C = assign lens ∧ st' = st₀ ∧ Built b om lit lens f₀ f' st') := by
+  rintro σ f st hw ⟨rfl, rfl, hR, hm, hph, hj, hnn, hsrc, hchk, hvar⟩
   obtain ⟨hok, herr⟩ := (build_tbl (lit := lit) hb lens md hw hR hm hph hj hnn hsrc h15).2 hchk hvar
   refine ⟨fun C st' h => ?_, herr⟩
   obtain ⟨hC, rfl, σ', f', hR', hw', hB'⟩ := hok C st' h
-  exact ⟨σ', f', hR', hw', hC, hB'⟩
+  exact ⟨σ', f', hR', hw', hC, rfl, hB'⟩
 
 theorem fixedL_getD (k : Nat) (hk : k < 288) : (fixedLLens.getD k 0 : Int) = fixLenI k := by
   have e : fixedLLens.getD k 0 = if k < 144 then 8 else if k < 256 then 9 else if k < 280 then 7 else 8 := by
@@ -3497,7 +3497,45 @@ theorem fixed_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x 
     · rw [e] at h; obtain ⟨σ', f', hR', hw', hq⟩ := hok a st' h; exact ⟨σ', f', hRc.trans hR', hw', hq⟩
     · rw [e] at h; obtain ⟨σ', f', hR', hw', hq⟩ := herr r h; exact ⟨σ', f', hRc.trans hR', hw', hq⟩
   | true =>
-    sorry
+    have post_mid : Sim b om p (fixedCodes true) (fun f' st' => f' = f ∧ st' = st)
+        (fun LD f' st' => LD = (assign fixedLLens, assign fixedDLens) ∧ ((Rel b om true f' st' ∧ f' cMODE = mSYM) ∧
+          f' cBF = bf ∧ TblRel b.size om f' 1 fixedLLens ∧ TblRel b.size om f' 2 fixedDLens)) := by
+      show Sim b om p (code fixedLLens >>= fun L => code fixedDLens >>= fun D => pure (L, D)) _ _
+      refine Sim.bind (code_Sim (lit := true) hb fixedLLens .normal f st fixedL_15 |>.mono
+        (fun f' st' ⟨e1, e2⟩ => by subst e1; subst e2; exact ⟨rfl, rfl, hR, hm, hph, hj, by rw [h6, hsz]; rfl,
+          fixL_src h5 hl, by rw [hchk]; rfl, by rw [h8]; rfl⟩) (fun _ _ _ h => h)) (fun L => ?_)
+      intro σ2 f2 st2 hw2 ⟨hL, hst2, hB2⟩
+      subst hL; subst hst2
+      obtain ⟨σ3, f3, hR3, hw3, hRe3, hm3, hp3, hj3, h53, h63, h83, hchk3, hbf3, htg3, hl3, hT3⟩ := fix_handoff hb bf hw2 h0 hB2
+      have h73 : f3 (X0 b.size om + 7) = tbase b.size om 2 := by
+        have hB3 := buildInv_of hRe3 hm3
+        obtain ⟨-, -, -, -, -, htb3⟩ := build_src hB3 hRe3.inv.1.hdr_rng.1
+        rw [htb3, htg3]
+      have hD := code_Sim (lit := true) hb fixedDLens .normal f3 st2 fixedD_15 σ3 f3 st2 hw3
+        ⟨rfl, rfl, hRe3, hm3, hp3, hj3, h63, fixD_src h53 hl3, by rw [hchk3]; rfl, by rw [h83]; rfl⟩
+      obtain ⟨hDok, hDerr⟩ := hD
+      refine ⟨fun a st' h => ?_, fun r h => ?_⟩
+      · rw [go_bind] at h
+        rcases hc : go (code fixedDLens .normal) ⟨b, om⟩ st2 with r' | ⟨D, s4⟩
+        · rw [hc] at h; simp at h
+        · rw [hc] at h
+          simp only [go_pure, Except.ok.injEq, Prod.mk.injEq] at h
+          obtain ⟨rfl, rfl⟩ := h
+          obtain ⟨σ4, f4, hR4, hw4, hD4, hs4, hB4⟩ := hDok D s4 hc
+          subst hD4; subst hs4
+          obtain ⟨σ5, f5, hR5, hw5, hpre⟩ := fix_toSym hb bf hw4 htg3 h63 hbf3 hT3 h73 hB4
+          exact ⟨σ5, f5, hR3.trans (hR4.trans hR5), hw5, rfl, hpre⟩
+      · rw [go_bind] at h
+        rcases hc : go (code fixedDLens .normal) ⟨b, om⟩ st2 with r' | ⟨D, s4⟩
+        · obtain ⟨σ4, f4, hR4, hw4, hm4⟩ := hDerr r' hc
+          exact ⟨σ4, f4, hR3.trans hR4, hw4, hm4⟩
+        · rw [hc] at h; simp [go_pure] at h
+    have hfull := (Sim.bind (k := fun LD => huff LD.1 LD.2)
+      (post := fun _ f st => Rel b om true f st ∧ f cMODE = endMode bf) post_mid (fun LD => by
+      intro σ' f' st' hw' ⟨hLD, hpre⟩
+      subst hLD
+      exact huff_Sim (lit := true) hb bf fixedLLens fixedDLens σ' f' st' hw' hpre)) σ f st hw ⟨rfl, rfl⟩
+    exact hfull
 
 /-! ## CorrectStmt from the forward statement -/
 
@@ -3610,5 +3648,16 @@ theorem correct_of_bodies
     (HF : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p (fixedBody lit) mFIXLENS (fun f => f cFILL = 0))
     (HD : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p dynamic mDHDR (fun _ => True)) : CorrectStmt :=
   correct_of_fwd (fwd_of_bodies HS HF HD)
+
+end VIRDeflate.Step
+
+namespace VIRDeflate.Step
+open VIRL1 VIRL2
+
+/-- **CORRECTNESS, reduced to the dynamic block alone:** stored (`stored_sim`) and fixed (`fixed_sim`, both readings)
+are proved; what remains is S6's `dynamic` from DHDR (S-18's `dynamic` row). -/
+theorem correct_of_dynamic
+    (HD : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p dynamic mDHDR (fun _ => True)) : CorrectStmt :=
+  correct_of_bodies (fun _ _ _ _ hb => stored_sim hb) (fun _ _ _ _ hb => fixed_sim hb) HD
 
 end VIRDeflate.Step
