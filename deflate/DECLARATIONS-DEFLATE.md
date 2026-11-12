@@ -249,3 +249,23 @@ S-10's semantics are unchanged: the values in the cells are exactly what S-10 de
 (15) and OUTMAX (16)** — it is a function of the parameters alone, like them. Every cursor-3 access loads X from 2079 rather than
 re-deriving it from n and OUTMAX. The initial world's contents are a function of (b, OUTMAX) only, so D7 (no premise on the
 bytes) is unaffected.
+
+### S-13 (amendment 7, 2026-11-11, the 63rd head). DECLARED before any SYM or COPY code. S7's `huffLoop`, split at each field.
+**S7's four tables are a READ-ONLY AREA of the initial world**, at X+16: LBASE[29] · LEXTRA[29] (X+45) · DBASE[30] (X+74) ·
+DEXTRA[30] (X+104), written from Spec.lean's arrays verbatim, like n, OUTMAX and X (S-12): a function of nothing. No step writes
+them. (A step cannot index a constant array: R-b, and P has no table primitive.)
+**Modes** (S7's order of reads and checks kept):
+- SYM: request a DECODE with TGT 1 (L), ret SYMD.
+- SYMD, by s = sym: s < 256 → m = OUTMAX: reason "overflow", REJECT; else output[m] := s, m += 1, mode SYM. s = 256 → the block
+  ends exactly as SCOPY's end does (BFINAL = 1 → DONE, else HDR). 257 ≤ s ≤ 285 → pending := LBASE[s−257], k := LEXTRA[s−257];
+  k = 0 → acc := 0, mode LENX (S's `bits 0` reads nothing); else READ k bits, ret LENX. s > 285 → reason "invalid
+  literal/length code", REJECT.
+- LENX: pending += acc (the length); request a DECODE with TGT 2 (D), ret DSTD.
+- DSTD, by d = sym: d ≥ 30 → reason "invalid distance code", REJECT; else distance := DBASE[d], k := DEXTRA[d]; k = 0 → acc := 0,
+  mode DSTX; else READ k bits, ret DSTX.
+- DSTX: distance += acc; then distance > m → reason "distance too far back", REJECT; then m + pending > OUTMAX → reason
+  "overflow", REJECT; else mode COPY.
+- COPY: pending = 0 → mode SYM; else output[m] := output[m − distance], m += 1, pending −= 1 (S's `copyBack`, one byte per step).
+**Reason codes:** 8 "invalid literal/length code" · 9 "invalid distance code" · 10 "distance too far back".
+**What would show this wrong:** a step that writes the read-only area; a check made out of S7's order; a COPY reading output
+at an index other than m − distance.
