@@ -403,6 +403,26 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       shift: every machine REJECT matched an S rejection and every acceptance matched S's output. LIMITS: reasons are
       not compared (S-18 leaves them out); one frame lemma was too coarse and was refined, not a program fact
       (`TblRel.keep` → `keep'`: the D build writes table 2 while L's table 1 must survive); no mutant against Correct.lean.
+    - **CORRECTNESS PROVED: `correct : CorrectStmt`** (VIRDeflate/Dynamic.lean, 1,186 lines; df-309, the 67th head),
+      `correct_of_dynamic` applied to `dynamic_sim : BodySim … dynamic mDHDR`, S6's row of the S-18 table. The pieces:
+      `dynamic_eq` (S6 as the do-notation elaborates it, by `rfl`); DHDR/DH2/DH3/DH4 (`dhdr_next` … `dh4_next`, S6's
+      count check after all three fields, as S does); `readcl_sim` (S6's `readCL` ↔ CLREAD/CLPUT, the spec array related
+      cell by cell through ORDER, which is a permutation: `order_inj`, `order_surj` by `decide`); `clzero_run` (S-14's
+      zero fill: the spec array is already 0 there); `cl_build_sim` (`code cl .strict`, BUILD target 0, VAR 1);
+      `lens_sim` (S6's `lensLoop` ↔ LENS/LSYM/LREP/REP, by fuel; `lbody` is the loop body as elaborated, with the
+      continuation in every branch, probe df-probe-009); `rep_req`/`rep_tail` (S's `pushN` appends at once, REP one cell
+      per step: `rep_run`; LREP rejects before writing, S appends then rejects, same verdict; 16 with no first length
+      rejects before any bit on both sides); `dyn_tail` (lengths[256] = 0 rejects; `dyn3_sim`: the L build VAR 0, the
+      hand-off, the D build VAR 2, SYM, `huff_Sim`). Builds df-292 … df-309, probes df-probe-005 … 009.
+    - **Audit df-audit-031: 633 #print rows (576 + Dynamic's 57), every one within propext · Classical.choice ·
+      Quot.sound, 0 sorryAx**; `correct` and `dynamic_sim` carry the three. axiom_gate parses 625: its regex does not
+      read the 8 primed names (`safe_hdr'`, `bits_sim'`, `Rel.of_keeps'`, `Sim.align'`, `Sim.set'`, `offOf_congr'`,
+      `TblRel.keep'`, `code_Sim'`), each read by hand in the log as within the three. Control df-audit-control-005 shows
+      `sorryAx`. Root `VIRDeflate` built first (df-310), per df-audit-029's lesson.
+    - **No program defect found** in S6's path either. LIMITS: reject reasons are not compared (S-18 leaves them out by
+      declaration); no mutant has been run against Correct.lean or Dynamic.lean; `correct` is a statement about the
+      machine's iteration against Spec.lean, so it inherits Spec.lean's fidelity to S (DEFLATE-E1's two readings both
+      covered: `lit` is universally quantified).
 
 ## Findings, recorded before X5 (no oracle has run)
 1. **DEFLATE-E1** (`errata/ERRATA-DEFLATE.md`), found by READING S while transcribing it, before any build of Spec.lean.

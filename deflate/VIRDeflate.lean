@@ -11,3 +11,4 @@ import VIRDeflate.Fit
 import VIRDeflate.Measure
 import VIRDeflate.Safety
 import VIRDeflate.Correct
+import VIRDeflate.Dynamic
