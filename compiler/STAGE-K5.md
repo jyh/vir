@@ -78,3 +78,11 @@
   Audit k5-audit-004: 17 rows (Audit.lean + build_left_end_inR, pow2_reach, strip_reach, bit_reach, table_inR), all within the three.
   **K5-2 trace coverage: HDR, READ, 12 + 20 + 11 + 1 mode traces, TABLE, the dispatch. NEXT: K5-2b (RANGE-SITES, 27 modes after
   READ), then deflate_inrange, then K5-3.**
+- **K5-2b, 69th head: 22 of 28 modes in range from `Inv` alone** (Safe1–4 + SafeRead, vir 88f332e · eeb50c7 · b63fa35 · f3d47b6;
+  k5p-060/063/064/065 EXIT=0). **Finding K5-2-1 + `Mag` re-declared: DECLARATIONS-K5.md Addendum 4 (vir 1871722)**, before any Mag file.
+  Its required census, run after it, over Step.lean (178 stores, `store \[` = `tcap .store`, two needles agree): cPEND 10 stores
+  (l.650 SLEN, 683 SCOPY, 1738 SYMD, 1745 LENX, 1775 COPY, 2259/2262/2264 LSYM, 2273 LREP → REP, 2285 REP) — the two not named in
+  the addendum land in REP, which `facts_rep` bounds (fl + pd ≤ hl + hd), so no clause is owed; cDIST 2 (1753 DSTD, 1763 DSTX);
+  cCODE/cLEFT/cREST/cTOTAL 2 each (BUILD); X and X+1: l.1509/1510 (DECODE) and l.1698/1699 (reqDecN) — the reqDecN X store has a
+  PARAMETER target `.v w0` that a `.v "…"` needle misses (found by the second needle shape the addendum names). Consistent with
+  the addendum: no unlisted write to a `Mag` cell.
