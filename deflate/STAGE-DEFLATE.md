@@ -298,7 +298,11 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       table cell being a bit, InvG's `bits`; wt·2^k ≤ kcap(rt) carried, so on return the return mode's acc bound holds;
       Φ: BITS − 1, LOC(rt) < 4096 by `LOC_lt`) and truncation (REJECT, the S-17 terminal step). Helpers: `InvG.mode`,
       `InvM.term`, `InvG.byte` (an input cell is b's byte, < 256: Safety's only use of the byte premise), `LOC_lt`.
-      **5 of 28 cases DONE** (HDR, HDRB, SLEN, DHDR, READ). The audit file is regenerated from VIRDeflate.lean's imports: the
+      **5 of 28 cases DONE** (HDR, HDRB, SLEN, DHDR, READ).
+    - **An invariant the design MISSED, found planning SCOPY (df-132 … df-134):** SCOPY's copy advances `by` and never `bi`,
+      so at `by = n` the invariant needs `bi = 0` — else BITS < 0 and Φ ≥ 0 fails. It holds because SHDR aligns and the two
+      16-bit READs keep `(bi + k) ≡ 0 (mod 8)`. Added as InvM fields `align` (SLEN, SNLEN, SCOPY → bi = 0) and `ralign` (READ
+      returning to SLEN/SNLEN → (bi + k) % 8 = 0); `InvM.req` takes the alignment premise; READ re-proved with both. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)

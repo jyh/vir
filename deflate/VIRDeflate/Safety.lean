@@ -287,6 +287,8 @@ structure InvM (n om : Nat) (f : Int → Int) : Prop where
      (f (X0 n om + 2) = 2 ∧ f (X0 n om + 3) = mDSTD)) ∧ sane n om f (f (X0 n om + 2))
   sym : f cMODE = mSYMD ∨ f cMODE = mDSTD ∨ f cMODE = mLSYM → 0 ≤ f (X0 n om + 4) ∧ f (X0 n om + 4) < 288
   scopy : f cMODE = mSCOPY → f cBY + f cPEND ≤ f cN
+  ralign : f cMODE = mREAD → (f cRET = mSLEN ∨ f cRET = mSNLEN) → (f cBI + f cK) % 8 = 0
+  align : f cMODE = mSLEN ∨ f cMODE = mSNLEN ∨ f cMODE = mSCOPY → f cBI = 0
 
 /-- **Safety's invariant:** the global part and the per-mode part. -/
 def Inv (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) : Prop := InvG b om lit f ∧ InvM b.size om f
@@ -341,7 +343,9 @@ theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCel
     ret := fun h => by rw [e0] at h; simp [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
     dec := fun h => by rw [e0] at h; simp [mDECODE] at h
     sym := fun h => by rw [e0] at h; simp [mSYMD, mDSTD, mLSYM] at h
-    scopy := fun h => by rw [e0] at h; simp [mSCOPY] at h }⟩
+    scopy := fun h => by rw [e0] at h; simp [mSCOPY] at h
+    ralign := fun h => by rw [e0] at h; simp [mREAD] at h
+    align := fun h => by rw [e0] at h; simp [mSLEN, mSNLEN, mSCOPY] at h }⟩
 
 /-! ## Safety from one safe step (the outer argument, checked before the 28 per-mode cases) -/
 
@@ -579,7 +583,8 @@ theorem SymsOK.upd {n om : Nat} {f : Int → Int} (h : SymsOK n om f) {i : Int} 
   rw [upd_eq f v (by unfold tbase LB0; omega)]; exact h t q h1 h2 h3 h4
 
 theorem InvM.req {n om : Nat} {f : Int → Int} (h : SymsOK n om f) (hhl : 0 ≤ f cHLIT) {k rt : Int}
-    (hf : facts n om rt f) (hk : 1 ≤ k) (hcap : 2 ^ k.toNat ≤ kcap rt) : InvM n om (reqF f k rt) where
+    (hf : facts n om rt f) (hk : 1 ≤ k) (hcap : 2 ^ k.toNat ≤ kcap rt)
+    (hal : rt = mSLEN ∨ rt = mSNLEN → (f cBI + k) % 8 = 0) : InvM n om (reqF f k rt) where
   syms t q h1 h2 h3 h4 := by
     rw [reqF_eq f k rt _ (by unfold tbase LB0; omega)]; exact h t q h1 h2 h3 h4
   cur := by
@@ -602,11 +607,18 @@ theorem InvM.req {n om : Nat} {f : Int → Int} (h : SymsOK n om f) (hhl : 0 ≤
     rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSYMD, mDSTD, mLSYM] at hm
   scopy hm := by
     rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSCOPY] at hm
+  ralign _ hr := by
+    rw [show reqF f k rt cRET = rt by simp [reqF, cRET, Function.update_apply]] at hr
+    rw [show reqF f k rt cBI = f cBI from reqF_eq f k rt _ (by unfold cBI; omega),
+      show reqF f k rt cK = k by simp [reqF, cK, Function.update_apply]]
+    exact hal hr
+  align hm := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSLEN, mSNLEN, mSCOPY] at hm
 
 /-- A write to a cell below 2080 that no part of the invariant watches keeps `InvM`, unless it is the mode or a cell the
 mode's READ/DECODE relation reads (0, 2068–2071, and X's cells are ≥ 2080). -/
 theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f cHLIT) {i : Int} (hi : i < 2080)
-    (hw : i ∉ watched) (h0 : i ≠ 0) (h1 : i ≠ 1) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
+    (hw : i ∉ watched) (h0 : i ≠ 0) (h1 : i ≠ 1) (h2 : i ≠ 2) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
   have W := watch_upd f hi hw v
   have u : ∀ c : Int, c ≠ i → Function.update f i v c = f c := fun c hc => upd_eq f v hc
   have hm : Function.update f i v cMODE = f cMODE := u _ (by unfold cMODE; omega)
@@ -635,7 +647,12 @@ theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f
     rw [hm] at hm'
     rw [u cBY (by unfold cBY; omega), u cPEND (by unfold cPEND; intro e; exact hw (by rw [← e]; decide)),
       u cN (by unfold cN; intro e; exact hw (by rw [← e]; decide))]
-    exact h.scopy hm' }
+    exact h.scopy hm'
+  ralign := fun hm' hr' => by
+    rw [hm] at hm'; rw [u cRET (by unfold cRET; omega)] at hr'
+    rw [u cBI (by unfold cBI; omega), u cK (by unfold cK; omega)]; exact h.ralign hm' hr'
+  align := fun hm' => by
+    rw [hm] at hm'; rw [u cBI (by unfold cBI; omega)]; exact h.align hm' }
 
 /-! ## The request modes, with the full invariant -/
 
@@ -645,7 +662,7 @@ theorem safeI_hdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
   have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
   obtain ⟨a, b', c, d⟩ := safe_hdr' (b := b) (om := om) (lit := lit) hw hL hi.1 hm
   exact ⟨_, _, a, b', ⟨c, InvM.req hi.2.syms hi.1.hdr_rng.1 (by simp [facts, mHDRB, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT,
-    mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRB])⟩, d⟩
+    mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRB]) (fun h => by simp [mHDRB, mSLEN, mSNLEN] at h)⟩, d⟩
 
 theorem safeI_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
     (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mDHDR) :
@@ -654,7 +671,7 @@ theorem safeI_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
   obtain ⟨a, b', c, d⟩ := safe_dhdr (b := b) (om := om) (lit := lit) hw hL hi.1 hm
   exact ⟨_, _, a, b', ⟨c, InvM.req hi.2.syms hi.1.hdr_rng.1 (by simp [facts, mDH2, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT,
     mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mDH2, mHDRB, mHDRD,
-    mSLEN, mSNLEN])⟩, d⟩
+    mSLEN, mSNLEN]) (fun h => by simp [mDH2, mSLEN, mSNLEN] at h)⟩, d⟩
 
 theorem safeI_hdrb {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
     (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mHDRB) :
@@ -664,7 +681,7 @@ theorem safeI_hdrb {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
   have hu := SymsOK.upd (n := b.size) (om := om) hi.2.syms (i := 4) (by norm_num) (f cACC)
   exact ⟨_, _, a, b', ⟨c, InvM.req hu (by rw [upd_eq _ _ (by unfold cHLIT; omega)]; exact hi.1.hdr_rng.1)
     (by simp [facts, mHDRD, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX,
-      mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRD, mHDRB])⟩, d⟩
+      mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mHDRD, mHDRB]) (fun h => by simp [mHDRD, mSLEN, mSNLEN] at h)⟩, d⟩
 
 theorem safeI_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
     (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mSLEN) :
@@ -675,7 +692,8 @@ theorem safeI_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
   have hu := SymsOK.upd (n := b.size) (om := om) hi.2.syms (i := 5) (by norm_num) (f cACC)
   exact ⟨_, _, a, b', ⟨c, InvM.req hu (by rw [upd_eq _ _ (by unfold cHLIT; omega)]; exact hi.1.hdr_rng.1)
     (by simp [facts, mSNLEN, cPEND]; exact hacc.1) (by norm_num)
-    (by simp [kcap, mSNLEN, mSLEN, mHDRB, mHDRD])⟩, d⟩
+    (by simp [kcap, mSNLEN, mSLEN, mHDRB, mHDRD])
+    (fun _ => by rw [upd_eq _ _ (by unfold cBI; omega), hi.2.align (Or.inl hm)]; norm_num)⟩, d⟩
 
 /-! ## Helpers for READ: the mode cell, the cursor's carry, a terminal mode, the input bytes -/
 
@@ -717,7 +735,9 @@ theorem InvM.term {n om : Nat} {f : Int → Int} (h : SymsOK n om f) {v : Int} (
         mLREP] at hm'
     dec := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mDECODE] at hm'
     sym := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSYMD, mDSTD, mLSYM] at hm'
-    scopy := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSCOPY] at hm' }
+    scopy := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSCOPY] at hm'
+    ralign := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mREAD] at hm'
+    align := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSLEN, mSNLEN, mSCOPY] at hm' }
 
 theorem InvM.syms_ok {n om : Nat} {f : Int → Int} (h : InvM n om f) : SymsOK n om f := h.syms
 
@@ -943,7 +963,23 @@ theorem safeI_read {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
         sym := fun h => by
           rw [eM'] at h
           rcases h with h | h | h <;> exact absurd h (hnotin _ (by simp))
-        scopy := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp)) }
+        scopy := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp))
+        ralign := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp))
+        align := fun h => by
+          rw [eM'] at h
+          have h' : f cRET = mSLEN ∨ f cRET = mSNLEN := by
+            rcases h with h | h | h
+            · exact Or.inl h
+            · exact Or.inr h
+            · exact absurd h (hnotin _ (by simp))
+          have hal := hi.2.ralign hm h'
+          rw [u0 _ (by unfold cBI; omega)]
+          simp only [hf1, cBI, Function.update_apply]
+          simp only [show (2 : Int) ≠ 2068 by decide, show (2 : Int) ≠ 2069 by decide, show (2 : Int) ≠ 2070 by decide,
+            if_false, if_true]
+          simp only [cBI, cK] at hal hir hk ⊢
+          unfold tblNext
+          split_ifs <;> simp <;> omega }
       refine ⟨_, _, hS, hw1'.store (i := 0) (by norm_num) (by unfold L0; omega), ⟨hg', hm'⟩, Or.inl ?_⟩
       have hLt := LOC_lt hg' hm'
       have hT' : TBL (Function.update f1 0 (f cRET)) = 0 := by unfold TBL; rw [eM', if_neg hrt0]
@@ -972,7 +1008,18 @@ theorem safeI_read {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
           rw [eM] at h; simp [readRets, mREAD, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
         dec := fun h => by rw [eM] at h; simp [mREAD, mDECODE] at h
         sym := fun h => by rw [eM] at h; simp [mREAD, mSYMD, mDSTD, mLSYM] at h
-        scopy := fun h => by rw [eM] at h; simp [mREAD, mSCOPY] at h }
+        scopy := fun h => by rw [eM] at h; simp [mREAD, mSCOPY] at h
+        ralign := fun _ hr => by
+          rw [eRT] at hr
+          have hal := hi.2.ralign hm hr
+          rw [e68]
+          simp only [hf1, cBI, Function.update_apply]
+          simp only [show (2 : Int) ≠ 2068 by decide, show (2 : Int) ≠ 2069 by decide, show (2 : Int) ≠ 2070 by decide,
+            if_false, if_true]
+          simp only [cBI, cK] at hal hir ⊢
+          unfold tblNext
+          split_ifs <;> simp <;> omega
+        align := fun h => by rw [eM] at h; simp [mREAD, mSLEN, mSNLEN, mSCOPY] at h }
       refine ⟨_, _, hS, hw1', ⟨hg', hm'⟩, Or.inl ?_⟩
       have hLOC1 : LOC f1 = 0 := by
         unfold LOC; rw [eM]; simp [mREAD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY,
