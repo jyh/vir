@@ -4,3 +4,5 @@ import VIRDeflate.Kraft
 import VIRDeflate.Spec
 import VIRDeflate.Run
 import VIRDeflate.Step
+import VIRDeflate.Dispatch
+import VIRDeflate.Statements

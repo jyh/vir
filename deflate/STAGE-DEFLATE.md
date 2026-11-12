@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-085; audit df-audit-021: 191 of 191 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-094; audit df-audit-022: 205 of 205 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -163,6 +163,29 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - Mutants: HLIT's limit at 285, red INSIDE `dh4_step` (df-mutant-039: lines 2113/2119/2124); code 18's base at 10, red
       INSIDE `lsym_step` (df-mutant-040: line 2397); CLPUT reading ORDER one cell off, red INSIDE `clput_step` (df-mutant-041:
       line 2198). The unmutated copy is GREEN (df-mutant-042).
+  - **S-15 and the top-level step, `VIRDeflate/Dispatch.lean`** (df-092; df-086…091 were elaboration fixes in the new
+    file). The step is ONE load of the mode cell and an `ite` chain over the 28 mode numbers (`modes`, keys 0…27, each once:
+    `modes_keys`); DONE, REJECT and every other value fall through to `ret world`.
+    - **The carrying lemma** (`NT.carry`, `carry_top`): a mode term compiled under the dispatch's binder `md`, closed at the
+      world and then substituted at the mode load, IS its standalone `closeAt p (t.c ["w"])`, whenever it never names `md`
+      and its closed atoms are closed (`modes_ok` checks all 28). It is proved by induction over the named layer with the
+      inner binders as Γ₁, in the substitutions' actual order, so no commutation lemma is needed.
+    - `disp_run`, `step_dispatch`: at mode m the step reaches the looked-up mode term's closed form, or `ret ⟨p⟩`.
+      `step_of_mode`: **every one-step mode lemma above transfers to the step unchanged** (`step_table` is the worked
+      instance). `step_fixed`: DONE and REJECT are fixed points with the store unchanged.
+    - Mutants: TABLE's number mapped to HDR's term, red INSIDE `step_table` (df-mutant-043: line 209); the fall-through
+      returning `md` instead of the world, red INSIDE `disp_run`'s empty case, on which `step_fixed` rests (df-mutant-044:
+      line 128). The unmutated copy is GREEN (df-mutant-045). (df-mutant-043…045 waited ~2 h on the fleet lock behind
+      another seat's solve and a salt build; they lost time and nothing else.)
+  - **The initial world and the X3 (a) statements, `VIRDeflate/Statements.lean`, written BEFORE their proofs (STATUS 293;
+    df-094).** `initCell` / `initStore`: ONE region of `L0 = n + OUTMAX + 3626` cells holding mode TABLE, n, OUTMAX, the
+    reading flag, X, the input bytes and the read-only area (S7's tables, ORDER), every other cell 0 — a function of (b,
+    OUTMAX, the reading) alone; `initStore_world` makes it a `World`. `stepS` / `iterS`: one step under a fixed per-step
+    bound `KSTEP` = 512 L2 steps, `none` on a fault. **`SafetyStmt`** (no premise on the bytes, D7; DONE or REJECT within
+    N(n, OUTMAX)) and **`CorrectStmt`** (DONE with o iff `run lit b OUTMAX = .ok o`, REJECT iff `.error`, both readings) are
+    `Prop` definitions with no proof. ⚠️ Declared against myself: `KSTEP` is a constant I chose. If any mode's longest path
+    under the dispatch exceeded it, `stepS` would read a correct step as a fault and Safety would be unprovable rather than
+    false; the proof must show every mode's path is shorter (the longest measured run bound in a mode lemma is 60).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -209,7 +232,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-151 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…085, df-audit-001…021, df-audit-control-001, df-mutant-001…042, df-probe-001/002).
+165 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.

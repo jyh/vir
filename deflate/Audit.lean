@@ -190,3 +190,17 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.lrep_step
 #print axioms VIRDeflate.Step.rep_end
 #print axioms VIRDeflate.Step.rep_byte
+#print axioms VIRDeflate.Step.substL_map
+#print axioms VIRDeflate.Step.var_carry
+#print axioms VIRDeflate.Step.NA.carry
+#print axioms VIRDeflate.Step.NT.carry
+#print axioms VIRDeflate.Step.carry_top
+#print axioms VIRDeflate.Step.modes_keys
+#print axioms VIRDeflate.Step.disp_run
+#print axioms VIRDeflate.Step.modes_ok
+#print axioms VIRDeflate.Step.step_dispatch
+#print axioms VIRDeflate.Step.step_of_mode
+#print axioms VIRDeflate.Step.step_fixed
+#print axioms VIRDeflate.Step.step_table
+#print axioms VIRDeflate.Step.lookup_fillF
+#print axioms VIRDeflate.Step.initStore_world

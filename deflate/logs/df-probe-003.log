@@ -1,0 +1,7 @@
+saltqueue: ticket P2 seat=root pid=4950
+@List.idxOf_cons : ∀ {α : Type u_1} {x : α} {xs : List α} {y : α} [inst : BEq α],
+  List.idxOf y (x :: xs) = bif x == y then 0 else List.idxOf y xs + 1
+@List.idxOf_nil : ∀ {α : Type u_1} {x : α} [inst : BEq α], List.idxOf x [] = 0
+@List.idxOf_append : ∀ {α : Type u_1} [inst : BEq α] [inst_1 : LawfulBEq α] {l₁ l₂ : List α} {a : α},
+  List.idxOf a (l₁ ++ l₂) = if a ∈ l₁ then List.idxOf a l₁ else List.idxOf a l₂ + l₁.length
+saltbuild EXIT=0
