@@ -76,3 +76,29 @@ K5-1 is proved in two parts, because Sim2 relates the IR to the word machine and
   atom is `InR`. (d) `inRangeRun_of_src`, then `s2_noovf`.
 - **What would show it wrong:** an IR state reachable from the start that is neither finished nor matched (then S1's
   simulation has states nobody characterised, a finding about S1), or a hypothesis beyond SrcInRange.
+
+## Addendum 3 (68th head, 2026-11-12, after K5-1b PROVED and BEFORE any K5-2 file): finding K5-2-0, and K5-2's route re-declared
+**K5-2-0, a FINDING about this file's own K5-2 route sentence.** It reads *"`Inv`'s cell bounds already give every value read a
+magnitude ≤ c·(n + OUTMAX + 3626)"*. Read at Safety.lean l. 50–293 (InvG, facts, InvM), that is FALSE AS WRITTEN: `Inv` bounds
+the cells it needs for Φ and the table reads, and leaves others bounded BELOW only, e.g. `cPEND` (`0 ≤ pd` in SNLEN, LENX, DSTD,
+DSTX), `cDIST` (`0 ≤ f cDIST` in DSTX), and every cell outside the named ones (no clause bounds an arbitrary cell). The step
+program loads `cPEND` 7 times and `cDIST` twice (Step.lean, census of `.load` sites). So `deflate_inrange` CANNOT be read off
+`Inv`. This is not yet a K5 falsifier: a missing upper bound in an invariant is not a premise on the bytes, and every value
+the program writes is computed from bounded ones. It means K5-2 must carry a bound `Inv` does not.
+**Route (declared now; the author's choice, posted with both arms):**
+- **(A, TAKEN) a checked runner over the existing traces.** `stepFn₂C` = `stepFn₂` that refuses (returns `none`) when the
+  configuration's head atoms are not `InR₂`; `run₂C`. Generic lemma: `run₂C k c = (.ret a, σ')` ⇒ `SrcInRange c` (⟶₂ is
+  deterministic, `step₂_det`, so the run's configurations are all the reachable ones, and the last is terminal). Per mode: the
+  mode's existing `run₂`-by-`simp` trace (Step.lean, 93 sites) is re-run with `stepFn₂C`; each arithmetic site's range is an
+  `omega` side goal from the facts that trace already holds, PLUS a global magnitude invariant `Mag`: every world cell is in
+  [0, 2⁴⁰] when n, OUTMAX < 2³² (stated first, proved preserved per mode from the same traces' written values).
+- **(B, NOT TAKEN) a generic magnitude checker** over app-free named terms (Fit.lean's `plen` class, 27 of 28 modes) with a
+  soundness proof once and a `decide` per mode. Not taken: the mul sites (`8·tb`, `wt·2`, `acc + x·wt`) need per-mode facts
+  (`wt ≤ kcap`), so the checker would take per-mode interval hypotheses, which is route A's work in another form, plus a
+  soundness proof A does not need.
+- **Price, stated before the first file:** A re-runs the mode traces (Step.lean 2,466 lines; 28 modes) with range goals, and
+  proves `Mag` preserved. Estimate 1–3 days of builds. If `Mag` fails for some cell (a value that grows without bound across
+  steps), K5 is not falsified by that alone (overflow needs an arithmetic site), but `Mag` must then be replaced by that
+  cell's own bound, and that is reported.
+- **Where:** a NEW project `k5/` requiring `compiler` and `deflate` by path (bridge/'s form: packages APFS-cloned, manifest by
+  edit), so neither is edited (D2's spirit; deflate's counts stay put).
