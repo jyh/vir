@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-098; audit df-audit-024: 260 of 260 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-101; audit df-audit-025: 269 of 269 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -218,12 +218,19 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - **`stepS_of_mode`**: for a mode term that is app-free with `plen ≤ KSTEP − 29`, its one-step lemma (a relational
       `Steps₂`) IS `stepS p σ = some σ'`. **`modes_fit`** checks the 27 modes other than TABLE. So every mode lemma except
       TABLE's now gives Statements.lean's functional step directly, with no per-lemma rework.
-    - OWED: TABLE. Its one `BITc` call recurses (POW, STRIP), so `plen` does not bound it; it needs counted
-      `pow2_steps` / `strip_steps` / `bit_steps`.
-    - The KSTEP risk declared at Statements.lean is closed for those 27 modes, by a check rather than a reading.
+    - TABLE (df-100): its one `BITc` call recurses (POW, STRIP), so `plen` does not bound it. `pow2_stepsN` (≤ 3k + 3),
+      `strip_stepsN` (≤ 3 + 31n with i + n ≤ 7), `bit_stepsN` (≤ 250) and `table_stepN` (≤ 262) are Step.lean's relational
+      proofs with every `run₂` kept as its count; **`stepS_table`** gives TABLE's `stepS`. `stepS_hdr` is the worked
+      instance of `stepS_of_mode` with `modes_fit`.
+    - ⇒ **Every one of the 28 modes' one-step lemmas now gives Statements.lean's functional step.** The KSTEP risk declared at
+      Statements.lean is closed by a check, not a reading: the longest bound is TABLE's 29 + 262 = 291 of 512.
+    - Mutants: `plen` taking the SHORTER branch of an `if` is red INSIDE `pure_dec` (df-mutant-048: lines 140, 142, its two
+      `if` cases); BIT's bound cut to 100 is red INSIDE `bit_stepsN` (df-mutant-049: line 339). The unmutated copy is GREEN
+      (df-mutant-050). df-099 (EXIT=1) was two slips of mine (an unnamed atom, a membership proof simp had already closed).
   - Audits: df-audit-023 ran on the library root before it was rebuilt with the two new imports, so it failed loudly on 55
     unknown names; it is kept and not counted. df-098 rebuilt the root; df-audit-024 is 260/260 within the standard three, and
-    df-audit-control-002 shows `sorryAx` on the control. The audit file is regenerated from VIRDeflate.lean's imports: the
+    df-audit-control-002 shows `sorryAx` on the control. After TABLE's counted pieces, df-101 rebuilt the root and
+    df-audit-025 is 269/269 (control: df-audit-control-002, same gate, same session). The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)

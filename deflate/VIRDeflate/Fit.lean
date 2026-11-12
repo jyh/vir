@@ -258,4 +258,147 @@ theorem modes_fit : ∀ kt ∈ modes, kt.1 ≠ mTABLE → appFree (kt.2.c ["w"])
     buildN, lensN, symN, decodeN, symdN, lenxN, dstdN, dstxN, copyN, dh2N, dh3N, dh4N, clreadN, clputN, lsymN, lrepN, repN,
     reqN, reqDecN, reqKN, rejN, bZeroN, bCountN, bNextN, bRestN, bLeftN, bSymsN]
 
+
+/-! ## TABLE's one `BITc` call, counted (Step.lean's `pow2_steps`, `strip_steps`, `bit_steps`, `table_step`, each `run₂` kept as
+its count). The recursion is bounded by the bit index: POW ≤ 3k + 3, STRIP ≤ 3 + 31n with i + n ≤ 7, BIT ≤ 250, TABLE ≤ 262. -/
+
+theorem StepsN.letE {n : Nat} {τ : Ty₂} {e₁ e₁' e₂ : Tm₂} {σ σ' : Store} (h : StepsN n (e₁, σ) (e₁', σ')) :
+    StepsN n (.letE τ e₁ e₂, σ) (.letE τ e₁' e₂, σ') := by
+  generalize hc : (e₁, σ) = c at h
+  generalize hc' : (e₁', σ') = c' at h
+  induction h generalizing e₁ σ with
+  | refl => subst hc; cases hc'; exact .refl _
+  | @step n c₁ c₂ c₃ s _ ih =>
+    subst hc
+    obtain ⟨e₂', σ₂⟩ := c₂
+    exact .step (.letStep s) (ih rfl hc')
+
+theorem stepsN_le_run {c d : Config} {B : Nat} (n : Nat) (hB : n ≤ B) (h : run₂ n c = d) : ∃ k ≤ B, StepsN k c d := by
+  obtain ⟨k, hk, hs⟩ := stepsN_run n h
+  exact ⟨k, by omega, hs⟩
+
+theorem pow2_stepsN (k : Nat) : ∀ (a : Atom₂), Atom.eval a = some (ci k) → ∀ (τ : Ty₂) (e₂ : Tm₂) (σ : Store),
+    ∃ m ≤ 3 * k + 3, StepsN m (.letE τ (.app POW a) e₂, σ) (e₂.subst 0 (ci (2 ^ k)), σ) := by
+  induction k with
+  | zero =>
+    intro a ha τ e₂ σ
+    exact stepsN_le_run 3 (by omega) (by l2eval)
+  | succ k ih =>
+    intro a ha τ e₂ σ
+    obtain ⟨m₁, hm₁, h₁⟩ := stepsN_run 2 (c := (.letE τ (.app POW a) e₂, σ))
+      (d := (.letE τ (.letE tint (.app POW (psub (ci ((k + 1 : Nat) : Int)) (ci 1))) (.ret (pmul (ci 2) (vr 0)))) e₂, σ))
+      (by l2eval; rw [show decide ((k : Int) < 0) = false by simp]; l2eval)
+    obtain ⟨m₂, hm₂, h₂⟩ := ih (psub (ci ((k + 1 : Nat) : Int)) (ci 1)) (by l2eval) tint (.ret (pmul (ci 2) (vr 0))) σ
+    obtain ⟨m₃, hm₃, h₃⟩ := stepsN_run 1
+      (c := (.letE τ ((Tm.ret (pmul (ci 2) (vr 0))).subst 0 (ci (2 ^ k))) e₂, σ))
+      (d := (e₂.subst 0 (ci (2 ^ (k + 1))), σ)) (by l2eval; ring_nf)
+    exact ⟨m₁ + m₂ + m₃, by omega, (h₁.trans (StepsN.letE h₂)).trans h₃⟩
+
+theorem strip_stepsN (n i : Nat) : i + n ≤ 7 → ∀ (v : Int) (a : Atom₂),
+    Atom.eval a = some (.pair (.pair (ci n) (ci i)) (ci v)) → ∀ (τ : Ty₂) (e₂ : Tm₂) (σ : Store),
+    ∃ m ≤ 3 + 31 * n, StepsN m (.letE τ (.app STRIPc a) e₂, σ) (e₂.subst 0 (ci (stripTop n i v)), σ) := by
+  induction n with
+  | zero =>
+    intro _ v a ha τ e₂ σ
+    exact stepsN_le_run 3 (by omega) (by l2eval)
+  | succ n ih =>
+    intro hin v a ha τ e₂ σ
+    obtain ⟨m₁, hm₁, h₁⟩ := stepsN_run 2 (c := (.letE τ (.app STRIPc a) e₂, σ))
+      (d := (.letE τ (.letE tint (.app POW (padd (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))))) (.letE tint (.ite (plt (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)) (.ret (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (.ret (psub (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)))) (.app STRIPc (.pair (.pair (psub (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (ci 1)) (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))))) (vr 0))))) e₂, σ))
+      (by clear ih; l2eval; all_goals (rw [show decide ((n : Int) < 0) = false by simp]; l2eval))
+    obtain ⟨m₂, hm₂, h₂⟩ := pow2_stepsN (i + (n + 1)) (padd (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))))
+      (by clear ih; l2eval; all_goals (push_cast; ring_nf)) tint (.letE tint (.ite (plt (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)) (.ret (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (.ret (psub (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)))) (.app STRIPc (.pair (.pair (psub (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (ci 1)) (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))))) (vr 0)))) σ
+    obtain ⟨m₃, hm₃, h₃⟩ := stepsN_run 2
+      (c := (.letE τ (Tm.subst 0 (ci (2 ^ (i + (n + 1)))) (.letE tint (.ite (plt (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)) (.ret (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (.ret (psub (.snd (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))) (vr 0)))) (.app STRIPc (.pair (.pair (psub (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (ci 1)) (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))))) (vr 0))))) e₂, σ))
+      (d := (.letE τ (.app STRIPc (.pair (.pair (psub (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (ci 1)) (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))))) (ci (if v < 2 ^ (i + (n + 1)) then v else v - 2 ^ (i + (n + 1)))))) e₂, σ))
+      (by clear ih; by_cases hv : v < 2 ^ (i + (n + 1)) <;> l2eval <;>
+        (rw [show decide (v < 2 ^ (i + (n + 1))) = false from decide_eq_false (by omega)]; l2eval))
+    have hstep : stripTop (n + 1) i v = stripTop n i (if v < 2 ^ (i + (n + 1)) then v else v - 2 ^ (i + (n + 1))) := by
+      simp only [stripTop, pow2_eq, Nat.add_assoc]
+    rw [hstep]
+    obtain ⟨m₄, hm₄, h₄⟩ := ih (by omega) (if v < 2 ^ (i + (n + 1)) then v else v - 2 ^ (i + (n + 1))) (.pair (.pair (psub (.fst (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v)))) (ci 1)) (.snd (.fst (.pair (.pair (ci ((n + 1 : Nat) : Int)) (ci i)) (ci v))))) (ci (if v < 2 ^ (i + (n + 1)) then v else v - 2 ^ (i + (n + 1))))) (by l2eval) τ e₂ σ
+    exact ⟨m₁ + m₂ + m₃ + m₄, by omega, (((h₁.trans (StepsN.letE h₂)).trans h₃).trans h₄)⟩
+
+theorem bit_stepsN (b : Int) (i : Nat) (hi : i ≤ 7) (a : Atom₂) (ha : Atom.eval a = some (.pair (ci b) (ci i)))
+    (τ : Ty₂) (e₂ : Tm₂) (σ : Store) :
+    ∃ m ≤ 250, StepsN m (.letE τ (.app BITc a) e₂, σ) (e₂.subst 0 (ci (bitAt b i)), σ) := by
+  obtain ⟨m₁, hm₁, h₁⟩ := stepsN_run 1 (c := (.letE τ (.app BITc a) e₂, σ))
+    (d := (.letE τ (.letE tint (.app STRIPc (.pair (.pair (psub (ci 7) (.snd (.pair (ci b) (ci i)))) (.snd (.pair (ci b) (ci i)))) (.fst (.pair (ci b) (ci i))))) (.letE tint (.app POW (.snd (.pair (ci b) (ci i)))) (.ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1))))) e₂, σ)) (by simp only [BITc]; l2eval)
+  obtain ⟨m₂, hm₂, h₂⟩ := strip_stepsN (7 - i) i (by omega) b (.pair (.pair (psub (ci 7) (.snd (.pair (ci b) (ci i)))) (.snd (.pair (ci b) (ci i)))) (.fst (.pair (ci b) (ci i))))
+    (by rw [show ((7 - i : Nat) : Int) = 7 - (i : Int) by omega]; l2eval) tint (.letE tint (.app POW (.snd (.pair (ci b) (ci i)))) (.ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1)))) σ
+  obtain ⟨m₃, hm₃, h₃⟩ := pow2_stepsN i (.snd (.pair (ci b) (ci i))) (by l2eval) tint (Tm.subst 1 (ci (stripTop (7 - i) i b)) (.ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1)))) σ
+  obtain ⟨m₄, hm₄, h₄⟩ := stepsN_run 2 (c := (.letE τ ((Tm.subst 1 (ci (stripTop (7 - i) i b)) (.ite (plt (vr 1) (vr 0)) (.ret (ci 0)) (.ret (ci 1)))).subst 0 (ci (2 ^ i))) e₂, σ))
+    (d := (e₂.subst 0 (ci (bitAt b i)), σ)) (by
+      unfold bitAt
+      rw [pow2_eq]
+      by_cases h : stripTop (7 - i) i b < 2 ^ i
+      · rw [if_pos h]; l2eval
+      · rw [if_neg h]; l2eval
+        all_goals (rw [show decide (stripTop (7 - i) i b < 2 ^ i) = false from decide_eq_false (by omega)]; l2eval))
+  exact ⟨m₁ + m₂ + m₃ + m₄, by omega, (((h₁.trans (StepsN.letE h₂)).trans (StepsN.letE h₃)).trans h₄)⟩
+
+theorem steps_via_bitN {c : Config} (k : Nat) {b : Int} {i : Nat} (hi : i ≤ 7) {K : Tm₂} {σ₁ : Store} {d : Config}
+    {B : Nat} (h1 : run₂ k c = (.letE tint (.app BITc (.pair (ci b) (ci i))) K, σ₁))
+    (h2 : ∃ m ≤ B, StepsN m (K.subst 0 (ci (bitAt b i)), σ₁) d) : ∃ m ≤ k + 250 + B, StepsN m c d := by
+  obtain ⟨m₁, hm₁, s₁⟩ := stepsN_run k h1
+  obtain ⟨m₂, hm₂, s₂⟩ := bit_stepsN b i hi (.pair (ci b) (ci i)) (by simp [Atom.eval]) tint K σ₁
+  obtain ⟨m₃, hm₃, s₃⟩ := h2
+  exact ⟨m₁ + m₂ + m₃, by omega, (s₁.trans s₂).trans s₃⟩
+
+theorem table_stepN {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2068 ≤ L)
+    (tb ti : Nat) (htb : f cTB = tb) (hti : f cTI = ti) (htb8 : tb < 256) (hti8 : ti ≤ 7) :
+    ∃ m ≤ 2 + 250 + 10, StepsN m (closeAt p tableT, σ)
+      (.ret (.const (.cap p)),
+        if (tblNext tb ti).1 = 256 then ⟨(tblH σ.H p tb ti).insert (p + 0) 1, σ.R⟩ else ⟨tblH σ.H p tb ti, σ.R⟩) := by
+  have hb := hw.cell 18 (by decide) (by omega)
+  have hi := hw.cell 19 (by decide) (by omega)
+  simp only [cTB, cTI] at htb hti
+  apply steps_via_bitN 2 (B := 10) (b := (tb : Int)) hti8
+  · conv_lhs => simp [closeAt, tableT, tableN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+      Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, hw.reg, hb, hi, htb, hti, Atom.eval, Atom.evalL,
+      cTB, cTI, BITc_subst, show (18 : Int) < L by omega, show (19 : Int) < L by omega]
+  · refine stepsN_le_run 10 (le_refl _) ?_
+    by_cases h7 : ti = 7
+    · subst h7
+      have hidx : (20 : Int) + (8 * tb + 7) < L := by omega
+      have hnn : (0 : Int) ≤ 20 + (8 * tb + 7) := by omega
+      by_cases h256 : tb + 1 = 256
+      · have h256' : (tb : Int) + 1 = 256 := by exact_mod_cast h256
+        simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+      · have h256' : ¬ ((tb : Int) + 1 = 256) := by exact_mod_cast h256
+        simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+    · have h7' : ¬ ((ti : Int) = 7) := by exact_mod_cast h7
+      have hidx : (20 : Int) + (8 * tb + ti) < L := by omega
+      have hnn : (0 : Int) ≤ 20 + (8 * tb + ti) := by omega
+      have htb' : ¬ ((tb : Int) = 256) := by omega
+      simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.store,
+          hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+          cMODE, mHDR, show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+/-- **TABLE's step is a `stepS`.** -/
+theorem stepS_table {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2068 ≤ L)
+    (tb ti : Nat) (hmode : f cMODE = mTABLE) (htb : f cTB = tb) (hti : f cTI = ti) (htb8 : tb < 256) (hti8 : ti ≤ 7) :
+    stepS p σ = some (if (tblNext tb ti).1 = 256 then ⟨(tblH σ.H p tb ti).insert (p + 0) 1, σ.R⟩
+      else ⟨tblH σ.H p tb ti, σ.R⟩) := by
+  obtain ⟨k₁, hk₁, h₁⟩ := step_dispatchN hw (by omega) mTABLE hmode
+  have hl : modes.lookup mTABLE = some tableN := rfl
+  rw [hl] at h₁
+  obtain ⟨k₂, hk₂, h₂⟩ := table_stepN hw hL tb ti htb hti htb8 hti8
+  have hrun := run₂_of_stepsN (h₁.trans h₂) rfl KSTEP (by simp only [KSTEP]; omega)
+  unfold stepS
+  rw [hrun]
+  simp
+
+/-- Worked instance of `stepS_of_mode` with `modes_fit`: HDR's one-step lemma is a `stepS`. -/
+theorem stepS_hdr {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (hm : f cMODE = mHDR) : stepS p σ = some ⟨reqH σ.H p 1 3, σ.R⟩ := by
+  have hmem : (mHDR, hdrN) ∈ modes := by
+    unfold modes; simp
+  have hfit := modes_fit (mHDR, hdrN) hmem (by decide)
+  exact stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (hdr_step hw hL)
+
 end VIRDeflate.Step

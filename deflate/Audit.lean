@@ -259,3 +259,12 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.step_dispatchN
 #print axioms VIRDeflate.Step.stepS_of_mode
 #print axioms VIRDeflate.Step.modes_fit
+#print axioms VIRDeflate.Step.StepsN.letE
+#print axioms VIRDeflate.Step.stepsN_le_run
+#print axioms VIRDeflate.Step.pow2_stepsN
+#print axioms VIRDeflate.Step.strip_stepsN
+#print axioms VIRDeflate.Step.bit_stepsN
+#print axioms VIRDeflate.Step.steps_via_bitN
+#print axioms VIRDeflate.Step.table_stepN
+#print axioms VIRDeflate.Step.stepS_table
+#print axioms VIRDeflate.Step.stepS_hdr
