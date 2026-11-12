@@ -338,3 +338,15 @@ branch and is not a fixed point.
    inside its table.
 **What would show this wrong:** a step that decreases none of TBL, BITS, OUT and LOC; a LOC value ≥ W on a state satisfying
 Inv; a conjunct a step breaks; a premise of a Step.lean lemma that Inv does not imply; N found to depend on the bytes.
+
+### S-17 (amendment 11, 2026-11-11, the 64th head). A FINDING against S-16, found while writing READ's safety case, declared before the code changes. S-16 is falsified by its own clause.
+**What S-16 said:** "every step strictly decreases Φ", and, under *what would show this wrong*, "a step that decreases none of
+TBL, BITS, OUT and LOC".
+**What is true:** READ's truncation (by = n: reason 1, REJECT) and DECODE's truncation are such steps. No bit is consumed, so
+BITS is unchanged, and LOC(READ) = LOC(DECODE) = 0 = LOC(REJECT). Φ is unchanged. Every other step into REJECT or DONE leaves a
+mode with LOC ≥ 1 or consumes a bit, and decreases Φ.
+**The amendment (the measure is NOT changed; D3 is scored on Measure.lean as written):** a step INTO DONE or REJECT need not
+decrease Φ: it is the last step. Safety's step obligation becomes "Φ strictly lower, OR the next mode is DONE or REJECT", and
+**N(n, OUTMAX) = Φ(initStore) + 1 = 4096 · (2048 + 8n + OUTMAX) + 1.** Still a function of n and OUTMAX alone.
+**What would show this wrong:** a non-terminal step that leaves Φ unchanged; a terminal step from a state Safety's induction
+cannot reach.
