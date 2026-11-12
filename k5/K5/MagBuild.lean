@@ -208,4 +208,68 @@ theorem Mag_step_build4 {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store}
           (by rw [hL0]; unfold X0; omega) hlt h)
       exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
 
+theorem Mag_step_build2 {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mBUILD)
+    (hph : f cPHASE = 2) (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hcell : ∀ c : Int, 0 ≤ c → c < b.size + om + 3626 → σ.H.lookup (p + c) = some (f c) :=
+    fun c a h => hw.cell c a (by rw [hL0]; exact h)
+  have hb := hi.2.cur
+  rw [hm, facts_build] at hb
+  have hB := bfacts hi hb
+  have hx := hi.1.x_eq
+  unfold buildInv at hb
+  dsimp only at hb
+  obtain ⟨htg0, htg2, htbb, htgc, hp0, hp1, hp23, hp4, _⟩ := hb
+  obtain ⟨t0, tL, s0, sL, n0, n318⟩ := hB
+  rw [htbb] at t0 tL
+  have hmem : (mBUILD, buildN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mBUILD, buildN) hmem (by decide)
+  obtain ⟨hj1, hj16, hz, hz32, hcn, hoff⟩ := hp23 (by omega) (by omega)
+  by_cases h15 : f cINDEX ≤ 15
+  · have hcode := hg.b1 hm hph
+    have hp := pow_le_32768 (k := (f cINDEX).toNat) (by omega)
+    have hcp : 0 ≤ f (tbase b.size om (f cTGT) + (f cINDEX - 1)) ∧ f (tbase b.size om (f cTGT) + (f cINDEX - 1)) ≤ 318 := by
+      rw [← htbb]
+      by_cases h1 : f cINDEX = 1
+      · rw [h1, show (1 : Int) - 1 = 0 by norm_num, add_zero, hz]; omega
+      · rw [hcn _ (by omega) (by omega)]
+        have := cnt_le_self f (f (X0 b.size om + 5)) (f cINDEX - 1) (f (X0 b.size om + 6)).toNat
+        omega
+    have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (build_next_cell hw (by unfold L0; omega) _ _ _ _ _ _ hph rfl hx htbb (by unfold X0; omega)
+        (by rw [hL0]; unfold X0; omega) hj1 h15 (by omega) (by rw [hL0]; unfold X0 at tL; omega) rfl rfl rfl)
+    have hp2 : (2 : Int) ^ (f cINDEX + 1).toNat = 2 * 2 ^ (f cINDEX).toNat := by
+      rw [show (f cINDEX + 1).toNat = (f cINDEX).toNat + 1 by omega, pow_succ]; ring
+    refine Mag_bld hS hSe hw' (by simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne]; rw [hcell _ (by decide) (by omega)]; exact congrArg some hm) ?_ (by intro ph _ _ _ _ e _ _ _ _ h; simp (disch := omega) only [cPHASE, Finmap.lookup_insert_of_ne] at e; first | (rw [Finmap.lookup_insert] at e; cases e; exact absurd h (by decide)) | (rw [hcell _ (by decide) (by omega)] at e; cases e; unfold cPHASE at hph; omega)) ?_
+    · intro ph j c eP eJ eC h
+      simp (disch := (simp only [tbase, LB0, X0, cINDEX, cPHASE, cCODE] at *; omega)) only [cPHASE, cINDEX, cCODE, Finmap.lookup_insert_of_ne] at eP eJ eC
+      rw [Finmap.lookup_insert] at eJ eC
+      cases eJ; cases eC
+      simp only [cCODE, cINDEX] at hcode hp2 hp hcp ⊢
+      rw [hp2]
+      constructor <;> omega
+    · intro t l a1 a2 a3 a4 v e
+      by_cases hc : t = f cTGT ∧ l = f cINDEX
+      · rw [hc.1, hc.2] at e
+        simp (disch := (simp only [tbase, LB0, X0, cINDEX] at *; omega)) only [Finmap.lookup_insert_of_ne] at e
+        rw [Finmap.lookup_insert] at e
+        cases e
+        have h16 : (2 : Int) ^ (f cINDEX).toNat ≤ 32768 := hp
+        constructor <;> omega
+      · simp (disch := (simp only [tbase, LB0, X0, cINDEX, cPHASE] at *; omega)) only [Finmap.lookup_insert_of_ne] at e
+        rw [hcell _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)] at e
+        cases e; exact hg.f1 t l a1 a2 a3 a4
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (build_next_end hw (by unfold L0; omega) _ _ _ _ hph rfl hx htbb (by unfold X0; omega)
+        (by rw [hL0]; unfold X0; omega) h15 rfl)
+    split_ifs at hSe
+    · -- entering phase 3: left 1, rest 0, total 0, j 1 — B2 made
+      refine Mag_bld hS hSe hw' (by simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne]; rw [hcell _ (by decide) (by omega)]; exact congrArg some hm) (by intro ph _ _ e _ _ h; simp (disch := omega) only [cPHASE, Finmap.lookup_insert_of_ne] at e; first | (rw [Finmap.lookup_insert] at e; cases e; exact absurd h (by decide)) | (rw [hcell _ (by decide) (by omega)] at e; cases e; unfold cPHASE at hph; omega)) ?_ (by intro t l a1 a2 a3 a4 v e; simp (disch := (simp only [tbase, LB0, X0, cINDEX, cPHASE] at *; omega)) only [Finmap.lookup_insert_of_ne] at e; rw [hcell _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)] at e; cases e; exact hg.f1 t l a1 a2 a3 a4)
+      intro ph j le r t eP eJ eL eR eT h
+      simp (disch := omega) only [cPHASE, cINDEX, cLEFT, cREST, cTOTAL, Finmap.lookup_insert_of_ne] at eP eJ eL eR eT
+      rw [Finmap.lookup_insert] at eJ eL eR eT
+      cases eJ; cases eL; cases eR; cases eT; norm_num
+    · exact Mag_bld hS hSe hw' (by simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne]; rw [hcell _ (by decide) (by omega)]; exact congrArg some hm) (by intro ph _ _ e _ _ h; simp (disch := omega) only [cPHASE, Finmap.lookup_insert_of_ne] at e; first | (rw [Finmap.lookup_insert] at e; cases e; exact absurd h (by decide)) | (rw [hcell _ (by decide) (by omega)] at e; cases e; unfold cPHASE at hph; omega)) (by intro ph _ _ _ _ e _ _ _ _ h; simp (disch := omega) only [cPHASE, Finmap.lookup_insert_of_ne] at e; first | (rw [Finmap.lookup_insert] at e; cases e; exact absurd h (by decide)) | (rw [hcell _ (by decide) (by omega)] at e; cases e; unfold cPHASE at hph; omega)) (by intro t l a1 a2 a3 a4 v e; simp (disch := (simp only [tbase, LB0, X0, cINDEX, cPHASE] at *; omega)) only [Finmap.lookup_insert_of_ne] at e; rw [hcell _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)] at e; cases e; exact hg.f1 t l a1 a2 a3 a4)
+
 end K5
