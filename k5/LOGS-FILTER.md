@@ -1,7 +1,11 @@
 # k5/logs: the replayed-warning filter (STATUS-vir 299; the helm's ruling (A), 2026-11-12 15:29, term 2)
 
 **From which build on:** every k5 log from **k5p-121** onward, including probes and audits named after it. Logs up to and including
-k5p-120 (a run stopped by its owner before it built anything) are byte-faithful, raw saltbuild output, and are never re-filtered.
+k5p-120 (a run stopped by its owner while queued, before it built anything) are byte-faithful, raw saltbuild output, and are never
+re-filtered. **k5p-121 is EMPTY:** the first filtered wrapper had a defect (`noclobber` refused its own redirect onto the temp file),
+so saltbuild never ran. It is kept as the record of that wrapper run and counts 0 EXIT lines. The fixed wrapper (`>|`) was then
+checked on a stub saltbuild that replays k5p-117: rc 1 passed through, the error and EXIT lines identical, no temp file left.
+The first filtered build is k5p-122.
 
 **What it drops:** lake re-prints the warnings of every CACHED module it replays (`⚠ [i/n] Replayed <Module>`). In a k5 build that
 was about 5,900 linter warnings from L1/L2/compiler/DEFLATE files, which made each log ~14.8 MB (k5p-114…k5p-119). For each such

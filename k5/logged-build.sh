@@ -31,7 +31,7 @@ set -o noclobber
 # that file with each REPLAYED module's re-printed warning body replaced by one hash line (tools/replay_filter.py). Header lines,
 # every line containing "error", and the `saltbuild EXIT=` line are copied byte for byte. If the filter fails, the RAW log is kept.
 raw=$(mktemp "${TMPDIR:-/tmp}/logged-build-$name.XXXXXX") || { echo "logged-build: no raw temp file" >&2; exit 5; }
-cd "$lean" && "$sb" "$@" > "$raw" 2>&1
+cd "$lean" && "$sb" "$@" >| "$raw" 2>&1
 rc=$?
 if ! python3 -I "$here/tools/replay_filter.py" "$raw" - >> "$log"; then
   echo "logged-build: replay_filter FAILED; the raw log is kept whole" >&2
