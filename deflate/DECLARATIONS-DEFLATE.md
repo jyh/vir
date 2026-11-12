@@ -269,3 +269,26 @@ them. (A step cannot index a constant array: R-b, and P has no table primitive.)
 **Reason codes:** 8 "invalid literal/length code" · 9 "invalid distance code" · 10 "distance too far back".
 **What would show this wrong:** a step that writes the read-only area; a check made out of S7's order; a COPY reading output
 at an index other than m − distance.
+
+### S-14 (amendment 8, 2026-11-11, the 63rd head). DECLARED before any DHDR, CLREAD, LENS or REP code. S6's `dynamic`, split at each field.
+**ORDER[19] joins the read-only area at X+134** (S-13's rule: from Spec.lean's list verbatim, written by the initial world).
+**Modes** (S6's order of reads and checks kept):
+- DHDR: READ 5 bits, ret DH2. DH2: HLIT := acc + 257; READ 5, ret DH3. DH3: HDIST := acc + 1; READ 4, ret DH4. DH4: HCLEN :=
+  acc + 4; then HLIT > 286 or HDIST > 30 → reason 11 ("too many length or distance symbols"), REJECT (S reads all three fields
+  first); else fill := 0, DYN := 1, CHK := 1, mode CLREAD.
+- CLREAD, by i = fill: i < HCLEN → READ 3, ret CLPUT. HCLEN ≤ i < 19 → cl[ORDER[i]] := 0, i += 1 (ORDER is a permutation of
+  0..18, so this is S's `Array.replicate 19 0` for every cell not read). i = 19 → the CL target's S-11 cells (TGT 0, SB = CL
+  area, NN 19, TBB = TB(0), VAR 1), phase 0, j 0, fill := 0, mode BUILD.
+- CLPUT: cl[ORDER[i]] := acc, i += 1, mode CLREAD.
+- LENS (entered from BUILD's CL end), by fill against total = HLIT + HDIST: fill < total → DECODE in CL, ret LSYM. Else
+  lengths[256] = 0 → reason 12 ("missing end-of-block"), REJECT; else the L target's S-11 cells (TGT 1, SB = lengths, NN =
+  HLIT, TBB = TB(1), VAR 0), phase 0, j 0, mode BUILD.
+- LSYM, by s: s ≤ 15 → lengths[fill] := s, fill += 1, mode LENS. s = 16 → fill = 0: reason 13 ("repeat with no first
+  length"), REJECT, before any bit is read; else last := lengths[fill − 1], pending := 3, READ 2. s = 17 → last := 0, pending
+  := 3, READ 3. Otherwise (18) → last := 0, pending := 11, READ 7. Each READ returns to LREP.
+- LREP: count := pending + acc; fill + count > total → reason 14 ("invalid bit length repeat"), REJECT; else pending := count,
+  mode REP. **S appends the whole repeat and then rejects; this step rejects before writing. The verdict and the reason are
+  the same, and nothing is written past `total`.**
+- REP: pending = 0 → mode LENS; else lengths[fill] := last, fill += 1, pending −= 1.
+**What would show this wrong:** a dynamic-header check made before all three fields are read; a repeat that writes past
+`total`; a CL cell left with a previous block's value.
