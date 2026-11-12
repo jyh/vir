@@ -350,3 +350,48 @@ decrease Φ: it is the last step. Safety's step obligation becomes "Φ strictly 
 **N(n, OUTMAX) = Φ(initStore) + 1 = 4096 · (2048 + 8n + OUTMAX) + 1.** Still a function of n and OUTMAX alone.
 **What would show this wrong:** a non-terminal step that leaves Φ unchanged; a terminal step from a state Safety's induction
 cannot reach.
+
+### S-18 (amendment 12, 2026-11-12, the 66th head). DECLARED before Correct.lean exists and before any correctness proof. The simulation relation for `CorrectStmt` (STATUS-vir 293 (c)), and the shape of the proof.
+**The shape: a FORWARD simulation plus determinism.** No backward simulation is proved.
+- (F-ok) `run lit b om = .ok o` ⇒ the iteration from `initStore` reaches a world in mode DONE with `outOf = o`.
+- (F-err) `run lit b om = .error r` ⇒ it reaches a world in mode REJECT.
+- (Det) `iterS` is a function, and DONE and REJECT are fixed points of the step (`step_fixed`, Dispatch.lean). So any two
+  terminal worlds reached from one start are EQUAL: run the shorter iteration to the longer one's length.
+- Both iffs of `CorrectStmt` follow. `run` is either `.ok` or `.error`. The forward lemma for that case gives a terminal world,
+  and (Det) says every terminal world the machine reaches is that one, so it has the right mode and output.
+**Reach.** `Reach p σ σ' := ∃ k, iterS p k σ = some σ'`. It is transitive: `iterS` composes.
+**The base relation `R b om lit f st`**, on the cell function f of a `World σ p (L0 n om) f` and the spec state st (the
+environment is always ⟨b, om⟩):
+1. `Inv b om lit f` (Safety's invariant, reused unchanged; it gives every range below);
+2. **the bit table is CORRECT**, not only bits: ∀ v < 256, i ≤ 7, `f (BT + 8v + i) = (v >>> i) &&& 1`. (Inv says only "0 or 1";
+   this is new, and it comes from TABLE's 2,048 steps with D4's `bitAt_eq`);
+3. **the position:** `8 · f cBY + f cBI = st.pos`;
+4. **the output:** `f cM = st.out.size`, and `f (2080 + n + i) = st.out[i]` for every i < m.
+**Codes are related by their DECODE BEHAVIOUR, not by structure equality.** `TblRel f tbb lens`: for 1 ≤ ℓ ≤ 15,
+count[ℓ] = `blCount lens ℓ`, first[ℓ] = `(nextCodes lens)[ℓ]`, and syms[offs[ℓ] + j] = `(symsOf lens ℓ)[j]` for j < count[ℓ].
+That is exactly what `decodeGo` reads of `assign lens` (its `lookup` at each ℓ). A spec `Code` is only ever `assign lens`
+(`code` returns it, and so does `fixedCodes false`), so the relation names the lengths, not the Code.
+**The triples.** Each spec action A gets a TOTAL-CORRECTNESS triple between an ENTRY configuration and an EXIT configuration
+of the machine, both at a mode boundary: if R holds at entry and `go A e st = .ok (a, st')`, the machine Reaches a world with
+R for st' in the exit configuration, with a in its named cell; if `go A e st = .error r`, it Reaches REJECT. Per action:
+| spec | entry | exit (result) |
+|---|---|---|
+| `bitsGo j i acc` | READ: k = j ≥ 1, acc, wt = 2^i, ret = r | mode r (acc). `bits 0` reads nothing: its callers (SYMD, DSTD) set acc := 0 and skip READ, so the triple has j ≥ 1 |
+| `decodeGo C (16 − ℓ) ℓ v` with C = `assign lens` | DECODE: X+0 = ℓ, X+1 = v, X+2 = TGT, X+3 = ret, `TblRel` at TB(TGT) | mode ret (X+4) |
+| `code lens mode` | BUILD phase 0, j 0, cells [SB, SB + NN) = lens, VAR ↔ mode, CHK = 1 | S-10's end successor, `TblRel` at TBB |
+| `pure (assign lens)` (fixedCodes false) | the same, CHK = 0 | the same |
+| `readCL ORDER hclen cl` (with the S-14 zero-fill to 19) | CLREAD, fill = 19 − (remaining), CL cells | CLREAD at fill = 19 |
+| `lensLoop CL total fuel lens` | LENS, fill = lens.size, lengths [0, fill) = lens | LENS at fill = total |
+| `huffLoop L D fuel` | SYM, `TblRel` at TB(1) and TB(2) | the block end: DONE if cell 4 (BFINAL) = 1, else HDR |
+| `stored`, `dynamic`, fixed `huff` | SHDR, DHDR, FIXLENS (as HDRD dispatches) | the block end, as above |
+| `blocks lit fuel` | HDR | DONE |
+Every loop triple carries the fuel premise `8n − st.pos < fuel` (the `*_adequate` lemmas make the fuel at entry immaterial).
+The TOP: from `initStore`, TABLE's 2,048 steps Reach HDR with R for ⟨0, #[]⟩; then `blocks lit (8n + 1)` and `run_adequate`.
+**Where the machine has no spec state, and needs none:** mid-REP (S's `pushN` appends at once), mid-SCOPY (S's `extract`),
+mid-COPY (S's `copyBack` is per byte, so COPY matches it iteration by iteration), LREP's early REJECT (S appends, then rejects),
+and inside a build. The triples relate states only at entry and exit, so these are loop invariants inside a lemma, never R.
+**Reasons are NOT in the relation.** `CorrectStmt` asks `∃ r`; reason codes are compared to S8's separately (S-6), not here.
+**What would show this wrong:** a spec action whose triple cannot be stated between two mode boundaries; a REJECT the machine
+reaches where S accepts, or the reverse (a defect in the PROGRAM, raised as a finding before the proof routes round it); a need
+for reasons, or for a backward simulation, to get the iffs; a post-condition that needs a cell `Inv` does not fix; a `Code`
+reached by S that is not `assign` of the lengths the machine holds.
