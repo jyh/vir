@@ -18,3 +18,13 @@ import VIRC
 #print axioms VIRC.s2_run_noovf
 #print axioms VIRC.s2_noovf
 #print axioms VIRC.s2_refines_noovf
+#print axioms VIRC.ARel.inR
+#print axioms VIRC.ARelL.inR
+#print axioms VIRC.match_stepInR
+#print axioms VIRC.step_notlet
+#print axioms VIRC.src_steps
+#print axioms VIRC.ir_step_match
+#print axioms VIRC.ir_reach
+#print axioms VIRC.inRangeRun_of_src
+#print axioms VIRC.compile_noovf
+#print axioms VIRC.compile_refines_noovf
