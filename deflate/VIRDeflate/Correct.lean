@@ -1778,6 +1778,46 @@ theorem copy_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
     refine ⟨σ', f', (Reach.step hS).trans hR', hw', by simpa [copyBack] using hRel, hmo, fun c h0 h1 hc => ?_⟩
     rw [hk' c h0 h1 hc, kf c h0 h1 (by unfold copySet IN at hc; omega)]
 
+/-- `decode (assign lens)` from a decode request, in the triple form, with a frame predicate. -/
+theorem decode_Sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
+    (tg rt : Int) (Q Q' : (Int → Int) → St → Prop)
+    (hQ : ∀ f st f' st', Q f st → Keeps (L0 b.size om) f f' (decSet b.size om) → st.pos < st'.pos →
+      st.pos < 8 * b.size → Q' f' st') :
+    Sim b om p (decode (assign lens)) (fun f st => (DecReady b om lit f st tg rt ∧ TblRel b.size om f tg lens) ∧ Q f st)
+      (fun s f' st' => Rel b om lit f' st' ∧ f' cMODE = rt ∧ f' (X0 b.size om + 4) = s ∧ Q' f' st') := by
+  rintro σ f st hw ⟨⟨⟨hR, hm, hl, hv, ht, hrt⟩, hT⟩, hq⟩
+  rw [← ht] at hT
+  have := decode_sim (lit := lit) hb lens 15 1 0 σ f st (by norm_num) hw hR hm hl hv hT
+  refine ⟨fun s st' h => ?_, this.2⟩
+  obtain ⟨σ', f', hR', hw', hR'', hm', hs', hk'⟩ := this.1 s st' h
+  obtain ⟨hlt, hin⟩ := adv_decode (assign lens) ⟨b, om⟩ st s st' h
+  exact ⟨σ', f', hR', hw', hR'', by rw [hm', hrt], hs', hQ f st f' st' hq hk' hlt hin⟩
+
+theorem decSet_frame {n om : Nat} {f f' : Int → Int} {lensL lensD : Array Nat} (hk : Keeps (L0 n om) f f' (decSet n om))
+    (h1 : TblRel n om f 1 lensL) (h2 : TblRel n om f 2 lensD) :
+    TblRel n om f' 1 lensL ∧ TblRel n om f' 2 lensD ∧ ∀ c : Int, 3 ≤ c → c < 20 → f' c = f c :=
+  ⟨h1.keep (by norm_num) hk (decSet_out _ _), h2.keep (by norm_num) hk (decSet_out _ _),
+    fun c h0 h1 => hk c (by omega) (by unfold L0; omega) (by unfold decSet X0; omega)⟩
+
+theorem rdSet_frame {n om : Nat} {f f' : Int → Int} {lensL lensD : Array Nat} (hk : Keeps (L0 n om) f f' rdSet)
+    (h1 : TblRel n om f 1 lensL) (h2 : TblRel n om f 2 lensD) :
+    TblRel n om f' 1 lensL ∧ TblRel n om f' 2 lensD ∧ ∀ c : Int, 3 ≤ c → c < 20 → f' c = f c :=
+  ⟨h1.keep (by norm_num) hk (fun c h => by unfold rdSet at h; unfold tbase LB0; omega),
+    h2.keep (by norm_num) hk (fun c h => by unfold rdSet at h; unfold tbase LB0; omega),
+    fun c h0 h1 => hk c (by omega) (by unfold L0; omega) (by unfold rdSet; omega)⟩
+
+/-- The loop's frame: BFINAL, both tables, and the unread-bits bound. -/
+def HFrame (n om : Nat) (bf : Int) (lensL lensD : Array Nat) (F : Nat) (f : Int → Int) (st : St) : Prop :=
+  f cBF = bf ∧ TblRel n om f 1 lensL ∧ TblRel n om f 2 lensD ∧ 8 * n - st.pos < F
+
+theorem HFrame.of_keeps {n om : Nat} {bf : Int} {lensL lensD : Array Nat} {F : Nat} {f f' : Int → Int} {st st' : St}
+    {S : Int → Prop} (h : HFrame n om bf lensL lensD F f st) (hk : Keeps (L0 n om) f f' S)
+    (hS : ∀ c, S c → c ≠ 4 ∧ (c < tbase n om 0 ∨ X0 n om ≤ c)) (hp : st.pos ≤ st'.pos) :
+    HFrame n om bf lensL lensD F f' st' :=
+  ⟨by rw [hk cBF (by decide) (by unfold cBF L0; omega) (fun hc => (hS _ hc).1 rfl)]; exact h.1,
+    h.2.1.keep (by norm_num) hk (fun c hc => (hS c hc).2), h.2.2.1.keep (by norm_num) hk (fun c hc => (hS c hc).2),
+    by have := h.2.2.2; omega⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
