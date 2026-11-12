@@ -2717,6 +2717,43 @@ theorem allZero_iff (lens : Array Nat) (h15 : ∀ i, i < lens.size → lens.getD
       exact ⟨i, hi, rfl⟩
     exact hpos (h _ (by simp [Array.getD, hi]; omega) hv)
 
+/-! ## Congruences: S4's folds read only the counts of lengths 1 … 15 -/
+
+theorem ncode_congr {c d : Nat → Int} : ∀ k, (∀ i, i < k → c i = d i) → ncode c k = ncode d k
+  | 0, _ => rfl
+  | k + 1, h => by simp only [ncode]; rw [ncode_congr k (fun i hi => h i (by omega)), h k (by omega)]
+
+theorem leftF_congr {c d : Nat → Int} : ∀ k, (∀ i, 1 ≤ i → i ≤ k → c i = d i) → leftF c k = leftF d k
+  | 0, _ => rfl
+  | k + 1, h => by simp only [leftF]; rw [leftF_congr k (fun i h1 h2 => h i h1 (by omega)), h (k + 1) (by omega) le_rfl]
+
+theorem restS_congr {c d : Nat → Int} : ∀ k, (∀ i, 1 ≤ i → i ≤ k → c i = d i) → restS c k = restS d k
+  | 0, _ => rfl
+  | k + 1, h => by simp only [restS]; rw [restS_congr k (fun i h1 h2 => h i h1 (by omega)), h (k + 1) (by omega) le_rfl]
+
+theorem totS_congr {c d : Nat → Int} : ∀ k, (∀ i, 1 ≤ i → i ≤ k → c i = d i) → totS c k = totS d k
+  | 0, _ => rfl
+  | k + 1, h => by simp only [totS]; rw [totS_congr k (fun i h1 h2 => h i h1 (by omega)), h (k + 1) (by omega) le_rfl]
+
+/-- The offsets are prefix sums: the run of length l ends at or before the start of every longer one. -/
+theorem offOf_le {f : Int → Int} {tbb : Int} (hc : ∀ l : Nat, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbb + l)) :
+    ∀ l l' : Nat, 1 ≤ l → l < l' → l' ≤ 16 → offOf f tbb l + f (tbb + l) ≤ offOf f tbb l' := by
+  intro l l' h1 h2 h3
+  induction l' with
+  | zero => omega
+  | succ l' ih =>
+    simp only [offOf]
+    by_cases he : l = l'
+    · subst he; rw [if_neg (by omega)]
+    · rw [if_neg (by omega)]; have := ih (by omega) (by omega); have := hc l' (by omega) (by omega); linarith
+
+theorem offOf_nonneg {f : Int → Int} {tbb : Int} (hc : ∀ l : Nat, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbb + l)) :
+    ∀ l : Nat, l ≤ 16 → 0 ≤ offOf f tbb l := by
+  intro l hl
+  induction l with
+  | zero => simp [offOf]
+  | succ l ih => simp only [offOf]; split_ifs <;> [simpa using ih (by omega); linarith [ih (by omega), hc l (by omega) (by omega)]]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
