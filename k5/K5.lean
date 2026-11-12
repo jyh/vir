@@ -20,3 +20,4 @@ import K5.InRange
 import K5.MagStep
 import K5.MagBuild
 import K5.MagAll
+import K5.DeflateInRange
