@@ -831,3 +831,70 @@ theorem correct_of_fwd (hf : FwdStmt) : CorrectStmt := by
       exact herr r hr
 
 end VIRDeflate.Step
+
+namespace VIRDeflate.Step
+open VIRL1 VIRL2
+
+/-! ## The top: the forward statement from the three bodies -/
+
+theorem outOf_world {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) : outOf p b.size σ = st.out := by
+  have hm := hR.m
+  have hmr := hR.inv.1.m_rng
+  have hc3 := hw.cell cM (by decide) (by unfold cM L0; omega)
+  unfold outOf
+  simp only [hc3, Option.getD_some, hm, Int.toNat_natCast]
+  apply Array.ext
+  · simp
+  · intro i h1 h2
+    have hi : i < st.out.size := h2
+    have hc := hw.cell (IN + b.size + i) (by unfold IN; omega) (by unfold IN L0; push_cast; omega)
+    have ho := hR.out i hi
+    simp only [IN] at hc ho
+    have key : ((σ.H.lookup (p + (2080 + (b.size : Int) + (i : Int)))).getD 0).toNat = st.out[i] := by
+      rw [hc, Option.getD_some, ho]; simp [Array.getD, hi]
+    have e : ∀ l : List Nat, List.flatMap (fun a : Nat => [(a : Int)]) l = l.map (fun a : Nat => (a : Int)) := by
+      intro l; induction l with
+      | nil => rfl
+      | cons x l ih => simp [List.flatMap_cons, ih]
+    simp
+    rw [List.getElem_of_eq (e _), List.getElem_map, List.getElem_range]
+    exact key
+
+/-- **The forward statement from the three block bodies (S-18).** -/
+theorem fwd_of_bodies
+    (HS : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p stored mSHDR (fun _ => True))
+    (HF : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p (fixedBody lit) mFIXLENS (fun f => f cFILL = 0))
+    (HD : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p dynamic mDHDR (fun _ => True)) : FwdStmt := by
+  intro b om lit p hb
+  have hL : 0 < L0 b.size om := by unfold L0; omega
+  obtain ⟨σ, f, hR0, hw, hi, hm, hbits, h1, h2, h3⟩ := init_to_hdr b om lit p
+  have hR : Rel b om lit f ⟨0, #[]⟩ := ⟨hi, hbits, by rw [h1, h2]; rfl, by rw [h3]; rfl, fun i h => by simp at h⟩
+  have hsim := blocks_sim (lit := lit) (p := p) hb (HS b om lit p hb) (HF b om lit p hb) (HD b om lit p hb)
+    (8 * b.size + 1) σ f ⟨0, #[]⟩ hw ⟨hR, hm, by omega⟩
+  have hrun := run_adequate lit b om (8 * b.size + 1) (by omega)
+  constructor
+  · intro o ho
+    rw [hrun] at ho
+    rcases hg : go (blocks lit (8 * b.size + 1)) ⟨b, om⟩ ⟨0, #[]⟩ with r | ⟨u, s⟩
+    · rw [hg] at ho; simp at ho
+    · rw [hg] at ho
+      simp only [Except.ok.injEq] at ho
+      obtain ⟨σ', f', hR', hw', hRel, hmd⟩ := hsim.1 u s hg
+      obtain ⟨k, hk⟩ := hR0.trans hR'
+      exact ⟨k, σ', hk, by rw [modeOf_world hw' hL]; exact hmd, by rw [outOf_world hw' hRel, ho]⟩
+  · intro r hr
+    rw [hrun] at hr
+    rcases hg : go (blocks lit (8 * b.size + 1)) ⟨b, om⟩ ⟨0, #[]⟩ with r' | ⟨u, s⟩
+    · obtain ⟨σ', f', hR', hw', hmd⟩ := hsim.2 r' hg
+      obtain ⟨k, hk⟩ := hR0.trans hR'
+      exact ⟨k, σ', hk, by rw [modeOf_world hw' hL]; exact hmd⟩
+    · rw [hg] at hr; simp at hr
+
+theorem correct_of_bodies
+    (HS : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p stored mSHDR (fun _ => True))
+    (HF : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p (fixedBody lit) mFIXLENS (fun f => f cFILL = 0))
+    (HD : ∀ b om lit p, (∀ x ∈ b, x < 256) → BodySim b om lit p dynamic mDHDR (fun _ => True)) : CorrectStmt :=
+  correct_of_fwd (fwd_of_bodies HS HF HD)
+
+end VIRDeflate.Step
