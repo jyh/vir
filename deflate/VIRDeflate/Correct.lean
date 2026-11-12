@@ -2971,6 +2971,163 @@ theorem go_code (lens : Array Nat) (md : Mode) (e : Env) (st : St) :
     · rw [if_neg h, if_neg]; · rfl
       cases md <;> simp_all [exemptB]
 
+/-- **BUILD ↔ S4's `code`** (S-18's `code` row; CHK = 0 is the repaired fixed reading's `pure (assign lens)`). -/
+theorem build_tbl {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
+    (md : Mode) {σ : Store} {f : Int → Int} {st : St} (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st)
+    (hm : f cMODE = mBUILD) (hph : f cPHASE = 0) (hj : f cINDEX = 0) (hnn : f (X0 b.size om + 6) = lens.size)
+    (hsrc : ∀ i : Nat, i < lens.size → f (f (X0 b.size om + 5) + i) = lens.getD i 0)
+    (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15) :
+    (f cCHK ≠ 1 → ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Built b om lit lens f f' st) ∧
+    (f cCHK = 1 → f (X0 b.size om + 8) = varOf md →
+      (∀ C st', go (code lens md) ⟨b, om⟩ st = .ok (C, st') → C = assign lens ∧ st' = st ∧
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Built b om lit lens f f' st) ∧
+      (∀ r, go (code lens md) ⟨b, om⟩ st = .error r →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT)) := by
+  have hB := buildInv_of hR hm
+  obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+  have far := bset_far (n := b.size) (om := om) ⟨ht0, ht2⟩
+  set tbb := f (X0 b.size om + 7) with htbbd
+  have htL : tbb + 352 ≤ L0 b.size om := by rw [htb]; unfold tbase LB0 L0; omega
+  have htbig : 2417 ≤ tbb := by rw [htb]; unfold tbase LB0; omega
+  obtain ⟨σ2, f2, hR2, hw2, hRe2, hm2, hp2, hj2, hk2, hz2, hfacts⟩ := build_prefix (lit := lit) hb lens hw hR hm hph hj hnn hsrc
+  rw [← htbbd] at hk2 hz2 hfacts
+  obtain ⟨σ3, f3, hS3, hw3, hRe3, hm3, hk3, hc1, hc0⟩ := next_end_next hb hw2 hRe2 hm2 hp2 hj2
+  -- what f3 still holds
+  have kf3 : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset tbb c → c ≠ 12 → c ≠ 13 → (c < 2076 ∨ 2078 < c) → f3 c = f c :=
+    fun c h0 h1 a1 a2 a3 a4 => (hk3 c h0 h1 (by omega)).trans (hk2 c h0 h1 a1)
+  have kt3 : ∀ c : Int, tbb ≤ c → c < tbb + 64 → f3 c = f2 c := fun c h1 h2 => hk3 c (by omega) (by omega) (by omega)
+  have e7 : f3 (X0 b.size om + 7) = tbb := kf3 _ (by unfold X0; omega) (by unfold X0 L0; omega)
+    (fun h => (far _ (htb ▸ h)).2.2.1 rfl) (by unfold X0; omega) (by unfold X0; omega) (by unfold X0; omega)
+  have e5 : f3 (X0 b.size om + 5) = f (X0 b.size om + 5) := kf3 _ (by unfold X0; omega) (by unfold X0 L0; omega)
+    (fun h => (far _ (htb ▸ h)).1 rfl) (by unfold X0; omega) (by unfold X0; omega) (by unfold X0; omega)
+  have e6 : f3 (X0 b.size om + 6) = lens.size := by
+    rw [kf3 _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ (htb ▸ h)).2.1 rfl) (by unfold X0; omega)
+      (by unfold X0; omega) (by unfold X0; omega)]; exact hnn
+  have e8 : f3 (X0 b.size om + 8) = f (X0 b.size om + 8) := kf3 _ (by unfold X0; omega) (by unfold X0 L0; omega)
+    (fun h => (far _ (htb ▸ h)).2.2.2.1 rfl) (by unfold X0; omega) (by unfold X0; omega) (by unfold X0; omega)
+  have etg : f3 cTGT = f cTGT := kf3 _ (by decide) (by unfold cTGT L0; omega) (fun h => (far _ (htb ▸ h)).2.2.2.2.1 rfl)
+    (by decide) (by decide) (by decide)
+  have echk : f2 cCHK = f cCHK := hk2 _ (by decide) (by unfold cCHK L0; omega) (fun h => (far _ (htb ▸ h)).2.2.2.2.2.1 rfl)
+  have src3 : ∀ i : Nat, i < lens.size → f3 (f3 (X0 b.size om + 5) + i) = lens.getD i 0 := fun i hi => by
+    rw [e5, kf3 _ (by unfold LB0 at hsb0; omega) (by unfold LB0 L0 at *; omega)
+      (fun h => by have := (far _ (htb ▸ h)).2.2.2.2.2.2.2.2.2.2.2; unfold LB0 at *; omega)
+      (by unfold LB0 at hsb0; omega) (by unfold LB0 at hsb0; omega) (by unfold LB0 at hsb0; omega)]
+    exact hsrc i hi
+  have cnt3 : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f3 (tbb + l) = blCount lens l := fun l h1 h2 => by
+    rw [kt3 _ (by omega) (by omega)]; exact (hfacts l h1 h2).1
+  have fst3 : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f3 (tbb + 16 + l) = (nextCodes lens).getD l 0 := fun l h1 h2 => by
+    rw [kt3 _ (by omega) (by omega)]; exact (hfacts l h1 h2).2.1
+  have off3 : ∀ l : Nat, l ≤ 16 → offOf f3 tbb l = offOf f2 tbb l := fun l hl =>
+    offOf_congr' l (fun k h1 h2 => kt3 _ (by omega) (by omega))
+  have oo3 : ∀ l : Nat, 1 ≤ l → l ≤ 15 → f3 (tbb + 32 + l) = offOf f3 tbb l ∧ f3 (tbb + 48 + l) = offOf f3 tbb l :=
+    fun l h1 h2 => by
+      rw [kt3 _ (by omega) (by omega), kt3 _ (by omega) (by omega), off3 l (by omega)]
+      exact (hfacts l h1 h2).2.2
+  have hk03 : Keeps (L0 b.size om) f f3 (bset tbb) := fun c h0 h1 hc =>
+    (hk3 c h0 h1 (fun h => hc (by unfold bset; omega))).trans (hk2 c h0 h1 hc)
+  constructor
+  · intro hchk
+    obtain ⟨hp4, hj4⟩ := hc0 (by rw [echk]; exact hchk)
+    obtain ⟨σ', f', hR', hw', hb'⟩ := syms_finish (lit := lit) (f₀ := f) hb lens hw3 hRe3 hm3 hp4 hj4 (e7.trans htbbd)
+      etg e5 e6 src3 (by rw [e7]; exact cnt3) (by rw [e7]; exact fst3) (by rw [e7]; exact oo3) hk03
+    exact ⟨σ', f', hR2.trans ((Reach.step hS3).trans hR'), hw', hb'⟩
+  · intro hchk hvar
+    obtain ⟨hp3, hj3, hl3, hr3, ht3⟩ := hc1 (by rw [echk]; exact hchk)
+    set cf : Nat → Int := fun k => f3 (tbb + k) with hcfd
+    have hcfb : ∀ l, 1 ≤ l → l ≤ 15 → cf l = blCount lens l := cnt3
+    have hlf : leftF (fun l => (blCount lens l : Int)) 15 = leftF cf 15 :=
+      leftF_congr 15 (fun i h1 h2 => (hcfb i h1 h2).symm)
+    obtain ⟨hno, hso⟩ := left_run (lit := lit) hb tbb cf 15 σ3 f3 st 1 hw3 hRe3 hm3 hp3 hj3 le_rfl rfl e7
+      (fun k _ => rfl) (by rw [hl3]; rfl) (by rw [hr3]; rfl) (by rw [ht3]; rfl)
+    have hex := exempt_iff lens md h15 cf hcfb
+    -- after LEFT: the end check, and SYMS
+    have after : ∀ v, leftF cf 15 = some v →
+        ∃ σ4 f4, Reach p σ3 σ4 ∧ World σ4 p (L0 b.size om) f4 ∧ Rel b om lit f4 st ∧ f4 cMODE = mBUILD ∧
+          f4 cPHASE = 3 ∧ f4 cINDEX = 16 ∧ f4 cLEFT = v ∧
+          f4 (X0 b.size om + 8) = varOf md ∧ f4 (f4 (X0 b.size om + 7) + 1) = cf 1 ∧ f4 cREST = restS cf 15 ∧
+          f4 cTOTAL = totS cf 15 ∧ Keeps (L0 b.size om) f3 f4 (fun c => c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) := by
+      intro v hv
+      obtain ⟨σ4, f4, hR4, hw4, hRe4, hm4, hp4, hj4, hl4, hr4, ht4, hk4⟩ := hso v hv
+      have e74 : f4 (X0 b.size om + 7) = tbb := by
+        rw [hk4 _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega)]; exact e7
+      refine ⟨σ4, f4, hR4, hw4, hRe4, hm4, hp4, hj4, hl4, ?_, ?_, hr4, ht4, hk4⟩
+      · rw [hk4 _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega), e8, hvar]
+      · rw [e74, hk4 _ (by omega) (by omega) (by omega)]; simp [hcfd]
+    constructor
+    · intro C st' h
+      rw [go_code, hlf] at h
+      rcases hv : leftF cf 15 with _ | v
+      · rw [hv] at h; simp at h
+      · rw [hv] at h
+        dsimp only at h
+        by_cases hc : 0 < v ∧ exemptB lens md = false
+        · rw [if_pos hc] at h; simp at h
+        · rw [if_neg hc] at h
+          simp only [Except.ok.injEq, Prod.mk.injEq] at h
+          obtain ⟨rfl, rfl⟩ := h
+          refine ⟨rfl, rfl, ?_⟩
+          obtain ⟨σ4, f4, hR4, hw4, hRe4, hm4, hp4, hj4, hl4, hv4, hc4, hr4, ht4, hk4⟩ := after v hv
+          obtain ⟨σ5, f5, hS5, hw5, -, hgo5⟩ := left_end_next hb hw4 hRe4 hm4 hp4 hj4
+          have hcond : ¬ (0 < f4 cLEFT ∧ bExempt (f4 (X0 b.size om + 8)) (f4 (f4 (X0 b.size om + 7) + 1)) (f4 cREST)
+              (f4 cTOTAL) ≠ 1) := by
+            rw [hl4, hv4, hc4, hr4, ht4]
+            rintro ⟨h1, h2⟩
+            apply hc
+            refine ⟨h1, ?_⟩
+            cases hE : exemptB lens md
+            · rfl
+            · exact absurd (hex.mp hE) h2
+          obtain ⟨hRe5, hm5, hp5, hj5, hk5⟩ := hgo5 hcond
+          have tr : ∀ c : Int, 0 ≤ c → c < L0 b.size om → c ≠ 12 → c ≠ 13 → (c < 2076 ∨ 2078 < c) → f5 c = f3 c :=
+            fun c h0 h1 a1 a2 a3 => (hk5 c h0 h1 (by omega)).trans (hk4 c h0 h1 (by omega))
+          have e75 : f5 (X0 b.size om + 7) = tbb := by
+            rw [tr _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega) (by unfold X0; omega)
+              (by unfold X0; omega)]; exact e7
+          have hk05 : Keeps (L0 b.size om) f f5 (bset tbb) := fun c h0 h1 hc =>
+            (tr c h0 h1 (by unfold bset at hc; omega) (by unfold bset at hc; omega) (by unfold bset at hc; omega)).trans
+              (hk03 c h0 h1 hc)
+          obtain ⟨σ', f', hR', hw', hb'⟩ := syms_finish (lit := lit) (f₀ := f) hb lens hw5 hRe5 hm5 hp5 hj5
+            (e75.trans htbbd)
+            (by rw [tr _ (by decide) (by unfold cTGT L0; omega) (by decide) (by decide) (by decide)]; exact etg)
+            (by rw [tr _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega) (by unfold X0; omega)
+              (by unfold X0; omega)]; exact e5)
+            (by rw [tr _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega) (by unfold X0; omega)
+              (by unfold X0; omega)]; exact e6)
+            (fun i hi => by
+              have e55 : f5 (X0 b.size om + 5) = f3 (X0 b.size om + 5) := tr _ (by unfold X0; omega)
+                (by unfold X0 L0; omega) (by unfold X0; omega) (by unfold X0; omega) (by unfold X0; omega)
+              rw [e55, e5, tr _ (by unfold LB0 at hsb0; omega) (by unfold LB0 L0 at *; omega) (by unfold LB0 at hsb0; omega)
+                (by unfold LB0 at hsb0; omega) (by unfold LB0 at hsb0; omega), ← e5]
+              exact src3 i hi)
+            (fun l h1 h2 => by rw [e75, tr _ (by omega) (by omega) (by omega) (by omega) (by omega)]; exact cnt3 l h1 h2)
+            (fun l h1 h2 => by rw [e75, tr _ (by omega) (by omega) (by omega) (by omega) (by omega)]; exact fst3 l h1 h2)
+            (fun l h1 h2 => by
+              rw [e75, tr _ (by omega) (by omega) (by omega) (by omega) (by omega),
+                tr (tbb + 48 + l) (by omega) (by omega) (by omega) (by omega) (by omega),
+                offOf_congr' (f := f5) (g := f3) l (fun k a b => tr _ (by omega) (by omega) (by omega) (by omega) (by omega))]
+              exact oo3 l h1 h2)
+            hk05
+          exact ⟨σ', f', hR2.trans ((Reach.step hS3).trans (hR4.trans ((Reach.step hS5).trans hR'))), hw', hb'⟩
+    · intro r h
+      rw [go_code, hlf] at h
+      rcases hv : leftF cf 15 with _ | v
+      · obtain ⟨σ', f', hR', hw', hm'⟩ := hno hv
+        exact ⟨σ', f', hR2.trans ((Reach.step hS3).trans hR'), hw', hm'⟩
+      · rw [hv] at h
+        dsimp only at h
+        by_cases hc : 0 < v ∧ exemptB lens md = false
+        · obtain ⟨σ4, f4, hR4, hw4, hRe4, hm4, hp4, hj4, hl4, hv4, hc4, hr4, ht4, hk4⟩ := after v hv
+          obtain ⟨σ5, f5, hS5, hw5, hrej5, -⟩ := left_end_next hb hw4 hRe4 hm4 hp4 hj4
+          have hcond : 0 < f4 cLEFT ∧ bExempt (f4 (X0 b.size om + 8)) (f4 (f4 (X0 b.size om + 7) + 1)) (f4 cREST)
+              (f4 cTOTAL) ≠ 1 := by
+            rw [hl4, hv4, hc4, hr4, ht4]
+            refine ⟨hc.1, fun he => ?_⟩
+            have := hex.mpr he
+            change exemptB lens md = true at this
+            rw [hc.2] at this; exact absurd this (by decide)
+          exact ⟨σ5, f5, hR2.trans ((Reach.step hS3).trans (hR4.trans (Reach.step hS5))), hw5, hrej5 hcond⟩
+        · rw [if_neg hc] at h; simp at h
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
