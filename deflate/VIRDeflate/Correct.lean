@@ -910,6 +910,102 @@ theorem snlen_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
   rw [ag 0 (by norm_num) (by omega), hgdef]
   split_ifs <;> simp [mREJECT, mSCOPY]
 
+theorem push_extract (o b : Array Nat) (q k : Nat) (hq : q < b.size) :
+    o ++ b.extract q (q + (k + 1)) = (o.push (b.getD q 0)) ++ b.extract (q + 1) (q + 1 + k) := by
+  apply Array.ext'
+  simp only [Array.toList_append, Array.toList_push, Array.toList_extract, List.extract_eq_drop_take]
+  rw [show q + (k + 1) - q = k + 1 by omega, show q + 1 + k - (q + 1) = k by omega,
+    List.drop_eq_getElem_cons (by simpa using hq), List.take_succ_cons]
+  simp [Array.getD, hq]
+
+/-- **SCOPY, one byte.** -/
+theorem scopy_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mSCOPY)
+    (hk : f cPEND ≠ 0) (hin : st.pos / 8 < b.size) (hom : st.out.size < om) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧
+      Rel b om lit f1 ⟨st.pos + 8, st.out.push (b.getD (st.pos / 8) 0)⟩ ∧ f1 cMODE = mSCOPY ∧
+      f1 cPEND = f cPEND - 1 ∧ f1 cBF = f cBF := by
+  have hL : 2080 + b.size + om ≤ L0 b.size om := by unfold L0; omega
+  have hi := hR.inv
+  have hbi0 : f cBI = 0 := hi.2.align (Or.inr (Or.inr hm))
+  have hpos := hR.pos
+  have hmm := hR.m
+  have hbr := hi.1.by_rng
+  have hq : (st.pos / 8 : Nat) = (f cBY).toNat := by omega
+  obtain ⟨hv, hv8⟩ := hi.1.byte hb (f cBY).toNat (by omega)
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (scopy_byte hw (f cBY).toNat b.size st.out.size om (f cPEND) ((b[(f cBY).toNat]'(by omega) : Nat) : Int) hL rfl hk (by omega)
+      hi.1.n_eq (by omega) hv (by rw [hmm]) hom)
+  set x : Int := ((b[(f cBY).toNat]'(by omega) : Nat) : Int) with hx
+  set g := Function.update (Function.update (Function.update (Function.update f (2080 + b.size + st.out.size) x) 1
+    ((f cBY).toNat + 1)) 3 (st.out.size + 1)) 5 (f cPEND - 1) with hgdef
+  have hg : World ⟨(((σ.H.insert (p + (2080 + b.size + st.out.size)) x).insert (p + 1) ((f cBY).toNat + 1)).insert (p + 3)
+      (st.out.size + 1)).insert (p + 5) (f cPEND - 1), σ.R⟩ p (L0 b.size om) g :=
+    (((hw.store (i := 2080 + b.size + st.out.size) (by omega) (by omega)).store (i := 1) (by norm_num) (by omega)).store
+      (i := 3) (by norm_num) (by omega)).store (i := 5) (by norm_num) (by omega)
+  obtain ⟨f1, hw1, hi1, ag⟩ := step_to hb hw hi (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+  have gf : ∀ c : Int, c ≠ 2080 + b.size + st.out.size → c ≠ 1 → c ≠ 3 → c ≠ 5 → g c = f c := fun c a b' c' d => by
+    rw [hgdef, upd_eq _ _ d, upd_eq _ _ c', upd_eq _ _ b', upd_eq _ _ a]
+  have kf : ∀ c : Int, 0 ≤ c → c < L0 b.size om → c ≠ 2080 + b.size + st.out.size → c ≠ 1 → c ≠ 3 → c ≠ 5 →
+      f1 c = f c := fun c h0 h1 a b' c' d => (ag c h0 h1).trans (gf c a b' c' d)
+  have e1 : f1 cBY = (f cBY).toNat + 1 := by rw [ag _ (by decide) (by unfold cBY; omega)]; simp [hgdef, cBY]
+  have eBI : f1 cBI = 0 := by
+    rw [kf _ (by decide) (by unfold cBI; omega) (by unfold cBI; omega) (by decide) (by decide) (by decide)]; exact hbi0
+  have e3 : f1 cM = st.out.size + 1 := by rw [ag _ (by decide) (by unfold cM; omega)]; simp [hgdef, cM]
+  have e5 : f1 cPEND = f cPEND - 1 := by rw [ag _ (by decide) (by unfold cPEND; omega)]; simp [hgdef, cPEND]
+  have eo : f1 (2080 + b.size + st.out.size) = x := by
+    rw [ag _ (by omega) (by omega)]; simp only [hgdef, Function.update_apply]
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]; simp
+  refine ⟨_, f1, hS, hw1, ⟨hi1, ?_, ?_, ?_, ?_⟩, ?_, e5, ?_⟩
+  · intro v i hv' hi7 hlt
+    rw [kf _ (by unfold BT; omega) (by unfold BT L0; omega) (by unfold BT; omega) (by unfold BT; omega)
+      (by unfold BT; omega) (by unfold BT; omega)]
+    exact hR.bits v i hv' hi7 hlt
+  · rw [e1, eBI]; simp only; omega
+  · rw [e3]; simp
+  · intro i hi2
+    simp only [Array.size_push] at hi2 ⊢
+    by_cases hlt : i < st.out.size
+    · rw [kf _ (by unfold IN; omega) (by unfold IN L0; push_cast; omega) (by unfold IN; omega) (by unfold IN; omega)
+        (by unfold IN; omega) (by unfold IN; omega), hR.out i hlt]
+      simp [Array.getD, hlt, Array.getElem_push, show i < st.out.size + 1 by omega]
+    · have hie : i = st.out.size := by omega
+      subst hie
+      simp only [IN]; rw [eo, hx]
+      simp [Array.getD, hq, show (f cBY).toNat < b.size by omega]
+  · rw [kf _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega) (by decide) (by decide) (by decide)]; exact hm
+  · rw [kf _ (by decide) (by unfold cBF; omega) (by unfold cBF; omega) (by decide) (by decide) (by decide)]
+
+/-- **SCOPY to the block's end:** k bytes are copied, as S3's one `extract`, and the block ends by BFINAL. -/
+theorem scopy_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int) :
+    ∀ (k : Nat) (σ : Store) (f : Int → Int) (st : St), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mSCOPY → f cPEND = k → f cBF = bf → st.pos / 8 + k ≤ b.size → st.out.size + k ≤ om →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧
+        Rel b om lit f' ⟨st.pos + 8 * k, st.out ++ b.extract (st.pos / 8) (st.pos / 8 + k)⟩ ∧ f' cMODE = endMode bf := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro k
+  induction k with
+  | zero =>
+    intro σ f st hw hR hm hk hbf _ _
+    have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide) (scopy_end hw hL bf (by simpa using hk) hbf)
+    have hg := hw.store (i := 0) (v := if bf = 1 then 98 else 1) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, _, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (fun c _ _ hc => upd_eq _ _ (show c ≠ 0 by omega)) (fun c hc => by unfold ctl; omega)
+    have e : st.out ++ b.extract (st.pos / 8) (st.pos / 8) = st.out := by apply Array.ext'; simp
+    refine ⟨_, f1, Reach.step hS, hw1, by simp only [Nat.mul_zero, Nat.add_zero, e]; exact hR1, ?_⟩
+    simp only [cMODE]; rw [ag 0 (by norm_num) (by omega)]; simp [endMode, mDONE, mHDR]
+  | succ k ih =>
+    intro σ f st hw hR hm hk hbf hin hom
+    obtain ⟨σ1, f1, hS, hw1, hR1, hm1, hk1, hbf1⟩ := scopy_next hb hw hR hm (by rw [hk]; omega) (by omega) (by omega)
+    obtain ⟨σ', f', hR', hw', hRel, hmo⟩ := ih σ1 f1 _ hw1 hR1 hm1 (by rw [hk1, hk]; push_cast; ring) (by rw [hbf1, hbf])
+      (by simp only; omega) (by simp only [Array.size_push]; omega)
+    refine ⟨σ', f', (Reach.step hS).trans hR', hw', ?_, hmo⟩
+    have e1 : (st.pos + 8) / 8 = st.pos / 8 + 1 := by omega
+    simp only [e1] at hRel
+    rw [push_extract st.out b (st.pos / 8) k (by omega)]
+    convert hRel using 2
+    omega
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
