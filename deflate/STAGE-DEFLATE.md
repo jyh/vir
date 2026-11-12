@@ -238,7 +238,11 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     `Nbound n om = 4096 · (2048 + 8n + om)`. Every successor pair was checked against these definitions before the build
     (BUILD's phase hand-offs drop LOC by exactly 1; FIXLENS→BUILD, CLREAD→CL build, LENS→L build, LREP→REP each drop it);
     LEFT's end at (4, 0) and LENS' end at nn = HLIT were read from their lemmas, not assumed. Max LOC ≈ 1,062 < 4096.
-    The invariant `Inv` is written conjunct by conjunct as S-16 lists them, as the proofs reach each premise. The audit file is regenerated from VIRDeflate.lean's imports: the
+    The invariant `Inv` is written conjunct by conjunct as S-16 lists them, as the proofs reach each premise.
+  - **Safety's proof begins, `VIRDeflate/Safety.lean` (df-104).** The per-mode form, fixed on HDR: `safe_hdr` gives the
+    mode's `stepS`, its result store as a World over an updated cell function (`World.req` for a READ request's five stores),
+    and `Φ` strictly lower (`Φ_hdr`, by the `phisimp` evaluation of Measure.lean's definitions). df-103 (EXIT=1): the lemma
+    was first named `World.reqH`, and inside it `reqH` resolved to the lemma itself; renamed. No mutant yet for this file. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
