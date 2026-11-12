@@ -3229,6 +3229,77 @@ theorem fixlens_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ 
     refine ⟨σ', f', (Reach.step hS).trans hR', hw', hRe', hm', h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, ?_, hl'⟩
     rw [hbf, hk1 _ (by decide) (by unfold cBF; omega) (by unfold cBF; omega)]
 
+/-! ## BUILD's end, by target (S-10/S-11) -/
+
+theorem build_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mBUILD)
+    (hph : f cPHASE = 4) (hj : f cINDEX = f (X0 b.size om + 6)) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧
+      (f cTGT = 0 → f1 cMODE = mLENS ∧ Keeps (L0 b.size om) f f1 (fun c => c = 0)) ∧
+      (f cTGT = 2 → f1 cMODE = mSYM ∧ Keeps (L0 b.size om) f f1 (fun c => c = 0)) ∧
+      (f cTGT = 1 → f1 cMODE = mBUILD ∧ f1 cTGT = 2 ∧ f1 (X0 b.size om + 5) = LB0 b.size om + f cHLIT ∧
+        f1 (X0 b.size om + 6) = f cHDIST ∧ f1 (X0 b.size om + 7) = tbase b.size om 2 ∧
+        f1 (X0 b.size om + 8) = (if f cDYN = 1 then 2 else 0) ∧ f1 cPHASE = 0 ∧ f1 cINDEX = 0 ∧
+        Keeps (L0 b.size om) f f1 (fun c => c = 12 ∨ c = 13 ∨ c = 2074 ∨ (X0 b.size om + 5 ≤ c ∧ c ≤ X0 b.size om + 8))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  have hB := buildInv_of hR hm
+  obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+  have hjn : ¬ f cINDEX < f (X0 b.size om + 6) := by omega
+  rcases (show f cTGT = 0 ∨ f cTGT = 1 ∨ f cTGT = 2 by omega) with h0 | h1 | h2
+  · have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_syms_end_cl hw hL _ (X0 b.size om) _ _ _ hph rfl hR.inv.1.x_eq rfl rfl rfl (by unfold X0; omega) hXL hjn h0)
+    have hg := hw.store (i := 0) (v := 12) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0) (fun c _ _ hc => upd_eq _ _ hc) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, hR1, fun _ => ⟨?_, hk1⟩, fun h => by omega, fun h => by omega⟩
+    rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [cMODE, mLENS]
+  · have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_syms_end_l hw hL _ (X0 b.size om) _ _ _ (f cHLIT) (f cHDIST) b.size om (f cDYN) hph rfl hR.inv.1.x_eq rfl rfl rfl
+        (by unfold X0; omega) hXL hjn h1 rfl rfl hR.inv.1.n_eq hR.inv.1.om_eq rfl)
+    have hg := ((((((hw.store (i := 2074) (v := 2) (by norm_num) (by omega)).store (i := X0 b.size om + 5)
+      (v := 2080 + b.size + om + f cHLIT) (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 6)
+      (v := f cHDIST) (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 7)
+      (v := 2080 + b.size + om + 1041) (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 8)
+      (v := if f cDYN = 1 then 2 else 0) (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := 12) (v := 0)
+      (by norm_num) (by omega)).store (i := 13) (v := 0) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 12 ∨ c = 13 ∨ c = 2074 ∨ (X0 b.size om + 5 ≤ c ∧ c ≤ X0 b.size om + 8))
+      (fun c _ _ hc => by
+        rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega),
+          upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+      (fun c hc => by unfold ctl IN X0 at *; omega)
+    refine ⟨_, f1, hS, hw1, hR1, fun h => by omega, fun h => by omega, fun _ => ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, hk1⟩⟩
+    · rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE X0; omega)]; exact hm
+    · show f1 (2074) = 2
+      rw [ag (2074) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (2074 : Int) ≠ 13 by (try unfold X0); omega), upd_eq _ _ (show (2074 : Int) ≠ 12 by (try unfold X0); omega), upd_eq _ _ (show (2074 : Int) ≠ X0 b.size om + 8 by (try unfold X0); omega), upd_eq _ _ (show (2074 : Int) ≠ X0 b.size om + 7 by (try unfold X0); omega), upd_eq _ _ (show (2074 : Int) ≠ X0 b.size om + 6 by (try unfold X0); omega), upd_eq _ _ (show (2074 : Int) ≠ X0 b.size om + 5 by (try unfold X0); omega), Function.update_self]
+    · show f1 (X0 b.size om + 5) = LB0 b.size om + f cHLIT
+      rw [ag (X0 b.size om + 5) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (X0 b.size om + 5 : Int) ≠ 13 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 5 : Int) ≠ 12 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 5 : Int) ≠ X0 b.size om + 8 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 5 : Int) ≠ X0 b.size om + 7 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 5 : Int) ≠ X0 b.size om + 6 by (try unfold X0); omega), Function.update_self]; unfold LB0; ring
+    · show f1 (X0 b.size om + 6) = f cHDIST
+      rw [ag (X0 b.size om + 6) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (X0 b.size om + 6 : Int) ≠ 13 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 6 : Int) ≠ 12 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 6 : Int) ≠ X0 b.size om + 8 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 6 : Int) ≠ X0 b.size om + 7 by (try unfold X0); omega), Function.update_self]
+    · show f1 (X0 b.size om + 7) = tbase b.size om 2
+      rw [ag (X0 b.size om + 7) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (X0 b.size om + 7 : Int) ≠ 13 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 7 : Int) ≠ 12 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 7 : Int) ≠ X0 b.size om + 8 by (try unfold X0); omega), Function.update_self]; unfold tbase LB0; ring
+    · show f1 (X0 b.size om + 8) = (if f cDYN = 1 then 2 else 0)
+      rw [ag (X0 b.size om + 8) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (X0 b.size om + 8 : Int) ≠ 13 by (try unfold X0); omega), upd_eq _ _ (show (X0 b.size om + 8 : Int) ≠ 12 by (try unfold X0); omega), Function.update_self]
+    · show f1 (12) = 0
+      rw [ag (12) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [upd_eq _ _ (show (12 : Int) ≠ 13 by (try unfold X0); omega), Function.update_self]
+    · show f1 (13) = 0
+      rw [ag (13) (by (try unfold X0); omega) (by (try unfold X0); unfold L0; omega)]
+      rw [Function.update_self]
+  · have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_syms_end_d hw hL _ (X0 b.size om) _ _ _ hph rfl hR.inv.1.x_eq rfl rfl rfl (by unfold X0; omega) hXL hjn h2)
+    have hg := hw.store (i := 0) (v := 13) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0) (fun c _ _ hc => upd_eq _ _ hc) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, hR1, fun h => by omega, fun _ => ⟨?_, hk1⟩, fun h => by omega⟩
+    rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [cMODE, mSYM]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
