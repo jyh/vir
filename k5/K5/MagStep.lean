@@ -268,4 +268,41 @@ theorem Mag_step_dh4 {b : Array Nat} {om : Nat} {σ σ' : Store} {p : Int} {f f'
   split_ifs at hSe
   all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frame)
 
+theorem Mag_step_clput {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mCLPUT)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hc := hi.2.cur
+  rw [hm] at hc
+  simp only [facts, show mCLPUT ≠ mSNLEN by decide, show mCLPUT ≠ mSCOPY by decide, show mCLPUT ≠ mFIXLENS by decide,
+    show mCLPUT ≠ mBUILD by decide, show mCLPUT ≠ mCLREAD by decide, if_false, if_true] at hc
+  obtain ⟨hf0, hf19, _, _, _, _⟩ := hc
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hor := order_cell hi hf0 hf19
+  have hmem : (mCLPUT, clputN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mCLPUT, clputN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+    (clput_step hw (by unfold L0; omega) _ _ _ _ _ _ rfl hi.1.x_eq hi.1.n_eq hi.1.om_eq rfl hf0 hf19 (by unfold X0; omega)
+      (by rw [hL0]; unfold X0; omega) rfl (by omega) (by rw [hL0]; omega))
+  refine Mag_pinned hw hg hS hSe hw' (by mag_mode) ?_
+  intro t l a1 a2 a3 a4
+  simp (disch := (simp only [tbase, LB0, X0] at *; omega)) only [Finmap.lookup_insert_of_ne]
+
+theorem Mag_step_table {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mTABLE)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  obtain ⟨h0, h1, h2, h3⟩ := hi.1.tb_rng hm
+  have hSe := stepS_table hw (by unfold L0; omega) (f cTB).toNat (f cTI).toNat hm (by omega) (by omega) (by omega) (by omega)
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hm0 : σ.H.lookup (p + 0) = some mTABLE := by rw [← hm]; exact hw.cell 0 (by decide) (by rw [hL0]; omega)
+  split_ifs at hSe
+  · refine Mag_pinned hw hg hS hSe hw' (by mag_mode) ?_
+    intro t l a1 a2 a3 a4
+    simp (disch := (simp only [tbase, LB0, X0] at *; omega)) only [tblH, Finmap.lookup_insert_of_ne]
+  · refine Mag_pinned hw hg hS hSe hw' ?_ ?_
+    · intro m e
+      simp (disch := omega) only [tblH, cMODE, Finmap.lookup_insert_of_ne] at e
+      rw [hm0] at e; cases e; simp [mTABLE, mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP]
+    · intro t l a1 a2 a3 a4
+      simp (disch := (simp only [tbase, LB0, X0] at *; omega)) only [tblH, Finmap.lookup_insert_of_ne]
+
 end K5
