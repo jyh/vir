@@ -11,3 +11,10 @@ import VIRC
 #print axioms VIRC.compile_refines
 #print axioms VIRC.s2_converse
 #print axioms VIRC.compile_converse
+#print axioms VIRC.stepW_noovf
+#print axioms VIRC.opd_noovf
+#print axioms VIRC.opdL_noovf
+#print axioms VIRC.step_noovf
+#print axioms VIRC.s2_run_noovf
+#print axioms VIRC.s2_noovf
+#print axioms VIRC.s2_refines_noovf
