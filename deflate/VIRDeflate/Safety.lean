@@ -3584,4 +3584,293 @@ theorem LOC_build_lt {f g : Int → Int} (hm : f cMODE = mBUILD) (hgm : g cMODE 
     (hlt : bRem (g cPHASE) (g cINDEX) (f (f cX + 6)) < bRem (f cPHASE) (f cINDEX) (f (f cX + 6))) : LOC g < LOC f := by
   rw [LOC_build hm, LOC_build hgm, eT, eHL, eHD, eX, e6]; omega
 
+/-! ## BUILD: the phases -/
+
+/-- `buildInv`'s static part carries to g when the target, the source, nn, the table base, the header and fill are
+unchanged (and table 1 stays sane when the target is 2). -/
+theorem bstatic {n om : Nat} {f g : Int → Int} (hb : buildInv n om f) (e74 : g cTGT = f cTGT)
+    (e5 : g (X0 n om + 5) = f (X0 n om + 5)) (e6 : g (X0 n om + 6) = f (X0 n om + 6))
+    (e7 : g (X0 n om + 7) = f (X0 n om + 7)) (eHL : g cHLIT = f cHLIT) (eHD : g cHDIST = f cHDIST)
+    (eF : g cFILL = f cFILL) (hs1 : f cTGT = 2 → sane n om f 1 → sane n om g 1) :
+    0 ≤ g cTGT ∧ g cTGT ≤ 2 ∧ g (X0 n om + 7) = tbase n om (g cTGT) ∧
+    ((g cTGT = 0 ∧ g (X0 n om + 5) = LB0 n om + 318 ∧ g (X0 n om + 6) = 19 ∧ g cHLIT ≤ 286 ∧ g cHDIST ≤ 30 ∧
+        g cFILL = 0) ∨
+     (g cTGT = 1 ∧ g (X0 n om + 5) = LB0 n om ∧ g (X0 n om + 6) = g cHLIT ∧ g cHLIT + g cHDIST ≤ 318 ∧ 0 ≤ g cHDIST) ∨
+     (g cTGT = 2 ∧ g (X0 n om + 5) = LB0 n om + g cHLIT ∧ g (X0 n om + 6) = g cHDIST ∧ g cHLIT + g cHDIST ≤ 318 ∧
+       0 ≤ g cHDIST ∧ sane n om g 1)) := by
+  obtain ⟨ht0, ht2, htb, htg, -⟩ := hb
+  rw [e74, e5, e6, e7, eHL, eHD, eF]
+  refine ⟨ht0, ht2, htb, ?_⟩
+  rcases htg with h | h | ⟨a, b', c, d, e, s⟩
+  · exact Or.inl h
+  · exact Or.inr (Or.inl h)
+  · exact Or.inr (Or.inr ⟨a, b', c, d, e, hs1 a s⟩)
+
+/-- A table stays sane when its 48 count/first/offset cells are unchanged. -/
+theorem sane_tab {n om : Nat} {f g : Int → Int} {t : Int}
+    (e : ∀ d : Int, tbase n om t ≤ d → d < tbase n om t + 48 → g d = f d) (hs : sane n om f t) : sane n om g t := by
+  intro l h1 h2
+  rw [e _ (by omega) (by omega), e _ (by omega) (by omega)]; exact hs l h1 h2
+
+theorem bRem_lt0 (j nn : Int) : bRem 0 (j + 1) nn < bRem 0 j nn := by unfold bRem; split_ifs <;> omega
+theorem bRem_lt1 (j nn : Int) : bRem 1 (j + 1) nn < bRem 1 j nn := by unfold bRem; split_ifs <;> omega
+theorem bRem_lt2 (j nn : Int) : bRem 2 (j + 1) nn < bRem 2 j nn := by unfold bRem; split_ifs <;> omega
+theorem bRem_lt3 (j nn : Int) : bRem 3 (j + 1) nn < bRem 3 j nn := by unfold bRem; split_ifs <;> omega
+theorem bRem_lt4 (j nn : Int) : bRem 4 (j + 1) nn < bRem 4 j nn := by unfold bRem; split_ifs <;> omega
+
+set_option maxHeartbeats 2000000 in
+theorem safeB_zero {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mBUILD) (hph : f cPHASE = 0) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hX : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+  have hLB : LB0 b.size om = 2080 + b.size + om := rfl
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mBUILD, buildN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mBUILD, buildN) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hr := hi.1.hdr_rng
+  have hx := hi.1.x_eq
+  have hb : buildInv b.size om f := by have h := hi.2.cur; rw [hm, facts_build] at h; exact h
+  obtain ⟨ht0, ht2, htb, hsb0, hnn0, hsbn, hnn288⟩ := bp hb hr
+  have hTB : f (X0 b.size om + 7) = LB0 b.size om + 337 + 352 * f cTGT := htb
+  have hb' := hb
+  obtain ⟨-, -, -, -, h0, -, -, -, -⟩ := hb'
+  obtain ⟨hj0, hj16, hz⟩ := h0 hph
+  by_cases hlt : f cINDEX < 16
+  · have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+      (build_zero_cell hw hL (f cINDEX) (X0 b.size om) (f (X0 b.size om + 7)) hph rfl hx rfl (by omega) (by omega) hj0 hlt
+        (by omega) (by omega))
+    set g := Function.update (Function.update f (f (X0 b.size om + 7) + f cINDEX) 0) 13 (f cINDEX + 1) with hg
+    have u : ∀ d : Int, d ≠ f (X0 b.size om + 7) + f cINDEX → d ≠ 13 → g d = f d := by
+      intro d a1 a2; rw [hg, upd_eq _ _ a2, upd_eq _ _ a1]
+    have uc : ∀ d : Int, d < 2080 → d ≠ 13 → g d = f d := fun d a1 a2 => u d (by omega) a2
+    have uX : ∀ k : Int, 0 ≤ k → g (X0 b.size om + k) = f (X0 b.size om + k) := fun k hk => u _ (by omega) (by omega)
+    have hgM : g cMODE = mBUILD := by rw [uc _ (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    have e74 : g cTGT = f cTGT := uc _ (by unfold cTGT; omega) (by unfold cTGT; omega)
+    have eHL : g cHLIT = f cHLIT := uc _ (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+    have eHD : g cHDIST = f cHDIST := uc _ (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+    have eF : g cFILL = f cFILL := uc _ (by unfold cFILL; omega) (by unfold cFILL; omega)
+    have eX : g cX = f cX := uc _ (by unfold cX; omega) (by unfold cX; omega)
+    have e12 : g cPHASE = 0 := by rw [uc _ (by unfold cPHASE; omega) (by unfold cPHASE; omega)]; exact hph
+    have e13 : g cINDEX = f cINDEX + 1 := by show g 13 = _; rw [hg, Function.update_self]
+    have hgb : buildInv b.size om g := by
+      obtain ⟨s1, s2, s3, s4⟩ := bstatic hb e74 (uX 5 (by norm_num)) (uX 6 (by norm_num)) (uX 7 (by norm_num)) eHL eHD eF
+        (fun h2 s => sane_tab (fun d a1 a2 => u d (by unfold tbase at a1 a2; omega) (by unfold tbase LB0 at a1; omega)) s)
+      unfold buildInv
+      exact ⟨s1, s2, s3, s4,
+        fun _ => ⟨by rw [e13]; omega, by rw [e13]; omega, fun l a b' => by
+          rw [e13] at b'; rw [uX 7 (by norm_num)]
+          by_cases hl : l = f cINDEX
+          · rw [hl, hg, upd_eq _ _ (by omega), Function.update_self]
+          · rw [u _ (by omega) (by omega)]; exact hz l a (by omega)⟩,
+        fun h => by rw [e12] at h; norm_num at h, fun h _ => by rw [e12] at h; norm_num at h,
+        fun h => by rw [e12] at h; norm_num at h, Or.inl e12⟩
+    have hs : SymsOK b.size om g := fun t q a1 a2 a3 a4 => by
+      rw [u _ (by unfold tbase; omega) (by unfold tbase LB0; omega)]; exact hi.2.syms t q a1 a2 a3 a4
+    refine ⟨_, g, hS, (hw.store (i := f (X0 b.size om + 7) + f cINDEX) (by omega) (by omega)).store (i := 13) (by norm_num)
+      (by omega), ⟨(hi.1.tw (c := f (X0 b.size om + 7) + f cINDEX) (by omega) (by omega) 0).upd (i := 13)
+        (by unfold scratch; omega) _, InvM.bld hs hgM hgb⟩, Or.inl ?_⟩
+    have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide) (fun d hd => uc d (by omega) (by omega))
+    refine Φ_lt_of t.1 t.2.1 t.2.2 (LOC_build_lt hm hgM e74 eHL eHD eX (by rw [hx]; exact uX 6 (by norm_num)) ?_)
+    rw [e12, e13, hph]; exact bRem_lt0 _ _
+  · have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+      (build_zero_end hw hL (f cINDEX) (X0 b.size om) (f (X0 b.size om + 7)) hph rfl hx rfl (by omega) (by omega) hlt)
+    have hj : f cINDEX = 16 := by omega
+    set g := Function.update (Function.update f 12 1) 13 0 with hg
+    have uc : ∀ d : Int, d ≠ 12 → d ≠ 13 → g d = f d := fun d a1 a2 => by rw [hg, upd_eq _ _ a2, upd_eq _ _ a1]
+    have uX : ∀ k : Int, 0 ≤ k → g (X0 b.size om + k) = f (X0 b.size om + k) := fun k hk => uc _ (by omega) (by omega)
+    have uT : ∀ d : Int, 2080 ≤ d → g d = f d := fun d hd => uc d (by omega) (by omega)
+    have hgM : g cMODE = mBUILD := by rw [uc _ (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    have e74 : g cTGT = f cTGT := uc _ (by unfold cTGT; omega) (by unfold cTGT; omega)
+    have eHL : g cHLIT = f cHLIT := uc _ (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+    have eHD : g cHDIST = f cHDIST := uc _ (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+    have eF : g cFILL = f cFILL := uc _ (by unfold cFILL; omega) (by unfold cFILL; omega)
+    have eX : g cX = f cX := uc _ (by unfold cX; omega) (by unfold cX; omega)
+    have e12 : g cPHASE = 1 := by show g 12 = 1; rw [hg, upd_eq _ _ (by omega), Function.update_self]
+    have e13 : g cINDEX = 0 := by show g 13 = 0; rw [hg, Function.update_self]
+    have hgb : buildInv b.size om g := by
+      obtain ⟨s1, s2, s3, s4⟩ := bstatic hb e74 (uX 5 (by norm_num)) (uX 6 (by norm_num)) (uX 7 (by norm_num)) eHL eHD eF
+        (fun _ s => sane_tab (fun d a1 _ => uT d (by unfold tbase LB0 at a1; omega)) s)
+      unfold buildInv
+      exact ⟨s1, s2, s3, s4, fun h => by rw [e12] at h; norm_num at h,
+        fun _ => ⟨by rw [e13], by rw [e13, uX 6 (by norm_num)]; exact hnn0,
+          by rw [uX 7 (by norm_num), uT _ (by omega)]; have := hz 0 (le_refl _) (by omega); simpa using this,
+          fun l a1 a2 => by
+            rw [e13, uX 7 (by norm_num), uT _ (by omega), hz l (by omega) (by omega)]; simp [cnt]⟩,
+        fun h _ => by rw [e12] at h; norm_num at h, fun h => by rw [e12] at h; norm_num at h, Or.inr (Or.inl e12)⟩
+    have hs : SymsOK b.size om g := SymsOK.upd (SymsOK.upd hi.2.syms (by norm_num) _) (by norm_num) _
+    refine ⟨_, g, hS, (hw.store (i := 12) (by norm_num) (by omega)).store (i := 13) (by norm_num) (by omega),
+      ⟨(hi.1.upd (i := 12) (by unfold scratch; omega) 1).upd (i := 13) (by unfold scratch; omega) _,
+       InvM.bld hs hgM hgb⟩, Or.inl ?_⟩
+    have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide) (fun d hd => uc d (by omega) (by omega))
+    refine Φ_lt_of t.1 t.2.1 t.2.2 (LOC_build_lt hm hgM e74 eHL eHD eX (by rw [hx]; exact uX 6 (by norm_num)) ?_)
+    rw [e12, e13, hph, hj]; unfold bRem; split_ifs <;> omega
+
+set_option maxHeartbeats 4000000 in
+theorem safeB_count {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mBUILD) (hph : f cPHASE = 1) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hX : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+  have hLB : LB0 b.size om = 2080 + b.size + om := rfl
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mBUILD, buildN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mBUILD, buildN) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hr := hi.1.hdr_rng
+  have hx := hi.1.x_eq
+  have hb : buildInv b.size om f := by have h := hi.2.cur; rw [hm, facts_build] at h; exact h
+  obtain ⟨ht0, ht2, htb, hsb0, hnn0, hsbn, hnn288⟩ := bp hb hr
+  have hTB : f (X0 b.size om + 7) = LB0 b.size om + 337 + 352 * f cTGT := htb
+  have hb' := hb
+  obtain ⟨-, -, -, -, -, h1, -, -, -⟩ := hb'
+  obtain ⟨hj0, hjn, hc0, hcnt⟩ := h1 hph
+  have hjk : ((f cINDEX).toNat : Int) = f cINDEX := by omega
+  by_cases hlt : f cINDEX < f (X0 b.size om + 6)
+  · have hlr := hi.1.lens (f (X0 b.size om + 5) + f cINDEX - (2080 + b.size + om)) (by omega) (by omega)
+    rw [show (2080 : Int) + b.size + om + (f (X0 b.size om + 5) + f cINDEX - (2080 + b.size + om)) =
+      f (X0 b.size om + 5) + f cINDEX by ring] at hlr
+    have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+      (build_count_cell hw hL (f cINDEX) (X0 b.size om) (f (X0 b.size om + 7)) (f (X0 b.size om + 5))
+        (f (X0 b.size om + 6)) (f (f (X0 b.size om + 5) + f cINDEX))
+        (f (f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX)))
+        hph rfl hx rfl rfl rfl (by omega) (by omega) hlt (by omega) (by omega) rfl (by omega) (by omega) hlr.1 hlr.2 rfl)
+    have hcg : ∀ g : Int → Int, (∀ i : Int, 2080 ≤ i → i < LB0 b.size om + 337 → f i = g i) → ∀ l : Int,
+        cnt g (f (X0 b.size om + 5)) l ((f cINDEX + 1).toNat) =
+          cnt f (f (X0 b.size om + 5)) l (f cINDEX).toNat + (if f (f (X0 b.size om + 5) + f cINDEX) = l then 1 else 0) := by
+      intro g hfg l
+      rw [show (f cINDEX + 1).toNat = (f cINDEX).toNat + 1 by omega,
+        ← cnt_congr (f := f) (g := g) (X := LB0 b.size om + 337) hfg (by omega) _ (by omega)]
+      simp only [cnt]; rw [hjk]
+    by_cases hl0 : f (f (X0 b.size om + 5) + f cINDEX) = 0
+    · rw [if_pos hl0] at hS
+      set g := Function.update f 13 (f cINDEX + 1) with hg
+      have uc : ∀ d : Int, d ≠ 13 → g d = f d := fun d a => upd_eq _ _ a
+      have uX : ∀ k : Int, 0 ≤ k → g (X0 b.size om + k) = f (X0 b.size om + k) := fun k hk => uc _ (by omega)
+      have uT : ∀ d : Int, 2080 ≤ d → g d = f d := fun d hd => uc d (by omega)
+      have hgM : g cMODE = mBUILD := by rw [uc _ (by unfold cMODE; omega)]; exact hm
+      have e74 : g cTGT = f cTGT := uc _ (by unfold cTGT; omega)
+      have eHL : g cHLIT = f cHLIT := uc _ (by unfold cHLIT; omega)
+      have eHD : g cHDIST = f cHDIST := uc _ (by unfold cHDIST; omega)
+      have eF : g cFILL = f cFILL := uc _ (by unfold cFILL; omega)
+      have eX : g cX = f cX := uc _ (by unfold cX; omega)
+      have e12 : g cPHASE = 1 := by rw [uc _ (by unfold cPHASE; omega)]; exact hph
+      have e13 : g cINDEX = f cINDEX + 1 := by show g 13 = _; rw [hg, Function.update_self]
+      have hgb : buildInv b.size om g := by
+        obtain ⟨s1, s2, s3, s4⟩ := bstatic hb e74 (uX 5 (by norm_num)) (uX 6 (by norm_num)) (uX 7 (by norm_num)) eHL eHD eF
+          (fun _ s => sane_tab (fun d a1 _ => uT d (by unfold tbase LB0 at a1; omega)) s)
+        unfold buildInv
+        exact ⟨s1, s2, s3, s4, fun h => by rw [e12] at h; norm_num at h,
+          fun _ => ⟨by rw [e13]; omega, by rw [e13, uX 6 (by norm_num)]; omega,
+            by rw [uX 7 (by norm_num), uT _ (by omega)]; exact hc0,
+            fun l a1 a2 => by
+              rw [e13, uX 7 (by norm_num), uX 5 (by norm_num), uT _ (by omega), hcnt l a1 a2,
+                hcg g (fun i a _ => (uT i a).symm) l, if_neg (by omega)]; simp⟩,
+          fun h _ => by rw [e12] at h; norm_num at h, fun h => by rw [e12] at h; norm_num at h, Or.inr (Or.inl e12)⟩
+      refine ⟨_, g, hS, hw.store (i := 13) (by norm_num) (by omega),
+        ⟨hi.1.upd (i := 13) (by unfold scratch; omega) _, InvM.bld (SymsOK.upd hi.2.syms (by norm_num) _) hgM hgb⟩, Or.inl ?_⟩
+      have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide) (fun d hd => uc d (by omega))
+      refine Φ_lt_of t.1 t.2.1 t.2.2 (LOC_build_lt hm hgM e74 eHL eHD eX (by rw [hx]; exact uX 6 (by norm_num)) ?_)
+      rw [e12, e13, hph]; exact bRem_lt1 _ _
+    · rw [if_neg hl0] at hS
+      set g := Function.update (Function.update f (f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX))
+        (f (f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX)) + 1)) 13 (f cINDEX + 1) with hg
+      have u : ∀ d : Int, d ≠ f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX) → d ≠ 13 → g d = f d := by
+        intro d a1 a2; rw [hg, upd_eq _ _ a2, upd_eq _ _ a1]
+      have uc : ∀ d : Int, d < 2080 → d ≠ 13 → g d = f d := fun d a1 a2 => u d (by omega) a2
+      have uX : ∀ k : Int, 0 ≤ k → g (X0 b.size om + k) = f (X0 b.size om + k) := fun k hk => u _ (by omega) (by omega)
+      have hgM : g cMODE = mBUILD := by rw [uc _ (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+      have e74 : g cTGT = f cTGT := uc _ (by unfold cTGT; omega) (by unfold cTGT; omega)
+      have eHL : g cHLIT = f cHLIT := uc _ (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+      have eHD : g cHDIST = f cHDIST := uc _ (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+      have eF : g cFILL = f cFILL := uc _ (by unfold cFILL; omega) (by unfold cFILL; omega)
+      have eX : g cX = f cX := uc _ (by unfold cX; omega) (by unfold cX; omega)
+      have e12 : g cPHASE = 1 := by rw [uc _ (by unfold cPHASE; omega) (by unfold cPHASE; omega)]; exact hph
+      have e13 : g cINDEX = f cINDEX + 1 := by show g 13 = _; rw [hg, Function.update_self]
+      have hgb : buildInv b.size om g := by
+        obtain ⟨s1, s2, s3, s4⟩ := bstatic hb e74 (uX 5 (by norm_num)) (uX 6 (by norm_num)) (uX 7 (by norm_num)) eHL eHD eF
+          (fun h2 s => sane_tab (fun d a1 a2 => u d (by unfold tbase at a1 a2; omega) (by unfold tbase LB0 at a1; omega)) s)
+        unfold buildInv
+        exact ⟨s1, s2, s3, s4, fun h => by rw [e12] at h; norm_num at h,
+          fun _ => ⟨by rw [e13]; omega, by rw [e13, uX 6 (by norm_num)]; omega,
+            by rw [uX 7 (by norm_num), u _ (by omega) (by omega)]; exact hc0,
+            fun l a1 a2 => by
+              rw [e13, uX 7 (by norm_num), uX 5 (by norm_num), hcg g (fun i a b' => (u i (by omega) (by omega)).symm) l]
+              by_cases e : l = f (f (X0 b.size om + 5) + f cINDEX)
+              · rw [if_pos e.symm, e, hg, upd_eq _ _ (by omega), Function.update_self,
+                  hcnt _ (by omega) (by omega)]; push_cast; ring
+              · rw [if_neg (fun h => e h.symm), u _ (by omega) (by omega), hcnt l a1 a2]; simp⟩,
+          fun h _ => by rw [e12] at h; norm_num at h, fun h => by rw [e12] at h; norm_num at h, Or.inr (Or.inl e12)⟩
+      have hs : SymsOK b.size om g := fun t q a1 a2 a3 a4 => by
+        rw [u _ (by unfold tbase; omega) (by unfold tbase LB0; omega)]; exact hi.2.syms t q a1 a2 a3 a4
+      refine ⟨_, g, hS, (hw.store (i := f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX)) (by omega)
+        (by omega)).store (i := 13) (by norm_num) (by omega),
+        ⟨(hi.1.tw (c := f (X0 b.size om + 7) + f (f (X0 b.size om + 5) + f cINDEX)) (by omega) (by omega) _).upd (i := 13)
+          (by unfold scratch; omega) _, InvM.bld hs hgM hgb⟩, Or.inl ?_⟩
+      have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide) (fun d hd => uc d (by omega) (by omega))
+      refine Φ_lt_of t.1 t.2.1 t.2.2 (LOC_build_lt hm hgM e74 eHL eHD eX (by rw [hx]; exact uX 6 (by norm_num)) ?_)
+      rw [e12, e13, hph]; exact bRem_lt1 _ _
+  · have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+      (build_count_end hw hL (f cINDEX) (X0 b.size om) (f (X0 b.size om + 7)) (f (X0 b.size om + 5)) (f (X0 b.size om + 6))
+        hph rfl hx rfl rfl rfl (by omega) (by omega) hlt (by omega) (by omega))
+    have hj : f cINDEX = f (X0 b.size om + 6) := by omega
+    set g := Function.update (Function.update (Function.update (Function.update (Function.update f 12 2) 13 1) 2075 0)
+      (f (X0 b.size om + 7) + 16) 0) (f (X0 b.size om + 7) + 32) 0 with hg
+    have u : ∀ d : Int, d ≠ 12 → d ≠ 13 → d ≠ 2075 → d ≠ f (X0 b.size om + 7) + 16 → d ≠ f (X0 b.size om + 7) + 32 →
+        g d = f d := by
+      intro d a1 a2 a3 a4 a5; rw [hg, upd_eq _ _ a5, upd_eq _ _ a4, upd_eq _ _ a3, upd_eq _ _ a2, upd_eq _ _ a1]
+    have uc : ∀ d : Int, d < 2080 → d ≠ 12 → d ≠ 13 → d ≠ 2075 → g d = f d :=
+      fun d a0 a1 a2 a3 => u d a1 a2 a3 (by omega) (by omega)
+    have uX : ∀ k : Int, 0 ≤ k → g (X0 b.size om + k) = f (X0 b.size om + k) :=
+      fun k hk => u _ (by omega) (by omega) (by omega) (by omega) (by omega)
+    have hgM : g cMODE = mBUILD := by
+      rw [uc _ (by unfold cMODE; omega) (by unfold cMODE; omega) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    have e74 : g cTGT = f cTGT := uc _ (by unfold cTGT; omega) (by unfold cTGT; omega) (by unfold cTGT; omega)
+      (by unfold cTGT; omega)
+    have eHL : g cHLIT = f cHLIT := uc _ (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+      (by unfold cHLIT; omega)
+    have eHD : g cHDIST = f cHDIST := uc _ (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+      (by unfold cHDIST; omega)
+    have eF : g cFILL = f cFILL := uc _ (by unfold cFILL; omega) (by unfold cFILL; omega) (by unfold cFILL; omega)
+      (by unfold cFILL; omega)
+    have eX : g cX = f cX := uc _ (by unfold cX; omega) (by unfold cX; omega) (by unfold cX; omega) (by unfold cX; omega)
+    have e12 : g cPHASE = 2 := by
+      show g 12 = 2; rw [hg, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega),
+        Function.update_self]
+    have e13 : g cINDEX = 1 := by
+      show g 13 = 1; rw [hg, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), Function.update_self]
+    have hgb : buildInv b.size om g := by
+      obtain ⟨s1, s2, s3, s4⟩ := bstatic hb e74 (uX 5 (by norm_num)) (uX 6 (by norm_num)) (uX 7 (by norm_num)) eHL eHD eF
+        (fun h2 s => sane_tab (fun d a1 a2 => u d (by unfold tbase LB0 at a1; omega) (by unfold tbase LB0 at a1; omega)
+          (by unfold tbase LB0 at a1; omega) (by unfold tbase at a1 a2; omega) (by unfold tbase at a1 a2; omega)) s)
+      unfold buildInv
+      exact ⟨s1, s2, s3, s4, fun h => by rw [e12] at h; norm_num at h, fun h => by rw [e12] at h; norm_num at h,
+        fun _ _ => ⟨by rw [e13], by rw [e13]; norm_num,
+          by rw [uX 7 (by norm_num), u _ (by omega) (by omega) (by omega) (by omega) (by omega)]; exact hc0,
+          by rw [uX 7 (by norm_num), hg, Function.update_self],
+          fun l a1 a2 => by
+            rw [uX 7 (by norm_num), uX 5 (by norm_num), uX 6 (by norm_num),
+              u _ (by omega) (by omega) (by omega) (by omega) (by omega), hcnt l a1 a2, hj,
+              cnt_congr (f := f) (g := g) (X := LB0 b.size om + 337)
+                (fun i a b' => (u i (by omega) (by omega) (by omega) (by omega) (by omega)).symm) (by omega) _ (by omega)],
+          fun l a1 a2 => by rw [e12, e13, if_pos rfl] at a2; omega⟩,
+        fun h => by rw [e12] at h; norm_num at h, Or.inr (Or.inr (Or.inl e12))⟩
+    have hs : SymsOK b.size om g := fun t q a1 a2 a3 a4 => by
+      rw [u _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega) (by unfold tbase LB0; omega) (by unfold tbase; omega)
+        (by unfold tbase; omega)]
+      exact hi.2.syms t q a1 a2 a3 a4
+    refine ⟨_, g, hS, ((((hw.store (i := 12) (by norm_num) (by omega)).store (i := 13) (by norm_num) (by omega)).store
+      (i := 2075) (by norm_num) (by omega)).store (i := f (X0 b.size om + 7) + 16) (by omega) (by omega)).store
+      (i := f (X0 b.size om + 7) + 32) (by omega) (by omega),
+      ⟨((((hi.1.upd (i := 12) (by unfold scratch; omega) 2).upd (i := 13) (by unfold scratch; omega) 1).upd (i := 2075)
+        (by unfold scratch; omega) 0).tw (c := f (X0 b.size om + 7) + 16) (by omega) (by omega) 0).tw
+        (c := f (X0 b.size om + 7) + 32) (by omega) (by omega) 0, InvM.bld hs hgM hgb⟩, Or.inl ?_⟩
+    have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide)
+      (fun d hd => uc d (by omega) (by omega) (by omega) (by omega))
+    refine Φ_lt_of t.1 t.2.1 t.2.2 (LOC_build_lt hm hgM e74 eHL eHD eX (by rw [hx]; exact uX 6 (by norm_num)) ?_)
+    rw [e12, e13, hph, hx, hj]; unfold bRem; split_ifs <;> omega
+
 end VIRDeflate.Step
