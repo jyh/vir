@@ -100,6 +100,122 @@ theorem term_unique (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (hb : ∀ 
   · exact key h h₁ t₁ h₂
   · exact (key h h₂ t₂ h₁).symm
 
+/-! ## TABLE: from `initStore` to HDR, with the bit table CORRECT (S-18 R, clause 2) -/
+
+theorem World.agree {σ : Store} {p : Int} {L : Nat} {f g : Int → Int} (hf : World σ p L f) (hg : World σ p L g) {i : Int}
+    (h0 : 0 ≤ i) (hL : i < L) : f i = g i :=
+  Option.some.inj ((hf.cell i h0 hL).symm.trans (hg.cell i h0 hL))
+
+/-- Every bit-table cell below c holds S1's bit (D4's `bitAt`, = `(v >>> i) &&& 1` by `bitAt_eq`). -/
+def BitsUpTo (f : Int → Int) (c : Int) : Prop :=
+  ∀ v i : Nat, v < 256 → i ≤ 7 → 8 * (v : Int) + i < c → f (BT + (8 * v + i)) = bitAt v i
+
+/-- **TABLE, one step, exactly:** the cell written is S1's bit, cells 1–3 are untouched, and the counter advances or HDR is
+reached at 2,048. -/
+theorem table_one {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mTABLE) (hb : BitsUpTo f (8 * f cTB + f cTI)) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      BitsUpTo f' (8 * f cTB + f cTI + 1) ∧ (∀ c : Int, (c = 1 ∨ c = 2 ∨ c = 3) → f' c = f c) ∧
+      ((8 * f cTB + f cTI + 1 < 2048 ∧ f' cMODE = mTABLE ∧ 8 * f' cTB + f' cTI = 8 * f cTB + f cTI + 1) ∨
+       (8 * f cTB + f cTI + 1 = 2048 ∧ f' cMODE = mHDR)) := by
+  have hL : 2068 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨tb0, tb256, ti0, ti7⟩ := hi.1.tb_rng hm
+  obtain ⟨σ', f', hS', hw', hi', _⟩ := safeI_table hw hi hm
+  have hS := stepS_table hw hL (f cTB).toNat (f cTI).toNat hm (by omega) (by omega) (by omega) (by omega)
+  simp only [show ((f cTB).toNat : Int) = f cTB by omega, show ((f cTI).toNat : Int) = f cTI by omega] at hS
+  rw [hS] at hS'
+  have hσ := (Option.some.inj hS').symm
+  refine ⟨σ', f', hS.trans hS', hw', hi', ?_⟩
+  set c0 := 8 * f cTB + f cTI with hc0
+  set nb := tblNext (f cTB) (f cTI) with hnb
+  have hnb1 : 8 * nb.1 + nb.2 = c0 + 1 := by simp only [hnb, hc0, tblNext]; split_ifs <;> simp <;> omega
+  have hnbr : 0 ≤ nb.2 ∧ nb.2 ≤ 7 ∧ 0 ≤ nb.1 ∧ nb.1 ≤ 256 := by
+    simp only [hnb, tblNext]; split_ifs <;> simp <;> omega
+  set g := Function.update (Function.update (Function.update f (20 + c0) (bitAt (f cTB) (f cTI).toNat)) 18 nb.1) 19 nb.2
+    with hg
+  have hgw : World ⟨tblH σ.H p (f cTB) (f cTI), σ.R⟩ p (L0 b.size om) g := by
+    unfold tblH
+    exact ((hw.store (i := 20 + c0) (by omega) (by unfold L0; omega)).store (i := 18) (by norm_num)
+      (by unfold L0; omega)).store (i := 19) (by norm_num) (by unfold L0; omega)
+  have u : ∀ c : Int, c ≠ 20 + c0 → c ≠ 18 → c ≠ 19 → g c = f c := fun c a1 a2 a3 => by
+    rw [hg, upd_eq _ _ a3, upd_eq _ _ a2, upd_eq _ _ a1]
+  have eTB : g cTB = nb.1 := by simp [hg, cTB]
+  have eTI : g cTI = nb.2 := by simp [hg, cTI]
+  have eC : g (BT + c0) = bitAt (f cTB) (f cTI).toNat := by
+    rw [hg, upd_eq _ _ (by unfold BT; omega), upd_eq _ _ (by unfold BT; omega)]; simp [BT]
+  -- the world after the step, as an explicit function g' that agrees with f' on the region
+  obtain ⟨g', hgw', hg'⟩ : ∃ g' : Int → Int, World σ' p (L0 b.size om) g' ∧
+      (∀ c : Int, c ≠ 0 → g' c = g c) ∧ True := by
+    by_cases h256 : nb.1 = 256
+    · rw [if_pos h256] at hσ
+      refine ⟨Function.update g 0 1, hσ ▸ hgw.store (i := 0) (by norm_num) (by unfold L0; omega), fun c hc => upd_eq _ _ hc, trivial⟩
+    · rw [if_neg h256] at hσ
+      exact ⟨g, hσ ▸ hgw, fun _ _ => rfl, trivial⟩
+  have ag : ∀ c : Int, 0 ≤ c → c < L0 b.size om → f' c = g' c := fun c h0 h1 => hw'.agree hgw' h0 h1
+  refine ⟨?_, ?_, ?_⟩
+  · intro v i hv hi7 hlt
+    rw [ag _ (by unfold BT; omega) (by unfold BT L0; omega), hg'.1 _ (by unfold BT; omega)]
+    by_cases hc : 8 * (v : Int) + i = c0
+    · have hv' : (v : Int) = f cTB := by omega
+      have hi' : i = (f cTI).toNat := by omega
+      rw [hc, eC, hv', hi']
+    · rw [u _ (by unfold BT; omega) (by unfold BT; omega) (by unfold BT; omega)]
+      exact hb v i hv hi7 (by omega)
+  · intro c hc
+    rw [ag _ (by omega) (by unfold L0; omega), hg'.1 _ (by omega), u _ (by omega) (by omega) (by omega)]
+  · by_cases h256 : nb.1 = 256
+    · right
+      refine ⟨by omega, ?_⟩
+      rw [if_pos h256] at hσ
+      have := hw'.agree (hσ ▸ hgw.store (i := 0) (by norm_num) (by unfold L0; omega)) (i := 0) (by norm_num)
+        (by unfold L0; omega)
+      simp only [cMODE]; rw [this]; simp [mHDR]
+    · left
+      rw [if_neg h256] at hσ
+      have a0 := hw'.agree (hσ ▸ hgw) (i := 0) (by norm_num) (by unfold L0; omega)
+      have a18 := hw'.agree (hσ ▸ hgw) (i := 18) (by norm_num) (by unfold L0; omega)
+      have a19 := hw'.agree (hσ ▸ hgw) (i := 19) (by norm_num) (by unfold L0; omega)
+      refine ⟨by omega, ?_, ?_⟩
+      · simp only [cMODE]; rw [a0, u _ (by omega) (by norm_num) (by norm_num)]; exact hm
+      · simp only [cTB, cTI] at eTB eTI ⊢; rw [a18, a19, eTB, eTI]; omega
+
+/-- **TABLE, to its end:** from any TABLE world with the bits below its counter correct, the iteration reaches HDR with all
+2,048 bits correct and cells 1–3 untouched. -/
+theorem table_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} :
+    ∀ (r : Nat) (σ : Store) (f : Int → Int), World σ p (L0 b.size om) f → Inv b om lit f → f cMODE = mTABLE →
+      BitsUpTo f (8 * f cTB + f cTI) → 2048 - (8 * f cTB + f cTI) = r →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ f' cMODE = mHDR ∧ BitsUpTo f' 2048 ∧
+        (∀ c : Int, (c = 1 ∨ c = 2 ∨ c = 3) → f' c = f c) := by
+  intro r
+  induction r with
+  | zero =>
+    intro σ f hw hi hm _ hr
+    obtain ⟨tb0, tb256, ti0, ti7⟩ := hi.1.tb_rng hm
+    omega
+  | succ r ih =>
+    intro σ f hw hi hm hb hr
+    obtain ⟨σ1, f1, hS, hw1, hi1, hb1, hc1, hk⟩ := table_one hw hi hm hb
+    rcases hk with ⟨_, hm1, hc⟩ | ⟨hend, hm1⟩
+    · obtain ⟨σ', f', hR, hw', hi', hm', hb', hc'⟩ :=
+        ih σ1 f1 hw1 hi1 hm1 (by rw [hc]; exact hb1) (by omega)
+      exact ⟨σ', f', (Reach.step hS).trans hR, hw', hi', hm', hb', fun c h => (hc' c h).trans (hc1 c h)⟩
+    · exact ⟨σ1, f1, Reach.step hS, hw1, hi1, hm1, by rw [← hend]; exact hb1, hc1⟩
+
+/-- **The start:** from `initStore`, HDR with every bit correct, the cursor at 0 and the output empty. -/
+theorem init_to_hdr (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) :
+    ∃ σ f, Reach p (initStore b om lit p) σ ∧ World σ p (L0 b.size om) f ∧ Inv b om lit f ∧ f cMODE = mHDR ∧
+      BitsUpTo f 2048 ∧ f cBY = 0 ∧ f cBI = 0 ∧ f cM = 0 := by
+  have z : ∀ i : Int, 0 ≤ i → i < 15 → initCell b om lit i = 0 := fun i h0 h1 =>
+    initCell_zero b om lit i h0 (by omega) (by omega) (by omega) (by omega) (by omega)
+  have e0 : initCell b om lit cMODE = mTABLE := z _ (by decide) (by decide)
+  have e18 : initCell b om lit cTB = 0 := initCell_zero b om lit _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
+  have e19 : initCell b om lit cTI = 0 := initCell_zero b om lit _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
+  obtain ⟨σ, f, hR, hw, hi, hm, hb, hc⟩ := table_run (2048 - (8 * initCell b om lit cTB + initCell b om lit cTI)).toNat
+    (initStore b om lit p) (initCell b om lit) (initStore_world b om lit p) (Inv_init b om lit) e0
+    (by intro v i _ _ h; rw [e18, e19] at h; omega) (by rw [e18, e19]; rfl)
+  exact ⟨σ, f, hR, hw, hi, hm, hb, by show f 1 = 0; rw [hc 1 (by simp)]; exact z 1 (by norm_num) (by norm_num),
+    by show f 2 = 0; rw [hc 2 (by simp)]; exact z 2 (by norm_num) (by norm_num), by show f 3 = 0; rw [hc 3 (by simp)]; exact z 3 (by norm_num) (by norm_num)⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
