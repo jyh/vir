@@ -172,3 +172,30 @@ both theorems use it.
 - **What would show it wrong:** a per-program fact that does not close by evaluation (a finding about stepT or the lowering);
   `deflate_noovf` needing a hypothesis beyond the loader premise and the K5-2 bounds (K5's third falsifier); a layout lemma
   about DEFLATE in particular (K6 then reads 1, not 0).
+
+## Addendum 7 (70th head, 2026-11-12, after K5-3 PROVED (d9ac597) and BEFORE any file of it): row 298, the loader premise DISCHARGED for DEFLATE
+K5-3's `deflate_noovf` takes `Layout σ lay` and `MemRel lay σ m` as hypotheses, the caller's loader premise. Row 298 exhibits a loader
+that satisfies them, so that the theorem's only hypotheses on the caller are the K5-2 bounds and where the region is placed. It is a
+STRENGTHENING. K6 already HOLDS on its declared population (STAGE-K5.md, row 296's reading as corrected at d6026bb), and this
+addendum adds no file under compiler/.
+- **L-1 (generic, k5/K5/Loader.lean; no DEFLATE constant, so K3's whitelist would pass it).** The scaled loader `scaleLay p :=
+  BitVec.ofInt 64 (8·p)`, `scaleMem σ a := BitVec.ofInt 64 ((σ.H.lookup (a.toNat / 8)).getD 0)`. **`loader_ok`:** σ.WF, every live
+  region at `p` of length `n` has `0 ≤ p` and `p + n ≤ 2⁶⁰`, and every live cell holds an `inRange` int ⇒ `Layout σ scaleLay` ∧
+  `MemRel scaleLay σ (scaleMem σ)`. Disjointness is L2's own WF.disj, scaled by 8. The 2⁶⁰ bound gives `fits` and `n < 2⁶³`.
+- **L-2 (generic, k5/K5/Loader.lean): a run without allocation keeps the store's shape and its cells in range.** `NoAlloc t`: no
+  `letOp .alloc` or `.free` occurs in t (λ/fix bodies included). `ConstInR t`: every int literal in t is `inRange` (λ/fix bodies
+  included). **`run_shape`:** `Steps₂ (t, σ) (t', σ')`, `SrcInRange (t, σ)`, `NoAlloc t`, `ConstInR t`, σ.WF, all cells of σ in range
+  ⇒ `σ'.R = σ.R`, σ'.WF, and all cells of σ' in range. Route: one step at a time, with `NoAlloc ∧ ConstInR` of the term as the
+  invariant. Substituting a value that is itself `NoAlloc ∧ ConstInR` preserves both; a value is a literal, a λ/fix of the term, a
+  loaded cell (in range by the store invariant), or a primitive's result (in range by `HeadInR` at that configuration). A `store`
+  writes an evaluated int atom into a key already in H (`wf_insert_mem`), and a `load` leaves σ unchanged.
+- **D-1 (DEFLATE, k5/K5/DeflateLoaded.lean).** `NoAlloc stepT` and `ConstInR stepT` by evaluation, and every `initCell` value in
+  range from bytes < 256 and n, OUTMAX < 2³². Over `iterS`, each `stepS` is a `run₂` that is a `Steps₂` (L2's `stepFn₂_sound`), and
+  its source run is in range by `deflate_inrange`. So every reached σ has `σ.R = {p ↦ L0 n om}`, is WF, and has every cell in range.
+- **Statement.** `deflate_noovf_loaded`: for bytes < 256, n and OUTMAX < 2³², either reading, `0 ≤ p` and `p + L0 n om ≤ 2⁶⁰`, and
+  every reached σ, `Layout σ scaleLay` and `MemRel scaleLay σ (scaleMem σ)` hold, and no word-machine run from
+  `(.run (lower2T [tcap] stepT []).1 (capWords scaleLay p (L0 n om)) [], scaleMem σ)` reaches `.ovf`. The premise on the caller is
+  the region's PLACEMENT (p), never the bytes.
+- **What would show it wrong:** a reached store with a second region or a cell out of range (then deflate_noovf's premise is
+  unsatisfiable at that σ, a finding against K5's reading); L-2 needing a hypothesis about DEFLATE (then it is not generic); a
+  placement premise that mentions b's content.
