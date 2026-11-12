@@ -1949,6 +1949,72 @@ theorem huff_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
         unfold copySet IN at hc; unfold tbase LB0 X0; omega) le_rfl⟩
     · exact Sim.reject (fun σ f st hw ⟨_, _, _, _, _, a5⟩ => ⟨σ, f, Reach.refl p σ, hw, a5 (by omega)⟩)
 
+/-! ## BUILD (S4's construction, S-10/S-11): ZERO and COUNT need only progress and a frame -/
+
+/-- The cells a BUILD step may write: its own cursor cells and the target table. -/
+def bset (tbb : Int) (c : Int) : Prop := c = 0 ∨ c = 12 ∨ c = 13 ∨ c = 14 ∨ (2075 ≤ c ∧ c ≤ 2078) ∨ (tbb ≤ c ∧ c < tbb + 352)
+
+theorem buildInv_of {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} {st : St} (hR : Rel b om lit f st)
+    (hm : f cMODE = mBUILD) : buildInv b.size om f := by
+  have := hR.inv.2.cur; rw [hm, facts_build] at this; exact this
+
+theorem bset_ctl {n om : Nat} {t : Int} (ht : 0 ≤ t ∧ t ≤ 2) (c : Int) (h : bset (tbase n om t) c) : ctl n om c := by
+  unfold bset tbase LB0 at h; unfold ctl IN; omega
+
+theorem build_mem : (mBUILD, buildN) ∈ modes := by unfold modes; simp
+
+/-- **ZERO, to its end.** -/
+theorem zero_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) :
+    ∀ (r : Nat) (σ : Store) (f : Int → Int) (st : St), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mBUILD → f cPHASE = 0 → 16 - f cINDEX = r →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st ∧ f' cMODE = mBUILD ∧
+        f' cPHASE = 1 ∧ f' cINDEX = 0 ∧ Keeps (L0 b.size om) f f' (bset (f (X0 b.size om + 7))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  intro r
+  induction r with
+  | zero =>
+    intro σ f st hw hR hm hph hr
+    have hB := buildInv_of hR hm
+    obtain ⟨ht0, ht2, htb, -, hz, -, -, -, -⟩ := hB
+    have hj := (hz hph).2.1
+    have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_zero_end hw hL (f cINDEX) (X0 b.size om) (f (X0 b.size om + 7)) hph rfl hR.inv.1.x_eq rfl
+        (by unfold X0; omega) hXL (by omega))
+    have hg := (hw.store (i := 12) (v := 1) (by norm_num) (by omega)).store (i := 13) (v := 0) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 12 ∨ c = 13) (fun c _ _ hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+      (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, Reach.step hS, hw1, hR1, ?_, ?_, ?_, fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (by unfold bset; omega))⟩
+    · rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    · rw [ag _ (by decide) (by unfold cPHASE; omega)]; simp [cPHASE, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX]
+  | succ r ih =>
+    intro σ f st hw hR hm hph hr
+    have hB := buildInv_of hR hm
+    obtain ⟨ht0, ht2, htb, -, hz, -, -, -, -⟩ := hB
+    have hj := (hz hph).1
+    set tbb := f (X0 b.size om + 7) with htbbd
+    have htL : tbb + 352 ≤ L0 b.size om := by rw [htb]; unfold tbase LB0 L0; omega
+    have ht0' : 0 ≤ tbb := by rw [htb]; unfold tbase LB0; omega
+    have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_zero_cell hw hL (f cINDEX) (X0 b.size om) tbb hph rfl hR.inv.1.x_eq rfl
+        (by unfold X0; omega) hXL hj (by omega) ht0' htL)
+    have hg := (hw.store (i := tbb + f cINDEX) (v := 0) (by omega) (by omega)).store (i := 13) (v := f cINDEX + 1)
+      (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = tbb + f cINDEX ∨ c = 13) (fun c _ _ hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+      (fun c hc => by rw [htb] at hc; unfold ctl IN; unfold tbase LB0 at hc; omega)
+    have hm1 : f1 cMODE = mBUILD := by rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; rw [htb]; unfold tbase LB0; omega)]; exact hm
+    have hp1 : f1 cPHASE = 0 := by rw [hk1 _ (by decide) (by unfold cPHASE; omega) (by unfold cPHASE; rw [htb]; unfold tbase LB0; omega)]; exact hph
+    have hj1 : f1 cINDEX = f cINDEX + 1 := by rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX]
+    have ht1 : f1 (X0 b.size om + 7) = tbb := by
+      rw [hk1 _ (by unfold X0; omega) (by unfold X0 L0; omega) (by rw [htb]; unfold tbase LB0 X0; omega)]
+    obtain ⟨σ', f', hR', hw', hR'', hm', hp', hj', hk'⟩ := ih _ f1 st hw1 hR1 hm1 hp1 (by rw [hj1]; omega)
+    rw [ht1] at hk'
+    have hk1' : Keeps (L0 b.size om) f f1 (bset tbb) := fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (by unfold bset; omega))
+    exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', hp', hj', hk1'.trans hk' (fun c h => h)⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
