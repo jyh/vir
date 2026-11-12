@@ -2497,7 +2497,78 @@ theorem syms_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
       have hk1' : Keeps (L0 b.size om) f f1 (fun c => c = 13 ∨ (tbb + 48 ≤ c ∧ c < tbb + 352)) :=
         fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (Or.inl h))
       exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', hp', hj', hsy', hk1'.trans hk' (fun c h => h)⟩
-    · sorry
+    · have hl1 : 1 ≤ l := by omega
+      have hfl : filt lens l (j + 1) = filt lens l j ++ [j] := by rw [filt_succ, if_pos rfl]
+      have hlen : (filt lens l j).length < blCount lens l := by
+        have := hcnt l h0; rw [hfl, List.length_append] at this; simp at this; omega
+      set sl := f (tbb + 48 + l) with hsld
+      have hsl : sl = o l + (filt lens l j).length := hslot l hl1 hl15
+      have hobl := hob l hl1 hl15
+      have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+        (build_syms_cell hw hL j (X0 b.size om) tbb sb lens.size l sl hph hj hR.inv.1.x_eq htb' hsb hnn
+          (by unfold X0; omega) hXL (by omega) (by omega) (by omega) (by rw [hsrc j (by omega)])
+          (by omega) htL (by omega) (by omega) rfl (fun _ => by omega) (fun _ => by omega))
+      rw [if_neg (by exact_mod_cast h0)] at hS
+      have hg := ((hw.store (i := tbb + 64 + sl) (v := (j : Int)) (by omega) (by omega)).store (i := tbb + 48 + l)
+        (v := sl + 1) (by omega) (by omega)).store (i := 13) (v := (j : Int) + 1) (by norm_num) (by omega)
+      obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+        (S := fun c => c = tbb + 64 + sl ∨ c = tbb + 48 + l ∨ c = 13)
+        (fun c _ _ hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+        (fun c hc => by rw [htb] at hc; unfold ctl IN; unfold tbase LB0 at hc; omega)
+      have nb : ∀ c : Int, 0 ≤ c → c < L0 b.size om → c ≠ tbb + 64 + sl → c ≠ tbb + 48 + l → c ≠ 13 → f1 c = f c :=
+        fun c h0 h1 a1 a2 a3 => hk1 c h0 h1 (by omega)
+      have hsyN : f1 (tbb + 64 + sl) = j := by
+        rw [ag _ (by omega) (by omega)]; simp only [Function.update_apply]
+        rw [if_neg (by omega), if_neg (by omega)]; simp
+      have hslN : f1 (tbb + 48 + l) = sl + 1 := by
+        rw [ag _ (by omega) (by omega)]; simp only [Function.update_apply]
+        rw [if_neg (by omega)]; simp
+      obtain ⟨σ', f', hR', hw', hR'', hm', hp', hj', hsy', hk'⟩ := ih _ f1 st (j + 1) hw1 hR1
+        (by rw [nb _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega) (by unfold cMODE; omega) (by decide)]
+            exact hm)
+        (by rw [nb _ (by decide) (by unfold cPHASE; omega) (by unfold cPHASE; omega) (by unfold cPHASE; omega) (by decide)]
+            exact hph)
+        (by rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX]) (by omega)
+        (by rw [nb _ (by unfold X0; omega) (by unfold X0 L0; omega) (by rw [htb]; unfold tbase LB0 X0; omega)
+              (by rw [htb]; unfold tbase LB0 X0; omega) (by unfold X0; omega)]; exact htb')
+        (by rw [nb _ (by unfold X0; omega) (by unfold X0 L0; omega) (by rw [htb]; unfold tbase LB0 X0; omega)
+              (by rw [htb]; unfold tbase LB0 X0; omega) (by unfold X0; omega)]; exact hsb)
+        (by rw [nb _ (by unfold X0; omega) (by unfold X0 L0; omega) (by rw [htb]; unfold tbase LB0 X0; omega)
+              (by rw [htb]; unfold tbase LB0 X0; omega) (by unfold X0; omega)]; exact hnn)
+        (fun i hi => by
+          rw [nb _ (by omega) (by omega) (by rw [htb]; unfold tbase LB0 at *; omega) (by rw [htb]; unfold tbase LB0 at *; omega)
+            (by omega)]; exact hsrc i hi)
+        (fun l' h1 h2 => by
+          by_cases hll : l' = l
+          · subst hll; rw [hslN, hsl, hfl]; simp; ring
+          · have he : filt lens l' (j + 1) = filt lens l' j := by rw [filt_succ, if_neg (by omega), List.append_nil]
+            rw [he, nb _ (by omega) (by omega) (by omega) (by omega) (by omega)]; exact hslot l' h1 h2)
+        (fun l' h1 h2 i hi => by
+          have hob' := hob l' h1 h2
+          by_cases hll : l' = l
+          · subst hll
+            by_cases hil : i < (filt lens l j).length
+            · rw [List.getElem_of_eq hfl hi, List.getElem_append_left hil,
+                nb _ (by omega) (by omega) (by rw [hsl]; omega) (by omega) (by omega)]
+              exact hsyms l h1 h2 i hil
+            · have hie : i = (filt lens l j).length := by rw [hfl] at hi; simp at hi; omega
+              subst hie
+              rw [List.getElem_of_eq hfl hi, List.getElem_append_right (by omega)]
+              simp only [Nat.sub_self, List.getElem_cons_zero]
+              rw [show tbb + 64 + o l + ((filt lens l j).length : Int) = tbb + 64 + sl by rw [hsl]; ring]
+              exact hsyN
+          · have he : filt lens l' (j + 1) = filt lens l' j := by rw [filt_succ, if_neg (by omega), List.append_nil]
+            have hi' : i < (filt lens l' j).length := by rw [← he]; exact hi
+            have hcb := filt_le lens l' (by omega) j (by omega)
+            have hsep : o l' + i < o l ∨ o l + blCount lens l ≤ o l' := by
+              rcases Nat.lt_or_gt_of_ne hll with hlt | hgt
+              · left; have := hdis l' l h1 hlt hl15; omega
+              · right; exact hdis l l' hl1 hgt h2
+            rw [List.getElem_of_eq he hi, nb _ (by omega) (by omega) (by rw [hsl]; omega) (by omega) (by omega)]
+            exact hsyms l' h1 h2 i hi')
+      have hk1' : Keeps (L0 b.size om) f f1 (fun c => c = 13 ∨ (tbb + 48 ≤ c ∧ c < tbb + 352)) :=
+        fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (by omega))
+      exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', hp', hj', hsy', hk1'.trans hk' (fun c h => h)⟩
 
 /-! ## CorrectStmt from the forward statement -/
 
