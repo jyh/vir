@@ -6,6 +6,7 @@ unfolding `Mem.bytes`.
 -/
 import X86.Memory
 import VIRC.Word
+import VIRC.Layout
 
 namespace VIRBridge
 open X86
@@ -84,5 +85,31 @@ theorem Rep.store {wm : VIRC.WMem} {m : Mem} {S : VIRC.W → Prop} (hR : Rep wm 
   by_cases e : a' = a
   · subst e; rw [Function.update_self]; exact readN_writeN m a' v
   · rw [Function.update_of_ne e, readN_writeN_apart m a a' v (hS a a' ha ha' (Ne.symm e))]; exact hR a' ha'
+
+/-- The live cell addresses: cell i of every live region, at its layout address. -/
+def Live (σ : VIRL2.Store) (lay : Int → VIRC.W) (a : VIRC.W) : Prop :=
+  ∃ p n i, σ.R.lookup p = some n ∧ i < n ∧ a = VIRC.cellAddr (lay p) (BitVec.ofNat 64 i)
+
+/-- **B-4: `Sep` ONCE from S2's layout premise** (regions fit without wrapping, pairwise disjoint): no per-program lemma (K6). -/
+theorem sep_of_layout {σ : VIRL2.Store} {lay : Int → VIRC.W} (hL : VIRC.Layout σ lay) : Sep (Live σ lay) := by
+  rintro a a' ⟨p, n, i, hp, hi, rfl⟩ ⟨q, m, j, hq, hj, rfl⟩ hne k l hk hl e
+  have fp := hL.fits p n hp
+  have fq := hL.fits q m hq
+  unfold VIRC.cellAddr at e
+  by_cases hpq : p = q
+  · subst hpq
+    rw [hp] at hq
+    cases hq
+    have : i = j := by bv_omega
+    subst this
+    exact hne rfl
+  · rcases hL.disj p q n m hp hq hpq with h' | h' <;> bv_omega
+
+/-- With S2's memory relation, a live cell's 8 bytes hold its int as a word. -/
+theorem cell_bytes {σ : VIRL2.Store} {lay : Int → VIRC.W} {wm : VIRC.WMem} {m : Mem} (hR : Rep wm m (Live σ lay))
+    (hM : VIRC.MemRel lay σ wm) {p : Int} {n i : Nat} (hp : σ.R.lookup p = some n) (hi : i < n) {v : Int}
+    (hv : σ.H.lookup (p + i) = some v) :
+    m.readN (VIRC.cellAddr (lay p) (BitVec.ofNat 64 i)) 8 = BitVec.ofInt 64 v := by
+  rw [hR _ ⟨p, n, i, hp, hi, rfl⟩]; exact hM p n hp i hi v hv
 
 end VIRBridge
