@@ -1629,6 +1629,155 @@ theorem symd_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
   · simp only [cMODE]
     rw [a0, hgd, if_neg (by push_cast; omega), if_neg (by push_cast; omega), if_neg (by push_cast; omega)]; simp [mREJECT]
 
+theorem dbase_pos : ∀ d, d < 30 → 1 ≤ DBASE.getD d 0 := by decide
+
+/-- **DSTD, one step**, by the decoded distance symbol d. -/
+theorem dstd_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mDSTD)
+    (d : Nat) (hd : f (X0 b.size om + 4) = d) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧
+      (30 ≤ d → f1 cMODE = mREJECT) ∧
+      (d < 30 → Rel b om lit f1 st ∧ f1 cDIST = DBASE.getD d 0 ∧ KReady f1 (DEXTRA.getD d 0) mDSTX ∧
+        Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 6 ∨ (2068 ≤ c ∧ c ≤ 2071))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hi := hR.inv
+  have hXL : X0 b.size om + 134 < L0 b.size om := by unfold X0 L0; omega
+  obtain ⟨-, -, rDB, rDE⟩ := hi.1.roVal
+  have hs288 := hi.2.sym (Or.inr (Or.inl hm))
+  rw [hd] at hs288
+  set db := f (X0 b.size om + 74 + d) with hdbd
+  set de := f (X0 b.size om + 104 + d) with hded
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (dstd_step hw hL (X0 b.size om) d db de hi.1.x_eq (by unfold X0; omega) hXL hd (by omega) rfl rfl)
+  by_cases h30 : (30 : Int) ≤ d
+  · rw [if_pos h30] at hS
+    have hg := (hw.store (i := 14) (v := 9) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+    exact ⟨_, _, hS, hg, fun _ => by simp [cMODE, mREJECT], fun h => absurd h (by omega)⟩
+  · rw [if_neg h30] at hS
+    have hdb : db = DBASE.getD d 0 := rDB d (by omega)
+    have hde : de = DEXTRA.getD d 0 := rDE d (by omega)
+    have hg := (hw.store (i := 6) (v := db) (by norm_num) (by omega)).reqK (by omega) de 18
+    have hk : Keeps (L0 b.size om) f (reqKF (Function.update f 6 db) de 18)
+        (fun c => c = 0 ∨ c = 6 ∨ (2068 ≤ c ∧ c ≤ 2071)) := fun c h0 h1 hc => by
+      rw [reqKF_keeps _ _ de 18 c h0 h1 (by omega), upd_eq _ _ (by omega)]
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg hk
+      (fun c hc => by unfold ctl IN; omega)
+    refine ⟨_, f1, hS, hw1, fun h => absurd h (by omega), fun _ => ⟨hR1, ?_, ?_, hk1⟩⟩
+    · rw [ag _ (by decide) (by unfold cDIST; omega), ← hdb]
+      unfold reqKF; split_ifs
+      · simp [cDIST, Function.update_apply]
+      · rw [reqF_eq _ _ _ _ (by unfold cDIST; omega)]; simp [cDIST]
+    · have r := reqKF_ready (Function.update f 6 db) (DEXTRA.getD d 0) 18
+      rw [← hde] at r
+      unfold KReady at r ⊢
+      simp only [cMODE, cACC, cK, cWT, cRET] at r ⊢
+      rw [ag 0 (by norm_num) (by omega), ag 2069 (by norm_num) (by omega), ag 2068 (by norm_num) (by omega),
+        ag 2070 (by norm_num) (by omega), ag 2071 (by norm_num) (by omega)]
+      rw [hde] at r ⊢
+      exact r
+
+/-- **DSTX, one step:** S7's two checks in S7's order, then COPY. -/
+theorem dstx_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mDSTX) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧
+      (f cM < f cDIST + f cACC → f1 cMODE = mREJECT) ∧
+      (¬ f cM < f cDIST + f cACC → f cOUTMAX < f cM + f cPEND → f1 cMODE = mREJECT) ∧
+      (¬ f cM < f cDIST + f cACC → ¬ f cOUTMAX < f cM + f cPEND → Rel b om lit f1 st ∧ f1 cMODE = mCOPY ∧
+        f1 cDIST = f cDIST + f cACC ∧ Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 6)) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (dstx_step hw hL (f cACC) (f cDIST) (f cM) (f cPEND) (f cOUTMAX) rfl rfl rfl rfl rfl)
+  by_cases h1 : f cM < f cDIST + f cACC
+  · rw [if_pos h1] at hS
+    have hg := (hw.store (i := 14) (v := 10) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+    exact ⟨_, _, hS, hg, fun _ => by simp [cMODE, mREJECT], fun h => absurd h1 h, fun h => absurd h1 h⟩
+  · rw [if_neg h1] at hS
+    by_cases h2 : f cOUTMAX < f cM + f cPEND
+    · rw [if_pos h2] at hS
+      have hg := (hw.store (i := 14) (v := 4) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+      exact ⟨_, _, hS, hg, fun h => absurd h h1, fun _ _ => by simp [cMODE, mREJECT], fun _ h => absurd h2 h⟩
+    · rw [if_neg h2] at hS
+      have hg := (hw.store (i := 6) (v := f cDIST + f cACC) (by norm_num) (by omega)).store (i := 0) (v := 19)
+        (by norm_num) (by omega)
+      have hk : Keeps (L0 b.size om) f (Function.update (Function.update f 6 (f cDIST + f cACC)) 0 19)
+          (fun c => c = 0 ∨ c = 6) := fun c _ _ hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+      obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg hk
+        (fun c hc => by unfold ctl IN; omega)
+      refine ⟨_, f1, hS, hw1, fun h => absurd h h1, fun _ h => absurd h h2, fun _ _ => ⟨hR1, ?_, ?_, hk1⟩⟩
+      · rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [cMODE, mCOPY]
+      · rw [ag _ (by decide) (by unfold cDIST; omega)]; simp [cDIST, Function.update_apply]
+
+def copySet (n om : Nat) (c : Int) : Prop := c = 0 ∨ c = 3 ∨ c = 5 ∨ (IN + n ≤ c ∧ c < IN + n + om)
+
+theorem copyBack_size (d : Nat) : ∀ k (o : Array Nat), (copyBack d k o).size = o.size + k
+  | 0, o => rfl
+  | k + 1, o => by rw [copyBack, copyBack_size d k]; simp; omega
+
+/-- **COPY to its end:** k bytes, each `o[m − dist]`, exactly S7's `copyBack`, then SYM. -/
+theorem copy_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (d : Nat) (hd1 : 1 ≤ d) :
+    ∀ (k : Nat) (σ : Store) (f : Int → Int) (st : St), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mCOPY → f cPEND = k → f cDIST = d → d ≤ st.out.size → st.out.size + k ≤ om →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' ⟨st.pos, copyBack d k st.out⟩ ∧
+        f' cMODE = mSYM ∧ Keeps (L0 b.size om) f f' (copySet b.size om) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro k
+  induction k with
+  | zero =>
+    intro σ f st hw hR hm hk hd hdm hom
+    have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide) (copy_end hw hL (by simpa using hk))
+    have hg := hw.store (i := 0) (v := 13) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0) (fun c _ _ hc => upd_eq _ _ hc) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, Reach.step hS, hw1, by simpa [copyBack] using hR1, ?_, fun c h0 h1 hc => hk1 c h0 h1
+      (fun h => hc (by unfold copySet; omega))⟩
+    rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [cMODE, mSYM]
+  | succ k ih =>
+    intro σ f st hw hR hm hk hd hdm hom
+    have hi := hR.inv
+    have hmm := hR.m
+    set m := st.out.size with hmd
+    have hy := hR.out (m - d) (by omega)
+    have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+      (copy_byte hw hL (f cPEND) b.size m d (st.out.getD (m - d) 0) rfl (by rw [hk]; omega) hi.1.n_eq hmm hd
+        (by omega) (by unfold L0; omega) (by simp only [IN] at hy; rw [← hy]; congr 1; omega) (by omega)
+        (by unfold L0; omega))
+    set y : Int := ((st.out.getD (m - d) 0 : Nat) : Int) with hyd
+    set g := Function.update (Function.update (Function.update f (2080 + b.size + m) y) 3 (m + 1)) 5 (f cPEND - 1)
+      with hgd
+    have hg : World _ p (L0 b.size om) g :=
+      ((hw.store (i := 2080 + b.size + m) (by omega) (by unfold L0; omega)).store (i := 3) (by norm_num)
+        (by omega)).store (i := 5) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hi1, ag⟩ := step_to hb hw hi (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+    have kf : Keeps (L0 b.size om) f f1 (fun c => c = 2080 + b.size + m ∨ c = 3 ∨ c = 5) := fun c h0 h1 hc => by
+      rw [ag c h0 h1, hgd, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+    have hR1 : Rel b om lit f1 ⟨st.pos, st.out.push (st.out.getD (st.out.size - d) 0)⟩ := by
+      refine ⟨hi1, ?_, ?_, ?_, ?_⟩
+      · intro v i hv hi7 hl
+        rw [kf _ (by unfold BT; omega) (by unfold BT L0; omega) (by unfold BT; omega)]; exact hR.bits v i hv hi7 hl
+      · rw [kf _ (by decide) (by unfold cBY L0; omega) (by unfold cBY; omega),
+          kf _ (by decide) (by unfold cBI L0; omega) (by unfold cBI; omega)]; exact hR.pos
+      · rw [ag _ (by decide) (by unfold cM; omega)]; simp [hgd, cM, hmd]
+      · intro i hi2
+        simp only [Array.size_push] at hi2
+        by_cases hlt : i < m
+        · have hlt' : i < st.out.size := hlt
+          rw [kf _ (by unfold IN; omega) (by unfold IN L0; push_cast; omega) (by unfold IN; omega), hR.out i hlt']
+          simp [Array.getD, hlt', Array.getElem_push, show i < st.out.size + 1 by omega]
+        · have hie : i = m := by omega
+          subst hie
+          rw [ag _ (by unfold IN; omega) (by unfold IN L0; push_cast; omega)]
+          simp only [IN, hgd, Function.update_apply]
+          rw [if_neg (by omega), if_neg (by omega)]
+          simp [Array.getD, hyd, hmd]
+    have hm1 : f1 cMODE = mCOPY := by rw [kf _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    have hk1 : f1 cPEND = k := by
+      rw [ag _ (by decide) (by unfold cPEND; omega)]; simp only [hgd, cPEND, Function.update_self]
+      rw [show (5 : Int) = cPEND from rfl, hk]; push_cast; ring
+    have hd1' : f1 cDIST = d := by rw [kf _ (by decide) (by unfold cDIST; omega) (by unfold cDIST; omega)]; exact hd
+    obtain ⟨σ', f', hR', hw', hRel, hmo, hk'⟩ := ih _ f1 _ hw1 hR1 hm1 hk1 hd1' (by simp; omega) (by simp; omega)
+    refine ⟨σ', f', (Reach.step hS).trans hR', hw', by simpa [copyBack] using hRel, hmo, fun c h0 h1 hc => ?_⟩
+    rw [hk' c h0 h1 hc, kf c h0 h1 (by unfold copySet IN at hc; omega)]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
