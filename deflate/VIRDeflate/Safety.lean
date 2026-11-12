@@ -464,4 +464,98 @@ theorem Φ_nonneg : PhiNonneg := by
 /-- **SAFETY reduces to the 28 per-mode cases:** `StepSafe` alone. -/
 theorem safety_of_stepSafe (hs : StepSafe) : SafetyStmt := safety_of_step hs Φ_nonneg
 
+/-! ## Congruence: `facts` reads only the watched cells (cursor cells 1, 3, 5–13, 15, 16, 2074, and every cell from 2080 up) -/
+
+def watched : List Int := [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 2074]
+
+def Watch (f g : Int → Int) : Prop := (∀ i : Int, 2080 ≤ i → f i = g i) ∧ ∀ c ∈ watched, f c = g c
+
+theorem sane_congr {n om : Nat} {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {t : Int} (ht : 0 ≤ t)
+    (hs : sane n om f t) : sane n om g t := by
+  intro l h1 h2
+  have a := h (tbase n om t + l) (by unfold tbase LB0; omega)
+  have b := h (tbase n om t + 32 + l) (by unfold tbase LB0; omega)
+  rw [← a, ← b]; exact hs l h1 h2
+
+theorem cnt_congr {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {sb l : Int} (hsb : 2080 ≤ sb) :
+    ∀ k : Nat, cnt f sb l k = cnt g sb l k
+  | 0 => rfl
+  | k + 1 => by simp only [cnt, cnt_congr h hsb k, h (sb + k) (by omega)]
+
+theorem offOf_congr {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {tbb : Int} (htb : 2080 ≤ tbb) :
+    ∀ l : Nat, offOf f tbb l = offOf g tbb l
+  | 0 => rfl
+  | l + 1 => by simp only [offOf, offOf_congr h htb l, h (tbb + l) (by omega)]
+
+theorem buildInv_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 ≤ f cHLIT) (hb : buildInv n om f) :
+    buildInv n om g := by
+  obtain ⟨hi, hc⟩ := hw
+  have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
+  have e5 := hi (X0 n om + 5) (by omega)
+  have e6 := hi (X0 n om + 6) (by omega)
+  have e7 := hi (X0 n om + 7) (by omega)
+  have e12 := hc 12 (by decide)
+  have e13 := hc 13 (by decide)
+  have e74 := hc 2074 (by decide)
+  have e7c := hc 7 (by decide)
+  have e8c := hc 8 (by decide)
+  unfold buildInv at hb ⊢
+  simp only [cPHASE, cINDEX, cTGT, cHLIT, cHDIST] at hb ⊢ hhl
+  rw [← e5, ← e6, ← e7, ← e12, ← e13, ← e74, ← e7c, ← e8c]
+  obtain ⟨ht0, ht2, htb, htg, h0, h1, h23, h4, hph⟩ := hb
+  have htb2 : (2080 : Int) ≤ f (X0 n om + 7) := by rw [htb]; unfold tbase LB0; omega
+  have hsb : (2080 : Int) ≤ f (X0 n om + 5) := by
+    rcases htg with ⟨_, h, _⟩ | ⟨_, h, _⟩ | ⟨_, h, _⟩ <;> rw [h] <;> unfold LB0 <;> omega
+  have hcnt : ∀ (l : Int) (k : Nat), cnt f (f (X0 n om + 5)) l k = cnt g (f (X0 n om + 5)) l k :=
+    fun l k => cnt_congr hi (l := l) hsb k
+  have hoff := offOf_congr hi htb2
+  refine ⟨ht0, ht2, htb, ?_, ?_, ?_, ?_, ?_, hph⟩
+  · rcases htg with h | h | ⟨a, b', c, d, e⟩
+    · exact Or.inl h
+    · exact Or.inr (Or.inl h)
+    · exact Or.inr (Or.inr ⟨a, b', c, d, sane_congr hi (by norm_num) e⟩)
+  · intro hp
+    obtain ⟨a, b', c⟩ := h0 hp
+    exact ⟨a, b', fun l l0 lj => by rw [← hi _ (by omega)]; exact c l l0 lj⟩
+  · intro hp
+    obtain ⟨a, b', c, d⟩ := h1 hp
+    refine ⟨a, b', by rw [← hi _ htb2]; exact c, fun l l1 l15 => ?_⟩
+    rw [← hi _ (by omega), ← hcnt]; exact d l l1 l15
+  · intro hp2 hp3
+    obtain ⟨a, b', c, d, e, g'⟩ := h23 hp2 hp3
+    refine ⟨a, b', by rw [← hi _ htb2]; exact c, by rw [← hi _ (by omega)]; exact d, fun l l1 l15 => ?_, fun l l1 lj => ?_⟩
+    · rw [← hi _ (by omega), ← hcnt]; exact e l l1 l15
+    · rw [← hi _ (by omega), ← hi _ (by omega), ← hoff]; exact g' l l1 lj
+  · intro hp
+    obtain ⟨a, b', c, d⟩ := h4 hp
+    refine ⟨a, b', sane_congr hi ht0 c, fun l l1 l15 => ?_⟩
+    rw [← hi _ (by omega), ← hcnt, ← hcnt]; exact d l l1 l15
+
+theorem ite_imp {c : Prop} [Decidable c] {a b a' b' : Prop} (h1 : a → a') (h2 : b → b') :
+    (if c then a else b) → (if c then a' else b') := by
+  split_ifs <;> assumption
+
+theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 ≤ f cHLIT) {md : Int}
+    (hf : facts n om md f) : facts n om md g := by
+  have hb := fun h => buildInv_congr (n := n) (om := om) hw hhl h
+  obtain ⟨hi, hc⟩ := hw
+  have s0 := sane_congr (n := n) (om := om) hi (t := 0) (le_refl _)
+  have s1 := sane_congr (n := n) (om := om) hi (t := 1) (by norm_num)
+  have s2 := sane_congr (n := n) (om := om) hi (t := 2) (by norm_num)
+  have e1 : f cBY = g cBY := hc cBY (by decide)
+  have e3 : f cM = g cM := hc cM (by decide)
+  have e5 : f cPEND = g cPEND := hc cPEND (by decide)
+  have e6 : f cDIST = g cDIST := hc cDIST (by decide)
+  have e7 : f cHLIT = g cHLIT := hc cHLIT (by decide)
+  have e8 : f cHDIST = g cHDIST := hc cHDIST (by decide)
+  have e9 : f cHCLEN = g cHCLEN := hc cHCLEN (by decide)
+  have e10 : f cFILL = g cFILL := hc cFILL (by decide)
+  have e11 : f cLAST = g cLAST := hc cLAST (by decide)
+  have e15 : f cN = g cN := hc cN (by decide)
+  have e16 : f cOUTMAX = g cOUTMAX := hc cOUTMAX (by decide)
+  unfold facts at hf ⊢
+  rw [← e1, ← e3, ← e5, ← e6, ← e7, ← e8, ← e9, ← e10, ← e11, ← e15, ← e16]
+  revert hf
+  repeat' (first | apply ite_imp | (intro h; tauto))
+
 end VIRDeflate.Step
