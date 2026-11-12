@@ -57,3 +57,8 @@
   next: split its walk at a `by_cases` or state it in two halves), TABLE (BITc), `readbit_trunc`'s twin is done in Modes2.
   **The K5-2b work list is k5/RANGE-SITES.md: 202 distinct (trace, expression) range obligations**, each to be discharged
   from Safety's facts or `Mag`.
+- **K5-2b PILOT DONE: `read_inR` (k5/K5/SafeRead.lean, k5p-052):** READ in range on every world satisfying Safety's `Inv`, n < 2³²,
+  from Inv ALONE (InvM.read: `wt·2^k ≤ kcap ≤ 65536` bounds wt and k ≤ 16; t ∈ {0,1}; acc < wt). Safety's `safeI_read`'s own
+  derivation is the template for every other mode. Audit k5-audit-001: 12 rows within the three; control sorryAx.
+- build_left_end with `maxHeartbeats 0` ran 11.5 min holding the fleet lock and was stopped by its owner (k5p-probe-009):
+  the unbounded form is impractical; split its 64-way case analysis into separate theorems.
