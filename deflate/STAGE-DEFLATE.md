@@ -288,7 +288,12 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       (`Watch`, `facts_congr`, `buildInv_congr`: facts read only cursor cells 1, 3, 5–13, 15, 16, 2074 and cells ≥ 2080);
       `InvM.req` (a READ request, from the syms part alone), `InvM.upd` (a write to an unwatched cell), `SymsOK.upd`.
       **`safeI_hdr`, `safeI_hdrb`, `safeI_slen`, `safeI_dhdr`: 4 of the 28 cases DONE** (SLEN's uses the return mode's
-      acc bound: LEN = acc ≥ 0 becomes SNLEN's pend). 24 owed, then `StepSafe` by cases on the mode. The audit file is regenerated from VIRDeflate.lean's imports: the
+      acc bound: LEN = acc ≥ 0 becomes SNLEN's pend). 24 owed, then `StepSafe` by cases on the mode.
+    - **S-17, a finding against S-16 by its own clause (found writing READ's case):** READ's and DECODE's truncation steps
+      into REJECT leave Φ unchanged (no bit; LOC 0 → 0). Declared (vir d788df8) before the code changed: a step into
+      DONE/REJECT is exempt, `StepSafe` says "Φ lower OR the next mode is terminal", and **N = Nbound + 1** (df-127,
+      `safety_of_step` re-proved). The measure is unchanged. Also: SCOPY's by + pend ≤ n moved to its own InvM field so
+      that cell 1 leaves the watched set (READ advances it). The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)

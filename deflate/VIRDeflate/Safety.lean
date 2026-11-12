@@ -345,11 +345,13 @@ theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCel
 
 /-! ## Safety from one safe step (the outer argument, checked before the 28 per-mode cases) -/
 
-/-- What every non-terminal mode must give: its `stepS`, the next world, the invariant kept, Φ strictly lower. -/
+/-- What every non-terminal mode must give: its `stepS`, the next world, the invariant kept, and Φ strictly lower — OR the next
+mode is DONE or REJECT (S-17: READ's and DECODE's truncation steps leave Φ unchanged). -/
 def StepSafe : Prop :=
-  ∀ (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (σ : Store) (f : Int → Int),
+  ∀ (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (σ : Store) (f : Int → Int), (∀ x ∈ b, x < 256) →
     World σ p (L0 b.size om) f → Inv b om lit f → f cMODE ≠ mDONE → f cMODE ≠ mREJECT →
-    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT)
 
 /-- Φ is never negative on a world satisfying the invariant. -/
 def PhiNonneg : Prop := ∀ (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int), Inv b om lit f → 0 ≤ Φ f
@@ -360,35 +362,33 @@ theorem modeOf_world {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : Wo
   rw [show p + 0 = p by omega] at h0
   simp [modeOf, h0, cMODE]
 
-theorem iter_reach (hs : StepSafe) (hnn : PhiNonneg) (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) :
-    ∀ (k : Nat) (σ : Store) (f : Int → Int), World σ p (L0 b.size om) f → Inv b om lit f → Φ f ≤ k →
+theorem iter_reach (hs : StepSafe) (hnn : PhiNonneg) (b : Array Nat) (om : Nat) (lit : Bool) (p : Int)
+    (hb : ∀ x ∈ b, x < 256) :
+    ∀ (k : Nat) (σ : Store) (f : Int → Int), World σ p (L0 b.size om) f → Inv b om lit f → Φ f < k →
       ∃ j σ', j ≤ k ∧ iterS p j σ = some σ' ∧ (modeOf p σ' = mDONE ∨ modeOf p σ' = mREJECT) := by
   have hL : 0 < L0 b.size om := by unfold L0; omega
   intro k
   induction k with
   | zero =>
-    intro σ f hw hi hk
-    by_cases ht : f cMODE = mDONE ∨ f cMODE = mREJECT
-    · exact ⟨0, σ, le_refl _, rfl, by rw [modeOf_world hw hL]; exact ht⟩
-    · push Not at ht
-      obtain ⟨σ', f', _, _, hi', hlt⟩ := hs b om lit p σ f hw hi ht.1 ht.2
-      have := hnn b om lit f' hi'
-      push_cast at hk
-      omega
+    intro σ f _ hi hk
+    have := hnn b om lit f hi
+    push_cast at hk; omega
   | succ k ih =>
     intro σ f hw hi hk
     by_cases ht : f cMODE = mDONE ∨ f cMODE = mREJECT
     · exact ⟨0, σ, by omega, rfl, by rw [modeOf_world hw hL]; exact ht⟩
     · push Not at ht
-      obtain ⟨σ', f', hst, hw', hi', hlt⟩ := hs b om lit p σ f hw hi ht.1 ht.2
-      obtain ⟨j, σ'', hj, hit, hm⟩ := ih σ' f' hw' hi' (by push_cast at hk ⊢; omega)
-      exact ⟨j + 1, σ'', by omega, by simp [iterS, hst, hit], hm⟩
+      obtain ⟨σ', f', hst, hw', hi', hlt⟩ := hs b om lit p σ f hb hw hi ht.1 ht.2
+      rcases hlt with hlt | ht'
+      · obtain ⟨j, σ'', hj, hit, hm⟩ := ih σ' f' hw' hi' (by push_cast at hk ⊢; omega)
+        exact ⟨j + 1, σ'', by omega, by simp [iterS, hst, hit], hm⟩
+      · exact ⟨1, σ', by omega, by simp [iterS, hst], by rw [modeOf_world hw' hL]; exact ht'⟩
 
-/-- **SAFETY, from one safe step and Φ ≥ 0:** with N = `Nbound`, a function of n and OUTMAX alone. -/
+/-- **SAFETY, from one safe step and Φ ≥ 0:** with N = `Nbound` + 1 (S-17), a function of n and OUTMAX alone. -/
 theorem safety_of_step (hs : StepSafe) (hnn : PhiNonneg) : SafetyStmt := by
-  refine ⟨Nbound, fun b om lit p _ => ?_⟩
-  obtain ⟨j, σ', hj, hit, hm⟩ := iter_reach hs hnn b om lit p (Nbound b.size om) (initStore b om lit p)
-    (initCell b om lit) (initStore_world b om lit p) (Inv_init b om lit) (by rw [Φ_init])
+  refine ⟨fun n om => Nbound n om + 1, fun b om lit p hb => ?_⟩
+  obtain ⟨j, σ', hj, hit, hm⟩ := iter_reach hs hnn b om lit p hb (Nbound b.size om + 1) (initStore b om lit p)
+    (initCell b om lit) (initStore_world b om lit p) (Inv_init b om lit) (by rw [Φ_init]; push_cast; omega)
   exact ⟨j, σ', hj, hit, hm⟩
 
 /-! ## Φ ≥ 0 on the invariant -/
