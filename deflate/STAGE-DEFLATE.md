@@ -307,7 +307,10 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       (four branches; REJECT terminal) safe (df-136 … df-141). Helpers `InvG.hdr`, `InvG.align`, `InvM.mode`, `Φ_lt_of`,
       `TBO_eq`. **9 of 28 DONE:** HDR, HDRB, SLEN, DHDR, READ, DH2, DH3, SHDR, HDRD. A recurring slip, recorded so the next
       head avoids it: after `simp [cX…]` unfolds a cell name in the GOAL, omega treats `f 8` and `f cHDIST` as different
-      atoms — unfold the names in the hypotheses too. The audit file is regenerated from VIRDeflate.lean's imports: the
+      atoms — unfold the names in the hypotheses too.
+    - SNLEN (S3's three checks; the pass to SCOPY establishes m + len ≤ OUTMAX, by + len ≤ n, bi = 0) and SCOPY (a byte:
+      BITS − 8, OUT − 1; the end: DONE or HDR) safe (df-146), with `InvG.out` (an output-area write) and `InvG.c13`.
+      **11 of 28 DONE.** The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
