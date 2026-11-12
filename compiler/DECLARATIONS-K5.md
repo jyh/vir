@@ -149,3 +149,26 @@ shape it did not search. ⇒ the census law for this campaign: search every addr
   2·(code + cp) ≤ 636·2^16. Every other store's address is outside the 3 × 15 cells (Safety's own table-frame lemmas are the
   route; their use is `Mag_step`'s).
 With F1, DECODE's obligations close: cv < 2¹⁵ (C1), fs ≤ 636·2¹⁶ (F1), c and o from `sane`.
+
+## Addendum 6 (70th head, 2026-11-12, after K5-2 PROVED (vir 12a5a95) and BEFORE any K5-3 file): K5-3's statement, and row 296's instantiation inside it
+K5-3 is `compile_noovf` (VIRC/NoOvfSrc.lean) at DEFLATE's step term. It is also the FIRST instantiation of `compile_refines`
+at a program (STATUS-vir 296): no program has been run through S1∘S2's statement before. So 296's setup is declared here once and
+both theorems use it.
+- **The instance.** Γ₀ = [tcap], Δ₀ = [true], e = stepT, τ = tcap (Typing.lean `stepT_typed`), vs = [.const (.cap p)], so the
+  ⟶₂ program is `instL 0 vs stepT`, which is `closeAt p stepT` by definition (both are `Tm.subst 0 (.const (.cap p)) stepT`).
+  ρw₀ = [lay p, BitVec.ofNat 64 (L0 n om)]: the cap's two words, EnvRel's `cap` case from `World.reg` at σ.
+- **The per-program facts**, each CLOSED by evaluation and stated about stepT alone: `Tm.wfB 1 stepT`, `Tm.fnOk stepT`,
+  `Tm.ok2 stepT`, and the lowered table's length < 2⁶⁴. `Good vs` is a fact about the constant cap.
+- **What stays a hypothesis:** `Layout σ lay` and `MemRel lay σ m`, compile_refines's own loader premise (where the store's
+  regions sit in the 64-bit address space, and that memory holds the cells). These are the GENERIC premise of every program
+  through the compiler, not a premise of DEFLATE, and never one on the bytes. K6 (0 per-program layout lemmas) is read at
+  this statement: it adds none.
+- **Statement.** `deflate_noovf`: for bytes < 256, n, OUTMAX < 2³², either reading, every k and σ with
+  `iterS p k (initStore b om lit p) = some σ`, every `lay m` with `Layout σ lay` and `MemRel lay σ m`: every word-machine run
+  from (.run (lower2T [tcap] stepT []).1 ρw₀ [], m) has `W'.1 ≠ .ovf`. Corollary `deflate_refines_noovf`: compile_refines (1)
+  at the same instance, without its `∨ .ovf` (296's instantiation, stated without the overflow disjunct).
+- **Route.** `deflate_inrange` gives `SrcInRange (closeAt p stepT, σ)`; `reach_inv` gives `World σ p (L0 n om) f`, hence EnvRel;
+  then `compile_noovf` with the facts above.
+- **What would show it wrong:** a per-program fact that does not close by evaluation (a finding about stepT or the lowering);
+  `deflate_noovf` needing a hypothesis beyond the loader premise and the K5-2 bounds (K5's third falsifier); a layout lemma
+  about DEFLATE in particular (K6 then reads 1, not 0).
