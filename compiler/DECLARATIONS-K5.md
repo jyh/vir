@@ -135,3 +135,17 @@ facts from `Inv ∧ Mag` as the other 22 take theirs from `Inv`.
 **What would show this wrong:** a write to one of these cells not in the census above (re-run it over Step.lean before
 `Mag_step`, by `command grep -n 'store \[' | grep -F` per cell name AND per `x" ) (.i k)` offset — the two needle shapes); a
 clause that `Mag_step` cannot close (reported as a finding with the cell and the write, never widened silently).
+
+## Addendum 5 (69th head, 2026-11-12, after `Mag.lean` (vir f9d81a3) and BEFORE the DECODE wrapper): clause F1, a gap in Addendum 4
+**K5-2-2, a FINDING against Addendum 4 (mine, the same head).** Addendum 4 lists DECODE's unbounded read as `x+1` (cv) only.
+Read at the trace (k5/K5/Modes4.lean `decode_step_inR`), DECODE also computes `fs + c` and `2·cv + b − fs` with
+`fs = f (tb + 16 + l)`, the table's `first[l]` cell, which no `Inv` clause bounds (`sane` bounds count and offset only) and no
+Addendum 4 clause names. Addendum 4's census was by CELL NAME and by `x + k` offset; `first[]` is addressed from `tbb`, a third
+shape it did not search. ⇒ the census law for this campaign: search every address SHAPE the program uses (named cell, `x + k`,
+`tbb + k (+ j)`, `IN + n + om + k`), not the shapes the author already has in mind.
+- **F1** (global, every mode) ∀ t ∈ [0, 2], ∀ l ∈ [1, 15]: 0 ≤ `f (tbase n om t + 16 + l)` ≤ 636·2¹⁶. *Initially* 0 (the tables are
+  in the zeroed tail, `initCell_tail`). *Written only by* BUILD (census over Step.lean's `tbb` shape, 2 stores: l.994
+  `first[0] := 0`, l.1008 `first[j] := 2·(code + cp)`), and at l.1008 B1 gives code + 636 ≤ 636·2^j with j ≤ 15 and cp ≤ 318, so
+  2·(code + cp) ≤ 636·2^16. Every other store's address is outside the 3 × 15 cells (Safety's own table-frame lemmas are the
+  route; their use is `Mag_step`'s).
+With F1, DECODE's obligations close: cv < 2¹⁵ (C1), fs ≤ 636·2¹⁶ (F1), c and o from `sane`.
