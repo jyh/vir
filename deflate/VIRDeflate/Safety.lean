@@ -120,4 +120,85 @@ theorem safe_hdr' {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
       InvG b om lit (reqF f 1 3) ∧ Φ (reqF f 1 3) < Φ f :=
   ⟨stepS_hdr hw hL hm, hw.req (by omega) 1 3, hi.req (by rw [hm]; decide) 1 (by decide), Φ_hdr hm⟩
 
+/-! ## Scratch cells: the invariant says nothing about them -/
+
+def scratch (i : Int) : Prop := i = 4 ∨ i = 5 ∨ i = 6 ∨ (10 ≤ i ∧ i ≤ 14) ∨ (2068 ≤ i ∧ i ≤ 2070) ∨ (2072 ≤ i ∧ i ≤ 2078)
+
+theorem upd_eq (f : Int → Int) {i j : Int} (v : Int) (h : j ≠ i) : Function.update f i v j = f j :=
+  Function.update_of_ne h v f
+
+theorem InvG.upd {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) {i : Int} (hs : scratch i)
+    (v : Int) : InvG b om lit (Function.update f i v) := by
+  unfold scratch at hs
+  exact {
+  n_eq := by rw [upd_eq _ _ (by unfold cN; omega)]; exact h.n_eq
+  om_eq := by rw [upd_eq _ _ (by unfold cOUTMAX; omega)]; exact h.om_eq
+  x_eq := by rw [upd_eq _ _ (by unfold cX; omega)]; exact h.x_eq
+  lit_eq := by rw [upd_eq _ _ (by unfold cLIT; omega)]; exact h.lit_eq
+  input := fun j h1 h2 => by rw [upd_eq _ _ (by omega)]; exact h.input j h1 h2
+  ro := fun j h1 h2 => by rw [upd_eq _ _ (by unfold X0 at h1; omega)]; exact h.ro j h1 h2
+  lens := fun j h1 h2 => by rw [upd_eq _ _ (by omega)]; exact h.lens j h1 h2
+  tb_rng := fun hm => by
+    rw [upd_eq _ _ (by unfold cMODE; omega)] at hm
+    rw [upd_eq _ _ (by unfold cTB; omega), upd_eq _ _ (by unfold cTI; omega)]; exact h.tb_rng hm
+  bits := fun c h1 h2 h3 => by
+    rw [upd_eq _ _ (by unfold cMODE; omega), upd_eq _ _ (by unfold cTB; omega), upd_eq _ _ (by unfold cTI; omega)] at h3
+    rw [upd_eq _ _ (by unfold BT; omega)]; exact h.bits c h1 h2 h3
+  by_rng := by rw [upd_eq _ _ (by unfold cBY; omega)]; exact h.by_rng
+  bi_rng := by rw [upd_eq _ _ (by unfold cBI; omega)]; exact h.bi_rng
+  by_end := by rw [upd_eq _ _ (by unfold cBY; omega), upd_eq _ _ (by unfold cBI; omega)]; exact h.by_end
+  m_rng := by rw [upd_eq _ _ (by unfold cM; omega)]; exact h.m_rng
+  mode_ok := by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact h.mode_ok
+  read_rt := fun hm => by
+    rw [upd_eq _ _ (by unfold cMODE; omega)] at hm
+    rw [upd_eq _ _ (by unfold cRET; omega)]; exact h.read_rt hm
+  hdr_rng := by
+    rw [upd_eq _ _ (by unfold cHLIT; omega), upd_eq _ _ (by unfold cHDIST; omega), upd_eq _ _ (by unfold cHCLEN; omega)]
+    exact h.hdr_rng }
+
+/-! ## The request modes -/
+
+theorem safe_hdrb {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {L : Nat} {f : Int → Int}
+    (hw : World σ p L f) (hL : 2080 ≤ L) (hi : InvG b om lit f) (hm : f cMODE = mHDRB) :
+    stepS p σ = some ⟨reqH (σ.H.insert (p + 4) (f cACC)) p 2 4, σ.R⟩ ∧
+      World ⟨reqH (σ.H.insert (p + 4) (f cACC)) p 2 4, σ.R⟩ p L (reqF (Function.update f 4 (f cACC)) 2 4) ∧
+      InvG b om lit (reqF (Function.update f 4 (f cACC)) 2 4) ∧ Φ (reqF (Function.update f 4 (f cACC)) 2 4) < Φ f := by
+  have hmem : (mHDRB, hdrbN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mHDRB, hdrbN) hmem (by decide)
+  refine ⟨stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (hdrb_step hw hL (f cACC) rfl),
+    (hw.store (i := 4) (by norm_num) (by omega)).req (by omega) 2 4,
+    (hi.upd (by unfold scratch; omega) _).req (by rw [upd_eq _ _ (by unfold cMODE; omega), hm]; decide) 2 (by decide), ?_⟩
+  simp only [reqF]
+  simp only [cMODE, mHDRB] at hm
+  phisimp
+  simp [hm]
+
+theorem safe_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {L : Nat} {f : Int → Int}
+    (hw : World σ p L f) (hL : 2080 ≤ L) (hi : InvG b om lit f) (hm : f cMODE = mSLEN) :
+    stepS p σ = some ⟨reqH (σ.H.insert (p + 5) (f cACC)) p 16 9, σ.R⟩ ∧
+      World ⟨reqH (σ.H.insert (p + 5) (f cACC)) p 16 9, σ.R⟩ p L (reqF (Function.update f 5 (f cACC)) 16 9) ∧
+      InvG b om lit (reqF (Function.update f 5 (f cACC)) 16 9) ∧ Φ (reqF (Function.update f 5 (f cACC)) 16 9) < Φ f := by
+  have hmem : (mSLEN, slenN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mSLEN, slenN) hmem (by decide)
+  refine ⟨stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (slen_step hw hL (f cACC) rfl),
+    (hw.store (i := 5) (by norm_num) (by omega)).req (by omega) 16 9,
+    (hi.upd (by unfold scratch; omega) _).req (by rw [upd_eq _ _ (by unfold cMODE; omega), hm]; decide) 16 (by decide), ?_⟩
+  simp only [reqF]
+  simp only [cMODE, mSLEN] at hm
+  phisimp
+  simp [hm]
+
+theorem safe_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {L : Nat} {f : Int → Int}
+    (hw : World σ p L f) (hL : 2080 ≤ L) (hi : InvG b om lit f) (hm : f cMODE = mDHDR) :
+    stepS p σ = some ⟨reqH σ.H p 5 20, σ.R⟩ ∧ World ⟨reqH σ.H p 5 20, σ.R⟩ p L (reqF f 5 20) ∧
+      InvG b om lit (reqF f 5 20) ∧ Φ (reqF f 5 20) < Φ f := by
+  have hmem : (mDHDR, dhdrN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mDHDR, dhdrN) hmem (by decide)
+  refine ⟨stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (dhdr_step hw hL), hw.req (by omega) 5 20,
+    hi.req (by rw [hm]; decide) 5 (by decide), ?_⟩
+  simp only [reqF]
+  simp only [cMODE, mDHDR] at hm
+  phisimp
+  simp [hm]
+
 end VIRDeflate.Step
