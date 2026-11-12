@@ -125,3 +125,22 @@
   states `Tm.ok2 stepT = false` and table length < 2; `decide` REFUSES both (2 errors at lines 5 and 8, EXIT=1), so the facts
   are evaluated rather than vacuous. **K5 (amend-23) reads HOLDS at this sha: the overflow exit is unreachable for DEFLATE's step
   under n, OUTMAX < 2³² with no per-input premise.** Row 296's K3/K6 reading at this sha is still owed (its own row).
+- **Row 296's reading at d9ac597 (70th head): K3 provisional HOLDS · K6 for DEFLATE UNREACHED, and its instrument meets a
+  router file.**
+  - **K3** (DECLARATIONS-S1.md l.46–50's whitelist). The driver theorem C0 (a) is S3's and does not exist yet, so this reads
+    the S1∘S2 statements that S3 will compose. Probe k5p-probe-K3-1 (EXIT=0) lists every constant in each type
+    (`Expr.getUsedConstants`), and `k5/tools/k3_check.py` applies the whitelist. compile_refines (66 constants),
+    compile_noovf (51), compile_refines_noovf (59) and s2_refines (60) read OK. Their constants are VIRC/VIRL1/VIRL2 plus core
+    and Mathlib (`Monoid`) only. Positive control: `K5.deflate_noovf` reads FALSIFIED (VIRDeflate.Step.stepT/iterS/initStore/L0,
+    K5.capWords), so the check can fail (rc 1). LIMIT: the script blacklists the forbidden namespaces. It does not enumerate
+    Mathlib, and the namespace census above is the positive half.
+  - **K6** ("S2's layout premise discharged ONCE from L2's capabilities: 0 per-program layout lemmas"). For DEFLATE: 0 files named
+    `*Layout*` under deflate/ or k5/, and no lemma about `Layout` in DeflateNoOvf.lean. ⚠️ **But the premise is not
+    discharged at all at this sha.** `Layout σ lay` and `MemRel lay σ m` are HYPOTHESES of deflate_noovf, so "0 per-program
+    lemmas" holds only because nothing discharges it yet. K6's subject, the ONE generic discharge from L2's capabilities, does
+    not exist. ⇒ K6 reads **UNREACHED**, not HOLDS. For the router, the instrument as written ("files named `*Layout*` per
+    program") meets `l3/VIRL3/Layout.lean`. That is the L3 world's cell layout (NW/NS/NT offsets), written before the compiler
+    existed, and it is not an S2-premise discharge. The instrument reads 1 and its subject reads 0. Both figures go to K6's
+    scorer; the author does not choose between them.
+  - Owed for K6: a generic `Layout`/`MemRel` construction (an allocator image for any store whose regions fit) and its use at
+    DEFLATE and the router with no program lemma. That is new work, not part of row 296, and it is queued as its own row.
