@@ -3351,6 +3351,76 @@ theorem fixedD_getD (k : Nat) (hk : k < 30) : (fixedDLens.getD k 0 : Int) = fixL
   have e : fixedDLens.getD k 0 = 5 := by simp [fixedDLens, Array.getD, hk]
   rw [e]; unfold fixLenI; split_ifs <;> first | omega | norm_num
 
+/-! ## The fixed block's two builds -/
+
+/-- The BUILD-for-L start that FIXLENS leaves. -/
+def FixStart (b : Array Nat) (om : Nat) (lit : Bool) (bf : Int) (f : Int → Int) (st : St) : Prop :=
+  Rel b om lit f st ∧ f cMODE = mBUILD ∧ f cPHASE = 0 ∧ f cINDEX = 0 ∧ f (X0 b.size om + 5) = LB0 b.size om ∧
+    f (X0 b.size om + 6) = 288 ∧ f (X0 b.size om + 7) = tbase b.size om 1 ∧ f (X0 b.size om + 8) = 0 ∧ f cTGT = 1 ∧
+    f cDYN = 0 ∧ f cCHK = (if lit then 1 else 0) ∧ f cHLIT = 288 ∧ f cHDIST = 30 ∧ f cBF = bf ∧
+    (∀ k : Nat, k < 318 → f (LB0 b.size om + k) = fixLenI k)
+
+theorem fixL_src {b : Array Nat} {om : Nat} {f : Int → Int} (h5 : f (X0 b.size om + 5) = LB0 b.size om)
+    (hl : ∀ k : Nat, k < 318 → f (LB0 b.size om + k) = fixLenI k) :
+    ∀ i : Nat, i < fixedLLens.size → f (f (X0 b.size om + 5) + i) = fixedLLens.getD i 0 := fun i hi => by
+  have : fixedLLens.size = 288 := by simp [fixedLLens]
+  rw [h5, hl i (by omega), fixedL_getD i (by omega)]
+
+theorem fixD_src {b : Array Nat} {om : Nat} {f : Int → Int} (h5 : f (X0 b.size om + 5) = LB0 b.size om + 288)
+    (hl : ∀ k : Nat, k < 318 → f (LB0 b.size om + k) = fixLenI k) :
+    ∀ i : Nat, i < fixedDLens.size → f (f (X0 b.size om + 5) + i) = fixedDLens.getD i 0 := fun i hi => by
+  have : fixedDLens.size = 30 := by simp [fixedDLens]
+  rw [h5, show LB0 b.size om + 288 + (i : Int) = LB0 b.size om + ((288 + i : Nat) : Int) by push_cast; ring,
+    hl (288 + i) (by omega), fixedD_getD i (by omega)]
+  push_cast; rfl
+
+theorem fixedL_15 : ∀ i, i < fixedLLens.size → fixedLLens.getD i 0 ≤ 15 := fun i hi => by
+  have hs : fixedLLens.size = 288 := by simp [fixedLLens]
+  have e : fixedLLens.getD i 0 = if i < 144 then 8 else if i < 256 then 9 else if i < 280 then 7 else 8 := by
+    simp [fixedLLens, Array.getD, show i < 288 by omega]
+  rw [e]; split_ifs <;> omega
+
+theorem fixedD_15 : ∀ i, i < fixedDLens.size → fixedDLens.getD i 0 ≤ 15 := fun i hi => by
+  have hs : fixedDLens.size = 30 := by simp [fixedDLens]
+  have e : fixedDLens.getD i 0 = 5 := by simp [fixedDLens, Array.getD, show i < 30 by omega]
+  rw [e]; omega
+
+/-- From the L build's end (`Built`), the hand-off to the D build. -/
+theorem fix_handoff {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int)
+    {σ : Store} {f₀ f : Int → Int} {st : St} (hw : World σ p (L0 b.size om) f) (h0 : FixStart b om lit bf f₀ st)
+    (hB : Built b om lit fixedLLens f₀ f st) :
+    ∃ σ1 f1, Reach p σ σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧ f1 cMODE = mBUILD ∧ f1 cPHASE = 0 ∧
+      f1 cINDEX = 0 ∧ f1 (X0 b.size om + 5) = LB0 b.size om + 288 ∧ f1 (X0 b.size om + 6) = fixedDLens.size ∧
+      f1 (X0 b.size om + 8) = 0 ∧ f1 cCHK = (if lit then 1 else 0) ∧ f1 cBF = bf ∧ f1 cTGT = 2 ∧
+      (∀ k : Nat, k < 318 → f1 (LB0 b.size om + k) = fixLenI k) ∧ TblRel b.size om f1 1 fixedLLens := by
+  obtain ⟨hR0, -, -, -, h5, h6, h7, h8, htg, hdy, hchk, hhl, hhd, hbf, hl⟩ := h0
+  obtain ⟨hR, hm, hph, hj, hT, hk⟩ := hB
+  rw [htg] at hT
+  rw [h7] at hk
+  have far := bset_far (n := b.size) (om := om) (t := 1) (by norm_num)
+  have kk : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset (tbase b.size om 1) c → f c = f₀ c := hk
+  have e6 : f (X0 b.size om + 6) = 288 := by
+    rw [kk _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ h).2.1 rfl)]; exact h6
+  have etg : f cTGT = 1 := by rw [kk _ (by decide) (by unfold cTGT L0; omega) (fun h => (far _ h).2.2.2.2.1 rfl)]; exact htg
+  have hsz : fixedLLens.size = 288 := by simp [fixedLLens]
+  obtain ⟨σ1, f1, hS, hw1, hR1, -, -, hL1⟩ := build_end_next hb hw hR hm hph (by rw [hj, e6, hsz]; rfl)
+  obtain ⟨hm1, htg1, h51, h61, h71, h81, hp1, hj1, hk1⟩ := hL1 etg
+  have kk1 : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ (c = 12 ∨ c = 13 ∨ c = 2074 ∨
+      (X0 b.size om + 5 ≤ c ∧ c ≤ X0 b.size om + 8)) → f1 c = f c := hk1
+  have hdsz : fixedDLens.size = 30 := by simp [fixedDLens]
+  refine ⟨σ1, f1, Reach.step hS, hw1, hR1, hm1, hp1, hj1, ?_, ?_, ?_, ?_, ?_, htg1, fun k hk' => ?_, ?_⟩
+  · rw [h51, kk _ (by decide) (by unfold cHLIT L0; omega) (fun h => (far _ h).2.2.2.2.2.2.2.1 rfl), hhl]
+  · rw [h61, kk _ (by decide) (by unfold cHDIST L0; omega) (fun h => (far _ h).2.2.2.2.2.2.2.2.1 rfl), hhd, hdsz]; rfl
+  · rw [h81, kk _ (by decide) (by unfold cDYN L0; omega) (fun h => (far _ h).2.2.2.2.2.2.1 rfl), hdy]; rfl
+  · rw [kk1 _ (by decide) (by unfold cCHK L0; omega) (by unfold cCHK X0; omega),
+      kk _ (by decide) (by unfold cCHK L0; omega) (fun h => (far _ h).2.2.2.2.2.1 rfl), hchk]
+  · rw [kk1 _ (by decide) (by unfold cBF L0; omega) (by unfold cBF X0; omega),
+      kk _ (by decide) (by unfold cBF L0; omega) (fun h => (far _ h).2.2.2.2.2.2.2.2.2.1 rfl), hbf]
+  · rw [kk1 _ (by unfold LB0; omega) (by unfold LB0 L0; omega) (by unfold LB0 X0; omega),
+      kk _ (by unfold LB0; omega) (by unfold LB0 L0; omega) (fun h => by have := (far _ h).2.2.2.2.2.2.2.2.2.2.2; omega)]
+    exact hl k hk'
+  · exact hT.keep (by norm_num) hk1 (fun c hc => by unfold tbase LB0 X0 at *; omega)
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
