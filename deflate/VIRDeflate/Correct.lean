@@ -3351,6 +3351,24 @@ theorem fixedD_getD (k : Nat) (hk : k < 30) : (fixedDLens.getD k 0 : Int) = fixL
   have e : fixedDLens.getD k 0 = 5 := by simp [fixedDLens, Array.getD, hk]
   rw [e]; unfold fixLenI; split_ifs <;> first | omega | norm_num
 
+/-- `TblRel t` survives any change outside table t itself. -/
+theorem TblRel.keep' {n om : Nat} {f f' : Int → Int} {t : Int} {lens : Array Nat} {S : Int → Prop}
+    (hT : TblRel n om f t lens) (ht : 0 ≤ t ∧ t ≤ 2) (hk : Keeps (L0 n om) f f' S)
+    (hS : ∀ c, S c → c < tbase n om t ∨ tbase n om t + 352 ≤ c) : TblRel n om f' t lens := by
+  have tb2 : tbase n om t + 352 ≤ L0 n om := by unfold tbase LB0 L0; omega
+  have tb0 : 0 ≤ tbase n om t := by unfold tbase LB0; omega
+  have k : ∀ c, tbase n om t ≤ c → c < tbase n om t + 352 → f' c = f c := fun c h1 h2 =>
+    hk c (by omega) (by omega) (fun h => by have := hS c h; omega)
+  intro l hl1 hl15
+  obtain ⟨h1, h2, h3, s1, s2⟩ := hT l hl1 hl15
+  have e32 : f' (tbase n om t + 32 + l) = f (tbase n om t + 32 + l) := k _ (by omega) (by omega)
+  refine ⟨by rw [k _ (by omega) (by omega)]; exact h1, by rw [k _ (by omega) (by omega)]; exact h2, fun j hj => ?_,
+    by rw [e32]; exact s1, by rw [e32]; exact s2⟩
+  rw [e32]
+  have hj' : (j : Int) < blCount lens l := by exact_mod_cast hj
+  rw [k _ (by omega) (by omega)]
+  exact h3 j hj
+
 /-! ## The fixed block's two builds -/
 
 /-- The BUILD-for-L start that FIXLENS leaves. -/
@@ -3420,6 +3438,66 @@ theorem fix_handoff {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ 
       kk _ (by unfold LB0; omega) (by unfold LB0 L0; omega) (fun h => by have := (far _ h).2.2.2.2.2.2.2.2.2.2.2; omega)]
     exact hl k hk'
   · exact hT.keep (by norm_num) hk1 (fun c hc => by unfold tbase LB0 X0 at *; omega)
+
+/-- From the D build's `Built`, its end: SYM, both tables related, BFINAL kept. -/
+theorem fix_toSym {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int)
+    {σ : Store} {f₁ f : Int → Int} {st : St} (hw : World σ p (L0 b.size om) f)
+    (h1 : f₁ cTGT = 2) (h16 : f₁ (X0 b.size om + 6) = fixedDLens.size) (hbf : f₁ cBF = bf)
+    (hT1 : TblRel b.size om f₁ 1 fixedLLens) (h7 : f₁ (X0 b.size om + 7) = tbase b.size om 2)
+    (hB : Built b om lit fixedDLens f₁ f st) :
+    ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧
+      ((Rel b om lit f' st ∧ f' cMODE = mSYM) ∧ f' cBF = bf ∧ TblRel b.size om f' 1 fixedLLens ∧
+        TblRel b.size om f' 2 fixedDLens) := by
+  obtain ⟨hR, hm, hph, hj, hT, hk⟩ := hB
+  rw [h1] at hT; rw [h7] at hk
+  have far := bset_far (n := b.size) (om := om) (t := 2) (by norm_num)
+  have kk : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset (tbase b.size om 2) c → f c = f₁ c := hk
+  have e6 : f (X0 b.size om + 6) = fixedDLens.size := by
+    rw [kk _ (by unfold X0; omega) (by unfold X0 L0; omega) (fun h => (far _ h).2.1 rfl)]; exact h16
+  have etg : f cTGT = 2 := by rw [kk _ (by decide) (by unfold cTGT L0; omega) (fun h => (far _ h).2.2.2.2.1 rfl)]; exact h1
+  obtain ⟨σ1, f1, hS, hw1, hR1, -, hD, -⟩ := build_end_next hb hw hR hm hph (by rw [hj, e6])
+  obtain ⟨hm1, hk1⟩ := hD etg
+  refine ⟨σ1, f1, Reach.step hS, hw1, ⟨hR1, hm1⟩, ?_, ?_, ?_⟩
+  · rw [hk1 _ (by decide) (by unfold cBF L0; omega) (by unfold cBF; omega),
+      kk _ (by decide) (by unfold cBF L0; omega) (fun h => (far _ h).2.2.2.2.2.2.2.2.2.1 rfl), hbf]
+  · exact (hT1.keep' (by norm_num) hk (fun c hc => by unfold bset tbase LB0 at hc; unfold tbase LB0; omega)).keep
+      (by norm_num) hk1 (fun c hc => by unfold tbase LB0 X0; omega)
+  · exact hT.keep (by norm_num) hk1 (fun c hc => by unfold tbase LB0 X0; omega)
+
+/-- **S5's fixed block is simulated** (S-18's fixed-`huff` row), for both readings. -/
+theorem fixed_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) :
+    BodySim b om lit p (fixedBody lit) mFIXLENS (fun f => f cFILL = 0) := by
+  intro bf
+  refine Sim.reach (pre' := FixStart b om lit bf) ?_ ?_
+  · rintro σ f st hw ⟨hR, hm, hbf, hfill⟩
+    obtain ⟨σ', f', hR', hw', hRe', hm', h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, hbf', hl'⟩ :=
+      fixlens_run (lit := lit) hb 318 σ f st 0 hw hR hm hfill rfl (fun k hk => by omega)
+    exact ⟨σ', f', hR', hw', hRe', hm', h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, by rw [hbf', hbf], hl'⟩
+  intro σ f st hw h0
+  have h0' := h0
+  obtain ⟨hR, hm, hph, hj, h5, h6, h7, h8, htg, hdy, hchk, hhl, hhd, hbf, hl⟩ := h0'
+  have hsz : fixedLLens.size = 288 := by simp [fixedLLens]
+  cases lit with
+  | false =>
+    have e : ∀ st', go (fixedBody false) ⟨b, om⟩ st' = go (huff (assign fixedLLens) (assign fixedDLens)) ⟨b, om⟩ st' := by
+      intro st'; unfold fixedBody fixedCodes; rw [go_bind]; rfl
+    obtain ⟨σ2, f2, hR2, hw2, hB2⟩ := (build_tbl (lit := false) hb fixedLLens .normal hw hR hm hph hj (by rw [h6, hsz]; rfl)
+      (fixL_src h5 hl) fixedL_15).1 (by rw [hchk]; decide)
+    obtain ⟨σ3, f3, hR3, hw3, hRe3, hm3, hp3, hj3, h53, h63, h83, hchk3, hbf3, htg3, hl3, hT3⟩ := fix_handoff hb bf hw2 h0 hB2
+    have h73 : f3 (X0 b.size om + 7) = tbase b.size om 2 := by
+      have hB3 := buildInv_of hRe3 hm3
+      obtain ⟨-, -, -, -, -, htb3⟩ := build_src hB3 hRe3.inv.1.hdr_rng.1
+      rw [htb3, htg3]
+    obtain ⟨σ4, f4, hR4, hw4, hB4⟩ := (build_tbl (lit := false) hb fixedDLens .normal hw3 hRe3 hm3 hp3 hj3 h63
+      (fixD_src h53 hl3) fixedD_15).1 (by rw [hchk3]; decide)
+    obtain ⟨σ5, f5, hR5, hw5, hpre⟩ := fix_toSym hb bf hw4 htg3 h63 hbf3 hT3 h73 hB4
+    obtain ⟨hok, herr⟩ := huff_Sim (lit := false) hb bf fixedLLens fixedDLens σ5 f5 st hw5 hpre
+    have hRc := hR2.trans (hR3.trans (hR4.trans hR5))
+    refine ⟨fun a st' h => ?_, fun r h => ?_⟩
+    · rw [e] at h; obtain ⟨σ', f', hR', hw', hq⟩ := hok a st' h; exact ⟨σ', f', hRc.trans hR', hw', hq⟩
+    · rw [e] at h; obtain ⟨σ', f', hR', hw', hq⟩ := herr r h; exact ⟨σ', f', hRc.trans hR', hw', hq⟩
+  | true =>
+    sorry
 
 /-! ## CorrectStmt from the forward statement -/
 
