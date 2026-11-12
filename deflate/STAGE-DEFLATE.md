@@ -484,9 +484,12 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   = 2.3 %, so the verdict does not turn on them. Direction: the canonical code was a small part; Safety (62,038), Correct +
   Dynamic (67,657) and Step (36,572) are 90 % of the arm. LIMIT: ARM58's fixture produces `held 1` only; the `held 0` shape is seen
   in this reading alone.
-- **Owed, not scored here:** D3 and D7 are read from theorem statements (`Measure.lean`'s Φ carries OUTMAX − m, D3's output
-  side; `SafetyStmt` carries `∀ x ∈ b, x < 256`, which a scorer must rule on: the byte TYPE, which b : Array Nat models, or a
-  premise on the bytes, which D7 forbids). D1 and D2 have their own rows (X5's run, STATUS 288; `git log` over l1/ l2/).
+- **D3 HOLDS.** Termination is proved (`safety_of_step`, `iter_reach`) by `Φ f = mW · (TBL f + BITS f + OUT f) + LOC f`
+  (Measure.lean:65), with `OUT f = OUTMAX − m` (:62) and TBL the table prefix. That is not a function of the input bit position
+  alone, which is D3's falsifier.
+- **Owed, not scored here: D7.** `SafetyStmt` carries `∀ x ∈ b, x < 256`. A scorer must rule which it is: the byte TYPE (b :
+  Array Nat models a byte string, and S-5 says "every byte string b"), or a premise on the bytes, which D7 forbids. The author
+  recommends the first, and leaves the call to a non-author read. D1 and D2 have their own rows (X5's run, STATUS 288; `git log` over l1/ l2/).
 
 ## D6 (builds), a reading, not a score
 166 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001…004).
