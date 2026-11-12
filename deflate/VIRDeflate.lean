@@ -8,3 +8,4 @@ import VIRDeflate.Dispatch
 import VIRDeflate.Statements
 import VIRDeflate.Typing
 import VIRDeflate.Fit
+import VIRDeflate.Measure

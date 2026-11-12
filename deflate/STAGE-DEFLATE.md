@@ -230,7 +230,15 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - Audits: df-audit-023 ran on the library root before it was rebuilt with the two new imports, so it failed loudly on 55
     unknown names; it is kept and not counted. df-098 rebuilt the root; df-audit-024 is 260/260 within the standard three, and
     df-audit-control-002 shows `sorryAx` on the control. After TABLE's counted pieces, df-101 rebuilt the root and
-    df-audit-025 is 269/269 (control: df-audit-control-002, same gate, same session). The audit file is regenerated from VIRDeflate.lean's imports: the
+    df-audit-025 is 269/269 (control: df-audit-control-002, same gate, same session).
+  - **Safety's measure, `VIRDeflate/Measure.lean`, written BEFORE any proof that uses it (S-16, vir 9a18798; df-102).**
+    `Φ f = 4096 · (TBL + BITS + OUT) + LOC`: table cells left, input bits left, **OUTMAX − m** (D3's output side), and LOC,
+    the bookkeeping left before the next table fill, bit or output byte (per mode: `bRem` for the current BUILD by phase and
+    index, `chainLD` for the L and D builds that follow a block's lengths, `locCL` for CLREAD, `locFIX` for FIXLENS).
+    `Nbound n om = 4096 · (2048 + 8n + om)`. Every successor pair was checked against these definitions before the build
+    (BUILD's phase hand-offs drop LOC by exactly 1; FIXLENS→BUILD, CLREAD→CL build, LENS→L build, LREP→REP each drop it);
+    LEFT's end at (4, 0) and LENS' end at nn = HLIT were read from their lemmas, not assumed. Max LOC ≈ 1,062 < 4096.
+    The invariant `Inv` is written conjunct by conjunct as S-16 lists them, as the proofs reach each premise. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
