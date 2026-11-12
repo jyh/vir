@@ -203,14 +203,15 @@ theorem safe_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
 
 /-! ## The per-mode invariant (S-16 conjuncts 4–5), DEFINED before its proofs (design: STAGE-DEFLATE.md, "InvM") -/
 
-/-- The lengths area's base, 2080 + n + OUTMAX, read from the world's own cells. -/
-def LBf (f : Int → Int) : Int := 2080 + f cN + f cOUTMAX
+/-- The lengths area's base, 2080 + n + OUTMAX (a constant of the world: InvG pins cells 15 and 16 to n and OUTMAX). -/
+def LB0 (n om : Nat) : Int := 2080 + n + om
 /-- Code table t's base: CL (0), L (1), D (2), each 352 cells (count 16 · first 16 · offset 16 · next 16 · syms 288). -/
-def tbase (f : Int → Int) (t : Int) : Int := LBf f + 337 + 352 * t
+def tbase (n om : Nat) (t : Int) : Int := LB0 n om + 337 + 352 * t
 
 /-- A built table decodes inside itself: for every length, count and offset ≥ 0 with offset + count ≤ 288. -/
-def sane (f : Int → Int) (t : Int) : Prop :=
-  ∀ l : Int, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbase f t + l) ∧ 0 ≤ f (tbase f t + 32 + l) ∧ f (tbase f t + 32 + l) + f (tbase f t + l) ≤ 288
+def sane (n om : Nat) (f : Int → Int) (t : Int) : Prop :=
+  ∀ l : Int, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbase n om t + l) ∧ 0 ≤ f (tbase n om t + 32 + l) ∧
+    f (tbase n om t + 32 + l) + f (tbase n om t + l) ≤ 288
 
 /-- The field width a READ returning to md may fill, as 2^width. -/
 def kcap (md : Int) : Int :=
@@ -229,32 +230,32 @@ def offOf (f : Int → Int) (tbb : Int) : Nat → Int
   | l + 1 => offOf f tbb l + (if l = 0 then 0 else f (tbb + l))
 
 /-- BUILD's invariant: its target and parameters, and the fold invariant of its phase. -/
-def buildInv (f : Int → Int) : Prop :=
+def buildInv (n om : Nat) (f : Int → Int) : Prop :=
   let ph := f cPHASE
   let j := f cINDEX
-  let X := f cX
+  let X := X0 n om
   let sb := f (X + 5)
   let nn := f (X + 6)
   let tbb := f (X + 7)
   let tg := f cTGT
   let hl := f cHLIT
   let hd := f cHDIST
-  0 ≤ tg ∧ tg ≤ 2 ∧ tbb = tbase f tg ∧
-  ((tg = 0 ∧ sb = LBf f + 318 ∧ nn = 19 ∧ hl ≤ 286 ∧ hd ≤ 30) ∨
-   (tg = 1 ∧ sb = LBf f ∧ nn = hl ∧ hl + hd ≤ 318) ∨
-   (tg = 2 ∧ sb = LBf f + hl ∧ nn = hd ∧ hl + hd ≤ 318 ∧ sane f 1)) ∧
+  0 ≤ tg ∧ tg ≤ 2 ∧ tbb = tbase n om tg ∧
+  ((tg = 0 ∧ sb = LB0 n om + 318 ∧ nn = 19 ∧ hl ≤ 286 ∧ hd ≤ 30) ∨
+   (tg = 1 ∧ sb = LB0 n om ∧ nn = hl ∧ hl + hd ≤ 318) ∨
+   (tg = 2 ∧ sb = LB0 n om + hl ∧ nn = hd ∧ hl + hd ≤ 318 ∧ sane n om f 1)) ∧
   (ph = 0 → 0 ≤ j ∧ j ≤ 16 ∧ ∀ l : Int, 0 ≤ l → l < j → f (tbb + l) = 0) ∧
   (ph = 1 → 0 ≤ j ∧ j ≤ nn ∧ f tbb = 0 ∧ ∀ l : Int, 1 ≤ l → l ≤ 15 → f (tbb + l) = cnt f sb l j.toNat) ∧
   (2 ≤ ph → ph ≤ 3 → 1 ≤ j ∧ j ≤ 16 ∧ f tbb = 0 ∧ f (tbb + 32) = 0 ∧
     (∀ l : Int, 1 ≤ l → l ≤ 15 → f (tbb + l) = cnt f sb l nn.toNat) ∧
     (∀ l : Int, 1 ≤ l → l < (if ph = 2 then j else 16) → f (tbb + 32 + l) = offOf f tbb l.toNat ∧
       f (tbb + 48 + l) = offOf f tbb l.toNat)) ∧
-  (ph = 4 → 0 ≤ j ∧ j ≤ nn ∧ sane f tg ∧
+  (ph = 4 → 0 ≤ j ∧ j ≤ nn ∧ sane n om f tg ∧
     ∀ l : Int, 1 ≤ l → l ≤ 15 → 0 ≤ f (tbb + 48 + l) ∧ f (tbb + 48 + l) + (cnt f sb l nn.toNat - cnt f sb l j.toNat) ≤ 288) ∧
   (ph = 0 ∨ ph = 1 ∨ ph = 2 ∨ ph = 3 ∨ ph = 4)
 
 /-- Each mode's own facts (no acc, no decoded symbol: those are `InvM.ret` and `InvM.sym`). -/
-def facts (md : Int) (f : Int → Int) : Prop :=
+def facts (n om : Nat) (md : Int) (f : Int → Int) : Prop :=
   let fl := f cFILL
   let hl := f cHLIT
   let hd := f cHDIST
@@ -262,32 +263,32 @@ def facts (md : Int) (f : Int → Int) : Prop :=
   if md = mSNLEN then 0 ≤ pd
   else if md = mSCOPY then 0 ≤ pd ∧ f cBY + pd ≤ f cN ∧ f cM + pd ≤ f cOUTMAX
   else if md = mFIXLENS then 0 ≤ fl ∧ fl ≤ 318
-  else if md = mBUILD then buildInv f
+  else if md = mBUILD then buildInv n om f
   else if md = mCLREAD then 0 ≤ fl ∧ fl ≤ 19 ∧ 4 ≤ f cHCLEN ∧ hl ≤ 286 ∧ hd ≤ 30
   else if md = mCLPUT then 0 ≤ fl ∧ fl < 19 ∧ fl < f cHCLEN ∧ 4 ≤ f cHCLEN ∧ hl ≤ 286 ∧ hd ≤ 30
-  else if md = mLENS then 0 ≤ fl ∧ fl ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane f 0
-  else if md = mLSYM then 0 ≤ fl ∧ fl < hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane f 0
-  else if md = mLREP then 0 ≤ fl ∧ fl ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane f 0 ∧ 0 ≤ pd ∧ 0 ≤ f cLAST ∧ f cLAST ≤ 15
-  else if md = mREP then 0 ≤ fl ∧ 0 ≤ pd ∧ fl + pd ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane f 0 ∧ 0 ≤ f cLAST ∧ f cLAST ≤ 15
-  else if md = mSYM ∨ md = mSYMD then sane f 1 ∧ sane f 2
-  else if md = mLENX ∨ md = mDSTD ∨ md = mDSTX then sane f 1 ∧ sane f 2 ∧ 0 ≤ pd
-  else if md = mCOPY then sane f 1 ∧ sane f 2 ∧ 0 ≤ pd ∧ f cDIST ≤ f cM ∧ f cM + pd ≤ f cOUTMAX
+  else if md = mLENS then 0 ≤ fl ∧ fl ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane n om f 0
+  else if md = mLSYM then 0 ≤ fl ∧ fl < hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane n om f 0
+  else if md = mLREP then 0 ≤ fl ∧ fl ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane n om f 0 ∧ 0 ≤ pd ∧ 0 ≤ f cLAST ∧ f cLAST ≤ 15
+  else if md = mREP then 0 ≤ fl ∧ 0 ≤ pd ∧ fl + pd ≤ hl + hd ∧ hl ≤ 286 ∧ hd ≤ 30 ∧ sane n om f 0 ∧ 0 ≤ f cLAST ∧ f cLAST ≤ 15
+  else if md = mSYM ∨ md = mSYMD then sane n om f 1 ∧ sane n om f 2
+  else if md = mLENX ∨ md = mDSTD ∨ md = mDSTX then sane n om f 1 ∧ sane n om f 2 ∧ 0 ≤ pd
+  else if md = mCOPY then sane n om f 1 ∧ sane n om f 2 ∧ 0 ≤ pd ∧ f cDIST ≤ f cM ∧ f cM + pd ≤ f cOUTMAX
   else True
 
 /-- **The per-mode invariant.** -/
-structure InvM (f : Int → Int) : Prop where
-  syms : ∀ t q : Int, 0 ≤ t → t ≤ 2 → 0 ≤ q → q < 288 → 0 ≤ f (tbase f t + 64 + q) ∧ f (tbase f t + 64 + q) < 288
-  cur : facts (f cMODE) f
-  read : f cMODE = mREAD → facts (f cRET) f ∧ 1 ≤ f cK ∧ 1 ≤ f cWT ∧ 0 ≤ f cACC ∧ f cACC < f cWT ∧
+structure InvM (n om : Nat) (f : Int → Int) : Prop where
+  syms : ∀ t q : Int, 0 ≤ t → t ≤ 2 → 0 ≤ q → q < 288 → 0 ≤ f (tbase n om t + 64 + q) ∧ f (tbase n om t + 64 + q) < 288
+  cur : facts n om (f cMODE) f
+  read : f cMODE = mREAD → facts n om (f cRET) f ∧ 1 ≤ f cK ∧ 1 ≤ f cWT ∧ 0 ≤ f cACC ∧ f cACC < f cWT ∧
     f cWT * 2 ^ (f cK).toNat ≤ kcap (f cRET)
   ret : f cMODE ∈ readRets → 0 ≤ f cACC ∧ f cACC < kcap (f cMODE)
-  dec : f cMODE = mDECODE → facts (f (f cX + 3)) f ∧ 1 ≤ f (f cX) ∧ f (f cX) ≤ 15 ∧
-    ((f (f cX + 2) = 0 ∧ f (f cX + 3) = mLSYM) ∨ (f (f cX + 2) = 1 ∧ f (f cX + 3) = mSYMD) ∨
-     (f (f cX + 2) = 2 ∧ f (f cX + 3) = mDSTD)) ∧ sane f (f (f cX + 2))
-  sym : f cMODE = mSYMD ∨ f cMODE = mDSTD ∨ f cMODE = mLSYM → 0 ≤ f (f cX + 4) ∧ f (f cX + 4) < 288
+  dec : f cMODE = mDECODE → facts n om (f (X0 n om + 3)) f ∧ 1 ≤ f (X0 n om) ∧ f (X0 n om) ≤ 15 ∧
+    ((f (X0 n om + 2) = 0 ∧ f (X0 n om + 3) = mLSYM) ∨ (f (X0 n om + 2) = 1 ∧ f (X0 n om + 3) = mSYMD) ∨
+     (f (X0 n om + 2) = 2 ∧ f (X0 n om + 3) = mDSTD)) ∧ sane n om f (f (X0 n om + 2))
+  sym : f cMODE = mSYMD ∨ f cMODE = mDSTD ∨ f cMODE = mLSYM → 0 ≤ f (X0 n om + 4) ∧ f (X0 n om + 4) < 288
 
 /-- **Safety's invariant:** the global part and the per-mode part. -/
-def Inv (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) : Prop := InvG b om lit f ∧ InvM f
+def Inv (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) : Prop := InvG b om lit f ∧ InvM b.size om f
 
 /-! ## The initial world satisfies the invariant -/
 
@@ -331,7 +332,7 @@ theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCel
         z cHDIST (by decide) (by decide) (by decide) (by decide) (by decide) (by decide),
         z cHCLEN (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; omega }, {
     syms := fun t q h1 h2 h3 h4 => by
-      simp only [tbase, LBf, e15, e16]
+      simp only [tbase, LB0]
       rw [initCell_tail b om lit _ (by omega) (by unfold X0; omega)]; omega
     cur := by rw [e0]; simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM,
       mSYMD, mLENX, mDSTD, mDSTX, mCOPY]
@@ -390,14 +391,15 @@ theorem safety_of_step (hs : StepSafe) (hnn : PhiNonneg) : SafetyStmt := by
 
 /-! ## Φ ≥ 0 on the invariant -/
 
-theorem build_nonneg {f : Int → Int} (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 ∧ 0 ≤ f cHDIST ∧ f cHDIST ≤ 32 ∧ 0 ≤ f cHCLEN ∧ f cHCLEN ≤ 19)
-    (hb : buildInv f) :
+theorem build_nonneg {n om : Nat} {f : Int → Int} (hx : f cX = X0 n om) (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 ∧ 0 ≤ f cHDIST ∧ f cHDIST ≤ 32 ∧ 0 ≤ f cHCLEN ∧ f cHCLEN ≤ 19)
+    (hb : buildInv n om f) :
     0 ≤ bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) +
       (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) := by
+  rw [hx]
   obtain ⟨ht0, ht2, _, htg, h0, h1, h23, h4, hph⟩ := hb
-  have hnn : 0 ≤ f (f cX + 6) := by
+  have hnn : 0 ≤ f (X0 n om + 6) := by
     rcases htg with ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ <;> rw [h] <;> omega
-  have hrem : 0 ≤ bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) := by
+  have hrem : 0 ≤ bRem (f cPHASE) (f cINDEX) (f (X0 n om + 6)) := by
     unfold bRem
     rcases hph with h | h | h | h | h
     · have := h0 h; simp [h]; omega
@@ -409,7 +411,7 @@ theorem build_nonneg {f : Int → Int} (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 �
     unfold chainLD bfull; split_ifs <;> omega
   omega
 
-theorem LOC_nonneg {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg : InvG b om lit f) (hm : InvM f) :
+theorem LOC_nonneg {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg : InvG b om lit f) (hm : InvM b.size om f) :
     0 ≤ LOC f := by
   have hr := hg.hdr_rng
   by_cases hb : f cMODE = mBUILD
@@ -425,7 +427,7 @@ theorem LOC_nonneg {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg
       (11 : Int) = 21 ∨ (11 : Int) = 13 ∨ (11 : Int) = 16) by decide,
       show ¬ ((11 : Int) = 15 ∨ (11 : Int) = 10 ∨ (11 : Int) = 19) by decide, show ¬ ((11 : Int) = 9 ∨ (11 : Int) = 18) by decide,
       show ¬ ((11 : Int) = 17) by decide, show ¬ ((11 : Int) = 4) by decide, show ¬ ((11 : Int) = 6) by decide, if_false, if_true]
-    exact build_nonneg hr hc
+    exact build_nonneg hg.x_eq hr hc
   · have hc := hm.cur
     have hmode := hg.mode_ok
     simp only [validModes, List.mem_cons, List.mem_nil_iff, or_false] at hmode
