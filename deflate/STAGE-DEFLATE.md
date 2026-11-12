@@ -310,7 +310,8 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       atoms — unfold the names in the hypotheses too.
     - SNLEN (S3's three checks; the pass to SCOPY establishes m + len ≤ OUTMAX, by + len ≤ n, bi = 0) and SCOPY (a byte:
       BITS − 8, OUT − 1; the end: DONE or HDR) safe (df-146), with `InvG.out` (an output-area write) and `InvG.c13`.
-      **11 of 28 DONE.** The audit file is regenerated from VIRDeflate.lean's imports: the
+      **11 of 28 DONE.** TABLE (df-147: a cell gets a bit, `bitAt_01`; the counters carry; at 256 all 2048 cells are bits
+      and the mode is HDR, TBL 1 → 0 paying for LOC 1). **12 of 28 DONE.** The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)

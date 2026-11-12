@@ -1489,4 +1489,143 @@ theorem safeI_scopy {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : In
     rw [hT, hLc, e1, eBI, eN, eOM, e3, hbi0]
     omega
 
+/-! ## TABLE -/
+
+theorem bitAt_01 (v i : Nat) (hv : v < 256) (hi : i < 8) : bitAt v i = 0 ∨ bitAt v i = 1 := by
+  rw [bitAt_eq v i hv hi, Nat.and_one_is_mod]
+  rcases Nat.mod_two_eq_zero_or_one (v >>> i) with h | h <;> simp [h]
+
+theorem safeI_table {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mTABLE) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2068 ≤ L0 b.size om := by unfold L0; omega
+  obtain ⟨tb0, tb256, ti0, ti7⟩ := hi.1.tb_rng hm
+  have hS := stepS_table hw hL (f cTB).toNat (f cTI).toNat hm (by omega) (by omega) (by omega) (by omega)
+  simp only [show ((f cTB).toNat : Int) = f cTB by omega, show ((f cTI).toNat : Int) = f cTI by omega] at hS
+  have hbit := bitAt_01 (f cTB).toNat (f cTI).toNat (by omega) (by omega)
+  simp only [show ((f cTB).toNat : Int) = f cTB by omega] at hbit
+  set c0 := 8 * f cTB + f cTI with hc0
+  set nb := tblNext (f cTB) (f cTI) with hnb
+  have hnb1 : 8 * nb.1 + nb.2 = c0 + 1 := by simp only [hnb, hc0, tblNext]; split_ifs <;> simp <;> omega
+  have hnbr : 0 ≤ nb.2 ∧ nb.2 ≤ 7 ∧ 0 ≤ nb.1 ∧ nb.1 ≤ 256 := by
+    simp only [hnb, tblNext]; split_ifs <;> simp <;> omega
+  set g := Function.update (Function.update (Function.update f (20 + c0) (bitAt (f cTB) (f cTI).toNat)) 18 nb.1) 19 nb.2
+    with hg
+  have hgw : World ⟨tblH σ.H p (f cTB) (f cTI), σ.R⟩ p (L0 b.size om) g := by
+    unfold tblH
+    exact ((hw.store (i := 20 + c0) (by omega) (by unfold L0; omega)).store (i := 18) (by norm_num)
+      (by unfold L0; omega)).store (i := 19) (by norm_num) (by unfold L0; omega)
+  have u : ∀ c : Int, c ≠ 20 + c0 → c ≠ 18 → c ≠ 19 → g c = f c := fun c a1 a2 a3 => by
+    rw [hg, upd_eq _ _ a3, upd_eq _ _ a2, upd_eq _ _ a1]
+  have eTB : g cTB = nb.1 := by simp [hg, cTB]
+  have eTI : g cTI = nb.2 := by simp [hg, cTI]
+  have eC : g (BT + c0) = bitAt (f cTB) (f cTI).toNat := by
+    rw [hg, upd_eq _ _ (by unfold BT; omega), upd_eq _ _ (by unfold BT; omega)]; simp [BT]
+  -- the global invariant after the three writes, before any mode change (the mode cell is untouched)
+  have hgG : ∀ v : Int, (v = mTABLE ∧ nb.1 < 256) ∨ (v = mHDR ∧ nb.1 = 256) → InvG b om lit (Function.update g 0 v) := by
+    intro v hv
+    have u0 : ∀ c : Int, c ≠ 0 → Function.update g 0 v c = g c := fun c hc => upd_eq _ _ hc
+    have hm' : Function.update g 0 v cMODE = v := by simp [cMODE]
+    exact {
+    n_eq := by rw [u0 _ (by unfold cN; omega), u _ (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega)]
+               exact hi.1.n_eq
+    om_eq := by rw [u0 _ (by unfold cOUTMAX; omega), u _ (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega)
+                  (by unfold cOUTMAX; omega)]; exact hi.1.om_eq
+    x_eq := by rw [u0 _ (by unfold cX; omega), u _ (by unfold cX; omega) (by unfold cX; omega) (by unfold cX; omega)]
+               exact hi.1.x_eq
+    lit_eq := by rw [u0 _ (by unfold cLIT; omega), u _ (by unfold cLIT; omega) (by unfold cLIT; omega)
+                   (by unfold cLIT; omega)]; exact hi.1.lit_eq
+    input := fun i a b' => by rw [u0 _ (by omega), u _ (by omega) (by omega) (by omega)]; exact hi.1.input i a b'
+    ro := fun i a b' => by
+      rw [u0 _ (by unfold X0 at a; omega), u _ (by unfold X0 at a; omega) (by unfold X0 at a; omega)
+        (by unfold X0 at a; omega)]; exact hi.1.ro i a b'
+    lens := fun j a b' => by rw [u0 _ (by omega), u _ (by omega) (by omega) (by omega)]; exact hi.1.lens j a b'
+    tb_rng := fun hm'' => by
+      rw [hm'] at hm''
+      rw [u0 _ (by unfold cTB; omega), u0 _ (by unfold cTI; omega), eTB, eTI]
+      rcases hv with ⟨_, h⟩ | ⟨h, _⟩
+      · omega
+      · rw [h] at hm''; exact absurd hm'' (by decide)
+    bits := fun c a b' h3 => by
+      rw [u0 _ (by unfold BT; omega)]
+      by_cases hc : c = c0
+      · subst hc; rw [eC]; exact hbit
+      · rw [u _ (by unfold BT; omega) (by unfold BT; omega) (by unfold BT; omega)]
+        refine hi.1.bits c a b' (Or.inr ?_)
+        rw [hm', u0 _ (by unfold cTB; omega), u0 _ (by unfold cTI; omega), eTB, eTI] at h3
+        rcases hv with ⟨h, _⟩ | ⟨h, h2⟩
+        · rcases h3 with h3 | h3
+          · exact absurd h h3
+          · omega
+        · omega
+    by_rng := by rw [u0 _ (by unfold cBY; omega), u _ (by unfold cBY; omega) (by unfold cBY; omega) (by unfold cBY; omega)]
+                 exact hi.1.by_rng
+    bi_rng := by rw [u0 _ (by unfold cBI; omega), u _ (by unfold cBI; omega) (by unfold cBI; omega) (by unfold cBI; omega)]
+                 exact hi.1.bi_rng
+    by_end := by
+      rw [u0 _ (by unfold cBY; omega), u _ (by unfold cBY; omega) (by unfold cBY; omega) (by unfold cBY; omega),
+        u0 _ (by unfold cBI; omega), u _ (by unfold cBI; omega) (by unfold cBI; omega) (by unfold cBI; omega)]
+      exact hi.1.by_end
+    m_rng := by rw [u0 _ (by unfold cM; omega), u _ (by unfold cM; omega) (by unfold cM; omega) (by unfold cM; omega)]
+                exact hi.1.m_rng
+    mode_ok := by rw [hm']; rcases hv with ⟨h, _⟩ | ⟨h, _⟩ <;> rw [h] <;> decide
+    read_rt := fun hm'' => by rw [hm'] at hm''; rcases hv with ⟨h, _⟩ | ⟨h, _⟩ <;> rw [h] at hm'' <;> simp [mTABLE, mHDR, mREAD] at hm''
+    hdr_rng := by
+      rw [u0 _ (by unfold cHLIT; omega), u _ (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega),
+        u0 _ (by unfold cHDIST; omega), u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega),
+        u0 _ (by unfold cHCLEN; omega), u _ (by unfold cHCLEN; omega) (by unfold cHCLEN; omega) (by unfold cHCLEN; omega)]
+      exact hi.1.hdr_rng }
+  have hgs : SymsOK b.size om g := by
+    intro t q a1 a2 a3 a4
+    rw [u _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)]
+    exact hi.2.syms t q a1 a2 a3 a4
+  have hgM : g cMODE = mTABLE := by rw [u _ (by unfold cMODE; omega) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+  have hgB : BITS g = BITS f := by
+    unfold BITS; rw [u _ (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega),
+      u _ (by unfold cBY; omega) (by unfold cBY; omega) (by unfold cBY; omega),
+      u _ (by unfold cBI; omega) (by unfold cBI; omega) (by unfold cBI; omega)]
+  have hgO : OUT g = OUT f := by
+    unfold OUT; rw [u _ (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega),
+      u _ (by unfold cM; omega) (by unfold cM; omega) (by unfold cM; omega)]
+  have hTf : TBL f = 2048 - c0 := by unfold TBL; rw [if_pos hm]
+  have hLf : LOC f = 0 := by unfold LOC; rw [hm]; simp [mTABLE, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX,
+    mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD, mHDRD, mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
+  by_cases hend : nb.1 = 256
+  · rw [if_pos hend] at hS
+    refine ⟨_, Function.update g 0 1, hS, hgw.store (i := 0) (by norm_num) (by unfold L0; omega),
+      ⟨hgG 1 (Or.inr ⟨rfl, hend⟩), InvM.mode hgs (by decide) (by decide) (by simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD,
+        mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY])⟩, Or.inl ?_⟩
+    have u0 : ∀ c : Int, c ≠ 0 → Function.update g 0 1 c = g c := fun c hc => upd_eq _ _ hc
+    have hT' : TBL (Function.update g 0 1) = 0 := by unfold TBL; simp [cMODE, mTABLE]
+    have hB' : BITS (Function.update g 0 1) = BITS g := by
+      unfold BITS; rw [u0 _ (by unfold cN; omega), u0 _ (by unfold cBY; omega), u0 _ (by unfold cBI; omega)]
+    have hO' : OUT (Function.update g 0 1) = OUT g := by unfold OUT; rw [u0 _ (by unfold cOUTMAX; omega), u0 _ (by unfold cM; omega)]
+    have hL' : LOC (Function.update g 0 1) = 1 := by unfold LOC; simp [cMODE, mHDR]
+    unfold Φ mW; rw [hT', hB', hO', hL', hgB, hgO, hTf, hLf]
+    have : c0 = 2047 := by omega
+    omega
+  · rw [if_neg hend] at hS
+    have hg0 : Function.update g 0 mTABLE = g := by
+      funext c; by_cases hc : c = 0
+      · subst hc; simp only [Function.update_self]; exact hgM.symm
+      · exact upd_eq _ _ hc
+    have hgI : InvG b om lit g := by rw [← hg0]; exact hgG mTABLE (Or.inl ⟨rfl, by omega⟩)
+    refine ⟨_, g, hS, hgw, ⟨hgI, {
+      syms := hgs
+      cur := by rw [hgM]; simp [facts, mTABLE, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP,
+        mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]
+      read := fun h => by rw [hgM] at h; simp [mTABLE, mREAD] at h
+      ret := fun h => by
+        rw [hgM] at h; simp [readRets, mTABLE, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
+      dec := fun h => by rw [hgM] at h; simp [mTABLE, mDECODE] at h
+      sym := fun h => by rw [hgM] at h; simp [mTABLE, mSYMD, mDSTD, mLSYM] at h
+      scopy := fun h => by rw [hgM] at h; simp [mTABLE, mSCOPY] at h
+      ralign := fun h => by rw [hgM] at h; simp [mTABLE, mREAD] at h
+      align := fun h => by rw [hgM] at h; simp [mTABLE, mSLEN, mSNLEN, mSCOPY] at h }⟩, Or.inl ?_⟩
+    have hT' : TBL g = 2048 - (c0 + 1) := by unfold TBL; rw [if_pos hgM, eTB, eTI, hnb1]
+    have hL' : LOC g = 0 := by unfold LOC; rw [hgM]; simp [mTABLE, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX,
+      mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD, mHDRD, mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
+    unfold Φ mW; rw [hT', hL', hgB, hgO, hTf, hLf]; omega
+
 end VIRDeflate.Step
