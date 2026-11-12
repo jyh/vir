@@ -1995,4 +1995,470 @@ theorem copy_byte {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World
       Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
       cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, copyT, copyN, cDIST, hpd0, g5, g15, g3, g6, gy, hs0, hsL, ho0, hoL, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
 
+/-! ## The dynamic header and the CL lengths (S-14): DHDR, DH2, DH3, DH4, CLREAD, CLPUT -/
+
+def cHCLEN : Int := 9
+def mDH2 : Int := 20
+def mDH3 : Int := 21
+def mDH4 : Int := 22
+def mCLREAD : Int := 23
+def mCLPUT : Int := 24
+def rTOOMANY : Int := 11  -- "too many length or distance symbols"
+
+def dhdrN : NT := reqN "w" 5 mDH2
+def dh2N : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "w1" tcap .store [.v "w", .i cHLIT, .p2 .add (.v "a") (.i 257)] (reqN "w1" 5 mDH3)
+def dh3N : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "w1" tcap .store [.v "w", .i cHDIST, .p2 .add (.v "a") (.i 1)] (reqN "w1" 4 mDH4)
+def dh4N : NT :=
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "hl" tint .load [.v "w", .i cHLIT] <|
+  .op "hd" tint .load [.v "w", .i cHDIST] <|
+  .op "w1" tcap .store [.v "w", .i cHCLEN, .p2 .add (.v "a") (.i 4)] <|
+  .ite (.p2 .lt (.i 286) (.v "hl")) (rejN "w1" rTOOMANY) <|
+  .ite (.p2 .lt (.i 30) (.v "hd")) (rejN "w1" rTOOMANY) <|
+  .op "w2" tcap .store [.v "w1", .i cFILL, .i 0] <|
+  .op "w3" tcap .store [.v "w2", .i cDYN, .i 1] <|
+  .op "w4" tcap .store [.v "w3", .i cCHK, .i 1] <|
+  .op "w5" tcap .store [.v "w4", .i cMODE, .i mCLREAD] (.ret (.v "w5"))
+
+def clreadN : NT :=
+  .op "i" tint .load [.v "w", .i cFILL] <|
+  .op "hc" tint .load [.v "w", .i cHCLEN] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .ite (.p2 .lt (.v "i") (.v "hc")) (reqN "w" 3 mCLPUT) <|
+  .ite (.p2 .lt (.v "i") (.i 19))
+    (.op "o" tint .load [.v "w", .p2 .add (.p2 .add (.v "x") (.i 134)) (.v "i")] <|
+     .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 318)) (.v "o"), .i 0] <|
+     .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "i") (.i 1)] (.ret (.v "w2")))
+    (.op "w1" tcap .store [.v "w", .i cTGT, .i 0] <|
+     .op "w2" tcap .store [.v "w1", .p2 .add (.v "x") (.i 5), .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 318)] <|
+     .op "w3" tcap .store [.v "w2", .p2 .add (.v "x") (.i 6), .i 19] <|
+     .op "w4" tcap .store [.v "w3", .p2 .add (.v "x") (.i 7), .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 337)] <|
+     .op "w5" tcap .store [.v "w4", .p2 .add (.v "x") (.i 8), .i 1] <|
+     .op "w6" tcap .store [.v "w5", .i cPHASE, .i 0] <|
+     .op "w7" tcap .store [.v "w6", .i cINDEX, .i 0] <|
+     .op "w8" tcap .store [.v "w7", .i cFILL, .i 0] <|
+     .op "w9" tcap .store [.v "w8", .i cMODE, .i mBUILD] (.ret (.v "w9")))
+
+def clputN : NT :=
+  .op "i" tint .load [.v "w", .i cFILL] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "o" tint .load [.v "w", .p2 .add (.p2 .add (.v "x") (.i 134)) (.v "i")] <|
+  .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 318)) (.v "o"), .v "a"] <|
+  .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "i") (.i 1)] <|
+  .op "w3" tcap .store [.v "w2", .i cMODE, .i mCLREAD] (.ret (.v "w3"))
+
+def dhdrT : Tm₂ := dhdrN.c ["w"]
+def dh2T : Tm₂ := dh2N.c ["w"]
+def dh3T : Tm₂ := dh3N.c ["w"]
+def dh4T : Tm₂ := dh4N.c ["w"]
+def clreadT : Tm₂ := clreadN.c ["w"]
+def clputT : Tm₂ := clputN.c ["w"]
+
+theorem dhdr_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L) :
+    Steps₂ (closeAt p dhdrT, σ) (.ret (.const (.cap p)), ⟨reqH σ.H p 5 20, σ.R⟩) := by
+  refine steps_run 10 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dhdrT, dhdrN, mDH2, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+theorem dh2_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a : Int) (ha : f cACC = a) :
+    Steps₂ (closeAt p dh2T, σ) (.ret (.const (.cap p)), ⟨reqH (σ.H.insert (p + 7) (a + 257)) p 5 21, σ.R⟩) := by
+  simp only [cACC] at ha
+  have g := hw.get (i := 2069) (by decide) (by omega) ha
+  refine steps_run 10 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dh2T, dh2N, g, mDH3, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+theorem dh3_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a : Int) (ha : f cACC = a) :
+    Steps₂ (closeAt p dh3T, σ) (.ret (.const (.cap p)), ⟨reqH (σ.H.insert (p + 8) (a + 1)) p 4 22, σ.R⟩) := by
+  simp only [cACC] at ha
+  have g := hw.get (i := 2069) (by decide) (by omega) ha
+  refine steps_run 10 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dh3T, dh3N, g, mDH4, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`DH4`, one step:** HCLEN := acc + 4, then S6's check on HLIT and HDIST (all three fields already read). -/
+theorem dh4_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (a hl hd : Int) (ha : f cACC = a) (hhl : f cHLIT = hl) (hhd : f cHDIST = hd) :
+    Steps₂ (closeAt p dh4T, σ)
+      (.ret (.const (.cap p)),
+        ⟨if 286 < hl ∨ 30 < hd then ((σ.H.insert (p + 9) (a + 4)).insert (p + 14) 11).insert (p + 0) 99
+         else ((((σ.H.insert (p + 9) (a + 4)).insert (p + 10) 0).insert (p + 2073) 1).insert (p + 2072) 1).insert (p + 0) 23,
+          σ.R⟩) := by
+  simp only [cACC, cHLIT, cHDIST] at ha hhl hhd
+  have g := hw.get (i := 2069) (by decide) (by omega) ha
+  have g7 := hw.get (i := 7) (by decide) (by omega) hhl
+  have g8 := hw.get (i := 8) (by decide) (by omega) hhd
+  refine steps_run 16 ?_
+  by_cases h1 : 286 < hl
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dh4T, dh4N, h1, g, g7, g8, rTOOMANY, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+  by_cases h2 : 30 < hd
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dh4T, dh4N, h1, h2, g, g7, g8, rTOOMANY, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, dh4T, dh4N, h1, h2, g, g7, g8, mCLREAD, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`CLREAD`, a length to read (i < HCLEN):** READ 3 bits, ret `CLPUT`. -/
+theorem clread_req {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (i hc X n om : Int) (hi : f cFILL = i) (hhc : f cHCLEN = hc) (hX : f cX = X) (hn : f cN = n) (hom : f cOUTMAX = om)
+    (hlt : i < hc) :
+    Steps₂ (closeAt p clreadT, σ) (.ret (.const (.cap p)), ⟨reqH σ.H p 3 24, σ.R⟩) := by
+  simp only [cFILL, cHCLEN, cX, cN, cOUTMAX] at hi hhc hX hn hom
+  have g10 := hw.get (i := 10) (by decide) (by omega) hi
+  have g9 := hw.get (i := 9) (by decide) (by omega) hhc
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, clreadT, clreadN, hlt, g10, g9, g79, g15, g16, mCLPUT, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`CLREAD`, a cell not read (HCLEN ≤ i < 19):** cl[ORDER[i]] := 0, i advanced. -/
+theorem clread_zero {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (i hc X n om o : Int) (hi : f cFILL = i) (hhc : f cHCLEN = hc) (hX : f cX = X) (hn : f cN = n) (hom : f cOUTMAX = om)
+    (hlt : ¬ i < hc) (h19 : i < 19) (hi0 : 0 ≤ i) (hX0 : 0 ≤ X) (hXL : X + 153 ≤ L) (ho : f (X + 134 + i) = o)
+    (hc0 : 0 ≤ 2080 + n + om + 318 + o) (hcL : 2080 + n + om + 318 + o < L) :
+    Steps₂ (closeAt p clreadT, σ)
+      (.ret (.const (.cap p)), ⟨(σ.H.insert (p + (2080 + n + om + 318 + o)) 0).insert (p + 10) (i + 1), σ.R⟩) := by
+  simp only [cFILL, cHCLEN, cX, cN, cOUTMAX] at hi hhc hX hn hom
+  have g10 := hw.get (i := 10) (by decide) (by omega) hi
+  have g9 := hw.get (i := 9) (by decide) (by omega) hhc
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  have go := hw.get (i := X + 134 + i) (by omega) (by omega) ho
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, clreadT, clreadN, hlt, h19, g10, g9, g79, g15, g16, go, hc0, hcL, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega,
+    show X + 134 + i < L by omega, show (0 : Int) ≤ X + 134 + i by omega]
+
+/-- **`CLREAD`, the end (i ≥ 19, i ≥ HCLEN):** the CL target's cells (S-11), phase 0, j 0, fill 0, mode BUILD. -/
+theorem clread_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (i hc X n om : Int) (hi : f cFILL = i) (hhc : f cHCLEN = hc) (hX : f cX = X) (hn : f cN = n) (hom : f cOUTMAX = om)
+    (hlt : ¬ i < hc) (h19 : ¬ i < 19) (hX0 : 0 ≤ X) (hXL : X + 153 ≤ L) :
+    Steps₂ (closeAt p clreadT, σ)
+      (.ret (.const (.cap p)), ⟨((((((((σ.H.insert (p + 2074) 0).insert (p + (X + 5)) (2080 + n + om + 318)).insert
+        (p + (X + 6)) 19).insert (p + (X + 7)) (2080 + n + om + 337)).insert (p + (X + 8)) 1).insert (p + 12) 0).insert
+        (p + 13) 0).insert (p + 10) 0).insert (p + 0) 11, σ.R⟩) := by
+  simp only [cFILL, cHCLEN, cX, cN, cOUTMAX] at hi hhc hX hn hom
+  have g10 := hw.get (i := 10) (by decide) (by omega) hi
+  have g9 := hw.get (i := 9) (by decide) (by omega) hhc
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  refine steps_run 20 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, clreadT, clreadN, hlt, h19, g10, g9, g79, g15, g16, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 5 < L by omega, show (0 : Int) ≤ X + 5 by omega, show X + 6 < L by omega, show (0 : Int) ≤ X + 6 by omega, show X + 7 < L by omega, show (0 : Int) ≤ X + 7 by omega, show X + 8 < L by omega, show (0 : Int) ≤ X + 8 by omega]
+
+/-- **`CLPUT`, one step:** cl[ORDER[i]] := acc, i advanced, mode `CLREAD`. -/
+theorem clput_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (i X n om a o : Int) (hi : f cFILL = i) (hX : f cX = X) (hn : f cN = n) (hom : f cOUTMAX = om) (ha : f cACC = a)
+    (hi0 : 0 ≤ i) (h19 : i < 19) (hX0 : 0 ≤ X) (hXL : X + 153 ≤ L) (ho : f (X + 134 + i) = o)
+    (hc0 : 0 ≤ 2080 + n + om + 318 + o) (hcL : 2080 + n + om + 318 + o < L) :
+    Steps₂ (closeAt p clputT, σ)
+      (.ret (.const (.cap p)),
+        ⟨((σ.H.insert (p + (2080 + n + om + 318 + o)) a).insert (p + 10) (i + 1)).insert (p + 0) 23, σ.R⟩) := by
+  simp only [cFILL, cX, cN, cOUTMAX, cACC] at hi hX hn hom ha
+  have g10 := hw.get (i := 10) (by decide) (by omega) hi
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  have g69 := hw.get (i := 2069) (by decide) (by omega) ha
+  have go := hw.get (i := X + 134 + i) (by omega) (by omega) ho
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, clputT, clputN, g10, g79, g15, g16, g69, go, hc0, hcL, mCLREAD, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega,
+    show X + 134 + i < L by omega, show (0 : Int) ≤ X + 134 + i by omega]
+
+/-! ## The literal/length and distance lengths (S-14): LENS, LSYM, LREP, REP -/
+
+def cLAST : Int := 11
+def mLSYM : Int := 25
+def mLREP : Int := 26
+def mREP : Int := 27
+def rNOEOB : Int := 12    -- "missing end-of-block"
+def rNOFIRST : Int := 13  -- "repeat with no first length"
+def rREPEAT : Int := 14   -- "invalid bit length repeat"
+
+def lensN : NT :=
+  .op "fl" tint .load [.v "w", .i cFILL] <|
+  .op "hl" tint .load [.v "w", .i cHLIT] <|
+  .op "hd" tint .load [.v "w", .i cHDIST] <|
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .ite (.p2 .lt (.v "fl") (.p2 .add (.v "hl") (.v "hd"))) (reqDecN "w" 0 mLSYM)
+    (.op "z" tint .load [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 256)] <|
+     .ite (.p2 .eq (.v "z") (.i 0)) (rejN "w" rNOEOB)
+       (.op "w1" tcap .store [.v "w", .i cTGT, .i 1] <|
+        .op "w2" tcap .store [.v "w1", .p2 .add (.v "x") (.i 5), .p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")] <|
+        .op "w3" tcap .store [.v "w2", .p2 .add (.v "x") (.i 6), .v "hl"] <|
+        .op "w4" tcap .store [.v "w3", .p2 .add (.v "x") (.i 7), .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.i 689)] <|
+        .op "w5" tcap .store [.v "w4", .p2 .add (.v "x") (.i 8), .i 0] <|
+        .op "w6" tcap .store [.v "w5", .i cPHASE, .i 0] <|
+        .op "w7" tcap .store [.v "w6", .i cINDEX, .i 0] <|
+        .op "w8" tcap .store [.v "w7", .i cMODE, .i mBUILD] (.ret (.v "w8"))))
+
+def lsymN : NT :=
+  .op "x" tint .load [.v "w", .i cX] <|
+  .op "s" tint .load [.v "w", .p2 .add (.v "x") (.i 4)] <|
+  .op "fl" tint .load [.v "w", .i cFILL] <|
+  .op "n" tint .load [.v "w", .i cN] <|
+  .op "om" tint .load [.v "w", .i cOUTMAX] <|
+  .ite (.p2 .le (.v "s") (.i 15))
+    (.op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.v "fl"), .v "s"] <|
+     .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "fl") (.i 1)] <|
+     .op "w3" tcap .store [.v "w2", .i cMODE, .i mLENS] (.ret (.v "w3"))) <|
+  .ite (.p2 .eq (.v "s") (.i 16))
+    (.ite (.p2 .eq (.v "fl") (.i 0)) (rejN "w" rNOFIRST)
+      (.op "pv" tint .load [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.p2 .sub (.v "fl") (.i 1))] <|
+       .op "w1" tcap .store [.v "w", .i cLAST, .v "pv"] <|
+       .op "w2" tcap .store [.v "w1", .i cPEND, .i 3] (reqN "w2" 2 mLREP))) <|
+  .ite (.p2 .eq (.v "s") (.i 17))
+    (.op "w1" tcap .store [.v "w", .i cLAST, .i 0] <|
+     .op "w2" tcap .store [.v "w1", .i cPEND, .i 3] (reqN "w2" 3 mLREP))
+    (.op "w1" tcap .store [.v "w", .i cLAST, .i 0] <|
+     .op "w2" tcap .store [.v "w1", .i cPEND, .i 11] (reqN "w2" 7 mLREP))
+
+def lrepN : NT :=
+  .op "pd" tint .load [.v "w", .i cPEND] <|
+  .op "a" tint .load [.v "w", .i cACC] <|
+  .op "fl" tint .load [.v "w", .i cFILL] <|
+  .op "hl" tint .load [.v "w", .i cHLIT] <|
+  .op "hd" tint .load [.v "w", .i cHDIST] <|
+  .ite (.p2 .lt (.p2 .add (.v "hl") (.v "hd")) (.p2 .add (.v "fl") (.p2 .add (.v "pd") (.v "a")))) (rejN "w" rREPEAT)
+    (.op "w1" tcap .store [.v "w", .i cPEND, .p2 .add (.v "pd") (.v "a")] <|
+     .op "w2" tcap .store [.v "w1", .i cMODE, .i mREP] (.ret (.v "w2")))
+
+def repN : NT :=
+  .op "pd" tint .load [.v "w", .i cPEND] <|
+  .ite (.p2 .eq (.v "pd") (.i 0)) (.op "w1" tcap .store [.v "w", .i cMODE, .i mLENS] (.ret (.v "w1")))
+    (.op "fl" tint .load [.v "w", .i cFILL] <|
+     .op "la" tint .load [.v "w", .i cLAST] <|
+     .op "n" tint .load [.v "w", .i cN] <|
+     .op "om" tint .load [.v "w", .i cOUTMAX] <|
+     .op "w1" tcap .store [.v "w", .p2 .add (.p2 .add (.p2 .add (.i IN) (.v "n")) (.v "om")) (.v "fl"), .v "la"] <|
+     .op "w2" tcap .store [.v "w1", .i cFILL, .p2 .add (.v "fl") (.i 1)] <|
+     .op "w3" tcap .store [.v "w2", .i cPEND, .p2 .sub (.v "pd") (.i 1)] (.ret (.v "w3")))
+
+def lensT : Tm₂ := lensN.c ["w"]
+def lsymT : Tm₂ := lsymN.c ["w"]
+def lrepT : Tm₂ := lrepN.c ["w"]
+def repT : Tm₂ := repN.c ["w"]
+
+/-- **`LENS`, a length still owed (fill < HLIT + HDIST):** a decode in CL, ret `LSYM`. -/
+theorem lens_req {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (fl hl hd X n om : Int) (hfl : f cFILL = fl) (hhl : f cHLIT = hl) (hhd : f cHDIST = hd) (hX : f cX = X) (hn : f cN = n)
+    (hom : f cOUTMAX = om) (hlt : fl < hl + hd) (hX0 : 0 ≤ X) (hXL : X + 8 < L) :
+    Steps₂ (closeAt p lensT, σ) (.ret (.const (.cap p)), ⟨reqDecH σ.H p X 0 25, σ.R⟩) := by
+  simp only [cFILL, cHLIT, cHDIST, cX, cN, cOUTMAX] at hfl hhl hhd hX hn hom
+  have g10 := hw.get (i := 10) (by decide) (by omega) hfl
+  have g7 := hw.get (i := 7) (by decide) (by omega) hhl
+  have g8 := hw.get (i := 8) (by decide) (by omega) hhd
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  refine steps_run 20 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lensT, lensN, hlt, g10, g7, g8, g79, g15, g16, mLSYM, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, hX0, show X < L by omega, show X + 1 < L by omega, show (0 : Int) ≤ X + 1 by omega, show X + 2 < L by omega, show (0 : Int) ≤ X + 2 by omega, show X + 3 < L by omega, show (0 : Int) ≤ X + 3 by omega]
+
+/-- **`LENS`, the end:** lengths[256] = 0 → "missing end-of-block"; else the L target's cells (S-11), phase 0, BUILD. -/
+theorem lens_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (fl hl hd X n om z : Int) (hfl : f cFILL = fl) (hhl : f cHLIT = hl) (hhd : f cHDIST = hd) (hX : f cX = X)
+    (hn : f cN = n) (hom : f cOUTMAX = om) (hlt : ¬ fl < hl + hd) (hX0 : 0 ≤ X) (hXL : X + 8 < L)
+    (hz0 : 0 ≤ 2080 + n + om + 256) (hzL : 2080 + n + om + 256 < L) (hz : f (2080 + n + om + 256) = z) :
+    Steps₂ (closeAt p lensT, σ)
+      (.ret (.const (.cap p)),
+        ⟨if z = 0 then (σ.H.insert (p + 14) 12).insert (p + 0) 99
+         else (((((((σ.H.insert (p + 2074) 1).insert (p + (X + 5)) (2080 + n + om)).insert (p + (X + 6)) hl).insert
+           (p + (X + 7)) (2080 + n + om + 689)).insert (p + (X + 8)) 0).insert (p + 12) 0).insert (p + 13) 0).insert
+           (p + 0) 11, σ.R⟩) := by
+  simp only [cFILL, cHLIT, cHDIST, cX, cN, cOUTMAX] at hfl hhl hhd hX hn hom
+  have g10 := hw.get (i := 10) (by decide) (by omega) hfl
+  have g7 := hw.get (i := 7) (by decide) (by omega) hhl
+  have g8 := hw.get (i := 8) (by decide) (by omega) hhd
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  have gz := hw.get hz0 hzL hz
+  refine steps_run 24 ?_
+  by_cases h0 : z = 0
+  · subst h0
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lensT, lensN, hlt, g10, g7, g8, g79, g15, g16, gz, hz0, hzL, rNOEOB, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lensT, lensN, hlt, h0, g10, g7, g8, g79, g15, g16, gz, hz0, hzL, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 5 < L by omega, show (0 : Int) ≤ X + 5 by omega, show X + 6 < L by omega, show (0 : Int) ≤ X + 6 by omega, show X + 7 < L by omega, show (0 : Int) ≤ X + 7 by omega, show X + 8 < L by omega, show (0 : Int) ≤ X + 8 by omega]
+
+/-- The cells `LSYM` writes, by s. -/
+def lsymH (H : Finmap (fun _ : Int => Int)) (p s fl n om pv : Int) : Finmap (fun _ : Int => Int) :=
+  if s ≤ 15 then ((H.insert (p + (2080 + n + om + fl)) s).insert (p + 10) (fl + 1)).insert (p + 0) 12
+  else if s = 16 then
+    (if fl = 0 then (H.insert (p + 14) 13).insert (p + 0) 99
+     else reqH ((H.insert (p + 11) pv).insert (p + 5) 3) p 2 26)
+  else if s = 17 then reqH ((H.insert (p + 11) 0).insert (p + 5) 3) p 3 26
+  else reqH ((H.insert (p + 11) 0).insert (p + 5) 11) p 7 26
+
+set_option maxHeartbeats 2000000 in
+/-- **`LSYM`, one step:** a length (≤ 15) written at fill; 16 with no first length REJECTs before any bit is read, else
+repeats the previous length (3 + 2 bits); 17 zeros (3 + 3 bits); 18 zeros (11 + 7 bits). -/
+theorem lsym_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (X s fl n om pv : Int) (hX : f cX = X) (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hs : f (X + 4) = s) (hfl : f cFILL = fl)
+    (hn : f cN = n) (hom : f cOUTMAX = om) (hw0 : s ≤ 15 → 0 ≤ 2080 + n + om + fl ∧ 2080 + n + om + fl < L)
+    (hp0 : s = 16 → fl ≠ 0 → 0 ≤ 2080 + n + om + (fl - 1) ∧ 2080 + n + om + (fl - 1) < L)
+    (hpv : f (2080 + n + om + (fl - 1)) = pv) :
+    Steps₂ (closeAt p lsymT, σ) (.ret (.const (.cap p)), ⟨lsymH σ.H p s fl n om pv, σ.R⟩) := by
+  simp only [cX, cFILL, cN, cOUTMAX] at hX hfl hn hom
+  have g79 := hw.get (i := 2079) (by decide) (by omega) hX
+  have gs := hw.get (i := X + 4) (by omega) (by omega) hs
+  have g10 := hw.get (i := 10) (by decide) (by omega) hfl
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  refine steps_run 24 ?_
+  by_cases h1 : s ≤ 15
+  · obtain ⟨a0, aL⟩ := hw0 h1
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lsymT, lsymN, lsymH, h1, g79, gs, g10, g15, g16, a0, aL, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 4 < L by omega, show (0 : Int) ≤ X + 4 by omega]
+  by_cases h2 : s = 16
+  · subst h2
+    by_cases h3 : fl = 0
+    · subst h3
+      simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lsymT, lsymN, lsymH, g79, gs, g10, g15, g16, rNOFIRST, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 4 < L by omega, show (0 : Int) ≤ X + 4 by omega]
+    · obtain ⟨a0, aL⟩ := hp0 rfl h3
+      have gp := hw.get a0 aL hpv
+      simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lsymT, lsymN, lsymH, h3, g79, gs, g10, g15, g16, gp, a0, aL, mLREP, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 4 < L by omega, show (0 : Int) ≤ X + 4 by omega]
+  by_cases h4 : s = 17
+  · subst h4
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lsymT, lsymN, lsymH, g79, gs, g10, g15, g16, mLREP, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 4 < L by omega, show (0 : Int) ≤ X + 4 by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lsymT, lsymN, lsymH, h1, h2, h4, g79, gs, g10, g15, g16, mLREP, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega, show X + 4 < L by omega, show (0 : Int) ≤ X + 4 by omega]
+
+/-- **`LREP`, one step:** count := pending + acc; fill + count > HLIT + HDIST → "invalid bit length repeat" (before any write);
+else pending := count, mode `REP`. -/
+theorem lrep_step {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (pd a fl hl hd : Int) (hpd : f cPEND = pd) (ha : f cACC = a) (hfl : f cFILL = fl) (hhl : f cHLIT = hl)
+    (hhd : f cHDIST = hd) :
+    Steps₂ (closeAt p lrepT, σ)
+      (.ret (.const (.cap p)),
+        ⟨if hl + hd < fl + (pd + a) then (σ.H.insert (p + 14) 14).insert (p + 0) 99
+         else (σ.H.insert (p + 5) (pd + a)).insert (p + 0) 27, σ.R⟩) := by
+  simp only [cPEND, cACC, cFILL, cHLIT, cHDIST] at hpd ha hfl hhl hhd
+  have g5 := hw.get (i := 5) (by decide) (by omega) hpd
+  have g69 := hw.get (i := 2069) (by decide) (by omega) ha
+  have g10 := hw.get (i := 10) (by decide) (by omega) hfl
+  have g7 := hw.get (i := 7) (by decide) (by omega) hhl
+  have g8 := hw.get (i := 8) (by decide) (by omega) hhd
+  refine steps_run 16 ?_
+  by_cases h : hl + hd < fl + (pd + a)
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lrepT, lrepN, h, g5, g69, g10, g7, g8, rREPEAT, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, lrepT, lrepN, h, g5, g69, g10, g7, g8, mREP, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`REP`, the end (pending 0):** mode `LENS`. -/
+theorem rep_end {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (hpd : f cPEND = 0) :
+    Steps₂ (closeAt p repT, σ) (.ret (.const (.cap p)), ⟨σ.H.insert (p + 0) 12, σ.R⟩) := by
+  simp only [cPEND] at hpd
+  have g5 := hw.get (i := 5) (by decide) (by omega) hpd
+  refine steps_run 8 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, repT, repN, g5, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
+/-- **`REP`, one length (pending ≠ 0):** lengths[fill] := last, fill advanced, pending counted down. -/
+theorem rep_byte {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
+    (pd fl la n om : Int) (hpd : f cPEND = pd) (hpd0 : pd ≠ 0) (hfl : f cFILL = fl) (hla : f cLAST = la) (hn : f cN = n)
+    (hom : f cOUTMAX = om) (ha0 : 0 ≤ 2080 + n + om + fl) (haL : 2080 + n + om + fl < L) :
+    Steps₂ (closeAt p repT, σ)
+      (.ret (.const (.cap p)),
+        ⟨((σ.H.insert (p + (2080 + n + om + fl)) la).insert (p + 10) (fl + 1)).insert (p + 5) (pd - 1), σ.R⟩) := by
+  simp only [cPEND, cFILL, cLAST, cN, cOUTMAX] at hpd hfl hla hn hom
+  have g5 := hw.get (i := 5) (by decide) (by omega) hpd
+  have g10 := hw.get (i := 10) (by decide) (by omega) hfl
+  have g11 := hw.get (i := 11) (by decide) (by omega) hla
+  have g15 := hw.get (i := 15) (by decide) (by omega) hn
+  have g16 := hw.get (i := 16) (by decide) (by omega) hom
+  refine steps_run 16 ?_
+  simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+      stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+      Const.toL1, Const.ofL1, Const.toBool, cBY, cBI, cN, cOUTMAX, cX, IN, cMODE, cREASON, cM, cPEND, cK, cACC, cWT, cRET,
+      cBF, mREAD, mREJECT, mDECODE, mHDR, mDONE, reqN, reqH, rejN, cHLIT, cHDIST, cHCLEN, cFILL, cDYN, cCHK, cTGT, cPHASE,
+      cINDEX, mBUILD, cLAST, reqDecN, reqDecH, mLENS, repT, repN, hpd0, g5, g10, g11, g15, g16, ha0, haL, show (0 : Int) < L by omega, show (3 : Int) < L by omega, show (4 : Int) < L by omega, show (5 : Int) < L by omega, show (6 : Int) < L by omega, show (7 : Int) < L by omega, show (8 : Int) < L by omega, show (9 : Int) < L by omega, show (10 : Int) < L by omega, show (11 : Int) < L by omega, show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (14 : Int) < L by omega, show (15 : Int) < L by omega, show (16 : Int) < L by omega, show (2068 : Int) < L by omega, show (2069 : Int) < L by omega, show (2070 : Int) < L by omega, show (2071 : Int) < L by omega, show (2072 : Int) < L by omega, show (2073 : Int) < L by omega, show (2074 : Int) < L by omega, show (2079 : Int) < L by omega, show 0 < L by omega]
+
 end VIRDeflate.Step

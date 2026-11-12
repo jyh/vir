@@ -176,3 +176,17 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.dstx_step
 #print axioms VIRDeflate.Step.copy_end
 #print axioms VIRDeflate.Step.copy_byte
+#print axioms VIRDeflate.Step.dhdr_step
+#print axioms VIRDeflate.Step.dh2_step
+#print axioms VIRDeflate.Step.dh3_step
+#print axioms VIRDeflate.Step.dh4_step
+#print axioms VIRDeflate.Step.clread_req
+#print axioms VIRDeflate.Step.clread_zero
+#print axioms VIRDeflate.Step.clread_end
+#print axioms VIRDeflate.Step.clput_step
+#print axioms VIRDeflate.Step.lens_req
+#print axioms VIRDeflate.Step.lens_end
+#print axioms VIRDeflate.Step.lsym_step
+#print axioms VIRDeflate.Step.lrep_step
+#print axioms VIRDeflate.Step.rep_end
+#print axioms VIRDeflate.Step.rep_byte

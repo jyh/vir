@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-083; audit df-audit-020: 177 of 177 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-085; audit df-audit-021: 191 of 191 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -151,6 +151,18 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       initializer's, and owed with the Safety/Correct statements (293).
     - Mutants: COPY reading output[m − distance − 1], red INSIDE `copy_byte` (df-mutant-036: line 1985); DSTX's two checks
       swapped, red INSIDE `dstx_step` (df-mutant-037: line 1953). The unmutated copy is GREEN (df-mutant-038).
+  - **S-14, declared before any DHDR/CLREAD/LENS/REP code (vir f02c7d6):** S6's `dynamic` split at each field; ORDER in the
+    read-only area; CL cells zeroed through ORDER (a permutation, so this is S's `Array.replicate 19 0`); an overrunning repeat
+    rejected BEFORE it writes, with S's verdict and reason.
+  - **The dynamic header and both length runs, one step each** (df-084, df-085). `dhdr_step`, `dh2_step`, `dh3_step`,
+    `dh4_step` (HCLEN, then the HLIT/HDIST check with all three fields read: reason 11); `clread_req` / `clread_zero` /
+    `clread_end` (the CL target's cells, fill 0, BUILD) and `clput_step`; `lens_req` (decode in CL) / `lens_end`
+    (lengths[256] = 0 → reason 12, else the L target's cells and BUILD); `lsym_step` (≤ 15 written; 16 with no first length →
+    reason 13 before any bit; 16/17/18 their repeat value, base and extra-bit count); `lrep_step` (overrun → reason 14);
+    `rep_end`, `rep_byte`.
+    - Mutants: HLIT's limit at 285, red INSIDE `dh4_step` (df-mutant-039: lines 2113/2119/2124); code 18's base at 10, red
+      INSIDE `lsym_step` (df-mutant-040: line 2397); CLPUT reading ORDER one cell off, red INSIDE `clput_step` (df-mutant-041:
+      line 2198). The unmutated copy is GREEN (df-mutant-042).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -197,7 +209,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-144 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…083, df-audit-001…020, df-audit-control-001, df-mutant-001…038, df-probe-001/002).
+151 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…085, df-audit-001…021, df-audit-control-001, df-mutant-001…042, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
