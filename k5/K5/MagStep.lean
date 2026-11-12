@@ -142,4 +142,56 @@ theorem Mag_step_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {
   obtain ⟨hSe, hwe, -, -⟩ := safe_dhdr (b := b) (om := om) (lit := lit) hw (by unfold L0; omega) hi.1 hm
   exact Mag_of_explicit hS hSe hw' hwe (Mag_reqF_vac hg (by decide) (fun _ _ _ _ _ _ => rfl))
 
+/-- After a step whose store is pinned to `⟨H', σ.R⟩`, each region cell of the new world is read off `H'`. -/
+theorem cell_after {σ σ' : Store} {p : Int} {L : Nat} {f' : Int → Int} {H' : Finmap (fun _ : Int => Int)}
+    (hS : stepS p σ = some σ') (hSe : stepS p σ = some ⟨H', σ.R⟩) (hw' : World σ' p L f') (c : Int) (h0 : 0 ≤ c)
+    (h1 : c < L) : H'.lookup (p + c) = some (f' c) := by
+  rw [hS] at hSe; cases hSe; exact hw'.cell c h0 h1
+
+/-- A cell the step did not write keeps its value. -/
+theorem cell_frame {σ : Store} {p : Int} {L : Nat} {f f' : Int → Int} (hw : World σ p L f) {c : Int} (h0 : 0 ≤ c)
+    (h1 : c < L) (h : σ.H.lookup (p + c) = some (f' c)) : f' c = f c := by
+  rw [hw.cell c h0 h1] at h; exact (Option.some.inj h).symm
+
+/-- `Mag_vac` read off a pinned store: the new mode `m` (not READ, DECODE or BUILD, nor a PEND/DIST mode) and the step
+writing none of the `first[]` cells. -/
+theorem Mag_pinned {b : Array Nat} {om : Nat} {σ σ' : Store} {p : Int} {f f' : Int → Int} {H' : Finmap (fun _ : Int => Int)}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hS : stepS p σ = some σ') (hSe : stepS p σ = some ⟨H', σ.R⟩)
+    (hw' : World σ' p (L0 b.size om) f')
+    (hm : ∀ m, H'.lookup (p + cMODE) = some m →
+      m ≠ mREAD ∧ m ≠ mDECODE ∧ m ≠ mBUILD ∧ m ≠ mSNLEN ∧ m ≠ mLENX ∧ m ≠ mDSTD ∧ m ≠ mDSTX ∧ m ≠ mLREP)
+    (hF : ∀ t l : Int, 0 ≤ t → t ≤ 2 → 1 ≤ l → l ≤ 15 →
+      H'.lookup (p + (tbase b.size om t + 16 + l)) = σ.H.lookup (p + (tbase b.size om t + 16 + l))) :
+    Mag b.size om f' := by
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have eM := cell_after hS hSe hw' cMODE (by decide) (by rw [hL0]; unfold cMODE; omega)
+  have hm' := hm _ eM
+  have hem : em f' = f' cMODE := by rw [em, if_neg hm'.1]
+  refine Mag_vac hg hm'.2.1 hm'.2.2.1 (by rw [hem]; exact hm'.2.2.2.1)
+    (by rw [hem]; exact hm'.2.2.2.2.1) (by rw [hem]; exact hm'.2.2.2.2.2.1) (by rw [hem]; exact hm'.2.2.2.2.2.2.1)
+    (by rw [hem]; exact hm'.2.2.2.2.2.2.2) ?_
+  intro t l a1 a2 a3 a4
+  have h0 : 0 ≤ tbase b.size om t + 16 + l := by unfold tbase LB0; omega
+  have h1 : tbase b.size om t + 16 + l < (L0 b.size om : Int) := by rw [hL0]; unfold tbase LB0; omega
+  have e := cell_after hS hSe hw' _ h0 h1
+  rw [hF t l a1 a2 a3 a4] at e
+  exact cell_frame hw h0 h1 e
+
+theorem Mag_step_hdrd {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hm : f cMODE = mHDRD)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mHDRD, hdrdN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mHDRD, hdrdN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (hdrd_step hw hL (f cACC) rfl)
+  have ne : ∀ (c d : Int), c ≠ d → p + c ≠ p + d := fun c d h e => h (by omega)
+  unfold hdrdH at hSe
+  split_ifs at hSe
+  all_goals refine Mag_pinned hw hg hS hSe hw' (fun m e => ?_) ?_
+  all_goals try (rw [show p + cMODE = p + 0 from rfl, Finmap.lookup_insert] at e; cases e; simp [mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP])
+  all_goals intro t l a1 a2 a3 a4
+  all_goals simp only [Finmap.lookup_insert_of_ne _ (ne _ _ (show tbase b.size om t + 16 + l ≠ 0 by unfold tbase LB0; omega)),
+    Finmap.lookup_insert_of_ne _ (ne _ _ (show tbase b.size om t + 16 + l ≠ 10 by unfold tbase LB0; omega)),
+    Finmap.lookup_insert_of_ne _ (ne _ _ (show tbase b.size om t + 16 + l ≠ 14 by unfold tbase LB0; omega))]
+
 end K5

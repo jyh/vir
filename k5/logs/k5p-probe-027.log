@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=43655
+probes/LookupProbe.lean:5:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≤ 4
+where
+ a := m
+probes/LookupProbe.lean:4:8: warning: This simp argument is unused:
+  Finmap.lookup_insert
+
+Hint: Omit it from the simp argument list.
+  simp [F̵i̵n̵m̵a̵p̵.̵l̵o̵o̵k̵u̵p̵_̵i̵n̵s̵e̵r̵t̵,̵ ̵cMODE] at e
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1
