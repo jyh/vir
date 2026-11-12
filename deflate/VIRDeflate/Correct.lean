@@ -2940,6 +2940,37 @@ theorem syms_finish {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ 
   · rw [← h7]
     exact hk0.trans (fun c h0 h1 hc => hk' c h0 h1 (by unfold bset at hc; omega)) (fun c h => by rw [h7] at *; exact h)
 
+theorem offOf_congr' {f g : Int → Int} {tbb : Int} : ∀ l : Nat, (∀ k : Nat, 1 ≤ k → k < l → f (tbb + k) = g (tbb + k)) →
+    offOf f tbb l = offOf g tbb l
+  | 0, _ => rfl
+  | l + 1, h => by
+    simp only [offOf]; rw [offOf_congr' l (fun k h1 h2 => h k h1 (by omega))]
+    split_ifs with h0
+    · rfl
+    · rw [h l (by omega) (by omega)]
+
+def exemptB (lens : Array Nat) (md : Mode) : Bool :=
+  match md with
+  | .normal => oneSymbolLenOne lens
+  | .strict => false
+  | .dist => oneSymbolLenOne lens || lens.all (· = 0)
+
+/-- S4's `code`, run: over-subscribed, incomplete, or the assignment, with the state untouched. -/
+theorem go_code (lens : Array Nat) (md : Mode) (e : Env) (st : St) :
+    go (code lens md) e st = match leftF (fun l => (blCount lens l : Int)) 15 with
+      | none => .error "over-subscribed"
+      | some v => if 0 < v ∧ exemptB lens md = false then .error "incomplete" else .ok (assign lens, st) := by
+  unfold code
+  rw [leftAfter_leftF]
+  rcases leftF (fun l => (blCount lens l : Int)) 15 with _ | v
+  · rfl
+  · simp only
+    by_cases h : 0 < v ∧ exemptB lens md = false
+    · rw [if_pos h, if_pos]; · rfl
+      cases md <;> simp_all [exemptB]
+    · rw [if_neg h, if_neg]; · rfl
+      cases md <;> simp_all [exemptB]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
