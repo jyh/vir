@@ -50,3 +50,10 @@
 - **OWED for K5-2, in order:** the BUILD family (11 traces), TABLE (its BITc call: POW/STRIP's arithmetic under the fix),
   the dispatch prefix (stepT → mode term), then **K5-2b: discharge every rrN at the Safety level** (the mode's own facts +
   `Mag`, finding K5-2-0), then `deflate_inrange` over the 28 modes, then K5-3.
+- **Update, end of the 68th head:** Modes2 20/21 (k5p-028), Modes3 10/11 BUILD (k5p-049), Modes4 DECODE (k5p-050: its `tauto`
+  hit the recursion limit over the added facts → `not_and_or.mp hh`), Dispatch `step_inR` (k5p-032: the dispatch adds no range
+  fact). **Traces done: HDR, READ bit, 12 + 20 + 10 + 1 = 45 mode traces + the dispatch.** OPEN: `build_left_end` (whnf
+  heartbeat timeout over the whole declaration even at 16M and de-duplicated, k5p-probe-006/008 and BuildLeftEndWIP rounds;
+  next: split its walk at a `by_cases` or state it in two halves), TABLE (BITc), `readbit_trunc`'s twin is done in Modes2.
+  **The K5-2b work list is k5/RANGE-SITES.md: 202 distinct (trace, expression) range obligations**, each to be discharged
+  from Safety's facts or `Mag`.
