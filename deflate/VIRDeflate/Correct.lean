@@ -1361,6 +1361,118 @@ theorem decode_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
             exact ⟨σ', f', (Reach.step hS).trans hR', hw', hm'⟩
         · rw [hlk] at h; simp [go_pure] at h
 
+/-! ## S7's loop: SYM, SYMD, LENX, DSTD, DSTX, COPY -/
+
+theorem InvG.roVal {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) :
+    (∀ i : Nat, i < 29 → f (X0 b.size om + 16 + i) = LBASE.getD i 0) ∧
+    (∀ i : Nat, i < 29 → f (X0 b.size om + 45 + i) = LEXTRA.getD i 0) ∧
+    (∀ i : Nat, i < 30 → f (X0 b.size om + 74 + i) = DBASE.getD i 0) ∧
+    (∀ i : Nat, i < 30 → f (X0 b.size om + 104 + i) = DEXTRA.getD i 0) := by
+  have hx : ∀ i : Int, X0 b.size om + 16 ≤ i → i < X0 b.size om + 153 → f i = initCell b om lit i := h.ro
+  unfold X0 at hx ⊢
+  refine ⟨fun i hi => ?_, fun i hi => ?_, fun i hi => ?_, fun i hi => ?_⟩
+  · rw [hx _ (by omega) (by omega)]; unfold initCell X0; dsimp only
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_pos (by omega)]
+    have e : (2080 + (b.size : Int) + (om : Int) + 1393 + 16 + (i : Int) - (2080 + (b.size : Int) + (om : Int) + 1393) - 16).toNat = i := by
+      omega
+    rw [e]
+  · rw [hx _ (by omega) (by omega)]; unfold initCell X0; dsimp only
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+      if_pos (by omega)]
+    have e : (2080 + (b.size : Int) + (om : Int) + 1393 + 45 + (i : Int) - (2080 + (b.size : Int) + (om : Int) + 1393) - 45).toNat = i := by
+      omega
+    rw [e]
+  · rw [hx _ (by omega) (by omega)]; unfold initCell X0; dsimp only
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+      if_neg (by omega), if_pos (by omega)]
+    have e : (2080 + (b.size : Int) + (om : Int) + 1393 + 74 + (i : Int) - (2080 + (b.size : Int) + (om : Int) + 1393) - 74).toNat = i := by
+      omega
+    rw [e]
+  · rw [hx _ (by omega) (by omega)]; unfold initCell X0; dsimp only
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+      if_neg (by omega), if_neg (by omega), if_pos (by omega)]
+    have e : (2080 + (b.size : Int) + (om : Int) + 1393 + 104 + (i : Int) - (2080 + (b.size : Int) + (om : Int) + 1393) - 104).toNat = i := by
+      omega
+    rw [e]
+
+/-- The cells a DECODE request writes. -/
+def reqDecF (f : Int → Int) (X tg rt : Int) : Int → Int :=
+  Function.update (Function.update (Function.update (Function.update (Function.update f X 1) (X + 1) 0) (X + 2) tg)
+    (X + 3) rt) 0 14
+
+theorem World.reqDec {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) {X : Int} (hX0 : 4 ≤ X)
+    (hXL : X + 4 < L) (tg rt : Int) : World ⟨reqDecH σ.H p X tg rt, σ.R⟩ p L (reqDecF f X tg rt) := by
+  unfold reqDecH reqDecF
+  exact ((((hw.store (i := X) (by omega) (by omega)).store (i := X + 1) (by omega) (by omega)).store (i := X + 2)
+    (by omega) (by omega)).store (i := X + 3) (by omega) (by omega)).store (i := 0) (by norm_num) (by omega)
+
+def decReqSet (n om : Nat) (c : Int) : Prop := c = 0 ∨ (X0 n om ≤ c ∧ c ≤ X0 n om + 3)
+
+theorem reqDecF_keeps (L n om : Nat) (f : Int → Int) (tg rt : Int) :
+    Keeps L f (reqDecF f (X0 n om) tg rt) (decReqSet n om) := fun c _ _ hc => by
+  unfold decReqSet at hc
+  simp only [reqDecF]
+  rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+
+theorem reqDecF_vals (f : Int → Int) (X tg rt : Int) (hX : 4 ≤ X) :
+    reqDecF f X tg rt cMODE = mDECODE ∧ reqDecF f X tg rt X = 1 ∧ reqDecF f X tg rt (X + 1) = 0 ∧
+      reqDecF f X tg rt (X + 2) = tg ∧ reqDecF f X tg rt (X + 3) = rt := by
+  simp only [reqDecF, cMODE, Function.update_apply]
+  refine ⟨by simp [mDECODE], ?_, ?_, ?_, ?_⟩ <;> split_ifs <;> first | omega | rfl
+
+/-- What a decode request leaves: R, the request's cells, every table and every cell outside the request kept. -/
+def DecReady (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) (st : St) (tg rt : Int) : Prop :=
+  Rel b om lit f st ∧ f cMODE = mDECODE ∧ f (X0 b.size om) = (1 : Nat) ∧ f (X0 b.size om + 1) = (0 : Nat) ∧
+    f (X0 b.size om + 2) = tg ∧ f (X0 b.size om + 3) = rt
+
+theorem sym_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mSYM) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ DecReady b om lit f1 st 1 mSYMD ∧
+      Keeps (L0 b.size om) f f1 (decReqSet b.size om) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hX4 : X0 b.size om + 4 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (sym_step hw hL (X0 b.size om) hR.inv.1.x_eq (by unfold X0; omega) hX4)
+  obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS
+    (hw.reqDec (by unfold X0; omega) hX4 1 15) (reqDecF_keeps _ b.size om f 1 15)
+    (fun c hc => by unfold decReqSet at hc; unfold ctl IN X0 at *; omega)
+  obtain ⟨v1, v2, v3, v4, v5⟩ := reqDecF_vals f (X0 b.size om) 1 15 (by unfold X0; omega)
+  refine ⟨_, f1, hS, hw1, ⟨hR1, ?_, ?_, ?_, ?_, ?_⟩, hk1⟩
+  · rw [ag _ (by decide) (by unfold cMODE; omega)]; exact v1
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v2
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v3
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v4
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v5
+
+theorem lenx_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mLENX) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ DecReady b om lit f1 st 2 mDSTD ∧
+      f1 cPEND = f cPEND + f cACC ∧ Keeps (L0 b.size om) f f1 (fun c => c = 5 ∨ decReqSet b.size om c) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hX4 : X0 b.size om + 4 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (lenx_step hw hL (X0 b.size om) (f cACC) (f cPEND) hR.inv.1.x_eq (by unfold X0; omega) hX4 rfl rfl)
+  have hg := (hw.store (i := 5) (v := f cPEND + f cACC) (by norm_num) (by omega)).reqDec (X := X0 b.size om)
+    (by unfold X0; omega) hX4 2 17
+  have hk : Keeps (L0 b.size om) f (reqDecF (Function.update f 5 (f cPEND + f cACC)) (X0 b.size om) 2 17)
+      (fun c => c = 5 ∨ decReqSet b.size om c) := fun c h0 h1 hc => by
+    rw [reqDecF_keeps _ b.size om _ 2 17 c h0 h1 (fun h => hc (Or.inr h)), upd_eq _ _ (fun h => hc (Or.inl h))]
+  obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg hk
+    (fun c hc => by unfold decReqSet at hc; unfold ctl IN X0 at *; omega)
+  obtain ⟨v1, v2, v3, v4, v5⟩ := reqDecF_vals (Function.update f 5 (f cPEND + f cACC)) (X0 b.size om) 2 17
+    (by unfold X0; omega)
+  refine ⟨_, f1, hS, hw1, ⟨hR1, ?_, ?_, ?_, ?_, ?_⟩, ?_, hk1⟩
+  · rw [ag _ (by decide) (by unfold cMODE; omega)]; exact v1
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v2
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v3
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v4
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v5
+  · rw [ag _ (by decide) (by unfold cPEND; omega)]
+    simp only [reqDecF, cPEND]
+    rw [upd_eq _ _ (by decide), upd_eq _ _ (by unfold X0; omega), upd_eq _ _ (by unfold X0; omega),
+      upd_eq _ _ (by unfold X0; omega), upd_eq _ _ (by unfold X0; omega)]
+    simp
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
