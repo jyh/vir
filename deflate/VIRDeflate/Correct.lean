@@ -2210,6 +2210,62 @@ theorem next_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
     rw [hncode l (by omega), ht1] at this
     exact this
 
+/-! ## S4's construction, on the spec side: counts and next codes -/
+
+/-- The machine's count over the source cells is S4's `bl_count`, when the source holds the lengths. -/
+theorem cnt_eq {f : Int → Int} {sb : Int} {lens : Array Nat} (hs : ∀ j : Nat, j < lens.size → f (sb + j) = lens.getD j 0)
+    (l : Nat) : ∀ k, k ≤ lens.size → cnt f sb l k = ((List.range k).filter (fun i => lens.getD i 0 = l)).length := by
+  intro k
+  induction k with
+  | zero => intro _; rfl
+  | succ k ih =>
+    intro hk
+    rw [cnt, ih (by omega), List.range_succ, List.filter_append, List.length_append, hs k (by omega)]
+    by_cases h : lens.getD k 0 = l
+    · rw [if_pos (by exact_mod_cast h)]
+      simp only [List.filter_cons, List.filter_nil, h, decide_true, if_true, List.length_singleton]
+    · rw [if_neg (by exact_mod_cast h)]
+      simp only [List.filter_cons, List.filter_nil, h, decide_false, Bool.false_eq_true, if_false, List.length_nil]
+
+theorem cnt_blCount {f : Int → Int} {sb : Int} {lens : Array Nat} (hs : ∀ j : Nat, j < lens.size → f (sb + j) = lens.getD j 0)
+    (l : Nat) (hl : l ≠ 0) : cnt f sb l lens.size = blCount lens l := by
+  rw [cnt_eq hs l _ le_rfl, blCount_eq _ _ hl]; rfl
+
+/-- `nextCodes` is the `ncode` recurrence over `bl_count`. -/
+theorem nextCodes_ncode (lens : Array Nat) (l : Nat) (hl : l ≤ 15) :
+    ((nextCodes lens).getD l 0 : Int) = ncode (fun k => (blCount lens k : Int)) l := by
+  have key : ∀ k, k ≤ 15 →
+      ((List.range' 1 k).foldl (fun (acc : Nat × Array Nat) l =>
+          let c := (acc.1 + blCount lens (l - 1)) <<< 1
+          (c, acc.2.push c)) (0, #[0])) =
+        (((ncode (fun k => (blCount lens k : Int)) k).toNat),
+          ((List.range (k + 1)).map fun i => (ncode (fun k => (blCount lens k : Int)) i).toNat).toArray) := by
+    have hnn : ∀ i, 0 ≤ ncode (fun k => (blCount lens k : Int)) i := by
+      intro i; induction i with
+      | zero => simp [ncode]
+      | succ i ih => simp only [ncode]; positivity
+    intro k hk
+    induction k with
+    | zero => simp [ncode]
+    | succ k ih =>
+      rw [List.range'_concat, List.foldl_append, ih (by omega)]
+      simp only [List.foldl_cons, List.foldl_nil, Nat.shiftLeft_eq, pow_one]
+      rw [show 1 + 1 * k - 1 = k by omega]
+      have e : ((ncode (fun k => (blCount lens k : Int)) k).toNat + blCount lens k) * 2 =
+          (ncode (fun k => (blCount lens k : Int)) (k + 1)).toNat := by
+        simp only [ncode]
+        have := hnn k; omega
+      rw [e, List.range_succ (n := k + 1), List.map_append]
+      simp
+  unfold nextCodes
+  rw [key 15 le_rfl]
+  simp only
+  have hnn : ∀ i, 0 ≤ ncode (fun k => (blCount lens k : Int)) i := by
+    intro i; induction i with
+    | zero => simp [ncode]
+    | succ i ih => simp only [ncode]; positivity
+  simp [Array.getD, show l < 16 by omega, Int.toNat_of_nonneg (hnn l)]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
