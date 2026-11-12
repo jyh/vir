@@ -59,3 +59,20 @@ K5-1 is proved in two parts, because Sim2 relates the IR to the word machine and
 - **What would show this wrong:** `s2_noovf` needing a hypothesis beyond `InRangeRun` and `s2_refines`'s own (a finding, K5's
   third falsifier); or an `.ovf` source in `stepW` that no head operand explains (then (i) is false and Word.lean has a fourth
   exit path nobody declared).
+
+## Addendum 2 (68th head, 2026-11-12, after K5-1a PROVED and BEFORE any K5-1b file): K5-1b's statement and route
+- **The source predicate.** `Atom.InR₂ a`: every `.prim` sub-atom of a that evaluates (`Atom.eval`) evaluates to an atom whose
+  int, if it is one, satisfies `inRange`. `Tm.HeadInR t`: the atoms t's NEXT step evaluates are `InR₂` (`ret a`: a ·
+  `letE _ e₁ _`: e₁'s head · `letOp _ as _ _`: every a in as · `app a₁ a₂`: both · `ite a`/`case a`: a). `SrcInRange S₀ :=
+  ∀ S, Steps₂ S₀ S → Tm.HeadInR S.1`. This is the declared "every .p1/.p2 int result the source run applies is inRange",
+  written per reachable configuration. **It names values only, never input bytes.**
+- **Statement.** `compile_noovf`: under `compile_refines`'s hypotheses and `SrcInRange (instL 0 vs e, σ)`, every word run from
+  W₀ has `W'.1 ≠ .ovf`. Corollary `compile_refines_noovf`: compile_refines (1) without its `∨ .ovf`.
+- **Route.** (a) `ir_step_match`: from `Match I S`, an IR step goes to a finished state, or to a state matched to the SAME S
+  (a `letE` push), or to one matched to a ⟶₂ successor of S. The NotLet case is sim_step's own case analysis, re-stated for a
+  NotLet code (`step_notlet`, a copy of sim_step's body after its `normalize`, since S1.lean is not edited) plus `src_steps`:
+  an IR step forces a ⟶₂ step (through `ARel.eval` and `stepFn₂_sound`). (b) `ir_reach`: every IR state reachable from a
+  matched start is finished or matched to a reachable source configuration. (c) `ARel.inR`: a related operand of an `InR₂`
+  atom is `InR`. (d) `inRangeRun_of_src`, then `s2_noovf`.
+- **What would show it wrong:** an IR state reachable from the start that is neither finished nor matched (then S1's
+  simulation has states nobody characterised, a finding about S1), or a hypothesis beyond SrcInRange.
