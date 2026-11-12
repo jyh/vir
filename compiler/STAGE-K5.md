@@ -32,3 +32,21 @@
 - **Duplication declared:** `step_notlet` is a verbatim copy of sim_step's body (S1.lean l. 98–181) so S1.lean stays unedited;
   it counts in this file's C5 and is named here so a count can subtract it.
 - NEXT: K5-2 `deflate_inrange` (SrcInRange for DEFLATE's step term from Safety's Inv, bounds in n and OUTMAX only), K5-3.
+
+## K5-2: IN PROGRESS (68th head, 2026-11-12), project k5/ (DECLARATIONS-K5 addendum 3, route A)
+- **Generic half DONE** (k5/K5/Checked.lean): `headB` (a Bool check, `headB_sound` → `Tm.HeadInR`), the checked runner
+  `stepFn₂C`/`run₂C`, `srcInRange_runC` (by `step₂_det`), `srcInRange_ret`, `srcInRange_step` (one checked step), `inRange_eq`.
+- **The kernel's limit, measured:** a trace written as ONE nested `run₂C 40` term passes elaboration and is refused by the
+  kernel, "deep recursion detected" (k5p-004/005; probes 001–003 localise it to the nesting, not the range proofs). The fix is
+  the walk `repeat (first | exact srcInRange_ret trivial | refine srcInRange_step ?_ ?_ ?_ <;> simp [...])`: a chain term.
+  An `omega` discharger for the range facts timed out (probe-004) and is not used.
+- **The porter** (scratch `port.py` + `fix.py`, the method recorded here): each Step.lean trace is copied with its conclusion
+  swapped to `SrcInRange (closeAt p T, σ)` and its trace `simp` wrapped in the walk. A build's leftover goals are EXACTLY the
+  arithmetic sites' range facts, which `fix.py` turns into named hypotheses `rrN : inRange (e) = true` (or a `norm_num` fact
+  for a literal) round by round until the build is clean. The hypotheses are the record of every arithmetic site a mode's
+  run passes through.
+- Done so far: HDR (Checked), READ's bit step (Read, r7–r10), Modes1 (12 traces: hdrb hdrd shdr slen snlen fixlens_step
+  fixlens_end dhdr dh2 dh3 dh4 clput; k5p-015 EXIT=0). Modes2 (21 traces) in rounds from k5p-020.
+- **OWED for K5-2, in order:** the BUILD family (11 traces), TABLE (its BITc call: POW/STRIP's arithmetic under the fix),
+  the dispatch prefix (stepT → mode term), then **K5-2b: discharge every rrN at the Safety level** (the mode's own facts +
+  `Mag`, finding K5-2-0), then `deflate_inrange` over the 28 modes, then K5-3.
