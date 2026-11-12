@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-079; audit df-audit-018: 168 of 168 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-082; audit df-audit-019: 170 of 170 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -132,6 +132,14 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       belong to the simulation (S-5).
     - Mutants: dist without the empty-code exemption, red INSIDE `build_left_end` (df-mutant-030: line 1312); slot += 2, red
       INSIDE `build_syms_cell` (df-mutant-031: line 1363). The unmutated copy is GREEN (df-mutant-032).
+  - **`DECODE`, S4's `decodeGo` one bit per step** (df-082; df-080/081 failed on miss branches where `simp` rewrote ℓ or bi in
+    the goal but not in the lookup hypotheses, and where fs ≤ v′ was left undecided). `decode_step`: the bit read as READ
+    reads it, v′ = 2·v + b; a hit (first[ℓ] ≤ v′ < first[ℓ] + count[ℓ] in TB(TGT)) writes sym := syms[offs[ℓ] + v′ −
+    first[ℓ]] and mode := ret; a miss at ℓ = 15 is reason 7 ("invalid code") with no further bit; otherwise ℓ + 1, v := v′.
+    The exact store is `decH`. `decode_trunc`: byte ≥ n → reason 1, REJECT.
+    - Mutants: "invalid code" at ℓ = 14, red INSIDE `decode_step` in all four miss branches (df-mutant-033); the hit's
+      symbol read without offs[ℓ], red INSIDE `decode_step` in both hit branches (df-mutant-034). The unmutated copy is
+      GREEN (df-mutant-035).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -178,7 +186,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-132 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…079, df-audit-001…018, df-audit-control-001, df-mutant-001…032, df-probe-001/002).
+139 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…082, df-audit-001…019, df-audit-control-001, df-mutant-001…035, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.
