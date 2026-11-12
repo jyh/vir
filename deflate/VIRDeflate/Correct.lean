@@ -1473,6 +1473,162 @@ theorem lenx_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
       upd_eq _ _ (by unfold X0; omega), upd_eq _ _ (by unfold X0; omega)]
     simp
 
+/-- A `READ`-K request's result: k = 0 is the return mode with acc 0 (S's `bits 0`), else a READ world. -/
+def KReady (f : Int → Int) (K : Nat) (rt : Int) : Prop :=
+  (K = 0 → f cMODE = rt ∧ f cACC = 0) ∧
+  (K ≠ 0 → f cMODE = mREAD ∧ f cK = K ∧ f cACC = 0 ∧ f cWT = 1 ∧ f cRET = rt)
+
+theorem reqKF_ready (g : Int → Int) (K : Nat) (rt : Int) : KReady (reqKF g K rt) K rt := by
+  unfold KReady reqKF
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · subst h; simp [cMODE, cACC, Function.update_apply]
+  · rw [if_neg (by exact_mod_cast h)]; exact reqF_vals g K rt
+
+theorem reqKF_keeps (L : Nat) (g : Int → Int) (k rt : Int) :
+    Keeps L g (reqKF g k rt) (fun c => c = 0 ∨ (2068 ≤ c ∧ c ≤ 2071)) := fun c h0 h1 hc => by
+  unfold reqKF; split_ifs
+  · rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+  · exact reqF_keeps L g k rt c h0 h1 hc
+
+/-- `bits K` from a `KReady` world, K possibly 0. -/
+theorem bitsK_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (K : Nat) (rt : Int)
+    (Q Q' : (Int → Int) → St → Prop) (hQ0 : ∀ f st, Q f st → Q' f st)
+    (hQ : ∀ f st f' st', Q f st → Keeps (L0 b.size om) f f' rdSet → st'.out = st.out → st.pos < st'.pos →
+      st.pos < 8 * b.size → Q' f' st') :
+    Sim b om p (bits K) (fun f st => (Rel b om lit f st ∧ KReady f K rt) ∧ Q f st)
+      (fun a f' st' => Rel b om lit f' st' ∧ f' cMODE = rt ∧ f' cACC = a ∧ Q' f' st') := by
+  cases K with
+  | zero =>
+    exact Sim.pure (fun f st ⟨⟨hR, hk0, _⟩, hq⟩ => ⟨hR, (hk0 rfl).1, by rw [(hk0 rfl).2]; rfl, hQ0 f st hq⟩)
+  | succ K =>
+    exact (bits_sim' hb K rt Q Q' hQ).mono (fun f st ⟨⟨hR, _, hk⟩, hq⟩ => by
+      obtain ⟨a1, a2, a3, a4, a5⟩ := hk (by omega)
+      exact ⟨⟨hR, a1, by rw [a2]; push_cast; ring, a3, a4, a5⟩, hq⟩) (fun _ _ _ h => h)
+
+def symdSet (n om : Nat) (m : Nat) (c : Int) : Prop :=
+  c = 0 ∨ c = 3 ∨ c = 5 ∨ c = 14 ∨ (2068 ≤ c ∧ c ≤ 2071) ∨ c = IN + n + m
+
+/-- **SYMD, one step**, by the decoded symbol s. -/
+theorem symd_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mSYMD)
+    (s : Nat) (hs : f (X0 b.size om + 4) = s) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Keeps (L0 b.size om) f f1 (symdSet b.size om st.out.size) ∧
+      (s < 256 → st.out.size = om → f1 cMODE = mREJECT) ∧
+      (s < 256 → st.out.size ≠ om → Rel b om lit f1 ⟨st.pos, st.out.push s⟩ ∧ f1 cMODE = mSYM) ∧
+      (s = 256 → Rel b om lit f1 st ∧ f1 cMODE = endMode (f cBF)) ∧
+      (256 < s → s ≤ 285 → Rel b om lit f1 st ∧ f1 cPEND = LBASE.getD (s - 257) 0 ∧
+        KReady f1 (LEXTRA.getD (s - 257) 0) mLENX) ∧
+      (285 < s → f1 cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hi := hR.inv
+  have hXL : X0 b.size om + 134 < L0 b.size om := by unfold X0 L0; omega
+  have hmm := hR.m
+  have hmr := hi.1.m_rng
+  obtain ⟨rLB, rLE, -, -⟩ := hi.1.roVal
+  have hs288 := hi.2.sym (Or.inl hm)
+  rw [hs] at hs288
+  set m : Int := (st.out.size : Int) with hmd
+  set lb := f (X0 b.size om + 16 + ((s : Int) - 257)) with hlbd
+  set le := f (X0 b.size om + 45 + ((s : Int) - 257)) with hled
+  have hS := stepS_fit hw (by omega) hm rfl (by unfold modes; simp) (by decide)
+    (symd_step hw hL (X0 b.size om) s m om b.size (f cBF) lb le hi.1.x_eq (by unfold X0; omega) hXL hs hmm hi.1.om_eq
+      hi.1.n_eq rfl (fun _ h2 => ⟨by omega, by unfold L0; omega⟩) rfl rfl)
+  set g : Int → Int := if (s : Int) < 256 then (if m = om then Function.update (Function.update f 14 4) 0 99
+      else Function.update (Function.update (Function.update f (2080 + b.size + m) s) 3 (m + 1)) 0 13)
+    else if (s : Int) = 256 then Function.update f 0 (if f cBF = 1 then 98 else 1)
+    else if (s : Int) ≤ 285 then reqKF (Function.update f 5 lb) le 16
+    else Function.update (Function.update f 14 8) 0 99 with hgd
+  have hg : World ⟨symdH σ.H p s m om b.size (f cBF) lb le, σ.R⟩ p (L0 b.size om) g := by
+    rw [hgd]
+    by_cases h1 : (s : Int) < 256
+    · by_cases h2 : m = om
+      · simp only [symdH, if_pos h1, if_pos h2]
+        exact (hw.store (i := 14) (by norm_num) (by omega)).store (i := 0) (by norm_num) (by omega)
+      · simp only [symdH, if_pos h1, if_neg h2]
+        exact ((hw.store (i := 2080 + b.size + m) (by omega) (by unfold L0; omega)).store (i := 3) (by norm_num)
+          (by omega)).store (i := 0) (by norm_num) (by omega)
+    · by_cases h3 : (s : Int) = 256
+      · simp only [symdH, if_neg h1, if_pos h3]
+        exact hw.store (i := 0) (by norm_num) (by omega)
+      · by_cases h4 : (s : Int) ≤ 285
+        · simp only [symdH, if_neg h1, if_neg h3, if_pos h4]
+          exact (hw.store (i := 5) (v := lb) (by norm_num) (by omega)).reqK (by omega) le 16
+        · simp only [symdH, if_neg h1, if_neg h3, if_neg h4]
+          exact (hw.store (i := 14) (by norm_num) (by omega)).store (i := 0) (by norm_num) (by omega)
+  have hk : Keeps (L0 b.size om) f g (symdSet b.size om st.out.size) := fun c h0 h1 hc => by
+    unfold symdSet IN at hc
+    rw [hgd]
+    by_cases hA : (s : Int) < 256
+    · by_cases hB : m = om
+      · simp only [if_pos hA, if_pos hB]; rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+      · simp only [if_pos hA, if_neg hB]; rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+    · by_cases hC : (s : Int) = 256
+      · simp only [if_neg hA, if_pos hC]; rw [upd_eq _ _ (by omega)]
+      · by_cases hD : (s : Int) ≤ 285
+        · simp only [if_neg hA, if_neg hC, if_pos hD]
+          rw [reqKF_keeps _ _ le 16 c h0 h1 (by omega), upd_eq _ _ (by omega)]
+        · simp only [if_neg hA, if_neg hC, if_neg hD]; rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+  obtain ⟨f1, hw1, hi1, ag⟩ := step_to hb hw hi (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+  have hk1 : Keeps (L0 b.size om) f f1 (symdSet b.size om st.out.size) := fun c h0 h1 hc => (ag c h0 h1).trans (hk c h0 h1 hc)
+  have a0 := ag 0 (by norm_num) (by omega)
+  refine ⟨_, f1, hS, hw1, hk1, fun h1 h2 => ?_, fun h1 h2 => ?_, fun h1 => ?_, fun h1 h2 => ?_, fun h1 => ?_⟩
+  · simp only [cMODE]; rw [a0, hgd, if_pos (by exact_mod_cast h1), if_pos (by rw [hmd, h2])]; simp [mREJECT]
+  · have hne : m ≠ om := by rw [hmd]; exact_mod_cast h2
+    have hlt : st.out.size < om := by omega
+    have eg : g = Function.update (Function.update (Function.update f (2080 + b.size + m) s) 3 (m + 1)) 0 13 := by
+      rw [hgd, if_pos (by exact_mod_cast h1), if_neg hne]
+    rw [eg] at ag
+    refine ⟨⟨hi1, ?_, ?_, ?_, ?_⟩, ?_⟩
+    · intro v i hv hi7 hl
+      rw [hk1 _ (by unfold BT; omega) (by unfold BT L0; omega) (by unfold symdSet BT IN; omega)]
+      exact hR.bits v i hv hi7 hl
+    · rw [hk1 _ (by decide) (by unfold cBY L0; omega) (by unfold symdSet cBY IN; omega),
+        hk1 _ (by decide) (by unfold cBI L0; omega) (by unfold symdSet cBI IN; omega)]
+      exact hR.pos
+    · rw [ag _ (by decide) (by unfold cM; omega)]; simp [cM, hmd]
+    · intro i hi2
+      simp only [Array.size_push] at hi2
+      by_cases hlt' : i < st.out.size
+      · rw [hk1 _ (by unfold IN; omega) (by unfold IN L0; push_cast; omega) (by unfold symdSet IN; omega), hR.out i hlt']
+        simp [Array.getD, hlt', Array.getElem_push, show i < st.out.size + 1 by omega]
+      · have hie : i = st.out.size := by omega
+        subst hie
+        rw [ag _ (by unfold IN; omega) (by unfold IN L0; push_cast; omega)]
+        simp only [IN, Function.update_apply]
+        rw [if_neg (by omega), if_neg (by omega), if_pos (by rw [hmd])]
+        simp [Array.getD]
+    · simp only [cMODE]; rw [a0, eg]; simp [mSYM]
+  · have eg : g = Function.update f 0 (if f cBF = 1 then 98 else 1) := by
+      rw [hgd, if_neg (by rw [h1]; norm_num), if_pos (by rw [h1]; norm_num)]
+    have hkg : Keeps (L0 b.size om) f f1 (fun c => c = 0) := fun c h0 h1 hc => by
+      rw [ag c h0 h1, eg, upd_eq _ _ hc]
+    refine ⟨hR.of_keeps hi1 hkg (fun c hc => by unfold ctl; omega), ?_⟩
+    simp only [cMODE]; rw [a0, eg]; simp [endMode, mDONE, mHDR]
+  · have eg : g = reqKF (Function.update f 5 lb) le 16 := by
+      rw [hgd, if_neg (by push_cast; omega), if_neg (by push_cast; omega), if_pos (by push_cast; omega)]
+    have hlb : lb = LBASE.getD (s - 257) 0 := by
+      rw [hlbd, show (s : Int) - 257 = ((s - 257 : Nat) : Int) by omega]; exact rLB _ (by omega)
+    have hle : le = LEXTRA.getD (s - 257) 0 := by
+      rw [hled, show (s : Int) - 257 = ((s - 257 : Nat) : Int) by omega]; exact rLE _ (by omega)
+    rw [hle] at eg
+    have hkg : Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 5 ∨ (2068 ≤ c ∧ c ≤ 2071)) := fun c h0 h1 hc => by
+      rw [ag c h0 h1, eg, reqKF_keeps _ _ _ 16 c h0 h1 (by omega), upd_eq _ _ (by omega)]
+    refine ⟨hR.of_keeps hi1 hkg (fun c hc => by unfold ctl IN; omega), ?_, ?_⟩
+    · rw [ag _ (by decide) (by unfold cPEND; omega), eg, ← hlb]
+      unfold reqKF; split_ifs
+      · simp [cPEND, Function.update_apply]
+      · rw [reqF_eq _ _ _ _ (by unfold cPEND; omega)]; simp [cPEND]
+    · have r := reqKF_ready (Function.update f 5 lb) (LEXTRA.getD (s - 257) 0) 16
+      have e : ∀ c : Int, 0 ≤ c → c < L0 b.size om → f1 c = reqKF (Function.update f 5 lb) (LEXTRA.getD (s - 257) 0) 16 c :=
+        fun c h0 h1 => by rw [ag c h0 h1, eg]
+      unfold KReady at r ⊢
+      simp only [cMODE, cACC, cK, cWT, cRET] at r ⊢
+      rw [e 0 (by norm_num) (by omega), e 2069 (by norm_num) (by omega), e 2068 (by norm_num) (by omega),
+        e 2070 (by norm_num) (by omega), e 2071 (by norm_num) (by omega)]
+      exact r
+  · simp only [cMODE]
+    rw [a0, hgd, if_neg (by push_cast; omega), if_neg (by push_cast; omega), if_neg (by push_cast; omega)]; simp [mREJECT]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
