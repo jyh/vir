@@ -1095,6 +1095,176 @@ theorem stored_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
       (by simp only at h2; omega) (by simp only at h3; omega)
     exact ⟨σ', f', hR', hw', hRel, hmo⟩
 
+/-! ## DECODE simulates S4's `decodeGo` (S-18's `decodeGo` row) -/
+
+/-- **S-18's code relation:** the table t holds what `decodeGo` reads of `assign lens`. -/
+def TblRel (n om : Nat) (f : Int → Int) (t : Int) (lens : Array Nat) : Prop :=
+  ∀ l : Nat, 1 ≤ l → l ≤ 15 →
+    f (tbase n om t + l) = blCount lens l ∧ f (tbase n om t + 16 + l) = (nextCodes lens).getD l 0 ∧
+    ∀ j : Nat, j < blCount lens l → f (tbase n om t + 64 + f (tbase n om t + 32 + l) + j) = (symsOf lens l).getD j 0
+
+/-- The cells a DECODE step writes on a hit or an advance. -/
+def decSet (n om : Nat) (c : Int) : Prop :=
+  c = 0 ∨ c = 1 ∨ c = 2 ∨ c = X0 n om ∨ c = X0 n om + 1 ∨ c = X0 n om + 4
+
+theorem decSet_ctl (n om : Nat) (c : Int) (h : decSet n om c) : ctl n om c ∨ c = 1 ∨ c = 2 := by
+  unfold decSet X0 at h; unfold ctl IN; omega
+
+theorem lookup_assign (lens : Array Nat) (l v : Nat) (hl : l < 16) :
+    lookup (assign lens) l v = if (nextCodes lens).getD l 0 ≤ v ∧ v < (nextCodes lens).getD l 0 + blCount lens l then
+      some ((symsOf lens l).getD (v - (nextCodes lens).getD l 0) 0) else none := by
+  unfold lookup; rw [assign_count _ _ hl, assign_syms _ _ hl, assign_first]
+
+/-- **DECODE, one step, against S's `bit` and `lookup`.** -/
+theorem decode_one {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} {σ : Store} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mDECODE)
+    (lens : Array Nat) (l v : Nat) (hl : f (X0 b.size om) = l) (hv : f (X0 b.size om + 1) = v)
+    (hT : TblRel b.size om f (f (X0 b.size om + 2)) lens) :
+    (∀ x s1, go bit ⟨b, om⟩ st = .ok (x, s1) →
+      ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧
+        (∀ s, lookup (assign lens) l (2 * v + x) = some s → Rel b om lit f1 s1 ∧
+          f1 cMODE = f (X0 b.size om + 3) ∧ f1 (X0 b.size om + 4) = s ∧ Keeps (L0 b.size om) f f1 (decSet b.size om)) ∧
+        (lookup (assign lens) l (2 * v + x) = none → l = 15 → f1 cMODE = mREJECT) ∧
+        (lookup (assign lens) l (2 * v + x) = none → l ≠ 15 → Rel b om lit f1 s1 ∧ f1 cMODE = mDECODE ∧
+          f1 (X0 b.size om) = l + 1 ∧ f1 (X0 b.size om + 1) = 2 * v + x ∧ Keeps (L0 b.size om) f f1 (decSet b.size om))) ∧
+    (∀ r, go bit ⟨b, om⟩ st = .error r →
+      ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ f1 cMODE = mREJECT) := by
+  have hLn : 2080 + b.size ≤ L0 b.size om := by unfold L0; omega
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mDECODE, decodeN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mDECODE, decodeN) hmem (by decide)
+  have hi := hR.inv
+  have hn := hi.1.n_eq
+  have hbr := hi.1.by_rng
+  have hir := hi.1.bi_rng
+  have hpos := hR.pos
+  have hd : f cMODE ≠ mDONE := by rw [hm]; decide
+  have hrj : f cMODE ≠ mREJECT := by rw [hm]; decide
+  obtain ⟨hfr, hl1, hl15, hpair, hsane⟩ := hi.2.dec hm
+  have ht02 : 0 ≤ f (X0 b.size om + 2) ∧ f (X0 b.size om + 2) ≤ 2 := by
+    rcases hpair with ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ <;> rw [h] <;> norm_num
+  rw [hl] at hl1 hl15
+  have hl1' : 1 ≤ l := by omega
+  have hl15' : l ≤ 15 := by omega
+  rw [go_bit]
+  by_cases hlt : f cBY < b.size
+  · have hp8 : st.pos / 8 = (f cBY).toNat := by omega
+    have hp8' : st.pos % 8 = (f cBI).toNat := by omega
+    have hsz : st.pos / 8 < (⟨b, om⟩ : Env).inp.size := by simp only; omega
+    rw [if_pos hsz]
+    refine ⟨fun x s1 hx => ?_, fun r hr => by simp at hr⟩
+    simp only [Except.ok.injEq, Prod.mk.injEq] at hx
+    obtain ⟨hx, hs1⟩ := hx
+    subst hs1
+    obtain ⟨hvb, hv8⟩ := hi.1.byte hb (f cBY).toNat (by omega)
+    set vb := b[(f cBY).toNat]'(by omega) with hvbdef
+    have hbiE : ((f cBI).toNat : Int) = f cBI := by omega
+    have htb := hR.bits vb (f cBI).toNat hv8 (by omega) (by omega)
+    have hxv : (x : Int) = bitAt vb (f cBI).toNat := by
+      rw [bitAt_eq vb _ hv8 (by omega), ← hx, hp8, hp8']
+      simp [Array.getD, show (f cBY).toNat < b.size by omega, hvbdef]
+    set t := f (X0 b.size om + 2) with htd
+    set rt := f (X0 b.size om + 3) with hrtd
+    set tb : Int := 2080 + (b.size : Int) + om + 337 + 352 * t with htbd
+    have htbase : tbase b.size om t = tb := by rw [htbd]; unfold tbase LB0; ring
+    have hs := hsane l (by omega) (by omega)
+    rw [htbase] at hs
+    obtain ⟨hTc, hTf, hTs⟩ := hT l hl1' hl15'
+    rw [htbase] at hTc hTf hTs
+    set bit := f (BT + (8 * (vb : Int) + ((f cBI).toNat : Int))) with hbitd
+    have hbitx : bit = x := htb.trans hxv.symm
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (decode_step hw (f cBY).toNat (f cBI).toNat b.size vb om (X0 b.size om) l v t rt bit tb
+        (f (tb + 16 + l)) (f (tb + l)) (f (tb + 32 + l))
+        (f (tb + 64 + f (tb + 32 + l) + (2 * v + bit - f (tb + 16 + l)))) hLn (by omega) (by omega) hn hi.1.om_eq hi.1.x_eq
+        (by omega) (by omega) hvb hv8 rfl (by unfold X0; omega) (by unfold X0 L0; omega) hl hv rfl rfl htbd.symm
+        (by omega) (by unfold X0 L0 at *; omega) (by omega) (by omega)
+        rfl rfl rfl (fun hh => ⟨by omega, by unfold L0; omega⟩) rfl)
+    simp only [decH, show ((f cBY).toNat : Int) = f cBY by omega, show ((f cBI).toNat : Int) = f cBI by omega] at hS
+    rw [hTf, hTc, hbitx] at hS
+    set fs : Nat := (nextCodes lens).getD l 0 with hfsd
+    set c : Nat := blCount lens l with hcd
+    have hlk := lookup_assign lens l (2 * v + x) (by omega)
+    set nb := tblNext (f cBY) (f cBI) with hnbd
+    have hnb1 : 8 * nb.1 + nb.2 = 8 * f cBY + f cBI + 1 := by
+      simp only [hnbd, tblNext]; split_ifs <;> simp <;> omega
+    have hposR : 8 * nb.1 + nb.2 = ((st.pos + 1 : Nat) : Int) := by rw [hnb1, hpos]; push_cast; ring
+    have hX4 : X0 b.size om + 4 < L0 b.size om := by unfold X0 L0; omega
+    have hXL : X0 b.size om + 1 < L0 b.size om := by unfold X0 L0; omega
+    by_cases hhit : (fs : Int) ≤ 2 * v + x ∧ (2 * v + x : Int) < fs + c
+    · rw [if_pos hhit] at hS
+      set sy := f (tb + 64 + f (tb + 32 + l) + (2 * v + x - fs)) with hsyd
+      set g := Function.update (Function.update (Function.update (Function.update f 1 nb.1) 2 nb.2)
+        (X0 b.size om + 4) sy) 0 rt with hgd
+      have hg : World _ p (L0 b.size om) g :=
+        (((hw.store (i := 1) (by norm_num) (by omega)).store (i := 2) (by norm_num) (by omega)).store
+          (i := X0 b.size om + 4) (by unfold X0; omega) hX4).store (i := 0) (by norm_num) (by omega)
+      obtain ⟨f1, hw1, hi1, ag⟩ := step_to hb hw hi hd hrj hS hg
+      have hk : Keeps (L0 b.size om) f f1 (decSet b.size om) := fun c h0 h1 hc => by
+        unfold decSet at hc
+        rw [ag c h0 h1, hgd, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+      refine ⟨_, f1, hS, hw1, fun s hs' => ?_, fun hn' => ?_, fun hn' => ?_⟩
+      · rw [hlk, if_pos (by exact_mod_cast hhit)] at hs'
+        simp only [Option.some.injEq] at hs'
+        refine ⟨hR.of_keeps' hi1 hk (decSet_ctl _ _) ?_ rfl, ?_, ?_, hk⟩
+        · rw [ag _ (by decide) (by unfold cBY; omega), ag _ (by decide) (by unfold cBI; omega)]
+          simp only [hgd, cBY, cBI, Function.update_apply]
+          simp only [show (1 : Int) ≠ 0 by decide, show (2 : Int) ≠ 0 by decide, show (1 : Int) ≠ 2 by decide,
+            show (1 : Int) ≠ X0 b.size om + 4 by unfold X0; omega, show (2 : Int) ≠ X0 b.size om + 4 by unfold X0; omega,
+            if_false, if_true]
+          exact hposR
+        · rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [hgd, cMODE]
+        · rw [ag _ (by unfold X0; omega) hX4, hgd, upd_eq _ _ (by unfold X0; omega)]
+          simp only [Function.update_self, hsyd]
+          rw [← hs']
+          have hj : (2 * v + x - fs : Nat) < c := by omega
+          have := hTs (2 * v + x - fs) hj
+          rw [show (2 * (v : Int) + x - fs) = ((2 * v + x - fs : Nat) : Int) by omega]
+          exact this
+      · rw [hlk, if_pos (by exact_mod_cast hhit)] at hn'; simp at hn'
+      · rw [hlk, if_pos (by exact_mod_cast hhit)] at hn'; simp at hn'
+    · rw [if_neg hhit] at hS
+      have hnone : lookup (assign lens) l (2 * v + x) = none := by
+        rw [hlk, if_neg (by intro h; exact hhit (by exact_mod_cast h))]
+      by_cases h15 : (l : Int) = 15
+      · rw [if_pos h15] at hS
+        have hg := (hw.store (i := 14) (v := 7) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+        refine ⟨_, _, hS, hg, fun s hs' => by rw [hnone] at hs'; simp at hs', fun _ _ => by simp [cMODE, mREJECT],
+          fun _ h => absurd (by exact_mod_cast h15) h⟩
+      · rw [if_neg h15] at hS
+        set g := Function.update (Function.update (Function.update (Function.update f 1 nb.1) 2 nb.2)
+          (X0 b.size om) (l + 1)) (X0 b.size om + 1) (2 * v + x) with hgd
+        have hg : World _ p (L0 b.size om) g :=
+          (((hw.store (i := 1) (by norm_num) (by omega)).store (i := 2) (by norm_num) (by omega)).store
+            (i := X0 b.size om) (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 1)
+            (by unfold X0; omega) hXL
+        obtain ⟨f1, hw1, hi1, ag⟩ := step_to hb hw hi hd hrj hS hg
+        have hk : Keeps (L0 b.size om) f f1 (decSet b.size om) := fun c h0 h1 hc => by
+          unfold decSet at hc
+          rw [ag c h0 h1, hgd, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)]
+        refine ⟨_, f1, hS, hw1, fun s hs' => by rw [hnone] at hs'; simp at hs', fun _ h => absurd (by exact_mod_cast h) h15,
+          fun _ _ => ⟨hR.of_keeps' hi1 hk (decSet_ctl _ _) ?_ rfl, ?_, ?_, ?_, hk⟩⟩
+        · rw [ag _ (by decide) (by unfold cBY; omega), ag _ (by decide) (by unfold cBI; omega)]
+          simp only [hgd, cBY, cBI, Function.update_apply]
+          simp only [show (1 : Int) ≠ X0 b.size om by unfold X0; omega, show (2 : Int) ≠ X0 b.size om by unfold X0; omega,
+            show (1 : Int) ≠ X0 b.size om + 1 by unfold X0; omega, show (2 : Int) ≠ X0 b.size om + 1 by unfold X0; omega,
+            show (1 : Int) ≠ 2 by decide, if_false, if_true]
+          exact hposR
+        · rw [ag _ (by decide) (by unfold cMODE; omega), hgd]
+          simp only [cMODE] at hm ⊢
+          rw [upd_eq _ _ (by unfold X0; omega), upd_eq _ _ (by unfold X0; omega), upd_eq _ _ (by decide),
+            upd_eq _ _ (by decide)]
+          exact hm
+        · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega), hgd, upd_eq _ _ (by omega)]; simp
+        · rw [ag _ (by unfold X0; omega) hXL, hgd]; simp
+  · have hsz : ¬ (st.pos / 8 < (⟨b, om⟩ : Env).inp.size) := by simp only; omega
+    rw [if_neg hsz]
+    refine ⟨fun x s1 hx => by simp at hx, fun r _ => ?_⟩
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (decode_trunc hw hL (f cBY) (f cBI) b.size om (X0 b.size om) rfl rfl hn hi.1.om_eq hi.1.x_eq (by omega))
+    have hwr := (hw.store (i := 14) (v := 1) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+    exact ⟨_, _, hS, hwr, by simp [cMODE, mREJECT]⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
