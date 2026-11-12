@@ -2835,6 +2835,53 @@ theorem build_prefix {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀
     have := hoff3 l (by omega) (by rw [if_pos hp3, hj3]; omega)
     simpa using this
 
+/-! ## BUILD assembled: S4's checks and SYMS, to the table relation -/
+
+def varOf : Mode → Int
+  | .normal => 0
+  | .strict => 1
+  | .dist => 2
+
+theorem exempt_iff (lens : Array Nat) (md : Mode) (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15)
+    (cf : Nat → Int) (hcf : ∀ l, 1 ≤ l → l ≤ 15 → cf l = blCount lens l) :
+    (match md with
+      | .normal => oneSymbolLenOne lens
+      | .strict => false
+      | .dist => oneSymbolLenOne lens || lens.all (· = 0)) = true ↔
+    bExempt (varOf md) (cf 1) (restS cf 15) (totS cf 15) = 1 := by
+  have hnn : ∀ l, 0 ≤ (fun l => if 1 ≤ l ∧ l ≤ 15 then cf l else 0) l := by
+    intro l; simp only; split_ifs with h
+    · rw [hcf l h.1 h.2]; positivity
+    · exact le_rfl
+  have er : restS cf 15 = restS (fun l => if 1 ≤ l ∧ l ≤ 15 then cf l else 0) 15 :=
+    restS_congr 15 (fun i h1 h2 => by simp [h1, h2])
+  have et : totS cf 15 = totS (fun l => if 1 ≤ l ∧ l ≤ 15 then cf l else 0) 15 :=
+    totS_congr 15 (fun i h1 h2 => by simp [h1, h2])
+  have hone : oneSymbolLenOne lens = true ↔ cf 1 = 1 ∧ restS cf 15 = 0 := by
+    rw [oneSym_iff, er, restS_zero hnn, hcf 1 le_rfl (by norm_num)]
+    constructor
+    · rintro ⟨h1, h2⟩
+      refine ⟨by rw [h1]; rfl, fun l a b => ?_⟩
+      simp only [show 1 ≤ l by omega, b, and_self, if_true]
+      rw [hcf l (by omega) b, h2 l a b]; rfl
+    · rintro ⟨h1, h2⟩; refine ⟨by exact_mod_cast h1, fun l a b => ?_⟩
+      have := h2 l a b; simp only [show 1 ≤ l by omega, b, and_self, if_true] at this
+      rw [hcf l (by omega) b] at this; exact_mod_cast this
+  have hall : lens.all (· = 0) = true ↔ totS cf 15 = 0 := by
+    rw [allZero_iff lens h15, et, totS_zero hnn]
+    constructor
+    · intro h l a b; simp only [a, b, and_self, if_true]; rw [hcf l a b, h l a b]; rfl
+    · intro h l a b; have := h l a b; simp only [a, b, and_self, if_true] at this
+      rw [hcf l a b] at this; exact_mod_cast this
+  cases md with
+  | normal =>
+    simp only [varOf, bExempt]; rw [hone]
+    by_cases h1 : cf 1 = 1 <;> by_cases h2 : restS cf 15 = 0 <;> simp [h1, h2]
+  | strict => simp [varOf, bExempt]
+  | dist =>
+    simp only [varOf, bExempt, Bool.or_eq_true]; rw [hone, hall]
+    by_cases h1 : cf 1 = 1 <;> by_cases h2 : restS cf 15 = 0 <;> by_cases h3 : totS cf 15 = 0 <;> simp [h1, h2, h3]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
