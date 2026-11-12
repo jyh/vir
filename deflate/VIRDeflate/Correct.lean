@@ -684,6 +684,107 @@ theorem hdrd_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
   · simp only [cMODE]; rw [a0, hgdef, if_neg (by omega), if_neg (by omega), if_pos h]; simp [mDHDR]
   · simp only [cMODE]; rw [a0, hgdef, if_neg h0, if_neg h1, if_neg h2]; simp [mREJECT]
 
+/-! ## The block loop (S2) against the three block bodies -/
+
+/-- `bits K` from a READ world, with a frame predicate carried across: Q holds of the start, and Q' of the end, whenever the
+end touched only READ's cells, kept the output and moved the position forward from inside the input. -/
+theorem bits_sim' {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (K : Nat) (rt : Int)
+    (Q Q' : (Int → Int) → St → Prop)
+    (hQ : ∀ f st f' st', Q f st → Keeps (L0 b.size om) f f' rdSet → st'.out = st.out → st.pos < st'.pos →
+      st.pos < 8 * b.size → Q' f' st') :
+    Sim b om p (bits (K + 1))
+      (fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = K + 1 ∧ f cACC = 0 ∧ f cWT = 1 ∧ f cRET = rt) ∧ Q f st)
+      (fun a f' st' => Rel b om lit f' st' ∧ f' cMODE = rt ∧ f' cACC = a ∧ Q' f' st') := by
+  rintro σ f st hw ⟨⟨hR, hm, hk, hacc, hwt, hrt⟩, hq⟩
+  have := read_sim (lit := lit) hb K 0 0 σ f st hw hR hm hk (by simpa using hacc) (by simpa using hwt)
+  refine ⟨fun a st' h => ?_, this.2⟩
+  obtain ⟨σ', f', hR', hw', hR'', hm', ha, ho, hkp⟩ := this.1 a st' h
+  obtain ⟨hlt, hin⟩ := (adv_bits K) ⟨b, om⟩ st a st' h
+  exact ⟨σ', f', hR', hw', hR'', by rw [hm', hrt], ha, hQ f st f' st' hq hkp ho hlt hin⟩
+
+/-- A triple for a spec action that never moves the position back carries the unread-bits bound. -/
+theorem Sim.measure {b : Array Nat} {om : Nat} {p : Int} {α : Type} {A : M α} {pre : (Int → Int) → St → Prop}
+    {post : α → (Int → Int) → St → Prop} (h : Sim b om p A pre post) (hA : Mono A) (F : Nat) :
+    Sim b om p A (fun f st => pre f st ∧ 8 * b.size - st.pos < F) (fun a f st => post a f st ∧ 8 * b.size - st.pos < F) := by
+  rintro σ f st hw ⟨hp, hF⟩
+  obtain ⟨hok, herr⟩ := h σ f st hw hp
+  refine ⟨fun a st' h' => ?_, herr⟩
+  obtain ⟨σ', f', hR, hw', hq⟩ := hok a st' h'
+  have := hA ⟨b, om⟩ st a st' h'
+  exact ⟨σ', f', hR, hw', hq, by omega⟩
+
+/-- The mode a block body ends in: DONE after the final block, else HDR. -/
+def endMode (bf : Int) : Int := if bf = 1 then mDONE else mHDR
+
+/-- S5's fixed block, as `blocks` writes it. -/
+def fixedBody (lit : Bool) : M Unit := fixedCodes lit >>= fun LD => huff LD.1 LD.2
+
+theorem mono_fixedBody (lit : Bool) : Mono (fixedBody lit) :=
+  mono_bind (mono_fixedCodes lit) fun LD => mono_huff LD.1 LD.2
+
+/-- What each block body owes (S-18's table, rows `stored`, `dynamic` and the fixed `huff`). -/
+def BodySim (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (A : M Unit) (md : Int) (extra : (Int → Int) → Prop) : Prop :=
+  ∀ bf : Int, Sim b om p A (fun f st => Rel b om lit f st ∧ f cMODE = md ∧ f cBF = bf ∧ extra f)
+    (fun _ f st => Rel b om lit f st ∧ f cMODE = endMode bf)
+
+/-- **S2's block loop is simulated, given the three bodies.** -/
+theorem blocks_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256)
+    (HS : BodySim b om lit p stored mSHDR (fun _ => True))
+    (HF : BodySim b om lit p (fixedBody lit) mFIXLENS (fun f => f cFILL = 0))
+    (HD : BodySim b om lit p dynamic mDHDR (fun _ => True)) :
+    ∀ fuel, Sim b om p (blocks lit fuel)
+      (fun f st => Rel b om lit f st ∧ f cMODE = mHDR ∧ 8 * b.size - st.pos < fuel)
+      (fun _ f st => Rel b om lit f st ∧ f cMODE = mDONE) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro fuel
+  induction fuel with
+  | zero => rintro σ f st hw ⟨_, _, h⟩; omega
+  | succ fuel ih =>
+    simp only [blocks]
+    refine Sim.step (pre' := fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = (0 : Nat) + 1 ∧ f cACC = 0 ∧
+      f cWT = 1 ∧ f cRET = mHDRB) ∧ 8 * b.size - st.pos < fuel + 1) ?_ ?_
+    · rintro σ f st hw ⟨hR, hm, hfu⟩
+      obtain ⟨σ1, f1, hS, hw1, hR1, h1, h2, h3, h4, h5, -⟩ := hdr_next hb hw hR hm
+      exact ⟨σ1, f1, hS, hw1, ⟨hR1, h1, by rw [h2]; norm_num, h3, h4, h5⟩, hfu⟩
+    refine Sim.bind (bits_sim' hb 0 mHDRB (fun _ st => 8 * b.size - st.pos < fuel + 1)
+      (fun _ st => 8 * b.size - st.pos < fuel) (fun _ _ _ _ h _ _ hlt hin => by omega)) (fun bf => ?_)
+    refine Sim.step (pre' := fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = (1 : Nat) + 1 ∧ f cACC = 0 ∧
+      f cWT = 1 ∧ f cRET = mHDRD) ∧ (f cBF = bf ∧ 8 * b.size - st.pos < fuel)) ?_ ?_
+    · rintro σ f st hw ⟨hR, hm, ha, hfu⟩
+      obtain ⟨σ1, f1, hS, hw1, hR1, h1, h2, h3, h4, h5, h6⟩ := hdrb_next hb hw hR hm
+      exact ⟨σ1, f1, hS, hw1, ⟨hR1, h1, by rw [h2]; norm_num, h3, h4, h5⟩, by rw [h6, ha], hfu⟩
+    refine Sim.bind (bits_sim' hb 1 mHDRD (fun f st => f cBF = bf ∧ 8 * b.size - st.pos < fuel)
+      (fun f st => f cBF = bf ∧ 8 * b.size - st.pos < fuel) (fun f st f' st' hq hk _ hlt _ => ⟨?_, by omega⟩))
+      (fun bt => ?_)
+    · rw [hk _ (by decide) (by unfold cBF L0; omega) (by unfold rdSet cBF; omega)]; exact hq.1
+    have cont : Sim b om p (if bf = 1 then Pure.pure () else blocks lit fuel)
+        (fun f st => (Rel b om lit f st ∧ f cMODE = endMode bf) ∧ 8 * b.size - st.pos < fuel)
+        (fun _ f st => Rel b om lit f st ∧ f cMODE = mDONE) := by
+      refine Sim.ite (fun h1 => Sim.pure ?_) (fun h1 => (ih.mono ?_ (fun _ _ _ h => h)))
+      · rintro f st ⟨⟨hR, hm⟩, _⟩
+        refine ⟨hR, ?_⟩
+        rw [hm, endMode, if_pos (by exact_mod_cast h1)]
+      · rintro f st ⟨⟨hR, hm⟩, hfu⟩
+        refine ⟨hR, ?_, hfu⟩
+        rw [hm, endMode, if_neg (by exact_mod_cast h1)]
+    refine Sim.step (pre' := fun f st => (Rel b om lit f st ∧ f cBF = bf ∧ (bt = 0 → f cMODE = mSHDR) ∧
+      (bt = 1 → f cMODE = mFIXLENS ∧ f cFILL = 0) ∧ (bt = 2 → f cMODE = mDHDR) ∧
+      (bt ≠ 0 → bt ≠ 1 → bt ≠ 2 → f cMODE = mREJECT)) ∧ 8 * b.size - st.pos < fuel) ?_ ?_
+    · rintro σ f st hw ⟨hR, hm, ha, hbf, hfu⟩
+      obtain ⟨σ1, f1, hS, hw1, hR1, e4, d0, d1, d2, d3⟩ := hdrd_next hb hw hR hm
+      rw [ha] at d0 d1 d2 d3
+      refine ⟨σ1, f1, hS, hw1, ⟨hR1, by rw [e4, hbf], fun h => d0 (by simp [h]), fun h => d1 (by simp [h]),
+        fun h => d2 (by simp [h]), fun h0 h1 h2 => d3 (by omega) (by omega) (by omega)⟩, hfu⟩
+    refine Sim.ite (fun h0 => ?_) (fun h0 => Sim.ite (fun h1 => ?_) (fun h1 => Sim.ite (fun h2 => ?_) (fun h2 => ?_)))
+    · exact Sim.bind (((HS bf).measure mono_stored fuel).mono
+        (fun f st ⟨⟨hR, hbf, d0, _⟩, hfu⟩ => ⟨⟨hR, d0 h0, hbf, trivial⟩, hfu⟩) (fun _ _ _ h => h)) (fun _ => cont)
+    · rw [← bind_assoc]
+      exact Sim.bind (((HF bf).measure (mono_fixedBody lit) fuel).mono
+        (fun f st ⟨⟨hR, hbf, _, d1, _⟩, hfu⟩ => ⟨⟨hR, (d1 h1).1, hbf, (d1 h1).2⟩, hfu⟩) (fun _ _ _ h => h)) (fun _ => cont)
+    · exact Sim.bind (((HD bf).measure mono_dynamic fuel).mono
+        (fun f st ⟨⟨hR, hbf, _, _, d2, _⟩, hfu⟩ => ⟨⟨hR, d2 h2, hbf, trivial⟩, hfu⟩) (fun _ _ _ h => h)) (fun _ => cont)
+    · exact Sim.reject_bind (fun σ f st hw ⟨⟨_, _, _, _, _, d3⟩, _⟩ => ⟨σ, f, Reach.refl p σ, hw, d3 h0 h1 h2⟩)
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
