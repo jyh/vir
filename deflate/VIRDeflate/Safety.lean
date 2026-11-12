@@ -261,7 +261,7 @@ def facts (n om : Nat) (md : Int) (f : Int → Int) : Prop :=
   let hd := f cHDIST
   let pd := f cPEND
   if md = mSNLEN then 0 ≤ pd
-  else if md = mSCOPY then 0 ≤ pd ∧ f cBY + pd ≤ f cN ∧ f cM + pd ≤ f cOUTMAX
+  else if md = mSCOPY then 0 ≤ pd ∧ f cM + pd ≤ f cOUTMAX
   else if md = mFIXLENS then 0 ≤ fl ∧ fl ≤ 318
   else if md = mBUILD then buildInv n om f
   else if md = mCLREAD then 0 ≤ fl ∧ fl ≤ 19 ∧ 4 ≤ f cHCLEN ∧ hl ≤ 286 ∧ hd ≤ 30
@@ -286,6 +286,7 @@ structure InvM (n om : Nat) (f : Int → Int) : Prop where
     ((f (X0 n om + 2) = 0 ∧ f (X0 n om + 3) = mLSYM) ∨ (f (X0 n om + 2) = 1 ∧ f (X0 n om + 3) = mSYMD) ∨
      (f (X0 n om + 2) = 2 ∧ f (X0 n om + 3) = mDSTD)) ∧ sane n om f (f (X0 n om + 2))
   sym : f cMODE = mSYMD ∨ f cMODE = mDSTD ∨ f cMODE = mLSYM → 0 ≤ f (X0 n om + 4) ∧ f (X0 n om + 4) < 288
+  scopy : f cMODE = mSCOPY → f cBY + f cPEND ≤ f cN
 
 /-- **Safety's invariant:** the global part and the per-mode part. -/
 def Inv (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) : Prop := InvG b om lit f ∧ InvM b.size om f
@@ -339,7 +340,8 @@ theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCel
     read := fun h => by rw [e0] at h; simp [mREAD] at h
     ret := fun h => by rw [e0] at h; simp [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
     dec := fun h => by rw [e0] at h; simp [mDECODE] at h
-    sym := fun h => by rw [e0] at h; simp [mSYMD, mDSTD, mLSYM] at h }⟩
+    sym := fun h => by rw [e0] at h; simp [mSYMD, mDSTD, mLSYM] at h
+    scopy := fun h => by rw [e0] at h; simp [mSCOPY] at h }⟩
 
 /-! ## Safety from one safe step (the outer argument, checked before the 28 per-mode cases) -/
 
@@ -466,7 +468,7 @@ theorem safety_of_stepSafe (hs : StepSafe) : SafetyStmt := safety_of_step hs Φ_
 
 /-! ## Congruence: `facts` reads only the watched cells (cursor cells 1, 3, 5–13, 15, 16, 2074, and every cell from 2080 up) -/
 
-def watched : List Int := [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 2074]
+def watched : List Int := [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 2074]
 
 def Watch (f g : Int → Int) : Prop := (∀ i : Int, 2080 ≤ i → f i = g i) ∧ ∀ c ∈ watched, f c = g c
 
@@ -542,7 +544,6 @@ theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 �
   have s0 := sane_congr (n := n) (om := om) hi (t := 0) (le_refl _)
   have s1 := sane_congr (n := n) (om := om) hi (t := 1) (by norm_num)
   have s2 := sane_congr (n := n) (om := om) hi (t := 2) (by norm_num)
-  have e1 : f cBY = g cBY := hc cBY (by decide)
   have e3 : f cM = g cM := hc cM (by decide)
   have e5 : f cPEND = g cPEND := hc cPEND (by decide)
   have e6 : f cDIST = g cDIST := hc cDIST (by decide)
@@ -554,7 +555,7 @@ theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 �
   have e15 : f cN = g cN := hc cN (by decide)
   have e16 : f cOUTMAX = g cOUTMAX := hc cOUTMAX (by decide)
   unfold facts at hf ⊢
-  rw [← e1, ← e3, ← e5, ← e6, ← e7, ← e8, ← e9, ← e10, ← e11, ← e15, ← e16]
+  rw [← e3, ← e5, ← e6, ← e7, ← e8, ← e9, ← e10, ← e11, ← e16]
   revert hf
   repeat' (first | apply ite_imp | (intro h; tauto))
 
@@ -599,11 +600,13 @@ theorem InvM.req {n om : Nat} {f : Int → Int} (h : SymsOK n om f) (hhl : 0 ≤
     rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mDECODE] at hm
   sym hm := by
     rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSYMD, mDSTD, mLSYM] at hm
+  scopy hm := by
+    rw [show reqF f k rt cMODE = 2 by simp [reqF, cMODE]] at hm; simp [mSCOPY] at hm
 
 /-- A write to a cell below 2080 that no part of the invariant watches keeps `InvM`, unless it is the mode or a cell the
 mode's READ/DECODE relation reads (0, 2068–2071, and X's cells are ≥ 2080). -/
 theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f cHLIT) {i : Int} (hi : i < 2080)
-    (hw : i ∉ watched) (h0 : i ≠ 0) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
+    (hw : i ∉ watched) (h0 : i ≠ 0) (h1 : i ≠ 1) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
   have W := watch_upd f hi hw v
   have u : ∀ c : Int, c ≠ i → Function.update f i v c = f c := fun c hc => upd_eq f v hc
   have hm : Function.update f i v cMODE = f cMODE := u _ (by unfold cMODE; omega)
@@ -627,7 +630,12 @@ theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f
   sym := fun hm' => by
     rw [hm] at hm'
     have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
-    rw [u (X0 n om + 4) (by omega)]; exact h.sym hm' }
+    rw [u (X0 n om + 4) (by omega)]; exact h.sym hm'
+  scopy := fun hm' => by
+    rw [hm] at hm'
+    rw [u cBY (by unfold cBY; omega), u cPEND (by unfold cPEND; intro e; exact hw (by rw [← e]; decide)),
+      u cN (by unfold cN; intro e; exact hw (by rw [← e]; decide))]
+    exact h.scopy hm' }
 
 /-! ## The request modes, with the full invariant -/
 
