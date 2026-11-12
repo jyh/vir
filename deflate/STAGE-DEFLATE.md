@@ -489,7 +489,10 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   alone, which is D3's falsifier.
 - **Owed, not scored here: D7.** `SafetyStmt` carries `∀ x ∈ b, x < 256`. A scorer must rule which it is: the byte TYPE (b :
   Array Nat models a byte string, and S-5 says "every byte string b"), or a premise on the bytes, which D7 forbids. The author
-  recommends the first, and leaves the call to a non-author read. D1 and D2 have their own rows (X5's run, STATUS 288; `git log` over l1/ l2/).
+  recommends the first, and leaves the call to a non-author read. D1 has its own row (X5's run, STATUS 288; Findings below).
+- **D2 HOLDS.** `git log origin/master..HEAD -- l1 l2` lists **0** commits over the whole branch: 141 commits, 121 of them under
+  deflate/. The control is the same command with `-- deflate`, which lists 121, so the instrument sees commits. ERRATA-L1.md and
+  ERRATA-L2.md carry **0** DEFLATE rows. The branch's one errata commit (786e7ae) adds DEFLATE-E1 to ERRATA-DEFLATE.md.
 
 ## D6 (builds), a reading, not a score
 166 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001…004).
