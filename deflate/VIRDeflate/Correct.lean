@@ -1265,6 +1265,101 @@ theorem decode_one {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} {σ : Store
     have hwr := (hw.store (i := 14) (v := 1) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
     exact ⟨_, _, hS, hwr, by simp [cMODE, mREJECT]⟩
 
+/-- `TblRel` survives any change outside the three tables. -/
+theorem TblRel.keep {n om : Nat} {f f' : Int → Int} {t : Int} {lens : Array Nat} {S : Int → Prop}
+    (hT : TblRel n om f t lens) (hs : sane n om f t) (ht : 0 ≤ t ∧ t ≤ 2) (hk : Keeps (L0 n om) f f' S)
+    (hS : ∀ c, S c → c < tbase n om 0 ∨ X0 n om ≤ c) : TblRel n om f' t lens := by
+  have tb0 : tbase n om 0 ≤ tbase n om t := by unfold tbase; omega
+  have tb2 : tbase n om t + 352 ≤ X0 n om := by unfold tbase LB0 X0; omega
+  have hX : X0 n om < L0 n om := by unfold X0 L0; omega
+  have k : ∀ c, tbase n om t ≤ c → c < tbase n om t + 352 → f' c = f c := fun c h1 h2 =>
+    hk c (by unfold tbase LB0 at *; omega) (by omega) (fun h => by have := hS c h; omega)
+  intro l hl1 hl15
+  obtain ⟨h1, h2, h3⟩ := hT l hl1 hl15
+  obtain ⟨s0, s1, s2⟩ := hs l (by omega) (by omega)
+  refine ⟨by rw [k _ (by omega) (by omega)]; exact h1, by rw [k _ (by omega) (by omega)]; exact h2, fun j hj => ?_⟩
+  have hc := h1
+  rw [k (tbase n om t + 32 + l) (by omega) (by omega)]
+  have hj' : (j : Int) < blCount lens l := by exact_mod_cast hj
+  rw [k _ (by omega) (by omega)]
+  exact h3 j hj
+
+theorem decSet_out (n om : Nat) (c : Int) (h : decSet n om c) : c < tbase n om 0 ∨ X0 n om ≤ c := by
+  unfold decSet at h; unfold tbase LB0 X0 at *; omega
+
+/-- **DECODE ↔ `decodeGo`** (S-18's row): from DECODE at length ℓ with the read value v, against `assign lens` held in the
+table the request names. -/
+theorem decode_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat) :
+    ∀ (fuel l v : Nat) (σ : Store) (f : Int → Int) (st : St), l + fuel = 16 → World σ p (L0 b.size om) f →
+      Rel b om lit f st → f cMODE = mDECODE → f (X0 b.size om) = l → f (X0 b.size om + 1) = v →
+      TblRel b.size om f (f (X0 b.size om + 2)) lens →
+      (∀ s st', go (decodeGo (assign lens) fuel l v) ⟨b, om⟩ st = .ok (s, st') →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st' ∧
+          f' cMODE = f (X0 b.size om + 3) ∧ f' (X0 b.size om + 4) = s ∧ Keeps (L0 b.size om) f f' (decSet b.size om)) ∧
+      (∀ r, go (decodeGo (assign lens) fuel l v) ⟨b, om⟩ st = .error r →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) := by
+  intro fuel
+  induction fuel with
+  | zero =>
+    intro l v σ f st hl hw hR hm hX
+    obtain ⟨_, _, hl15, _⟩ := hR.inv.2.dec hm
+    omega
+  | succ fuel ih =>
+    intro l v σ f st hl hw hR hm hX hV hT
+    obtain ⟨_, _, _, hpair, hsane⟩ := hR.inv.2.dec hm
+    have ht02 : 0 ≤ f (X0 b.size om + 2) ∧ f (X0 b.size om + 2) ≤ 2 := by
+      rcases hpair with ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ <;> rw [h] <;> norm_num
+    obtain ⟨hok, herr⟩ := decode_one hb hw hR hm lens l v hX hV hT
+    rw [decodeGo_succ]
+    constructor
+    · intro s st' h
+      rw [go_bind] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r | ⟨x, s1⟩
+      · rw [hbit] at h; simp at h
+      · rw [hbit] at h
+        dsimp only at h
+        obtain ⟨σ1, f1, hS, hw1, hhit, h15, hadv⟩ := hok x s1 hbit
+        rcases hlk : lookup (assign lens) l (2 * v + x) with _ | s0
+        · rw [hlk] at h
+          by_cases hl15 : l = 15
+          · subst hl15
+            have : fuel = 0 := by omega
+            subst this
+            simp [decodeGo, go_reject] at h
+          · obtain ⟨hR1, hm1, hX1, hV1, hk1⟩ := hadv hlk hl15
+            have hT1 := hT.keep (hsane) ht02 hk1 (decSet_out _ _)
+            rw [← hk1 (X0 b.size om + 2) (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold decSet X0; omega)] at hT1
+            obtain ⟨σ', f', hR', hw', hR'', hm', hs', hk'⟩ :=
+              (ih (l + 1) (2 * v + x) σ1 f1 s1 (by omega) hw1 hR1 hm1 (by rw [hX1]; push_cast; ring) (by rw [hV1]; push_cast; ring)
+                hT1).1 s st' h
+            refine ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', ?_, hs', hk1.trans hk' (fun c h => h)⟩
+            rw [hm', hk1 (X0 b.size om + 3) (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold decSet X0; omega)]
+        · rw [hlk] at h
+          simp only [go_pure, Except.ok.injEq, Prod.mk.injEq] at h
+          obtain ⟨rfl, rfl⟩ := h
+          obtain ⟨hR1, hm1, hs1, hk1⟩ := hhit s0 hlk
+          exact ⟨σ1, f1, Reach.step hS, hw1, hR1, hm1, hs1, hk1⟩
+    · intro r h
+      rw [go_bind] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r' | ⟨x, s1⟩
+      · obtain ⟨σ1, f1, hS, hw1, hm1⟩ := herr r' hbit
+        exact ⟨σ1, f1, Reach.step hS, hw1, hm1⟩
+      · rw [hbit] at h
+        dsimp only at h
+        obtain ⟨σ1, f1, hS, hw1, hhit, h15, hadv⟩ := hok x s1 hbit
+        rcases hlk : lookup (assign lens) l (2 * v + x) with _ | s0
+        · rw [hlk] at h
+          by_cases hl15 : l = 15
+          · exact ⟨σ1, f1, Reach.step hS, hw1, h15 hlk hl15⟩
+          · obtain ⟨hR1, hm1, hX1, hV1, hk1⟩ := hadv hlk hl15
+            have hT1 := hT.keep (hsane) ht02 hk1 (decSet_out _ _)
+            rw [← hk1 (X0 b.size om + 2) (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold decSet X0; omega)] at hT1
+            obtain ⟨σ', f', hR', hw', hm'⟩ :=
+              (ih (l + 1) (2 * v + x) σ1 f1 s1 (by omega) hw1 hR1 hm1 (by rw [hX1]; push_cast; ring) (by rw [hV1]; push_cast; ring)
+                hT1).2 r h
+            exact ⟨σ', f', (Reach.step hS).trans hR', hw', hm'⟩
+        · rw [hlk] at h; simp [go_pure] at h
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
