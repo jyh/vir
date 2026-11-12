@@ -3300,6 +3300,57 @@ theorem build_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p :
     refine ⟨_, f1, hS, hw1, hR1, fun h => by omega, fun _ => ⟨?_, hk1⟩, fun h => by omega⟩
     rw [ag _ (by decide) (by unfold cMODE; omega)]; simp [cMODE, mSYM]
 
+/-! ## Toolkit: machine prefixes of any length; `huff` over `fuelNow` -/
+
+theorem Sim.reach {b : Array Nat} {om : Nat} {p : Int} {α : Type} {A : M α} {pre pre' : (Int → Int) → St → Prop}
+    {post : α → (Int → Int) → St → Prop}
+    (hs : ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+      ∃ σ1 f1, Reach p σ σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ pre' f1 st)
+    (h : Sim b om p A pre' post) : Sim b om p A pre post := by
+  intro σ f st hw hp
+  obtain ⟨σ1, f1, hR1, hw1, hp1⟩ := hs σ f st hw hp
+  obtain ⟨hok, herr⟩ := h σ1 f1 st hw1 hp1
+  exact ⟨fun a st' h' => (hok a st' h').imp fun σ' ⟨f', hR, hw', hq⟩ => ⟨f', hR1.trans hR, hw', hq⟩,
+    fun r h' => (herr r h').imp fun σ' ⟨f', hR, hw', hq⟩ => ⟨f', hR1.trans hR, hw', hq⟩⟩
+
+/-- S7's `huff`, from SYM with both tables related. -/
+theorem huff_Sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int)
+    (lensL lensD : Array Nat) :
+    Sim b om p (huff (assign lensL) (assign lensD))
+      (fun f st => (Rel b om lit f st ∧ f cMODE = mSYM) ∧ f cBF = bf ∧ TblRel b.size om f 1 lensL ∧
+        TblRel b.size om f 2 lensD)
+      (fun _ f st => Rel b om lit f st ∧ f cMODE = endMode bf) := by
+  unfold huff
+  intro σ f st hw ⟨hRm, hbf, h1, h2⟩
+  have e : go fuelNow ⟨b, om⟩ st = .ok (8 * b.size - st.pos + 1, st) := go_fuelNow _ _
+  have := huff_sim (lit := lit) hb bf lensL lensD (8 * b.size - st.pos + 1) σ f st hw ⟨hRm, hbf, h1, h2, by omega⟩
+  refine ⟨fun a st' h => ?_, fun r h => ?_⟩
+  · rw [go_bind, e] at h; exact this.1 a st' h
+  · rw [go_bind, e] at h; exact this.2 r h
+
+/-- S4's `code`, in the triple form, from a BUILD start (CHK = 1). -/
+theorem code_Sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (lens : Array Nat)
+    (md : Mode) (f₀ : Int → Int) (h15 : ∀ i, i < lens.size → lens.getD i 0 ≤ 15) :
+    Sim b om p (code lens md)
+      (fun f st => f = f₀ ∧ Rel b om lit f st ∧ f cMODE = mBUILD ∧ f cPHASE = 0 ∧ f cINDEX = 0 ∧
+        f (X0 b.size om + 6) = lens.size ∧ (∀ i : Nat, i < lens.size → f (f (X0 b.size om + 5) + i) = lens.getD i 0) ∧
+        f cCHK = 1 ∧ f (X0 b.size om + 8) = varOf md)
+      (fun C f' st' => C = assign lens ∧ Built b om lit lens f₀ f' st') := by
+  rintro σ f st hw ⟨rfl, hR, hm, hph, hj, hnn, hsrc, hchk, hvar⟩
+  obtain ⟨hok, herr⟩ := (build_tbl (lit := lit) hb lens md hw hR hm hph hj hnn hsrc h15).2 hchk hvar
+  refine ⟨fun C st' h => ?_, herr⟩
+  obtain ⟨hC, rfl, σ', f', hR', hw', hB'⟩ := hok C st' h
+  exact ⟨σ', f', hR', hw', hC, hB'⟩
+
+theorem fixedL_getD (k : Nat) (hk : k < 288) : (fixedLLens.getD k 0 : Int) = fixLenI k := by
+  have e : fixedLLens.getD k 0 = if k < 144 then 8 else if k < 256 then 9 else if k < 280 then 7 else 8 := by
+    simp [fixedLLens, Array.getD, hk]
+  rw [e]; unfold fixLenI; split_ifs <;> first | omega | norm_num
+
+theorem fixedD_getD (k : Nat) (hk : k < 30) : (fixedDLens.getD k 0 : Int) = fixLenI (288 + k) := by
+  have e : fixedDLens.getD k 0 = 5 := by simp [fixedDLens, Array.getD, hk]
+  rw [e]; unfold fixLenI; split_ifs <;> first | omega | norm_num
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
