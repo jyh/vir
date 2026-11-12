@@ -16,3 +16,4 @@ import K5.Safe3
 import K5.Safe4
 import K5.Mag
 import K5.SafeBuild
+import K5.InRange

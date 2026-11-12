@@ -38,3 +38,4 @@ import K5
 #print axioms K5.lrep_inR
 #print axioms K5.decode_inR
 #print axioms K5.build_inR
+#print axioms K5.step_inrange
