@@ -6,3 +6,5 @@ import VIRDeflate.Run
 import VIRDeflate.Step
 import VIRDeflate.Dispatch
 import VIRDeflate.Statements
+import VIRDeflate.Typing
+import VIRDeflate.Fit

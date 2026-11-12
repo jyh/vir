@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-094; audit df-audit-022: 205 of 205 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-098; audit df-audit-024: 260 of 260 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -193,6 +193,38 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     a weakening for `BITc` (typed at []) under TABLE's context.
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
+  - **The step under ⊢₂, `VIRDeflate/Typing.lean` (STATUS 293 (a); df-096, built green there; 64th head).**
+    **`stepT_typed : HasType₂ [tcap] [true] stepT tcap`**: the step is a well-typed L2 term, linear in its one capability.
+    - Compositional. `ModeTyped t` types a mode term under the dispatch's binder (`[md : int, w : cap]`, the capability
+      available). All 28 are proved, one theorem each (`table_typed` … `rep_typed`, collected in `modes_typed`). `disp_typed`
+      does the dispatch by induction over the mode list; the step itself is L2's `load` rule on the mode cell.
+    - The tactic is the probe's (l3's `l3ty`, copied) plus l3's simp set for variable indices. `BITc` is typed in TABLE's own
+      context (`BITc_typed_table`) by the proof that types it at []. No weakening lemma was needed: every context here is a
+      concrete list.
+    - Two defects in my own tactic were found by the build, not by reading (df-095, EXIT=1, 24 of 28 modes green there):
+      `refine HasTypeA₂.fst ?_` (and `snd`, and `app`) leaves the other component's type as an unassignable implicit, so a
+      projection never fired; `l2type`'s ten-case mask split ran out in TABLE's deeper `BITc` contexts. Fixed by `apply` and
+      by the cons-wise mask lemmas.
+    - Mutant: TABLE's second store goes through the SPENT capability `w`, red INSIDE `table_typed`, at exactly that store
+      (its mask entry is already false; df-mutant-046: line 93). The unmutated copy is GREEN (df-mutant-047).
+  - **Safety's first piece, the KSTEP fit, `VIRDeflate/Fit.lean` (STATUS 293 (b); df-097).** No program code.
+    - `StepsN`, a counted ⟶₂*. **`stepFn₂_complete`**: l2's step function is complete for ⟶₂ (l2 proves it sound; L1's half
+      is l2's `stepFn_complete`). So `run₂_of_stepsN`: a counted path to a stuck configuration is what `run₂` computes at any
+      fuel at or above the count.
+    - `plen`, a path-length measure: a `let` adds its sides, an `if` takes the longer branch, atoms count nothing.
+      **`stepsN_le`**: a path from an APP-FREE term is no longer than its `plen` (`step₂_dec`: every step decreases it and
+      keeps the term app-free; `plen_subst`: substitution leaves it unchanged).
+    - `disp_runN` / `step_dispatchN`: Dispatch.lean's dispatch with its counts kept, at most 1 + 28 steps.
+    - **`stepS_of_mode`**: for a mode term that is app-free with `plen ≤ KSTEP − 29`, its one-step lemma (a relational
+      `Steps₂`) IS `stepS p σ = some σ'`. **`modes_fit`** checks the 27 modes other than TABLE. So every mode lemma except
+      TABLE's now gives Statements.lean's functional step directly, with no per-lemma rework.
+    - OWED: TABLE. Its one `BITc` call recurses (POW, STRIP), so `plen` does not bound it; it needs counted
+      `pow2_steps` / `strip_steps` / `bit_steps`.
+    - The KSTEP risk declared at Statements.lean is closed for those 27 modes, by a check rather than a reading.
+  - Audits: df-audit-023 ran on the library root before it was rebuilt with the two new imports, so it failed loudly on 55
+    unknown names; it is kept and not counted. df-098 rebuilt the root; df-audit-024 is 260/260 within the standard three, and
+    df-audit-control-002 shows `sorryAx` on the control. The audit file is regenerated from VIRDeflate.lean's imports: the
+    old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
 1. **DEFLATE-E1** (`errata/ERRATA-DEFLATE.md`), found by READING S while transcribing it, before any build of Spec.lean.
