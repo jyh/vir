@@ -14,3 +14,21 @@
   else: the range premise is what closes the three `chk` sites. k5-mutant-001 (prim's result clause dropped) is red too, but at
   a structural `rw`, so it is recorded and NOT counted as evidence.
 - Scope, stated beside the verdict: InRangeRun is a predicate on the IR run (S1's image). The ⟶₂ form is K5-1b, OWED.
+
+## K5-1b: PROVED (68th head, 2026-11-12), VIRC/NoOvfSrc.lean (declared first: DECLARATIONS-K5 addendum 2, vir 72b9c8f)
+- `compile_noovf`: under `compile_refines`'s hypotheses and `SrcInRange (instL 0 vs e, σ)` (every configuration the ⟶₂ run
+  reaches evaluates in-range atoms next), NO word run of the compiled program reaches `.ovf`. `compile_refines_noovf`:
+  compile_refines (1) without its `∨ .ovf`. No hypothesis beyond SrcInRange and compile_refines's own. **K5-0 is closed at
+  the source**, for every L2 program the compiler accepts.
+- Route as declared: `ir_step_match` (letE push: same source configuration; a final `ret`: done; otherwise `src_steps` forces
+  a ⟶₂ step and `step_notlet`, sim_step's body copied for a NotLet code, matches it), `ir_reach`, `ARel.inR` + `valOf_inR`,
+  `match_stepInR`, `inRangeRun_of_src`, then K5-1a's `s2_noovf`. ir_reach answers declared falsifier 1: every IR state reachable
+  from a matched start IS finished or matched (S1 has no uncharacterised states).
+- Builds: k5-007/008 red (names, a `stepFn₂_sound` unification, a wildcard `cases` arm), k5-009 EXIT=0, k5-010 root EXIT=0,
+  k5-011 EXIT=0 (rebuild after the mutant).
+- Audit k5-audit-002: 29 rows (the 19 of audit-001 + 10) within the three; control k5-audit-control-001 (sorryAx) stands.
+- Mutant k5-mutant-003 (`Atom.inR₂`'s int case → True): RED at exactly one site, `valOf_inR` (NoOvfSrc l. 53), the point
+  where a source result's range becomes the IR value's range.
+- **Duplication declared:** `step_notlet` is a verbatim copy of sim_step's body (S1.lean l. 98–181) so S1.lean stays unedited;
+  it counts in this file's C5 and is named here so a count can subtract it.
+- NEXT: K5-2 `deflate_inrange` (SrcInRange for DEFLATE's step term from Safety's Inv, bounds in n and OUTMAX only), K5-3.
