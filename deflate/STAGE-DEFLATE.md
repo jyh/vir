@@ -242,7 +242,14 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   - **Safety's proof begins, `VIRDeflate/Safety.lean` (df-104).** The per-mode form, fixed on HDR: `safe_hdr` gives the
     mode's `stepS`, its result store as a World over an updated cell function (`World.req` for a READ request's five stores),
     and `Φ` strictly lower (`Φ_hdr`, by the `phisimp` evaluation of Measure.lean's definitions). df-103 (EXIT=1): the lemma
-    was first named `World.reqH`, and inside it `reqH` resolved to the lemma itself; renamed. No mutant yet for this file. The audit file is regenerated from VIRDeflate.lean's imports: the
+    was first named `World.reqH`, and inside it `reqH` resolved to the lemma itself; renamed. No mutant yet for this file.
+    - The invariant's GLOBAL part `InvG` (df-107): the world's constants (n, OUTMAX, X, the flag), the input bytes and the
+      read-only area equal to the initial world's, every stored length in [0, 15], the bit table (TABLE's counters in range;
+      every filled cell a bit), the cursor (by ≤ n, bi ≤ 7, by = n → bi = 0, m ≤ OUTMAX), **mode ∈ the 28 ∪ {DONE, REJECT}**
+      and READ's return mode one READ is requested with (a value outside would be a fixed point that is neither DONE nor
+      REJECT: Safety would be FALSE, not merely unproved), and HLIT ≤ 288, HDIST ≤ 32, HCLEN ≤ 19. **`Φ_init`: Φ of the
+      initial world IS `Nbound n OUTMAX`.** df-105/106 were a `let`-bound `initCell` that `split_ifs` could not see through
+      and a tactic after a closed goal. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
