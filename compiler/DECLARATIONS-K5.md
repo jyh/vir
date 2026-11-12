@@ -102,3 +102,36 @@ the program writes is computed from bounded ones. It means K5-2 must carry a bou
   cell's own bound, and that is reported.
 - **Where:** a NEW project `k5/` requiring `compiler` and `deflate` by path (bridge/'s form: packages APFS-cloned, manifest by
   edit), so neither is edited (D2's spirit; deflate's counts stay put).
+
+## Addendum 4 (69th head, 2026-11-12, after 22 of 28 modes are in range from `Inv` alone, BEFORE any `Mag` file): `Mag` re-declared
+**K5-2-1, a FINDING about Addendum 3's `Mag`.** Addendum 3 declares `Mag` as *"every world cell is in [0, 2⁴⁰]"*, proved preserved
+per mode. That uniform form is NOT PRESERVED by the step program: three writes double a cell, so no uniform bound is closed under
+them — DECODE `x+1 := 2·cv + b` (Step.lean l.1510), BUILD phase 3 `cLEFT := 2·left − c` (l.1044), BUILD phase 2
+`cCODE := 2·(code + cp)` (l.1007). Each is bounded only through a COUNTER (l, j). Addendum 3's own fallback applies ("`Mag` must
+then be replaced by that cell's own bound, and that is reported"): this is that report. It is not a K5 falsifier.
+**Measured before this addendum (k5/K5/Safe1–4.lean, SafeRead.lean, vir f3d47b6):** 22 modes are in range from `Inv` alone with
+n, OUTMAX < 2³² — HDR TABLE READ HDRB HDRD SHDR SLEN SCOPY DHDR DH2 DH3 DH4 FIXLENS CLREAD CLPUT LENS LSYM REP SYM SYMD DSTD COPY.
+The other six read a cell `Inv` leaves unbounded: SNLEN, LENX, DSTX, LREP (`cPEND`, `cDIST`), DECODE (`x+1`), BUILD (`cLEFT`,
+`cREST`, `cTOTAL`, `cCODE`).
+**`Mag n om f`, declared now (k5 only; DEFLATE is not edited).** Let em = `f cRET` when `f cMODE = mREAD`, else `f cMODE` (the
+mode a READ returns to, as `InvM.read` reads it), and let X = X0 n om.
+- **P1** em = SNLEN → 0 ≤ `f cPEND` ≤ 65535. *Made by* SLEN (`pend := acc`, acc < kcap SLEN = 65536); *kept* (READ writes no PEND).
+- **P2** em = LENX → 0 ≤ `f cPEND` ≤ 258. *Made by* SYMD (`pend := lb`, lb an LBASE cell of the read-only area, ≤ 258).
+- **P3** em ∈ {DSTD, DSTX} or (`f cMODE` = DECODE and `f (X+3)` = DSTD) → 0 ≤ `f cPEND` ≤ 289. *Made by* LENX
+  (`pend := pd + a`, pd ≤ 258 by P2, a < kcap LENX = 32).
+- **P4** em = LREP → 0 ≤ `f cPEND` ≤ 11. *Made by* LSYM (`pend := 3 | 3 | 11`).
+- **D1** em = DSTX → 0 ≤ `f cDIST` ≤ 24577. *Made by* DSTD (`dist := db`, db a DBASE cell, ≤ 24577).
+- **C1** `f cMODE` = DECODE → 0 ≤ `f (X+1)` < 2^`f X` (with Inv's 1 ≤ `f X` ≤ 15, so < 2¹⁵). *Made by* reqDecN (l := 1, cv := 0);
+  *kept by* DECODE's non-hit branch (l := l + 1, cv := 2·cv + b, b ∈ {0, 1}: 2cv + b < 2^(l+1)).
+- **B1** BUILD, phase 2 → 0 ≤ `f cCODE` and `f cCODE` + 636 ≤ 636·2^j (j = `f cINDEX`). *Made by* phase 1's end (code := 0, j := 1:
+  636 ≤ 1272); *kept by* `code := 2·(code + cp)`, j := j + 1 with cp a count ≤ nn ≤ 318: 2code + 2cp + 636 ≤ 2(code + 636).
+- **B2** BUILD, phase 3 → 0 ≤ `f cLEFT` ≤ 2^j ∧ 0 ≤ `f cREST` ≤ 318·j ∧ 0 ≤ `f cTOTAL` ≤ 318·j. *Made by* phase 2's end (left 1,
+  rest 0, total 0, j := 1); *kept by* left := 2·left − c (stored only when ≥ 0), rest/total += c with c a count ≤ 318.
+Every other clause is vacuous outside its mode, so a step that does not ENTER one of these modes keeps `Mag` by the frame (the
+cells it writes are none of `cPEND cDIST X X+1 cCODE cLEFT cREST cTOTAL`, or it leaves the clause's mode).
+**`Mag_init`** (MODE = TABLE: every clause vacuous) and **`Mag_step`** (`Inv ∧ Mag` before a step ⇒ `Mag` after it, for each of
+the 28 modes, from Safety's own step lemmas' explicit writes) are owed; with them each of the six wrappers takes its range
+facts from `Inv ∧ Mag` as the other 22 take theirs from `Inv`.
+**What would show this wrong:** a write to one of these cells not in the census above (re-run it over Step.lean before
+`Mag_step`, by `command grep -n 'store \[' | grep -F` per cell name AND per `x" ) (.i k)` offset — the two needle shapes); a
+clause that `Mag_step` cannot close (reported as a finding with the cell and the write, never widened silently).
