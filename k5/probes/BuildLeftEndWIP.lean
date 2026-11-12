@@ -5,7 +5,7 @@ import K5.Modes3
 namespace K5
 open VIRL1 VIRL2 VIRC VIRDeflate.Step
 
-set_option maxHeartbeats 16000000 in
+set_option maxHeartbeats 0 in
 set_option maxRecDepth 8000 in
 theorem build_left_end_inR {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 2080 ≤ L)
     (j X tbb left rest tot c1 var : Int) (hph : f cPHASE = 3) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
