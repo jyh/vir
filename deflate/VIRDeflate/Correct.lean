@@ -454,6 +454,144 @@ theorem read_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
         obtain ⟨σ', f', hR', hw', hm'⟩ := (ih (i + 1) (acc + x * 2 ^ i) σ1 f1 s1 hw1 hR1 hm1 hk1 hacc1 hwt1).2 r h
         exact ⟨σ', f', (Reach.step hS).trans hR', hw', hm'⟩
 
+/-! ## The triple toolkit (S-18): `Sim A pre post` -/
+
+/-- Control cells: R observes none of them (the mode, cells 4–19, cursor-2, and everything above the output). -/
+def ctl (n om : Nat) (c : Int) : Prop := c = 0 ∨ (4 ≤ c ∧ c < 20) ∨ (2068 ≤ c ∧ c < 2080) ∨ IN + n + om ≤ c
+
+/-- R survives any change to control cells alone. -/
+theorem Rel.of_keeps {b : Array Nat} {om : Nat} {lit : Bool} {f f' : Int → Int} {st : St} {S : Int → Prop}
+    (hR : Rel b om lit f st) (hi' : Inv b om lit f') (hk : Keeps (L0 b.size om) f f' S)
+    (hS : ∀ c, S c → ctl b.size om c) : Rel b om lit f' st where
+  inv := hi'
+  bits v i hv hi7 hlt := by
+    rw [hk _ (by unfold BT; omega) (by unfold BT L0; omega) (fun h => by have := hS _ h; unfold ctl BT IN at *; omega)]
+    exact hR.bits v i hv hi7 hlt
+  pos := by
+    rw [hk _ (by decide) (by unfold cBY L0; omega) (fun h => by have := hS _ h; unfold ctl cBY IN at *; omega),
+      hk _ (by decide) (by unfold cBI L0; omega) (fun h => by have := hS _ h; unfold ctl cBI IN at *; omega)]
+    exact hR.pos
+  m := by
+    rw [hk _ (by decide) (by unfold cM L0; omega) (fun h => by have := hS _ h; unfold ctl cM IN at *; omega)]
+    exact hR.m
+  out i hi2 := by
+    have hm' := hR.inv.1.m_rng
+    have hm2 := hR.m
+    have hc : IN + (b.size : Int) + i < L0 b.size om := by unfold IN L0; push_cast; omega
+    rw [hk _ (by unfold IN; omega) hc (fun h => by have := hS _ h; unfold ctl IN at *; omega)]
+    exact hR.out i hi2
+
+/-- **The triple** (S-18): from any world satisfying pre, S's ok result is reached with post, and S's error with REJECT. -/
+def Sim (b : Array Nat) (om : Nat) (p : Int) {α : Type} (A : M α) (pre : (Int → Int) → St → Prop)
+    (post : α → (Int → Int) → St → Prop) : Prop :=
+  ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+    (∀ a st', go A ⟨b, om⟩ st = .ok (a, st') →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ post a f' st') ∧
+    (∀ r, go A ⟨b, om⟩ st = .error r → ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT)
+
+section Toolkit
+variable {b : Array Nat} {om : Nat} {p : Int} {α β : Type}
+
+theorem Sim.bind {A : M α} {k : α → M β} {pre : (Int → Int) → St → Prop} {mid : α → (Int → Int) → St → Prop}
+    {post : β → (Int → Int) → St → Prop} (h1 : Sim b om p A pre mid) (h2 : ∀ a, Sim b om p (k a) (mid a) post) :
+    Sim b om p (A >>= k) pre post := by
+  intro σ f st hw hp
+  obtain ⟨hok, herr⟩ := h1 σ f st hw hp
+  constructor
+  · intro c st' h
+    rw [go_bind] at h
+    rcases hA : go A ⟨b, om⟩ st with r | ⟨a, s1⟩
+    · rw [hA] at h; simp at h
+    · rw [hA] at h
+      obtain ⟨σ1, f1, hR1, hw1, hm1⟩ := hok a s1 hA
+      obtain ⟨σ', f', hR', hw', hp'⟩ := (h2 a σ1 f1 s1 hw1 hm1).1 c st' h
+      exact ⟨σ', f', hR1.trans hR', hw', hp'⟩
+  · intro r h
+    rw [go_bind] at h
+    rcases hA : go A ⟨b, om⟩ st with r' | ⟨a, s1⟩
+    · exact herr r' hA
+    · rw [hA] at h
+      obtain ⟨σ1, f1, hR1, hw1, hm1⟩ := hok a s1 hA
+      obtain ⟨σ', f', hR', hw', hp'⟩ := (h2 a σ1 f1 s1 hw1 hm1).2 r h
+      exact ⟨σ', f', hR1.trans hR', hw', hp'⟩
+
+theorem Sim.mono {A : M α} {pre pre' : (Int → Int) → St → Prop} {post post' : α → (Int → Int) → St → Prop}
+    (h : Sim b om p A pre post) (hpre : ∀ f st, pre' f st → pre f st) (hpost : ∀ a f st, post a f st → post' a f st) :
+    Sim b om p A pre' post' := by
+  intro σ f st hw hp
+  obtain ⟨hok, herr⟩ := h σ f st hw (hpre f st hp)
+  exact ⟨fun a st' h' => (hok a st' h').imp fun σ' ⟨f', hR, hw', hq⟩ => ⟨f', hR, hw', hpost _ _ _ hq⟩, herr⟩
+
+/-- A machine step before S does anything. -/
+theorem Sim.step {A : M α} {pre pre' : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (hs : ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+      ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ pre' f1 st)
+    (h : Sim b om p A pre' post) : Sim b om p A pre post := by
+  intro σ f st hw hp
+  obtain ⟨σ1, f1, hS, hw1, hp1⟩ := hs σ f st hw hp
+  obtain ⟨hok, herr⟩ := h σ1 f1 st hw1 hp1
+  exact ⟨fun a st' h' => (hok a st' h').imp fun σ' ⟨f', hR, hw', hq⟩ => ⟨f', (Reach.step hS).trans hR, hw', hq⟩,
+    fun r h' => (herr r h').imp fun σ' ⟨f', hR, hw', hq⟩ => ⟨f', (Reach.step hS).trans hR, hw', hq⟩⟩
+
+theorem Sim.pure {a : α} {pre : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (h : ∀ f st, pre f st → post a f st) : Sim b om p (Pure.pure a : M α) pre post := by
+  intro σ f st hw hp
+  refine ⟨fun a' st' h' => ?_, fun r h' => by rw [go_pure] at h'; simp at h'⟩
+  rw [go_pure] at h'
+  simp only [Except.ok.injEq, Prod.mk.injEq] at h'
+  obtain ⟨rfl, rfl⟩ := h'
+  exact ⟨σ, f, Reach.refl p σ, hw, h f st hp⟩
+
+/-- S rejects, and the machine reaches REJECT. -/
+theorem Sim.reject {r : String} {pre : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (h : ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) :
+    Sim b om p (VIRDeflate.reject r : M α) pre post := by
+  intro σ f st hw hp
+  exact ⟨fun a st' h' => by rw [go_reject] at h'; simp at h', fun _ _ => h σ f st hw hp⟩
+
+theorem Sim.reject_bind {r : String} {k : α → M β} {pre : (Int → Int) → St → Prop} {post : β → (Int → Int) → St → Prop}
+    (h : ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) :
+    Sim b om p (VIRDeflate.reject r >>= k) pre post := Sim.bind (mid := fun _ _ _ => False) (Sim.reject h)
+  (fun _ σ f st _ hp => absurd hp id)
+
+theorem Sim.get {k : St → M α} {pre : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (h : ∀ s, Sim b om p (k s) (fun f st => pre f st ∧ st = s) post) : Sim b om p (MonadState.get >>= k) pre post := by
+  intro σ f st hw hp
+  have := h st σ f st hw ⟨hp, rfl⟩
+  simp only [go_bind, go_get]
+  exact this
+
+theorem Sim.read {k : Env → M α} {pre : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (h : Sim b om p (k ⟨b, om⟩) pre post) : Sim b om p (MonadReader.read >>= k) pre post := by
+  intro σ f st hw hp
+  have := h σ f st hw hp
+  simp only [go_bind, go_read]
+  exact this
+
+theorem Sim.ite {c : Prop} [Decidable c] {t e : M α} {pre : (Int → Int) → St → Prop} {post : α → (Int → Int) → St → Prop}
+    (ht : c → Sim b om p t pre post) (he : ¬ c → Sim b om p e pre post) : Sim b om p (if c then t else e) pre post := by
+  split
+  · exact ht ‹_›
+  · exact he ‹_›
+
+end Toolkit
+
+/-- **`bits K` from a READ world** (K ≥ 1, acc 0, wt 1): the corollary of `read_sim` in the triple form, with the start
+world f₀ and state st₀ as ghosts. -/
+theorem bits_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (K : Nat) (f₀ : Int → Int)
+    (st₀ : St) :
+    Sim b om p (bits (K + 1))
+      (fun f st => f = f₀ ∧ st = st₀ ∧ Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = K + 1 ∧ f cACC = 0 ∧ f cWT = 1)
+      (fun a f' st' => Rel b om lit f' st' ∧ f' cMODE = f₀ cRET ∧ f' cACC = a ∧ st'.out = st₀.out ∧
+        Keeps (L0 b.size om) f₀ f' rdSet ∧ st₀.pos < st'.pos) := by
+  rintro σ f st hw ⟨rfl, rfl, hR, hm, hk, hacc, hwt⟩
+  have := read_sim (lit := lit) hb K 0 0 σ f st hw hR hm hk (by simpa using hacc) (by simpa using hwt)
+  refine ⟨fun a st' h => ?_, this.2⟩
+  obtain ⟨σ', f', hR', hw', hR'', hm', ha, ho, hkp⟩ := this.1 a st' h
+  exact ⟨σ', f', hR', hw', hR'', hm', ha, ho, hkp, ((adv_bits K) ⟨b, om⟩ st a st' h).1⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
