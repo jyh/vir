@@ -1,0 +1,59 @@
+saltqueue: ticket P2 seat=root pid=68097
+def VIRDeflate.dynamic : M Unit :=
+do
+  let __do_lift ← bits 5
+  have hlit : ℕ := __do_lift + 257
+  let __do_lift ← bits 5
+  have hdist : ℕ := __do_lift + 1
+  let __do_lift ← bits 4
+  have hclen : ℕ := __do_lift + 4
+  have __do_jp : Unit → M Unit := fun __r => do
+    let cl ← readCL ORDER hclen (Array.replicate 19 0)
+    let CL ← code cl Mode.strict
+    let __do_lift ← fuelNow
+    let lens ← lensLoop CL (hlit + hdist) __do_lift #[]
+    have __do_jp : Unit → M Unit := fun __r => do
+      let L ← code (lens.extract 0 hlit)
+      let D ← code (lens.extract hlit (hlit + hdist)) Mode.dist
+      huff L D
+    if lens.getD 256 0 = 0 then do
+        let __r ← reject "missing end-of-block"
+        __do_jp __r
+      else __do_jp ()
+  if hlit > 286 ∨ hdist > 30 then do
+      let __r ← reject "too many length or distance symbols"
+      __do_jp __r
+    else __do_jp ()
+probes/DynProbe.lean:10:16: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+probes/DynProbe.lean:20:110: error: Tactic `rfl` failed: The left-hand side
+  none.getD 0
+is not definitionally equal to the right-hand side
+  if j < a.size then x else 0
+
+x : ℕ
+a : Array ℕ
+j : ℕ
+h : a.size ≤ j
+⊢ none.getD 0 = if j < a.size then x else 0
+probes/DynProbe.lean:28:43: warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe.lean:28:43: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/DynProbe.lean:33:32: warning: 'simp_all' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe.lean:33:43: warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe.lean:33:32: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/DynProbe.lean:33:43: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=1

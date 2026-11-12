@@ -1,0 +1,20 @@
+saltqueue: ticket P2 seat=root pid=76029
+probes/DynProbe2.lean:19:65: warning: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe2.lean:19:73: warning: 'exact getD_oob a j (by omega)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe2.lean:23:45: warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/DynProbe2.lean:19:65: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/DynProbe2.lean:19:73: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/DynProbe2.lean:23:45: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=0

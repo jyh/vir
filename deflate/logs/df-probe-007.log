@@ -1,0 +1,8 @@
+saltqueue: ticket P2 seat=root pid=75679
+probes/DynProbe2.lean:12:16: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+probes/DynProbe2.lean:17:54: warning: unused name: h2
+probes/DynProbe2.lean:20:4: error: No goals to be solved
+saltbuild EXIT=1
