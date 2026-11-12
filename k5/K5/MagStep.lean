@@ -470,4 +470,99 @@ theorem Mag_step_lens {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {
     · exact Mag_pinned_b0 hw hg hS hSe hw' (by simp only [cMODE]; exact Finmap.lookup_insert _)
         (by simp (disch := omega) only [cPHASE, Finmap.lookup_insert_of_ne]; exact Finmap.lookup_insert _) (by mag_frameX)
 
+theorem Mag_step_copy {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mCOPY)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hc := hi.2.cur
+  rw [hm, facts_copy] at hc
+  obtain ⟨_, _, hp0, hd0, hdm, hmp⟩ := hc
+  have hmr := hi.1.m_rng
+  have hn := hi.1.n_eq
+  have ho := hi.1.om_eq
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mCOPY, copyN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mCOPY, copyN) hmem (by decide)
+  have hm0 : σ.H.lookup (p + 0) = some mCOPY := by rw [← hm]; exact hw.cell 0 (by decide) (by rw [hL0]; omega)
+  by_cases hpd : f cPEND = 0
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 (copy_end hw (by unfold L0; omega) hpd)
+    exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (copy_byte hw (by unfold L0; omega) _ _ _ _ _ rfl hpd hn rfl rfl (by omega) (by rw [hL0]; omega) rfl (by omega)
+        (by rw [hL0]; omega))
+    refine Mag_pinned hw hg hS hSe hw' ?_ (by mag_frameX)
+    intro m e
+    simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne] at e
+    rw [hm0] at e; cases e; simp [mCOPY, mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP]
+
+theorem Mag_step_rep {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mREP)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hc := hi.2.cur
+  rw [hm, facts_rep] at hc
+  obtain ⟨hf0, hp0, hfp, hl286, hd30, _, _, _⟩ := hc
+  have hh := hi.1.hdr_rng
+  have hn := hi.1.n_eq
+  have ho := hi.1.om_eq
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mREP, repN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mREP, repN) hmem (by decide)
+  have hm0 : σ.H.lookup (p + 0) = some mREP := by rw [← hm]; exact hw.cell 0 (by decide) (by rw [hL0]; omega)
+  by_cases hpd : f cPEND = 0
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 (rep_end hw (by unfold L0; omega) hpd)
+    exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (rep_byte hw (by unfold L0; omega) _ _ _ _ _ rfl hpd rfl rfl hn ho (by omega) (by rw [hL0]; omega))
+    refine Mag_pinned hw hg hS hSe hw' ?_ (by mag_frameX)
+    intro m e
+    simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne] at e
+    rw [hm0] at e; cases e; simp [mREP, mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP]
+
+theorem Mag_step_scopy {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mSCOPY)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hc := hi.2.cur
+  rw [hm] at hc
+  simp only [facts, show mSCOPY ≠ mSNLEN by decide, if_false, if_true] at hc
+  have hsc := hi.2.scopy hm
+  have hmr := hi.1.m_rng
+  have hbr := hi.1.by_rng
+  have hn := hi.1.n_eq
+  have ho := hi.1.om_eq
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mSCOPY, scopyN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mSCOPY, scopyN) hmem (by decide)
+  have hm0 : σ.H.lookup (p + 0) = some mSCOPY := by rw [← hm]; exact hw.cell 0 (by decide) (by rw [hL0]; omega)
+  by_cases hk : f cPEND = 0
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 (scopy_end hw (by unfold L0; omega) _ hk rfl)
+    split_ifs at hSe
+    all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+  · have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+      (scopy_byte hw (f cBY).toNat b.size (f cM).toNat om _ _ (by unfold L0; omega) rfl hk (by omega) hn (by omega)
+        (by rw [show (((f cBY).toNat : Nat) : Int) = f cBY by omega]) (by omega) (by omega))
+    refine Mag_pinned hw hg hS hSe hw' ?_ (by mag_frameX)
+    intro m e
+    simp (disch := omega) only [cMODE, Finmap.lookup_insert_of_ne] at e
+    rw [hm0] at e; cases e; simp [mSCOPY, mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP]
+
+theorem Mag_step_lrep {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hm : f cMODE = mLREP)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hmem : (mLREP, lrepN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mLREP, lrepN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+    (lrep_step hw (by unfold L0; omega) _ _ _ _ _ rfl rfl rfl rfl rfl)
+  split_ifs at hSe
+  all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+
+theorem Mag_step_snlen {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hm : f cMODE = mSNLEN)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hmem : (mSNLEN, snlenN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mSNLEN, snlenN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+    (snlen_step hw (by unfold L0; omega) _ _ _ _ _ _ rfl rfl rfl rfl rfl rfl)
+  unfold snlenH at hSe
+  split_ifs at hSe
+  all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+
 end K5
