@@ -2570,6 +2570,78 @@ theorem syms_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
         fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (by omega))
       exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', hp', hj', hsy', hk1'.trans hk' (fun c h => h)⟩
 
+/-! ## BUILD's phase ends: NEXT → LEFT or SYMS, and LEFT's incomplete check -/
+
+theorem next_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mBUILD)
+    (hph : f cPHASE = 2) (hj : f cINDEX = 16) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧ f1 cMODE = mBUILD ∧
+      Keeps (L0 b.size om) f f1 (fun c => c = 12 ∨ c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) ∧
+      (f cCHK = 1 → f1 cPHASE = 3 ∧ f1 cINDEX = 1 ∧ f1 cLEFT = 1 ∧ f1 cREST = 0 ∧ f1 cTOTAL = 0) ∧
+      (f cCHK ≠ 1 → f1 cPHASE = 4 ∧ f1 cINDEX = 0) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+    (build_next_end hw hL 16 (X0 b.size om) (f (X0 b.size om + 7)) (f cCHK) hph hj hR.inv.1.x_eq rfl
+      (by unfold X0; omega) hXL (by norm_num) rfl)
+  by_cases hc : f cCHK = 1
+  · rw [if_pos hc] at hS
+    have hg := ((((hw.store (i := 12) (v := 3) (by norm_num) (by omega)).store (i := 13) (v := 1) (by norm_num)
+      (by omega)).store (i := 2076) (v := 1) (by norm_num) (by omega)).store (i := 2077) (v := 0) (by norm_num)
+      (by omega)).store (i := 2078) (v := 0) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 12 ∨ c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) (fun c _ _ hc => by
+        rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega),
+          upd_eq _ _ (by omega)]) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, hR1, by rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm,
+      hk1, fun _ => ⟨?_, ?_, ?_, ?_, ?_⟩, fun h => absurd hc h⟩
+    · rw [ag _ (by decide) (by unfold cPHASE; omega)]; simp [cPHASE, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cLEFT; omega)]; simp [cLEFT, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cREST; omega)]; simp [cREST, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cTOTAL; omega)]; simp [cTOTAL, Function.update_apply]
+  · rw [if_neg hc] at hS
+    have hg := (hw.store (i := 12) (v := 4) (by norm_num) (by omega)).store (i := 13) (v := 0) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 12 ∨ c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) (fun c _ _ hc => by
+        rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)]) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, hR1, by rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm,
+      hk1, fun h => absurd h hc, fun _ => ⟨?_, ?_⟩⟩
+    · rw [ag _ (by decide) (by unfold cPHASE; omega)]; simp [cPHASE, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX, Function.update_apply]
+
+theorem left_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mBUILD)
+    (hph : f cPHASE = 3) (hj : f cINDEX = 16) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧
+      (0 < f cLEFT ∧ bExempt (f (X0 b.size om + 8)) (f (f (X0 b.size om + 7) + 1)) (f cREST) (f cTOTAL) ≠ 1 →
+        f1 cMODE = mREJECT) ∧
+      (¬ (0 < f cLEFT ∧ bExempt (f (X0 b.size om + 8)) (f (f (X0 b.size om + 7) + 1)) (f cREST) (f cTOTAL) ≠ 1) →
+        Rel b om lit f1 st ∧ f1 cMODE = mBUILD ∧ f1 cPHASE = 4 ∧ f1 cINDEX = 0 ∧
+        Keeps (L0 b.size om) f f1 (fun c => c = 12 ∨ c = 13)) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  have hB := buildInv_of hR hm
+  obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+  have htL : f (X0 b.size om + 7) + 352 ≤ L0 b.size om := by rw [htb]; unfold tbase LB0 L0; omega
+  have ht0' : 0 ≤ f (X0 b.size om + 7) := by rw [htb]; unfold tbase LB0; omega
+  have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+    (build_left_end hw hL 16 (X0 b.size om) _ _ _ _ _ _ hph hj hR.inv.1.x_eq rfl (by unfold X0; omega) hXL (by norm_num)
+      ht0' htL rfl rfl rfl rfl rfl)
+  by_cases hc : 0 < f cLEFT ∧ bExempt (f (X0 b.size om + 8)) (f (f (X0 b.size om + 7) + 1)) (f cREST) (f cTOTAL) ≠ 1
+  · rw [if_pos hc] at hS
+    have hg := (hw.store (i := 14) (v := 6) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+    exact ⟨_, _, hS, hg, fun _ => by simp [cMODE, mREJECT], fun h => absurd hc h⟩
+  · rw [if_neg hc] at hS
+    have hg := (hw.store (i := 12) (v := 4) (by norm_num) (by omega)).store (i := 13) (v := 0) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 12 ∨ c = 13) (fun c _ _ hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+      (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, fun h => absurd h hc, fun _ => ⟨hR1, ?_, ?_, ?_, hk1⟩⟩
+    · rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    · rw [ag _ (by decide) (by unfold cPHASE; omega)]; simp [cPHASE, Function.update_apply]
+    · rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [cINDEX, Function.update_apply]
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
