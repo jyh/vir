@@ -39,3 +39,9 @@ import K5
 #print axioms K5.decode_inR
 #print axioms K5.build_inR
 #print axioms K5.step_inrange
+#print axioms K5.Mag_step
+#print axioms K5.Mag_step_build
+#print axioms K5.Mag_step_decode
+#print axioms K5.Mag_step_build2
+#print axioms K5.reach_inv
+#print axioms K5.deflate_inrange

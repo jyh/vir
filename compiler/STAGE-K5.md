@@ -104,3 +104,12 @@
   that MAKES P1). **Route for the other 27:** per mode, the explicit store from Safety's `safe_*` (5 exist) or from Step.lean's
   `<mode>_step` via `stepS_of_mode` exactly as the mode's `safeI_*` builds it, then the 9 clauses of the explicit cell function
   (most are vacuous by the new mode; the frame is `Function.update_apply` away from the written cells).
+- **K5-2 CLOSED (69th head): `deflate_inrange` PROVED (k5/K5/DeflateInRange.lean, vir 12a5a95, k5p-116).** For every byte string
+  (bytes < 256), n, OUTMAX < 2³², either reading, and every world the iteration reaches from `initStore`, the step term is in range
+  at every configuration of its run. Route: `reach_inv` (induction over `iterS`: Safety's `stepSafe_of safeI_build` keeps `Inv`,
+  `Mag_step` keeps `Mag`, DONE/REJECT fixed by `stepS_fixed`), then `step_inrange`. `Mag_step` (MagAll.lean, k5p-114) dispatches the
+  28 mode cases of MagStep.lean (23) and MagBuild.lean (BUILD, 5 phases); each pins the step's store from Safety's/Step.lean's
+  explicit step and reads the new cells off it. **Audit k5-audit-007: 46 rows, all within propext / Classical.choice / Quot.sound,
+  0 sorryAx** (deflate_inrange, reach_inv, Mag_step, Mag_step_build, Mag_step_decode, Mag_step_build2 among them).
+  The premise beyond Addendum 3's statement is `Mag`, PROVED preserved, so the theorem's hypotheses are only bytes < 256 and
+  n, OUTMAX < 2³² (no premise on the bytes' content: K5's falsifier is not met). **NEXT: K5-3 `deflate_noovf`.**
