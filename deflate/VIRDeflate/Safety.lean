@@ -826,4 +826,168 @@ theorem LOC_lt {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg : I
       mLSYM, mLREP, mREP, mDONE, mREJECT] at hc hb ⊢ <;>
     (try split_ifs) <;> omega
 
+/-! ## READ -/
+
+theorem pow_toNat_succ (k : Int) (hk : 1 ≤ k) : (2 : Int) ^ k.toNat = 2 * 2 ^ (k - 1).toNat := by
+  obtain ⟨m, rfl⟩ : ∃ m : Nat, k = (m : Int) + 1 := ⟨(k - 1).toNat, by omega⟩
+  rw [show ((m : Int) + 1).toNat = m + 1 by omega, show ((m : Int) + 1 - 1).toNat = m by omega, pow_succ]; ring
+
+theorem safeI_read {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} (hb : ∀ x ∈ b, x < 256)
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mREAD) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 + b.size ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mREAD, readN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mREAD, readN) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hn := hi.1.n_eq
+  have hbr := hi.1.by_rng
+  have hir := hi.1.bi_rng
+  have hhl := hi.1.hdr_rng.1
+  by_cases hlt : f cBY < b.size
+  · -- a bit remains
+    obtain ⟨hfr, hk1, hw1, ha0, hal, hcap⟩ := hi.2.read hm
+    have hrt := hi.1.read_rt hm
+    obtain ⟨hv, hv8⟩ := hi.1.byte hb (f cBY).toNat (by omega)
+    have hbiE : ((f cBI).toNat : Int) = f cBI := by omega
+    have ht01 := hi.1.bits (8 * (b[(f cBY).toNat]'(by omega) : Int) + f cBI) (by omega) (by omega) (Or.inl hnt)
+    have hstep := readbit_step hw (f cBY).toNat (f cBI).toNat b.size (b[(f cBY).toNat]'(by omega)) (f cK) (f cACC) (f cWT)
+      (f cRET) (f (BT + (8 * (b[(f cBY).toNat]'(by omega) : Int) + f cBI))) hL (by omega) (by omega) hn (by omega) (by omega)
+      hv hv8 (by rw [hbiE]) rfl rfl rfl rfl
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 hstep
+    simp only [show ((f cBY).toNat : Int) = f cBY by omega, show ((f cBI).toNat : Int) = f cBI by omega] at hS
+    set t := f (BT + (8 * (b[(f cBY).toNat]'(by omega) : Int) + f cBI)) with ht
+    set f1 := Function.update (Function.update (Function.update (Function.update (Function.update f 1 (tblNext (f cBY) (f cBI)).1)
+      2 (tblNext (f cBY) (f cBI)).2) 2069 (f cACC + t * f cWT)) 2070 (2 * f cWT)) 2068 (f cK - 1) with hf1
+    have hw1' : World ⟨rdH σ.H p (f cBY) (f cBI) (f cACC) (f cWT) (f cK) t, σ.R⟩ p (L0 b.size om) f1 := by
+      unfold rdH
+      exact ((((hw.store (i := 1) (by norm_num) (by unfold L0; omega)).store (i := 2) (by norm_num) (by unfold L0; omega)).store
+        (i := 2069) (by norm_num) (by unfold L0; omega)).store (i := 2070) (by norm_num) (by unfold L0; omega)).store
+        (i := 2068) (by norm_num) (by unfold L0; omega)
+    have hg1 : InvG b om lit f1 :=
+      (((hi.1.cursor rfl rfl hlt).upd (by unfold scratch; omega) _).upd (by unfold scratch; omega) _).upd
+        (by unfold scratch; omega) _
+    have W1 : Watch f f1 :=
+      ((((watch_upd f (by norm_num) (by decide) _).trans (watch_upd _ (by norm_num) (by decide) _)).trans
+        (watch_upd _ (by norm_num) (by decide) _)).trans (watch_upd _ (by norm_num) (by decide) _)).trans
+        (watch_upd _ (by norm_num) (by decide) _)
+    have u1 : ∀ c : Int, c ≠ 1 → c ≠ 2 → c ≠ 2068 → c ≠ 2069 → c ≠ 2070 → f1 c = f c := by
+      intro c a1 a2 a3 a4 a5; simp only [hf1]; rw [upd_eq _ _ a3, upd_eq _ _ a5, upd_eq _ _ a4, upd_eq _ _ a2, upd_eq _ _ a1]
+    have hs1 : SymsOK b.size om f1 := by
+      intro tt q h1 h2 h3 h4
+      rw [u1 _ (by unfold tbase LB0; omega) (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)
+        (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)]
+      exact hi.2.syms tt q h1 h2 h3 h4
+    have e68 : f1 cK = f cK - 1 := by simp [hf1, cK]
+    have e69 : f1 cACC = f cACC + t * f cWT := by simp [hf1, cACC, Function.update_apply]
+    have e70 : f1 cWT = 2 * f cWT := by simp [hf1, cWT, Function.update_apply]
+    have eRT : f1 cRET = f cRET := u1 _ (by unfold cRET; omega) (by unfold cRET; omega) (by unfold cRET; omega)
+      (by unfold cRET; omega) (by unfold cRET; omega)
+    have eM : f1 cMODE = mREAD := by rw [u1 _ (by unfold cMODE; omega) (by unfold cMODE; omega) (by unfold cMODE; omega)
+      (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact hm
+    have hBITS : BITS f1 = BITS f - 1 := by
+      unfold BITS
+      rw [u1 cN (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega)]
+      simp only [hf1, cBY, cBI]
+      simp only [Function.update_apply]
+      simp only [show (1 : Int) ≠ 2068 by decide, show (1 : Int) ≠ 2069 by decide, show (1 : Int) ≠ 2070 by decide,
+        show (2 : Int) ≠ 2068 by decide, show (2 : Int) ≠ 2069 by decide, show (2 : Int) ≠ 2070 by decide,
+        show (1 : Int) ≠ 2 by decide, if_false, if_true]
+      unfold tblNext cBY cBI at *
+      split_ifs <;> simp <;> omega
+    have hOUT : OUT f1 = OUT f := by
+      unfold OUT
+      rw [u1 cOUTMAX (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega)
+        (by unfold cOUTMAX; omega), u1 cM (by unfold cM; omega) (by unfold cM; omega) (by unfold cM; omega)
+        (by unfold cM; omega) (by unfold cM; omega)]
+    have hLOC0 : LOC f = 0 := by
+      unfold LOC; rw [hm]; simp [mREAD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN,
+        mDSTX, mDSTD, mHDRD, mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
+    have hTBL : TBL f = 0 := by unfold TBL; rw [if_neg hnt]
+    have hacc' : 0 ≤ f1 cACC ∧ f1 cACC < f1 cWT := by
+      rw [e69, e70]; rcases ht01 with h0 | h0 <;> rw [h0] <;> constructor <;> nlinarith
+    by_cases hk : f cK - 1 = 0
+    · -- k reaches 0: back to rt
+      rw [if_pos hk] at hS
+      have hrt' : f cRET ∈ validModes := by
+        simp only [readRets, validModes, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP,
+          List.mem_cons, List.mem_nil_iff, or_false] at hrt ⊢; omega
+      have hrt0 : f cRET ≠ mTABLE := by
+        simp only [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP, mTABLE,
+          List.mem_cons, List.mem_nil_iff, or_false] at hrt ⊢; omega
+      have hrtR : f cRET ≠ mREAD := by
+        simp only [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP, mREAD,
+          List.mem_cons, List.mem_nil_iff, or_false] at hrt ⊢; omega
+      have hg' : InvG b om lit (Function.update f1 0 (f cRET)) :=
+        hg1.mode hrt' hrt0 (fun h => absurd h hrtR) (by rw [eM]; decide)
+      have W' : Watch f (Function.update f1 0 (f cRET)) := W1.trans (watch_upd _ (by norm_num) (by decide) _)
+      have eM' : Function.update f1 0 (f cRET) cMODE = f cRET := by simp [cMODE]
+      have u0 : ∀ c : Int, c ≠ 0 → Function.update f1 0 (f cRET) c = f1 c := fun c hc => upd_eq _ _ hc
+      have hnotin : ∀ m ∈ [mDECODE, mSYMD, mDSTD, mLSYM, mSCOPY, mREAD], f cRET ≠ m := by
+        intro m hmm
+        simp only [readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP,
+          List.mem_cons, List.mem_nil_iff, or_false] at hrt
+        simp only [mDECODE, mSYMD, mDSTD, mLSYM, mSCOPY, mREAD, List.mem_cons, List.mem_nil_iff, or_false] at hmm
+        omega
+      have hm' : InvM b.size om (Function.update f1 0 (f cRET)) := {
+        syms := SymsOK.upd hs1 (by norm_num) _
+        cur := by rw [eM']; exact facts_congr W' hhl hfr
+        read := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp))
+        ret := fun _ => by
+          rw [eM', u0 _ (by unfold cACC; omega)]
+          refine ⟨hacc'.1, lt_of_lt_of_le hacc'.2 ?_⟩
+          rw [e70]
+          have : (f cK).toNat = 1 := by omega
+          rw [this] at hcap; simpa [mul_comm] using hcap
+        dec := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp))
+        sym := fun h => by
+          rw [eM'] at h
+          rcases h with h | h | h <;> exact absurd h (hnotin _ (by simp))
+        scopy := fun h => by rw [eM'] at h; exact absurd h (hnotin _ (by simp)) }
+      refine ⟨_, _, hS, hw1'.store (i := 0) (by norm_num) (by unfold L0; omega), ⟨hg', hm'⟩, Or.inl ?_⟩
+      have hLt := LOC_lt hg' hm'
+      have hT' : TBL (Function.update f1 0 (f cRET)) = 0 := by unfold TBL; rw [eM', if_neg hrt0]
+      have hB' : BITS (Function.update f1 0 (f cRET)) = BITS f1 := by
+        unfold BITS; rw [u0 _ (by unfold cN; omega), u0 _ (by unfold cBY; omega), u0 _ (by unfold cBI; omega)]
+      have hO' : OUT (Function.update f1 0 (f cRET)) = OUT f1 := by
+        unfold OUT; rw [u0 _ (by unfold cOUTMAX; omega), u0 _ (by unfold cM; omega)]
+      unfold Φ mW at *
+      rw [hT', hB', hO', hBITS, hOUT, hTBL, hLOC0]
+      omega
+    · -- still READ
+      rw [if_neg hk] at hS
+      have hg' : InvG b om lit f1 := hg1
+      have hm' : InvM b.size om f1 := {
+        syms := hs1
+        cur := by rw [eM]; simp [facts, mREAD, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP,
+          mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]
+        read := fun _ => by
+          rw [eRT, e68]
+          refine ⟨facts_congr W1 hhl hfr, by omega, by rw [e70]; omega, hacc'.1, hacc'.2, ?_⟩
+          rw [e70]
+          rw [pow_toNat_succ _ hk1] at hcap
+          calc 2 * f cWT * 2 ^ (f cK - 1).toNat = f cWT * (2 * 2 ^ (f cK - 1).toNat) := by ring
+            _ ≤ kcap (f cRET) := hcap
+        ret := fun h => by
+          rw [eM] at h; simp [readRets, mREAD, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX, mLREP] at h
+        dec := fun h => by rw [eM] at h; simp [mREAD, mDECODE] at h
+        sym := fun h => by rw [eM] at h; simp [mREAD, mSYMD, mDSTD, mLSYM] at h
+        scopy := fun h => by rw [eM] at h; simp [mREAD, mSCOPY] at h }
+      refine ⟨_, _, hS, hw1', ⟨hg', hm'⟩, Or.inl ?_⟩
+      have hLOC1 : LOC f1 = 0 := by
+        unfold LOC; rw [eM]; simp [mREAD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY,
+          mSNLEN, mDSTX, mDSTD, mHDRD, mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
+      have hT1 : TBL f1 = 0 := by unfold TBL; rw [eM]; simp [mREAD, mTABLE]
+      unfold Φ mW
+      rw [hT1, hBITS, hOUT, hTBL, hLOC0, hLOC1]
+      omega
+  · -- truncated
+    have hbx : f cBY = b.size := by omega
+    have hstep := readbit_trunc hw (by unfold L0; omega) (f cBY) b.size rfl hn (by omega)
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 hstep
+    refine ⟨_, _, hS, (hw.store (i := 14) (by norm_num) (by unfold L0; omega)).store (i := 0) (by norm_num) (by unfold L0; omega),
+      ⟨(hi.1.upd (by unfold scratch; omega) _).mode (by decide) (by decide) (fun h => by simp [mREJECT, mREAD] at h)
+        (by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact hnt),
+       InvM.term (SymsOK.upd hi.2.syms (by norm_num) _) (Or.inr rfl)⟩, Or.inr (Or.inr (by simp [cMODE, mREJECT]))⟩
+
 end VIRDeflate.Step

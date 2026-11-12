@@ -293,7 +293,12 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       into REJECT leave Φ unchanged (no bit; LOC 0 → 0). Declared (vir d788df8) before the code changed: a step into
       DONE/REJECT is exempt, `StepSafe` says "Φ lower OR the next mode is terminal", and **N = Nbound + 1** (df-127,
       `safety_of_step` re-proved). The measure is unchanged. Also: SCOPY's by + pend ≤ n moved to its own InvM field so
-      that cell 1 leaves the watched set (READ advances it). The audit file is regenerated from VIRDeflate.lean's imports: the
+      that cell 1 leaves the watched set (READ advances it).
+    - **READ safe (df-131, `safeI_read`)**: a bit remaining (the cursor's carry by `InvG.cursor`; acc + t·wt < 2·wt from the
+      table cell being a bit, InvG's `bits`; wt·2^k ≤ kcap(rt) carried, so on return the return mode's acc bound holds;
+      Φ: BITS − 1, LOC(rt) < 4096 by `LOC_lt`) and truncation (REJECT, the S-17 terminal step). Helpers: `InvG.mode`,
+      `InvM.term`, `InvG.byte` (an input cell is b's byte, < 256: Safety's only use of the byte premise), `LOC_lt`.
+      **5 of 28 cases DONE** (HDR, HDRB, SLEN, DHDR, READ). The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
