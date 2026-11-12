@@ -1,0 +1,37 @@
+saltqueue: ticket P2 seat=root pid=52065
+mutants/DynRep17.lean:67:100: warning: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/DynRep17.lean:72:43: warning: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/DynRep17.lean:118:50: warning: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/DynRep17.lean:118:97: warning: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/DynRep17.lean:179:52: error: unsolved goals
+b : Array ℕ
+om : ℕ
+lit : Bool
+p : ℤ
+hb : ∀ x ∈ b, x < 256
+bf : ℤ
+hl hd : ℕ
+htot : hl + hd ≤ 316
+cl : Array ℕ
+hL : 2080 ≤ L0 b.size om
+fuel : ℕ
+ih :
+  ∀ (lens : Array ℕ),
+    Sim b om p (lensLoopM (assign cl) (hl + hd) fuel lens) (LPre b om lit bf hl hd cl lens fuel)
+      (LPost b om lit bf hl hd cl)
+lens : Array ℕ
+hlt : lens.size < hl + hd
+s : ℕ
+h15 : ¬s ≤ 15
+h16 : ¬s = 16
+h17 : s = 17
+⊢ False
+saltbuild EXIT=1

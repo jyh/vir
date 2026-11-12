@@ -419,8 +419,12 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       read the 8 primed names (`safe_hdr'`, `bits_sim'`, `Rel.of_keeps'`, `Sim.align'`, `Sim.set'`, `offOf_congr'`,
       `TblRel.keep'`, `code_Sim'`), each read by hand in the log as within the three. Control df-audit-control-005 shows
       `sorryAx`. Root `VIRDeflate` built first (df-310), per df-audit-029's lesson.
+    - **Mutant against Dynamic.lean** (STAGE's sub-namespace method, mutants/DynCtl.lean + DynRep17.lean): S6's lengths
+      loop copied with `lens_sim`'s proof re-run on the copy. Control (unmutated) df-mutant-051 GREEN. Mutant (code 17
+      repeats zero 4 + r times where S says 3 + r) df-mutant-052 RED, ONE error, in `lens_sim`'s 17 branch, at the
+      obligation that the machine's PENDING (3) is the spec's repeat base (4), which reduces to `False`.
     - **No program defect found** in S6's path either. LIMITS: reject reasons are not compared (S-18 leaves them out by
-      declaration); no mutant has been run against Correct.lean or Dynamic.lean; `correct` is a statement about the
+      declaration); one mutant only (the repeat count; none against Correct.lean's other triples); `correct` is a statement about the
       machine's iteration against Spec.lean, so it inherits Spec.lean's fidelity to S (DEFLATE-E1's two readings both
       covered: `lit` is universally quantified).
 
