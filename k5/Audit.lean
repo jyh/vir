@@ -45,3 +45,12 @@ import K5
 #print axioms K5.Mag_step_build2
 #print axioms K5.reach_inv
 #print axioms K5.deflate_inrange
+#print axioms K5.stepT_wfB
+#print axioms K5.stepT_fnOk
+#print axioms K5.stepT_ok2
+#print axioms K5.stepT_table
+#print axioms K5.stepT_inst
+#print axioms K5.good_cap
+#print axioms K5.envRel_cap
+#print axioms K5.deflate_noovf
+#print axioms K5.deflate_refines_noovf

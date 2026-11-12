@@ -1,0 +1,6 @@
+saltqueue: ticket P2 seat=root pid=73930
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 10s — attempting acquisition
+'p_wf' depends on axioms: [propext]
+'p_T' depends on axioms: [propext]
+saltbuild EXIT=0

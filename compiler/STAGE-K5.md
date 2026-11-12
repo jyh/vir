@@ -113,3 +113,15 @@
   0 sorryAx** (deflate_inrange, reach_inv, Mag_step, Mag_step_build, Mag_step_decode, Mag_step_build2 among them).
   The premise beyond Addendum 3's statement is `Mag`, PROVED preserved, so the theorem's hypotheses are only bytes < 256 and
   n, OUTMAX < 2³² (no premise on the bytes' content: K5's falsifier is not met). **NEXT: K5-3 `deflate_noovf`.**
+- **K5-3 `deflate_noovf` PROVED (70th head, k5/K5/DeflateNoOvf.lean, k5p-118 EXIT=0; root K5 k5p-119 EXIT=0), with
+  `deflate_refines_noovf` (row 296: compile_refines (1) at DEFLATE's step term, without its overflow disjunct).** Declared first as
+  DECLARATIONS-K5.md Addendum 6 (vir 6752570). Instance: Γ₀ = [tcap], Δ₀ = [true], vs = [cap p], ρw₀ = `capWords lay p (L0 n om)`.
+  The four per-program facts (`Tm.wfB 1`, `fnOk`, `ok2` of stepT; lowered table length < 2⁶⁴) close by `decide` (probe
+  k5p-probe-stepT-1 EXIT=0); `instL 0 [cap p] stepT = closeAt p stepT` is `rfl`. EnvRel comes from `World.reg` at the reached σ
+  (`envRel_cap`, the cap parameter's two words; not a statement about `Layout`). **Hypotheses of deflate_noovf: bytes < 256,
+  n, OUTMAX < 2³², σ reached by `iterS`, and the loader premise `Layout σ lay`, `MemRel lay σ m`, which every program carries.**
+  No premise on the bytes' content. **Audit k5-audit-009: 55 rows (48 within the three, 7 [propext]), 0 sorryAx** (k5-audit-008
+  EXIT=1 audited a stale root olean: the 9 new names unknown, so it was re-run after k5p-119). Going red: k5p-probe-mut-stepT-1
+  states `Tm.ok2 stepT = false` and table length < 2; `decide` REFUSES both (2 errors at lines 5 and 8, EXIT=1), so the facts
+  are evaluated rather than vacuous. **K5 (amend-23) reads HOLDS at this sha: the overflow exit is unreachable for DEFLATE's step
+  under n, OUTMAX < 2³² with no per-input premise.** Row 296's K3/K6 reading at this sha is still owed (its own row).
