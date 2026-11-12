@@ -85,4 +85,39 @@ theorem Φ_init (b : Array Nat) (om : Nat) (lit : Bool) : Φ (initCell b om lit)
   simp [mTABLE, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD, mHDRD,
     mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
 
+/-! ## A READ request preserves the global invariant -/
+
+theorem reqF_eq (f : Int → Int) (k rt i : Int) (hi : (i < 2068 ∧ i ≠ 0) ∨ 2071 < i) : reqF f k rt i = f i := by
+  simp only [reqF, Function.update_apply]
+  split_ifs <;> first | omega | rfl
+
+theorem InvG.req {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) (hnt : f cMODE ≠ mTABLE)
+    (k : Int) {rt : Int} (hrt : rt ∈ readRets) : InvG b om lit (reqF f k rt) where
+  n_eq := by rw [reqF_eq _ _ _ _ (by unfold cN; omega)]; exact h.n_eq
+  om_eq := by rw [reqF_eq _ _ _ _ (by unfold cOUTMAX; omega)]; exact h.om_eq
+  x_eq := by rw [reqF_eq _ _ _ _ (by unfold cX; omega)]; exact h.x_eq
+  lit_eq := by rw [reqF_eq _ _ _ _ (by unfold cLIT; omega)]; exact h.lit_eq
+  input i h1 h2 := by rw [reqF_eq _ _ _ _ (by omega)]; exact h.input i h1 h2
+  ro i h1 h2 := by rw [reqF_eq _ _ _ _ (by unfold X0 at h1; omega)]; exact h.ro i h1 h2
+  lens j h1 h2 := by rw [reqF_eq _ _ _ _ (by omega)]; exact h.lens j h1 h2
+  tb_rng hm := by simp [reqF, cMODE, mTABLE] at hm
+  bits c h1 h2 _ := by rw [reqF_eq _ _ _ _ (by unfold BT; omega)]; exact h.bits c h1 h2 (Or.inl hnt)
+  by_rng := by rw [reqF_eq _ _ _ _ (by unfold cBY; omega)]; exact h.by_rng
+  bi_rng := by rw [reqF_eq _ _ _ _ (by unfold cBI; omega)]; exact h.bi_rng
+  by_end := by rw [reqF_eq _ _ _ _ (by unfold cBY; omega), reqF_eq _ _ _ _ (by unfold cBI; omega)]; exact h.by_end
+  m_rng := by rw [reqF_eq _ _ _ _ (by unfold cM; omega)]; exact h.m_rng
+  mode_ok := by simp [reqF, cMODE, validModes]
+  read_rt _ := by simpa [reqF, cRET, Function.update_apply] using hrt
+  hdr_rng := by
+    rw [reqF_eq _ _ _ _ (by unfold cHLIT; omega), reqF_eq _ _ _ _ (by unfold cHDIST; omega),
+      reqF_eq _ _ _ _ (by unfold cHCLEN; omega)]
+    exact h.hdr_rng
+
+/-- **HDR, safe:** its `stepS`, the next world, the invariant kept, Φ lower. -/
+theorem safe_hdr' {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {L : Nat} {f : Int → Int}
+    (hw : World σ p L f) (hL : 2080 ≤ L) (hi : InvG b om lit f) (hm : f cMODE = mHDR) :
+    stepS p σ = some ⟨reqH σ.H p 1 3, σ.R⟩ ∧ World ⟨reqH σ.H p 1 3, σ.R⟩ p L (reqF f 1 3) ∧
+      InvG b om lit (reqF f 1 3) ∧ Φ (reqF f 1 3) < Φ f :=
+  ⟨stepS_hdr hw hL hm, hw.req (by omega) 1 3, hi.req (by rw [hm]; decide) 1 (by decide), Φ_hdr hm⟩
+
 end VIRDeflate.Step
