@@ -1,0 +1,133 @@
+saltqueue: ticket P2 seat=root pid=14783
+probes/BuildLeftEndWIP.lean:10:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (16000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+probes/BuildLeftEndWIP.lean:31:134: warning: This simp argument is unused:
+  rr2
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, r̵r̵2̵,̵ ̵rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7, g76,
+  ̲  ̲ ̲ ̲ ̲ ̲g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN,
+  ̲  ̲ ̲ ̲ ̲ ̲bRestN, bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:31:139: warning: This simp argument is unused:
+  rr3
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, r̵r̵3̵,̵ ̵rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7, g76,
+  ̲  ̲ ̲ ̲ ̲ ̲g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN,
+  ̲  ̲ ̲ ̲ ̲ ̲bRestN, bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:31:144: warning: This simp argument is unused:
+  rr1
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, r̵r̵1̵,̵ ̵a1, a2, a3, a4, a5, a6, g12, g13, g79, g7, g76,
+  ̲  ̲ ̲ ̲ ̲ ̲g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN,
+  ̲  ̲ ̲ ̲ ̲ ̲bRestN, bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:33:80: warning: This simp argument is unused:
+  cCODE
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7,
+  ̲  ̲ ̲ ̲ ̲ ̲g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, c̵C̵O̵D̵E̵,̵ ̵cCHK, cLEFT, cREST, cTOTAL, bLeftN, bRestN,
+  ̲  ̲ ̲ ̲ ̲ ̲bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:33:87: warning: This simp argument is unused:
+  cCHK
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7,
+  ̲  ̲ ̲ ̲ ̲ ̲g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, c̵C̵H̵K̵,̵ ̵cLEFT, cREST, cTOTAL, bLeftN, bRestN,
+  ̲  ̲ ̲ ̲ ̲ ̲bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:33:131: warning: This simp argument is unused:
+  bExempt
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7,
+  ̲  ̲ ̲ ̲ ̲ ̲g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN,
+  ̲  ̲ ̲ ̲ ̲ ̲bRestN, b̵E̵x̵e̵m̵p̵t̵,̵ ̵cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) < L by omega, show 0 < L by omega, show (0 : Int) ≤ X + 7 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show X + 7 < L by omega, show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega,
+        show (0 : Int) ≤ tbb + 1 by omega, show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/BuildLeftEndWIP.lean:36:36: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [headB,
+  ̲  ̲ ̲ ̲ ̲ ̲aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7,
+  ̲  ̲ ̲ ̲ ̲ ̲g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go,
+  ̲  ̲ ̲ ̲ ̲ ̲Tm.subst, Atom.subst, Atom.substL, stepFn₂, stepFn, opStep, Store.load, Store.store, hw.reg,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN,
+  ̲  ̲ ̲ ̲ ̲ ̲bRestN, bExempt, cREASON, rINCOMP, cMODE, mREJECT, show (12 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (2076 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (2077 : Int) < L by omega, show (2078 : Int) < L by omega, show (14 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega, show (0 : Int) ≤ X + 7 by omega, show X + 7 < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show (0 : Int) ≤ X + 8 by omega, show X + 8 < L by omega, show (0 : Int) ≤ tbb + 1 by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲show tbb + 1 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1
