@@ -4,7 +4,7 @@ Written 2026-11-11 by the 62nd vir head. The arm is the Lean arm (X0 (a)). The p
 DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the manifest written by edit. Every build ran through
 `deflate/logged-build.sh` (saltbuild, one log per run, noclobber).
 
-## What is built (saltbuild EXIT=0 at df-082; audit df-audit-019: 170 of 170 theorems within the standard three)
+## What is built (saltbuild EXIT=0 at df-083; audit df-audit-020: 177 of 177 theorems within the standard three)
 - `VIRDeflate/Bits.lean` (the rest group): S1's reader (`bit`, `bits`, `align`) as S1 writes it, with `>>>` and `&&&`, over
   `ReaderT Env (StateT St (Except String))`. Also D4's recursion: `bitAt`, the bit of a byte, using `Int` `sub`, `lt`, `add` and
   `mul` only. **`bitAt_eq`**: on every byte b < 256 and i < 8, `bitAt b i = (b >>> i) &&& 1`. `stripTop_eq` is the general
@@ -140,6 +140,17 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - Mutants: "invalid code" at ℓ = 14, red INSIDE `decode_step` in all four miss branches (df-mutant-033); the hit's
       symbol read without offs[ℓ], red INSIDE `decode_step` in both hit branches (df-mutant-034). The unmutated copy is
       GREEN (df-mutant-035).
+  - **S-13, declared before any SYM or COPY code (vir 9494dd3):** S7's four tables as a read-only area of the initial world at
+    X+16 (a step cannot index a constant array); `huffLoop` split at each field, S7's reads and checks in S7's order.
+  - **SYM … COPY, one step each** (df-083). `sym_step` (decode in L, ret SYMD); `symd_step` (a literal with the overflow
+    check first, the block end as SCOPY's, a length's base then its extra bits — none when LEXTRA = 0, as S's `bits 0` — or
+    reason 8); `lenx_step` (length += extra, decode in D, ret DSTD); `dstd_step` (d ≥ 30 → reason 9, else DBASE then extra
+    bits); `dstx_step` ("distance too far back" (10), then "overflow" (4), in S7's order, else COPY); `copy_end` (→ SYM),
+    `copy_byte` (output[m] := output[m − distance], S's `copyBack` one byte).
+    - Not yet stated: that the initial world's read-only area holds Spec.lean's LBASE/LEXTRA/DBASE/DEXTRA. It is the
+      initializer's, and owed with the Safety/Correct statements (293).
+    - Mutants: COPY reading output[m − distance − 1], red INSIDE `copy_byte` (df-mutant-036: line 1985); DSTX's two checks
+      swapped, red INSIDE `dstx_step` (df-mutant-037: line 1953). The unmutated copy is GREEN (df-mutant-038).
   - The audit generator now takes each theorem's namespace from its own file. A first audit (df-audit-008) named two Step
     lemmas in the wrong namespace and failed loudly. It is kept and not counted.
 
@@ -186,7 +197,7 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
 ## D6 (builds), a reading, not a score
-139 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…082, df-audit-001…019, df-audit-control-001, df-mutant-001…035, df-probe-001/002).
+144 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…083, df-audit-001…020, df-audit-control-001, df-mutant-001…038, df-probe-001/002).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction
 (> 109 to correctness) is a lower bound and the count has passed it before correctness. That is a reading, not the score; the
 score is taken at that audit.

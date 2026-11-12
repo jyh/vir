@@ -169,3 +169,10 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.build_syms_end_d
 #print axioms VIRDeflate.Step.decode_step
 #print axioms VIRDeflate.Step.decode_trunc
+#print axioms VIRDeflate.Step.sym_step
+#print axioms VIRDeflate.Step.symd_step
+#print axioms VIRDeflate.Step.lenx_step
+#print axioms VIRDeflate.Step.dstd_step
+#print axioms VIRDeflate.Step.dstx_step
+#print axioms VIRDeflate.Step.copy_end
+#print axioms VIRDeflate.Step.copy_byte
