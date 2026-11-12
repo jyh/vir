@@ -242,8 +242,8 @@ def buildInv (n om : Nat) (f : Int → Int) : Prop :=
   let hd := f cHDIST
   0 ≤ tg ∧ tg ≤ 2 ∧ tbb = tbase n om tg ∧
   ((tg = 0 ∧ sb = LB0 n om + 318 ∧ nn = 19 ∧ hl ≤ 286 ∧ hd ≤ 30) ∨
-   (tg = 1 ∧ sb = LB0 n om ∧ nn = hl ∧ hl + hd ≤ 318) ∨
-   (tg = 2 ∧ sb = LB0 n om + hl ∧ nn = hd ∧ hl + hd ≤ 318 ∧ sane n om f 1)) ∧
+   (tg = 1 ∧ sb = LB0 n om ∧ nn = hl ∧ hl + hd ≤ 318 ∧ 0 ≤ hd) ∨
+   (tg = 2 ∧ sb = LB0 n om + hl ∧ nn = hd ∧ hl + hd ≤ 318 ∧ 0 ≤ hd ∧ sane n om f 1)) ∧
   (ph = 0 → 0 ≤ j ∧ j ≤ 16 ∧ ∀ l : Int, 0 ≤ l → l < j → f (tbb + l) = 0) ∧
   (ph = 1 → 0 ≤ j ∧ j ≤ nn ∧ f tbb = 0 ∧ ∀ l : Int, 1 ≤ l → l ≤ 15 → f (tbb + l) = cnt f sb l j.toNat) ∧
   (2 ≤ ph → ph ≤ 3 → 1 ≤ j ∧ j ≤ 16 ∧ f tbb = 0 ∧ f (tbb + 32) = 0 ∧
@@ -474,32 +474,35 @@ theorem safety_of_stepSafe (hs : StepSafe) : SafetyStmt := safety_of_step hs Φ_
 
 def watched : List Int := [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 2074]
 
-def Watch (f g : Int → Int) : Prop := (∀ i : Int, 2080 ≤ i → f i = g i) ∧ ∀ c ∈ watched, f c = g c
+/-- What `facts` reads: the watched cursor cells, every cell from 2080 up to X (lengths and tables), and BUILD's parameters at
+X + 5 … X + 7. Cells X … X + 4 (the decode cursor) are NOT read by `facts`. -/
+def Watch (n om : Nat) (f g : Int → Int) : Prop :=
+  (∀ i : Int, 2080 ≤ i → i < X0 n om → f i = g i) ∧ (∀ j : Int, 5 ≤ j → j ≤ 7 → f (X0 n om + j) = g (X0 n om + j)) ∧
+    ∀ c ∈ watched, f c = g c
 
-theorem sane_congr {n om : Nat} {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {t : Int} (ht : 0 ≤ t)
-    (hs : sane n om f t) : sane n om g t := by
+theorem sane_congr {n om : Nat} {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → i < X0 n om → f i = g i) {t : Int}
+    (ht : 0 ≤ t) (ht2 : t ≤ 2) (hs : sane n om f t) : sane n om g t := by
   intro l h1 h2
-  have a := h (tbase n om t + l) (by unfold tbase LB0; omega)
-  have b := h (tbase n om t + 32 + l) (by unfold tbase LB0; omega)
+  have a := h (tbase n om t + l) (by unfold tbase LB0; omega) (by unfold tbase LB0 X0; omega)
+  have b := h (tbase n om t + 32 + l) (by unfold tbase LB0; omega) (by unfold tbase LB0 X0; omega)
   rw [← a, ← b]; exact hs l h1 h2
 
-theorem cnt_congr {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {sb l : Int} (hsb : 2080 ≤ sb) :
-    ∀ k : Nat, cnt f sb l k = cnt g sb l k
-  | 0 => rfl
-  | k + 1 => by simp only [cnt, cnt_congr h hsb k, h (sb + k) (by omega)]
+theorem cnt_congr {f g : Int → Int} {X : Int} (h : ∀ i : Int, 2080 ≤ i → i < X → f i = g i) {sb l : Int}
+    (hsb : 2080 ≤ sb) : ∀ k : Nat, sb + k ≤ X → cnt f sb l k = cnt g sb l k
+  | 0, _ => rfl
+  | k + 1, hk => by simp only [cnt, cnt_congr h hsb k (by omega), h (sb + k) (by omega) (by omega)]
 
-theorem offOf_congr {f g : Int → Int} (h : ∀ i : Int, 2080 ≤ i → f i = g i) {tbb : Int} (htb : 2080 ≤ tbb) :
-    ∀ l : Nat, offOf f tbb l = offOf g tbb l
-  | 0 => rfl
-  | l + 1 => by simp only [offOf, offOf_congr h htb l, h (tbb + l) (by omega)]
+theorem offOf_congr {f g : Int → Int} {X : Int} (h : ∀ i : Int, 2080 ≤ i → i < X → f i = g i) {tbb : Int}
+    (htb : 2080 ≤ tbb) : ∀ l : Nat, tbb + l ≤ X → offOf f tbb l = offOf g tbb l
+  | 0, _ => rfl
+  | l + 1, hl => by simp only [offOf, offOf_congr h htb l (by omega), h (tbb + l) (by omega) (by omega)]
 
-theorem buildInv_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 ≤ f cHLIT) (hb : buildInv n om f) :
+theorem buildInv_congr {n om : Nat} {f g : Int → Int} (hw : Watch n om f g) (hhl : 0 ≤ f cHLIT) (hb : buildInv n om f) :
     buildInv n om g := by
-  obtain ⟨hi, hc⟩ := hw
-  have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
-  have e5 := hi (X0 n om + 5) (by omega)
-  have e6 := hi (X0 n om + 6) (by omega)
-  have e7 := hi (X0 n om + 7) (by omega)
+  obtain ⟨hi, hx, hc⟩ := hw
+  have e5 := hx 5 (by norm_num) (by norm_num)
+  have e6 := hx 6 (by norm_num) (by norm_num)
+  have e7 := hx 7 (by norm_num) (by norm_num)
   have e12 := hc 12 (by decide)
   have e13 := hc 13 (by decide)
   have e74 := hc 2074 (by decide)
@@ -510,44 +513,57 @@ theorem buildInv_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 
   rw [← e5, ← e6, ← e7, ← e12, ← e13, ← e74, ← e7c, ← e8c]
   obtain ⟨ht0, ht2, htb, htg, h0, h1, h23, h4, hph⟩ := hb
   have htb2 : (2080 : Int) ≤ f (X0 n om + 7) := by rw [htb]; unfold tbase LB0; omega
+  have htbX : f (X0 n om + 7) + 64 ≤ X0 n om := by rw [htb]; unfold tbase LB0 X0; omega
   have hsb : (2080 : Int) ≤ f (X0 n om + 5) := by
     rcases htg with ⟨_, h, _⟩ | ⟨_, h, _⟩ | ⟨_, h, _⟩ <;> rw [h] <;> unfold LB0 <;> omega
-  have hcnt : ∀ (l : Int) (k : Nat), cnt f (f (X0 n om + 5)) l k = cnt g (f (X0 n om + 5)) l k :=
-    fun l k => cnt_congr hi (l := l) hsb k
-  have hoff := offOf_congr hi htb2
+  have hsbX : f (X0 n om + 5) + (f (X0 n om + 6)).toNat ≤ X0 n om := by
+    rcases htg with ⟨_, h, h', _⟩ | ⟨_, h, h', _, _⟩ | ⟨_, h, h', _, _⟩ <;> rw [h, h'] <;> unfold LB0 X0 <;> omega
+  have hcnt : ∀ (l : Int) (k : Nat), k ≤ (f (X0 n om + 6)).toNat →
+      cnt f (f (X0 n om + 5)) l k = cnt g (f (X0 n om + 5)) l k :=
+    fun l k hk => cnt_congr hi (l := l) hsb k (by omega)
+  have hoff : ∀ l : Nat, l ≤ 16 → offOf f (f (X0 n om + 7)) l = offOf g (f (X0 n om + 7)) l :=
+    fun l hl => offOf_congr hi htb2 l (by omega)
+  have hi' : ∀ k : Int, 0 ≤ k → k < 64 → f (f (X0 n om + 7) + k) = g (f (X0 n om + 7) + k) :=
+    fun k a b' => hi _ (by omega) (by omega)
   refine ⟨ht0, ht2, htb, ?_, ?_, ?_, ?_, ?_, hph⟩
   · rcases htg with h | h | ⟨a, b', c, d, e⟩
     · exact Or.inl h
     · exact Or.inr (Or.inl h)
-    · exact Or.inr (Or.inr ⟨a, b', c, d, sane_congr hi (by norm_num) e⟩)
+    · obtain ⟨e1, e2⟩ := e
+      exact Or.inr (Or.inr ⟨a, b', c, d, e1, sane_congr hi (by norm_num) (by norm_num) e2⟩)
   · intro hp
     obtain ⟨a, b', c⟩ := h0 hp
-    exact ⟨a, b', fun l l0 lj => by rw [← hi _ (by omega)]; exact c l l0 lj⟩
+    exact ⟨a, b', fun l l0 lj => by rw [← hi' l l0 (by omega)]; exact c l l0 lj⟩
   · intro hp
     obtain ⟨a, b', c, d⟩ := h1 hp
-    refine ⟨a, b', by rw [← hi _ htb2]; exact c, fun l l1 l15 => ?_⟩
-    rw [← hi _ (by omega), ← hcnt]; exact d l l1 l15
+    refine ⟨a, b', by rw [← hi _ htb2 (by omega)]; exact c, fun l l1 l15 => ?_⟩
+    rw [← hi' l (by omega) (by omega), ← hcnt l _ (by omega)]; exact d l l1 l15
   · intro hp2 hp3
     obtain ⟨a, b', c, d, e, g'⟩ := h23 hp2 hp3
-    refine ⟨a, b', by rw [← hi _ htb2]; exact c, by rw [← hi _ (by omega)]; exact d, fun l l1 l15 => ?_, fun l l1 lj => ?_⟩
-    · rw [← hi _ (by omega), ← hcnt]; exact e l l1 l15
-    · rw [← hi _ (by omega), ← hi _ (by omega), ← hoff]; exact g' l l1 lj
+    refine ⟨a, b', ?_, by rw [← hi' 32 (by norm_num) (by norm_num)]; exact d, fun l l1 l15 => ?_, fun l l1 lj => ?_⟩
+    · have := hi' 0 (le_refl _) (by norm_num); simp only [add_zero] at this; rw [← this]; exact c
+    · rw [← hi' l (by omega) (by omega), ← hcnt l _ (le_refl _)]; exact e l l1 l15
+    · have hl16 : l < 16 := by split_ifs at lj <;> omega
+      rw [← hi (f (X0 n om + 7) + 32 + l) (by omega) (by omega), ← hi (f (X0 n om + 7) + 48 + l) (by omega) (by omega),
+        ← hoff _ (by omega)]
+      exact g' l l1 lj
   · intro hp
     obtain ⟨a, b', c, d⟩ := h4 hp
-    refine ⟨a, b', sane_congr hi ht0 c, fun l l1 l15 => ?_⟩
-    rw [← hi _ (by omega), ← hcnt, ← hcnt]; exact d l l1 l15
+    refine ⟨a, b', sane_congr hi ht0 ht2 c, fun l l1 l15 => ?_⟩
+    rw [← hi (f (X0 n om + 7) + 48 + l) (by omega) (by omega), ← hcnt l _ (le_refl _), ← hcnt l _ (by omega)]
+    exact d l l1 l15
 
 theorem ite_imp {c : Prop} [Decidable c] {a b a' b' : Prop} (h1 : a → a') (h2 : b → b') :
     (if c then a else b) → (if c then a' else b') := by
   split_ifs <;> assumption
 
-theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 ≤ f cHLIT) {md : Int}
+theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch n om f g) (hhl : 0 ≤ f cHLIT) {md : Int}
     (hf : facts n om md f) : facts n om md g := by
   have hb := fun h => buildInv_congr (n := n) (om := om) hw hhl h
-  obtain ⟨hi, hc⟩ := hw
-  have s0 := sane_congr (n := n) (om := om) hi (t := 0) (le_refl _)
-  have s1 := sane_congr (n := n) (om := om) hi (t := 1) (by norm_num)
-  have s2 := sane_congr (n := n) (om := om) hi (t := 2) (by norm_num)
+  obtain ⟨hi, _, hc⟩ := hw
+  have s0 := sane_congr (n := n) (om := om) hi (t := 0) (le_refl _) (by norm_num)
+  have s1 := sane_congr (n := n) (om := om) hi (t := 1) (by norm_num) (by norm_num)
+  have s2 := sane_congr (n := n) (om := om) hi (t := 2) (by norm_num) (by norm_num)
   have e3 : f cM = g cM := hc cM (by decide)
   have e5 : f cPEND = g cPEND := hc cPEND (by decide)
   have e6 : f cDIST = g cDIST := hc cDIST (by decide)
@@ -565,13 +581,15 @@ theorem facts_congr {n om : Nat} {f g : Int → Int} (hw : Watch f g) (hhl : 0 �
 
 /-! ## A READ request keeps the per-mode invariant -/
 
-theorem watch_reqF (f : Int → Int) (k rt : Int) : Watch f (reqF f k rt) := by
-  refine ⟨fun i hi => (reqF_eq f k rt i (by omega)).symm, fun c hc => ?_⟩
+theorem watch_reqF {n om : Nat} (f : Int → Int) (k rt : Int) : Watch n om f (reqF f k rt) := by
+  refine ⟨fun i hi _ => (reqF_eq f k rt i (by omega)).symm,
+    fun j _ _ => (reqF_eq f k rt _ (by unfold X0; omega)).symm, fun c hc => ?_⟩
   simp only [watched, List.mem_cons, List.mem_nil_iff, or_false] at hc
   rw [reqF_eq f k rt c (by omega)]
 
-theorem watch_upd (f : Int → Int) {i : Int} (hi : i < 2080) (hw : i ∉ watched) (v : Int) : Watch f (Function.update f i v) := by
-  refine ⟨fun j hj => (upd_eq f v (by omega)).symm, fun c hc => ?_⟩
+theorem watch_upd {n om : Nat} (f : Int → Int) {i : Int} (hi : i < 2080) (hw : i ∉ watched) (v : Int) :
+    Watch n om f (Function.update f i v) := by
+  refine ⟨fun j hj _ => (upd_eq f v (by omega)).symm, fun j _ _ => (upd_eq f v (by unfold X0; omega)).symm, fun c hc => ?_⟩
   rw [upd_eq f v (by rintro rfl; exact hw hc)]
 
 def SymsOK (n om : Nat) (f : Int → Int) : Prop :=
@@ -619,7 +637,7 @@ theorem InvM.req {n om : Nat} {f : Int → Int} (h : SymsOK n om f) (hhl : 0 ≤
 mode's READ/DECODE relation reads (0, 2068–2071, and X's cells are ≥ 2080). -/
 theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f cHLIT) {i : Int} (hi : i < 2080)
     (hw : i ∉ watched) (h0 : i ≠ 0) (h1 : i ≠ 1) (h2 : i ≠ 2) (hr : i < 2068 ∨ 2071 < i) (v : Int) : InvM n om (Function.update f i v) := by
-  have W := watch_upd f hi hw v
+  have W : Watch n om f (Function.update f i v) := watch_upd f hi hw v
   have u : ∀ c : Int, c ≠ i → Function.update f i v c = f c := fun c hc => upd_eq f v hc
   have hm : Function.update f i v cMODE = f cMODE := u _ (by unfold cMODE; omega)
   exact {
@@ -638,7 +656,7 @@ theorem InvM.upd {n om : Nat} {f : Int → Int} (h : InvM n om f) (hhl : 0 ≤ f
     have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
     rw [u (X0 n om + 3) (by omega), u (X0 n om) (by omega), u (X0 n om + 2) (by omega)]
     refine ⟨facts_congr W hhl a, b, c, d, ?_⟩
-    rcases d with ⟨d1, _⟩ | ⟨d1, _⟩ | ⟨d1, _⟩ <;> rw [d1] at e ⊢ <;> exact sane_congr W.1 (by norm_num) e
+    rcases d with ⟨d1, _⟩ | ⟨d1, _⟩ | ⟨d1, _⟩ <;> rw [d1] at e ⊢ <;> exact sane_congr W.1 (by norm_num) (by norm_num) e
   sym := fun hm' => by
     rw [hm] at hm'
     have hX : (2080 : Int) ≤ X0 n om := by unfold X0; omega
@@ -792,8 +810,9 @@ theorem InvG.cursor {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h
     rw [u _ (by unfold cHLIT; omega) (by unfold cHLIT; omega), u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega),
       u _ (by unfold cHCLEN; omega) (by unfold cHCLEN; omega)]; exact h.hdr_rng }
 
-theorem Watch.trans {f g h : Int → Int} (a : Watch f g) (b : Watch g h) : Watch f h :=
-  ⟨fun i hi => (a.1 i hi).trans (b.1 i hi), fun c hc => (a.2 c hc).trans (b.2 c hc)⟩
+theorem Watch.trans {n om : Nat} {f g h : Int → Int} (a : Watch n om f g) (b : Watch n om g h) : Watch n om f h :=
+  ⟨fun i hi hX => (a.1 i hi hX).trans (b.1 i hi hX), fun j h1 h2 => (a.2.1 j h1 h2).trans (b.2.1 j h1 h2),
+    fun c hc => (a.2.2 c hc).trans (b.2.2 c hc)⟩
 
 /-! ## LOC < W on the invariant (so a step that lowers the W-part may raise LOC to anything it reaches) -/
 
@@ -887,7 +906,7 @@ theorem safeI_read {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
     have hg1 : InvG b om lit f1 :=
       (((hi.1.cursor rfl rfl hlt).upd (by unfold scratch; omega) _).upd (by unfold scratch; omega) _).upd
         (by unfold scratch; omega) _
-    have W1 : Watch f f1 :=
+    have W1 : Watch b.size om f f1 :=
       ((((watch_upd f (by norm_num) (by decide) _).trans (watch_upd _ (by norm_num) (by decide) _)).trans
         (watch_upd _ (by norm_num) (by decide) _)).trans (watch_upd _ (by norm_num) (by decide) _)).trans
         (watch_upd _ (by norm_num) (by decide) _)
@@ -940,7 +959,7 @@ theorem safeI_read {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
           List.mem_cons, List.mem_nil_iff, or_false] at hrt ⊢; omega
       have hg' : InvG b om lit (Function.update f1 0 (f cRET)) :=
         hg1.mode hrt' hrt0 (fun h => absurd h hrtR) (by rw [eM]; decide)
-      have W' : Watch f (Function.update f1 0 (f cRET)) := W1.trans (watch_upd _ (by norm_num) (by decide) _)
+      have W' : Watch b.size om f (Function.update f1 0 (f cRET)) := W1.trans (watch_upd _ (by norm_num) (by decide) _)
       have eM' : Function.update f1 0 (f cRET) cMODE = f cRET := by simp [cMODE]
       have u0 : ∀ c : Int, c ≠ 0 → Function.update f1 0 (f cRET) c = f1 c := fun c hc => upd_eq _ _ hc
       have hnotin : ∀ m ∈ [mDECODE, mSYMD, mDSTD, mLSYM, mSCOPY, mREAD], f cRET ≠ m := by
