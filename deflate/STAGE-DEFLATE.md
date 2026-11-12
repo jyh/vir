@@ -315,7 +315,8 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - `Watch` WEAKENED to what `facts` reads (cursor cells, cells 2080 … X, BUILD's parameters at X + 5 … X + 7), so the
       decode cursor X … X + 4 may be written (df-148/149; buildInv's L and D disjuncts gained `0 ≤ HDIST`). Decode requests:
       `dreqF`, `World.dreq`, `InvG.xc`, `InvG.dreq`, `InvM.dreq`, `dreq_TBO`. **SYM, LENX safe (df-151, df-155).
-      14 of 28 DONE:** HDR, HDRB, SLEN, DHDR, READ, DH2, DH3, SHDR, HDRD, SNLEN, SCOPY, TABLE, SYM, LENX.
+      14 of 28 DONE:** HDR, HDRB, SLEN, DHDR, READ, DH2, DH3, SHDR, HDRD, SNLEN, SCOPY, TABLE, SYM, LENX; then DH4 (df-157,
+      HCLEN = acc + 4 ≤ 19, the HLIT/HDIST check into CLREAD or REJECT): **15 of 28.**
       **OWED (14):** FIXLENS, BUILD (the fold invariants), LENS, DECODE (sane table ⇒ indices in range), SYMD, DSTD, DSTX,
       COPY, DH4, CLREAD, CLPUT, LSYM, LREP, REP — then `StepSafe` by cases on the mode, then `safety_of_stepSafe` closes
       SafetyStmt. The audit file is regenerated from VIRDeflate.lean's imports: the

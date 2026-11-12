@@ -1810,4 +1810,73 @@ theorem safeI_lenx {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
   have hTf : TBL f = 0 := by unfold TBL; rw [if_neg hnt]
   unfold Φ mW; rw [t1, t2, t3, t4, hB, hO, hLf, hTf]; omega
 
+/-! ## DH4 -/
+
+theorem safeI_dh4 {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mDH4) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mDH4, dh4N) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mDH4, dh4N) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hacc := hi.2.ret (by rw [hm]; decide)
+  rw [hm] at hacc; simp only [kcap, mDH4, mDH2, mDH3, mHDRB, mHDRD, mSLEN, mSNLEN] at hacc; norm_num at hacc
+  have hr := hi.1.hdr_rng
+  have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2
+    (dh4_step hw hL (f cACC) (f cHLIT) (f cHDIST) rfl rfl rfl)
+  have hg9 := hi.1.hdr (i := 9) (by norm_num) (f cACC + 4) (by simp [cHLIT, cHDIST, cHCLEN] at hr ⊢; omega)
+  have hnt9 : Function.update f 9 (f cACC + 4) cMODE ≠ mTABLE := by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact hnt
+  have hs9 : SymsOK b.size om (Function.update f 9 (f cACC + 4)) := SymsOK.upd hi.2.syms (by norm_num) _
+  by_cases hck : 286 < f cHLIT ∨ 30 < f cHDIST
+  · rw [if_pos hck] at hS
+    exact ⟨_, _, hS, ((hw.store (i := 9) (by norm_num) (by omega)).store (i := 14) (by norm_num) (by omega)).store (i := 0)
+      (by norm_num) (by omega),
+      ⟨(hg9.upd (by unfold scratch; omega) _).mode (by decide) (by decide) (fun h => by simp [mREJECT, mREAD] at h)
+        (by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact hnt9),
+       InvM.term (SymsOK.upd hs9 (by norm_num) _) (Or.inr rfl)⟩, Or.inr (Or.inr (by simp [cMODE, mREJECT]))⟩
+  · rw [if_neg hck] at hS
+    push Not at hck
+    set g := Function.update (Function.update (Function.update (Function.update (Function.update f 9 (f cACC + 4)) 10 0)
+      2073 1) 2072 1) 0 23 with hg
+    have u : ∀ c : Int, c ≠ 9 → c ≠ 10 → c ≠ 2073 → c ≠ 2072 → c ≠ 0 → g c = f c := by
+      intro c a1 a2 a3 a4 a5; rw [hg, upd_eq _ _ a5, upd_eq _ _ a4, upd_eq _ _ a3, upd_eq _ _ a2, upd_eq _ _ a1]
+    have hgM : g cMODE = 23 := by simp [hg, cMODE]
+    refine ⟨_, g, hS, ((((hw.store (i := 9) (by norm_num) (by omega)).store (i := 10) (by norm_num) (by omega)).store
+      (i := 2073) (by norm_num) (by omega)).store (i := 2072) (by norm_num) (by omega)).store (i := 0) (by norm_num) (by omega),
+      ⟨(((hg9.upd (by unfold scratch; omega) _).upd (by unfold scratch; omega) _).upd (by unfold scratch; omega) _).mode
+        (by decide) (by decide) (fun h => by simp [mREAD] at h)
+        (by rw [upd_eq _ _ (by unfold cMODE; omega), upd_eq _ _ (by unfold cMODE; omega), upd_eq _ _ (by unfold cMODE; omega)]
+            exact hnt9),
+       InvM.mode (SymsOK.upd (SymsOK.upd (SymsOK.upd hs9 (by norm_num) _) (by norm_num) _) (by norm_num) _) (by decide)
+         (by decide) ?_⟩, Or.inl ?_⟩
+    · show facts b.size om 23 g
+      simp only [facts, show (23 : Int) = mCLREAD by rfl, show ¬ (mCLREAD = mSNLEN) by decide,
+        show ¬ (mCLREAD = mSCOPY) by decide, show ¬ (mCLREAD = mFIXLENS) by decide, show ¬ (mCLREAD = mBUILD) by decide,
+        if_false, if_true]
+      have e10 : g cFILL = 0 := by simp [hg, cFILL]
+      have e9 : g cHCLEN = f cACC + 4 := by simp [hg, cHCLEN]
+      rw [e10, e9, u cHLIT (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+        (by unfold cHLIT; omega), u cHDIST (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+        (by unfold cHDIST; omega) (by unfold cHDIST; omega)]
+      omega
+    · have t := TBO_eq (f := f) (f' := g) hnt (by rw [hgM]; decide) (fun c hc => u c (by omega) (by omega) (by omega)
+        (by omega) (by omega))
+      refine Φ_lt_of t.1 t.2.1 t.2.2 ?_
+      have e10 : g cFILL = 0 := by simp [hg, cFILL]
+      have e9 : g cHCLEN = f cACC + 4 := by simp [hg, cHCLEN]
+      have e7 : g cHLIT = f cHLIT := u _ (by unfold cHLIT; omega) (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+        (by unfold cHLIT; omega) (by unfold cHLIT; omega)
+      have e8 : g cHDIST = f cHDIST := u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+        (by unfold cHDIST; omega) (by unfold cHDIST; omega)
+      have hLg : LOC g = 1 := by
+        unfold LOC; rw [hgM, e10, e9]
+        simp [mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD, mHDRD,
+          mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, locCL]
+        omega
+      have hLf : LOC f = 1 + (20 + bfull 19 + (1 + chainLD (f cHLIT) (f cHDIST))) := by
+        unfold LOC; rw [hm]; simp [mDH4, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY,
+          mSNLEN, mDSTX, mDSTD, mHDRD, mFIXLENS, mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT]
+      rw [hLg, hLf]; unfold chainLD bfull; omega
+
 end VIRDeflate.Step
