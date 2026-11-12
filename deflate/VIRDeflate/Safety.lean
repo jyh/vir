@@ -677,4 +677,99 @@ theorem safeI_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int
     (by simp [facts, mSNLEN, cPEND]; exact hacc.1) (by norm_num)
     (by simp [kcap, mSNLEN, mSLEN, mHDRB, mHDRD])⟩, d⟩
 
+/-! ## Helpers for READ: the mode cell, the cursor's carry, a terminal mode, the input bytes -/
+
+theorem InvG.mode {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) {v : Int}
+    (hv : v ∈ validModes) (hv0 : v ≠ mTABLE) (hvr : v = mREAD → f cRET ∈ readRets) (hnt : f cMODE ≠ mTABLE) :
+    InvG b om lit (Function.update f 0 v) := by
+  have u : ∀ c : Int, c ≠ 0 → Function.update f 0 v c = f c := fun c hc => upd_eq f v hc
+  have hm : Function.update f 0 v cMODE = v := by simp [cMODE]
+  exact {
+  n_eq := by rw [u _ (by unfold cN; omega)]; exact h.n_eq
+  om_eq := by rw [u _ (by unfold cOUTMAX; omega)]; exact h.om_eq
+  x_eq := by rw [u _ (by unfold cX; omega)]; exact h.x_eq
+  lit_eq := by rw [u _ (by unfold cLIT; omega)]; exact h.lit_eq
+  input := fun i h1 h2 => by rw [u _ (by omega)]; exact h.input i h1 h2
+  ro := fun i h1 h2 => by rw [u _ (by unfold X0 at h1; omega)]; exact h.ro i h1 h2
+  lens := fun j h1 h2 => by rw [u _ (by omega)]; exact h.lens j h1 h2
+  tb_rng := fun hm' => by rw [hm] at hm'; exact absurd hm' hv0
+  bits := fun c h1 h2 _ => by rw [u _ (by unfold BT; omega)]; exact h.bits c h1 h2 (Or.inl hnt)
+  by_rng := by rw [u _ (by unfold cBY; omega)]; exact h.by_rng
+  bi_rng := by rw [u _ (by unfold cBI; omega)]; exact h.bi_rng
+  by_end := by rw [u _ (by unfold cBY; omega), u _ (by unfold cBI; omega)]; exact h.by_end
+  m_rng := by rw [u _ (by unfold cM; omega)]; exact h.m_rng
+  mode_ok := by rw [hm]; exact hv
+  read_rt := fun hm' => by rw [hm] at hm'; rw [u _ (by unfold cRET; omega)]; exact hvr hm'
+  hdr_rng := by
+    rw [u _ (by unfold cHLIT; omega), u _ (by unfold cHDIST; omega), u _ (by unfold cHCLEN; omega)]; exact h.hdr_rng }
+
+/-- Into DONE or REJECT: every per-mode conjunct is vacuous or untouched. -/
+theorem InvM.term {n om : Nat} {f : Int → Int} (h : SymsOK n om f) {v : Int} (hv : v = mDONE ∨ v = mREJECT) :
+    InvM n om (Function.update f 0 v) := by
+  have hm : Function.update f 0 v cMODE = v := by simp [cMODE]
+  rcases hv with rfl | rfl <;> exact {
+    syms := fun t q h1 h2 h3 h4 => by rw [upd_eq f _ (by unfold tbase LB0; omega)]; exact h t q h1 h2 h3 h4
+    cur := by rw [hm]; simp [facts, mDONE, mREJECT, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP,
+      mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY]
+    read := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mREAD] at hm'
+    ret := fun hm' => by
+      rw [hm] at hm'; simp [mDONE, mREJECT, readRets, mHDRB, mHDRD, mSLEN, mSNLEN, mDH2, mDH3, mDH4, mCLPUT, mLENX, mDSTX,
+        mLREP] at hm'
+    dec := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mDECODE] at hm'
+    sym := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSYMD, mDSTD, mLSYM] at hm'
+    scopy := fun hm' => by rw [hm] at hm'; simp [mDONE, mREJECT, mSCOPY] at hm' }
+
+theorem InvM.syms_ok {n om : Nat} {f : Int → Int} (h : InvM n om f) : SymsOK n om f := h.syms
+
+/-- An input byte is the byte string's, and below 256. -/
+theorem InvG.byte {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) (hb : ∀ x ∈ b, x < 256)
+    (j : Nat) (hj : j < b.size) : f (IN + j) = (b[j] : Int) ∧ b[j] < 256 := by
+  refine ⟨?_, hb _ (Array.getElem_mem hj)⟩
+  rw [h.input (IN + j) (by unfold IN; omega) (by unfold IN; omega)]
+  unfold initCell IN
+  dsimp only
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_pos (by omega)]
+  simp [Array.getD, hj]
+
+/-- READ's cursor advance keeps InvG: (bx, bi) → tblNext bx bi, with bx < n. -/
+theorem InvG.cursor {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h : InvG b om lit f) {bx bi : Int}
+    (hby : f cBY = bx) (hbi : f cBI = bi) (hbx : bx < b.size) :
+    InvG b om lit (Function.update (Function.update f 1 (tblNext bx bi).1) 2 (tblNext bx bi).2) := by
+  have u : ∀ c : Int, c ≠ 1 → c ≠ 2 → Function.update (Function.update f 1 (tblNext bx bi).1) 2 (tblNext bx bi).2 c = f c :=
+    fun c h1 h2 => by rw [upd_eq _ _ h2, upd_eq _ _ h1]
+  have e1 : Function.update (Function.update f 1 (tblNext bx bi).1) 2 (tblNext bx bi).2 cBY = (tblNext bx bi).1 := by
+    simp [cBY]
+  have e2 : Function.update (Function.update f 1 (tblNext bx bi).1) 2 (tblNext bx bi).2 cBI = (tblNext bx bi).2 := by
+    simp [cBI]
+  have hbr := h.by_rng
+  have hir := h.bi_rng
+  rw [hby] at hbr; rw [hbi] at hir
+  exact {
+  n_eq := by rw [u _ (by unfold cN; omega) (by unfold cN; omega)]; exact h.n_eq
+  om_eq := by rw [u _ (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega)]; exact h.om_eq
+  x_eq := by rw [u _ (by unfold cX; omega) (by unfold cX; omega)]; exact h.x_eq
+  lit_eq := by rw [u _ (by unfold cLIT; omega) (by unfold cLIT; omega)]; exact h.lit_eq
+  input := fun i h1 h2 => by rw [u _ (by omega) (by omega)]; exact h.input i h1 h2
+  ro := fun i h1 h2 => by rw [u _ (by unfold X0 at h1; omega) (by unfold X0 at h1; omega)]; exact h.ro i h1 h2
+  lens := fun j h1 h2 => by rw [u _ (by omega) (by omega)]; exact h.lens j h1 h2
+  tb_rng := fun hm => by
+    rw [u _ (by unfold cMODE; omega) (by unfold cMODE; omega)] at hm
+    rw [u _ (by unfold cTB; omega) (by unfold cTB; omega), u _ (by unfold cTI; omega) (by unfold cTI; omega)]
+    exact h.tb_rng hm
+  bits := fun c h1 h2 h3 => by
+    rw [u _ (by unfold cMODE; omega) (by unfold cMODE; omega), u _ (by unfold cTB; omega) (by unfold cTB; omega),
+      u _ (by unfold cTI; omega) (by unfold cTI; omega)] at h3
+    rw [u _ (by unfold BT; omega) (by unfold BT; omega)]; exact h.bits c h1 h2 h3
+  by_rng := by rw [e1]; unfold tblNext; split_ifs <;> simp <;> omega
+  bi_rng := by rw [e2]; unfold tblNext; split_ifs <;> simp <;> omega
+  by_end := by rw [e1, e2]; unfold tblNext; split_ifs <;> simp <;> omega
+  m_rng := by rw [u _ (by unfold cM; omega) (by unfold cM; omega)]; exact h.m_rng
+  mode_ok := by rw [u _ (by unfold cMODE; omega) (by unfold cMODE; omega)]; exact h.mode_ok
+  read_rt := fun hm => by
+    rw [u _ (by unfold cMODE; omega) (by unfold cMODE; omega)] at hm
+    rw [u _ (by unfold cRET; omega) (by unfold cRET; omega)]; exact h.read_rt hm
+  hdr_rng := by
+    rw [u _ (by unfold cHLIT; omega) (by unfold cHLIT; omega), u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega),
+      u _ (by unfold cHCLEN; omega) (by unfold cHCLEN; omega)]; exact h.hdr_rng }
+
 end VIRDeflate.Step
