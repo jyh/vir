@@ -470,6 +470,24 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
   (row 288) is the oracle.
 - The X5 run of these definitions needs a compiled driver. That is row 288 and is not built yet.
 
+## D5 and D6, SCORED 2026-11-12 by the 67th head (X3 (a) both halves green: `safety` df-audit-028, `correct` df-audit-031)
+- **D6 HOLDS.** Its rule, written below before correctness existed: the population runs to the first green audit of X3 (a)'s
+  correctness theorem, df-audit-031. **404 `saltbuild EXIT=` lines** in `logs/*.log` whose mtime is at or before df-audit-031's
+  (one line per log, none with two): df-001…df-310 (310), df-mutant-001…050 (50), df-audit-001…031 (31), df-probe-001…009 (9),
+  df-audit-control-001…004 (4). Predicted > 109. After it, and outside the population: df-audit-control-005, df-mutant-051/052.
+  The builds alone (df-NNN, 310) are > 109 too, so the verdict does not turn on what counts as a build.
+- **D5 FALSIFIED.** `python3 harness/count.py --arm deflate deflate` (the arm and its selftest ARM58 written red-first this
+  shift; mutant "comments counted" KILLED), output `out/counts-d5.tsv` + `.cmd`: the canonical-code group (Huffman.lean 1,363 +
+  Kraft.lean 2,380 = **3,743** tokens) is **20 ‰ (2.0 %)** of the arm's **184,961**. Predicted ≥ 25 %. The groups are the
+  ones DECLARATIONS-DEFLATE.md fixed before the first file. Five files that the declaration did not list (Dispatch, Dynamic, Fit, Measure,
+  Statements) are counted in the denominator and named by the arm. With only the nine declared files the share is 3,743 / 159,492
+  = 2.3 %, so the verdict does not turn on them. Direction: the canonical code was a small part; Safety (62,038), Correct +
+  Dynamic (67,657) and Step (36,572) are 90 % of the arm. LIMIT: ARM58's fixture produces `held 1` only; the `held 0` shape is seen
+  in this reading alone.
+- **Owed, not scored here:** D3 and D7 are read from theorem statements (`Measure.lean`'s Φ carries OUTMAX − m, D3's output
+  side; `SafetyStmt` carries `∀ x ∈ b, x < 256`, which a scorer must rule on: the byte TYPE, which b : Array Nat models, or a
+  premise on the bytes, which D7 forbids). D1 and D2 have their own rows (X5's run, STATUS 288; `git log` over l1/ l2/).
+
 ## D6 (builds), a reading, not a score
 166 `saltbuild EXIT=` lines in `logs/df-*.log` so far (one per log; df-001…094, df-audit-001…022, df-audit-control-001, df-mutant-001…045, df-probe-001…004).
 D6's population runs to the first green audit of X3 (a)'s correctness theorem, which does not exist yet. The prediction

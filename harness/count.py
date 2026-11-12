@@ -1950,6 +1950,33 @@ def leanl4(d):
     return rows
 
 
+# amend-23 D5 on the DEFLATE arm (STATUS-vir 293 (c); selftest ARM58). DIR is deflate/ (it holds VIRDeflate/). FILE-LEVEL C5 tokens, as
+# L4's syntax-copy row: comments stripped, whitespace-split. The canonical-code group is the one deflate/DECLARATIONS-DEFLATE.md fixed
+# before the arm's first file (Huffman.lean + Kraft.lean, "any later lemma about canonical codes goes in one of these two files"); the
+# denominator is EVERY .lean the arm has, so a file the declaration did not list is counted there and NAMED in D5.undeclared (BESIDE).
+D5_CANON = ('Huffman.lean', 'Kraft.lean')
+D5_DECLARED = D5_CANON + ('Bits.lean', 'Spec.lean', 'Step.lean', 'Typing.lean', 'Safety.lean', 'Correct.lean', 'Run.lean')
+
+
+def deflate(d):
+    src = os.path.join(os.path.abspath(d), 'VIRDeflate')
+    files = sorted(f for f in os.listdir(src) if f.endswith('.lean')) if os.path.isdir(src) else []
+    if not all(c in files for c in D5_CANON):
+        return [('D5.src', 0, 'EMPTY:canonical group missing in ' + src)]
+    tok = {}
+    for f in files:
+        fp = os.path.join(src, f)
+        tok[f] = len(l4_strip(read(fp)).split())  # D5-STRIP
+    c = sum(tok[f] for f in D5_CANON)
+    t = sum(tok.values())
+    und = [f for f in files if f not in D5_DECLARED]
+    return [('D5.canonical.C5tok', c, 'MEASURED:' + '+'.join('%s %d' % (f, tok[f]) for f in D5_CANON)),
+            ('D5.total.C5tok', t, 'MEASURED:%d files' % len(files)),
+            ('D5.share.permille', (1000 * c) // t if t else 0, 'MEASURED:floor(1000 x canonical / total)'),
+            ('D5.held', 1 if 4 * c >= t else 0, 'MEASURED:canonical >= 25%% of total (%d vs %d)' % (4 * c, t)),
+            ('D5.undeclared', len(und), 'BESIDE:' + (','.join(und) if und else 'none'))] + \
+           [('D5.file.' + f, tok[f], 'BESIDE') for f in files]
+
 # amend-21 Q1-Q8 on the MetaPRL arm (STATUS-vir 209; selftest ARM57). DIR is a clone of the arm's tree, --base its L3-closed sha, --ext
 # the sha scored. A row's C5 is its IN-LAYER closure, the reading of metaprll3 (ARM50): the posted roots, every virl4_* rule a closure
 # text names as a whole identifier, every virl4_* `{| reduce |}` rule when a text invokes reduceC. Roots are posted by the arm, as
@@ -2113,7 +2140,7 @@ def metaprll4(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2139,6 +2166,8 @@ def main():
         rows = leanl3(a.dir)
     elif a.arm == 'l4':
         rows = leanl4(a.dir)
+    elif a.arm == 'deflate':
+        rows = deflate(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
     elif a.arm == 'metaprll2':

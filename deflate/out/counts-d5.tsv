@@ -1,0 +1,19 @@
+deflate	D5.canonical.C5tok	3743	MEASURED:Huffman.lean 1363+Kraft.lean 2380
+deflate	D5.total.C5tok	184961	MEASURED:14 files
+deflate	D5.share.permille	20	MEASURED:floor(1000 x canonical / total)
+deflate	D5.held	0	MEASURED:canonical >= 25% of total (14972 vs 184961)
+deflate	D5.undeclared	5	BESIDE:Dispatch.lean,Dynamic.lean,Fit.lean,Measure.lean,Statements.lean
+deflate	D5.file.Bits.lean	742	BESIDE
+deflate	D5.file.Correct.lean	50172	BESIDE
+deflate	D5.file.Dispatch.lean	1945	BESIDE
+deflate	D5.file.Dynamic.lean	17485	BESIDE
+deflate	D5.file.Fit.lean	4709	BESIDE
+deflate	D5.file.Huffman.lean	1363	BESIDE
+deflate	D5.file.Kraft.lean	2380	BESIDE
+deflate	D5.file.Measure.lean	549	BESIDE
+deflate	D5.file.Run.lean	719	BESIDE
+deflate	D5.file.Safety.lean	62038	BESIDE
+deflate	D5.file.Spec.lean	4538	BESIDE
+deflate	D5.file.Statements.lean	781	BESIDE
+deflate	D5.file.Step.lean	36572	BESIDE
+deflate	D5.file.Typing.lean	968	BESIDE
