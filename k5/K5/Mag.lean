@@ -22,6 +22,9 @@ structure Mag (n om : Nat) (f : Int → Int) : Prop where
   b1 : f cMODE = mBUILD → f cPHASE = 2 → 0 ≤ f cCODE ∧ f cCODE + 636 ≤ 636 * 2 ^ (f cINDEX).toNat
   b2 : f cMODE = mBUILD → f cPHASE = 3 → 0 ≤ f cLEFT ∧ f cLEFT ≤ 2 ^ (f cINDEX).toNat ∧
     0 ≤ f cREST ∧ f cREST ≤ 318 * f cINDEX ∧ 0 ≤ f cTOTAL ∧ f cTOTAL ≤ 318 * f cINDEX
+  /-- Addendum 5's F1: every table's `first[l]` cell. -/
+  f1 : ∀ t l : Int, 0 ≤ t → t ≤ 2 → 1 ≤ l → l ≤ 15 →
+    0 ≤ f (tbase n om t + 16 + l) ∧ f (tbase n om t + 16 + l) ≤ 636 * 2 ^ 16
 
 theorem em_of {f : Int → Int} {m : Int} (hm : f cMODE = m) (hr : m ≠ mREAD) : em f = m := by
   simp [em, hm, hr]
@@ -31,8 +34,11 @@ theorem Mag_init (b : Array Nat) (om : Nat) (lit : Bool) : Mag b.size om (initCe
   have e0 : initCell b om lit cMODE = 0 :=
     initCell_zero b om lit _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
   have he : em (initCell b om lit) = 0 := by simp [em, e0, mREAD]
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩ <;> intros <;>
-    simp_all [mSNLEN, mLENX, mDSTD, mDSTX, mLREP, mDECODE, mBUILD]
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  all_goals try (intros; simp_all [mSNLEN, mLENX, mDSTD, mDSTX, mLREP, mDECODE, mBUILD]; done)
+  intro t l h0 h2 h1 h15
+  rw [initCell_tail b om lit _ (by unfold tbase LB0; omega) (by unfold tbase LB0 X0; omega)]
+  norm_num
 
 variable {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
 
@@ -78,5 +84,45 @@ theorem lrep_inR (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : 
   have hh := hi.1.hdr_rng
   apply lrep_step_inR hw (by unfold L0; omega) _ _ _ _ _ rfl rfl rfl rfl rfl
   rclose
+
+theorem decode_inR (hb : ∀ x ∈ b, x < 256) (hn32 : b.size < 2 ^ 32) (hom32 : om < 2 ^ 32)
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mDECODE) :
+    SrcInRange (closeAt p decodeT, σ) := by
+  have hLn : 2080 + b.size ≤ L0 b.size om := by unfold L0; omega
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hn := hi.1.n_eq
+  have hbr := hi.1.by_rng
+  have hir := hi.1.bi_rng
+  have hx := hi.1.x_eq
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  obtain ⟨_, hl1, hl15, hpair, hsane⟩ := hi.2.dec hm
+  have ht02 : 0 ≤ f (X0 b.size om + 2) ∧ f (X0 b.size om + 2) ≤ 2 := by
+    rcases hpair with ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ <;> rw [h] <;> norm_num
+  have hcv := hg.c1 hm
+  have hp15 : (2 : Int) ^ (f (X0 b.size om)).toNat ≤ 32768 := by
+    calc (2 : Int) ^ (f (X0 b.size om)).toNat ≤ 2 ^ 15 := pow_le_pow_right₀ (by norm_num) (by omega)
+      _ = 32768 := by norm_num
+  by_cases hlt : f cBY < b.size
+  · obtain ⟨hv, hv8⟩ := hi.1.byte hb (f cBY).toNat (by omega)
+    set l := f (X0 b.size om) with hld
+    set t := f (X0 b.size om + 2) with htd
+    set tb : Int := 2080 + (b.size : Int) + om + 337 + 352 * t with htbd
+    have hs := hsane l hl1 hl15
+    have htb : tbase b.size om t = tb := by rw [htbd]; unfold tbase LB0; ring
+    rw [htb] at hs
+    have hF := hg.f1 t l ht02.1 ht02.2 hl1 hl15
+    rw [htb] at hF
+    have hbit := hi.1.bits (8 * (b[(f cBY).toNat]'(by omega) : Int) + ((f cBI).toNat : Int)) (by omega) (by omega)
+      (Or.inl hnt)
+    have hX0 : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+    apply decode_step_inR hw (f cBY).toNat (f cBI).toNat b.size (b[(f cBY).toNat]'(by omega)) om (X0 b.size om) l
+      (f (X0 b.size om + 1)) t (f (X0 b.size om + 3)) _ tb (f (tb + 16 + l)) (f (tb + l)) (f (tb + 32 + l)) _ hLn
+      (by omega) (by omega) hn hi.1.om_eq hx (by omega) (by omega) hv hv8 rfl (by omega) (by rw [hL0]; omega) rfl rfl rfl rfl
+      htbd.symm (by omega) (by rw [hL0]; omega) hl1 hl15 rfl rfl rfl (fun hh => ⟨by omega, by rw [hL0]; omega⟩) rfl
+    all_goals (try rw [hX0])
+    all_goals (have hcv' := hcv; rw [hX0] at hcv')
+    all_goals (rcases hbit with hb0 | hb1)
+    rclose
+  · exact decode_trunc_inR hw (by unfold L0; omega) _ _ _ _ _ rfl rfl hn hi.1.om_eq hx (by omega)
 
 end K5
