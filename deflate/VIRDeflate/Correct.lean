@@ -1101,7 +1101,8 @@ theorem stored_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
 def TblRel (n om : Nat) (f : Int → Int) (t : Int) (lens : Array Nat) : Prop :=
   ∀ l : Nat, 1 ≤ l → l ≤ 15 →
     f (tbase n om t + l) = blCount lens l ∧ f (tbase n om t + 16 + l) = (nextCodes lens).getD l 0 ∧
-    ∀ j : Nat, j < blCount lens l → f (tbase n om t + 64 + f (tbase n om t + 32 + l) + j) = (symsOf lens l).getD j 0
+    (∀ j : Nat, j < blCount lens l → f (tbase n om t + 64 + f (tbase n om t + 32 + l) + j) = (symsOf lens l).getD j 0) ∧
+    0 ≤ f (tbase n om t + 32 + l) ∧ f (tbase n om t + 32 + l) + blCount lens l ≤ 288
 
 /-- The cells a DECODE step writes on a hit or an advance. -/
 def decSet (n om : Nat) (c : Int) : Prop :=
@@ -1169,7 +1170,7 @@ theorem decode_one {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} {σ : Store
     have htbase : tbase b.size om t = tb := by rw [htbd]; unfold tbase LB0; ring
     have hs := hsane l (by omega) (by omega)
     rw [htbase] at hs
-    obtain ⟨hTc, hTf, hTs⟩ := hT l hl1' hl15'
+    obtain ⟨hTc, hTf, hTs, -, -⟩ := hT l hl1' hl15'
     rw [htbase] at hTc hTf hTs
     set bit := f (BT + (8 * (vb : Int) + ((f cBI).toNat : Int))) with hbitd
     have hbitx : bit = x := htb.trans hxv.symm
@@ -1267,7 +1268,7 @@ theorem decode_one {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} {σ : Store
 
 /-- `TblRel` survives any change outside the three tables. -/
 theorem TblRel.keep {n om : Nat} {f f' : Int → Int} {t : Int} {lens : Array Nat} {S : Int → Prop}
-    (hT : TblRel n om f t lens) (hs : sane n om f t) (ht : 0 ≤ t ∧ t ≤ 2) (hk : Keeps (L0 n om) f f' S)
+    (hT : TblRel n om f t lens) (ht : 0 ≤ t ∧ t ≤ 2) (hk : Keeps (L0 n om) f f' S)
     (hS : ∀ c, S c → c < tbase n om 0 ∨ X0 n om ≤ c) : TblRel n om f' t lens := by
   have tb0 : tbase n om 0 ≤ tbase n om t := by unfold tbase; omega
   have tb2 : tbase n om t + 352 ≤ X0 n om := by unfold tbase LB0 X0; omega
@@ -1275,11 +1276,11 @@ theorem TblRel.keep {n om : Nat} {f f' : Int → Int} {t : Int} {lens : Array Na
   have k : ∀ c, tbase n om t ≤ c → c < tbase n om t + 352 → f' c = f c := fun c h1 h2 =>
     hk c (by unfold tbase LB0 at *; omega) (by omega) (fun h => by have := hS c h; omega)
   intro l hl1 hl15
-  obtain ⟨h1, h2, h3⟩ := hT l hl1 hl15
-  obtain ⟨s0, s1, s2⟩ := hs l (by omega) (by omega)
-  refine ⟨by rw [k _ (by omega) (by omega)]; exact h1, by rw [k _ (by omega) (by omega)]; exact h2, fun j hj => ?_⟩
-  have hc := h1
-  rw [k (tbase n om t + 32 + l) (by omega) (by omega)]
+  obtain ⟨h1, h2, h3, s1, s2⟩ := hT l hl1 hl15
+  have e32 : f' (tbase n om t + 32 + l) = f (tbase n om t + 32 + l) := k _ (by omega) (by omega)
+  refine ⟨by rw [k _ (by omega) (by omega)]; exact h1, by rw [k _ (by omega) (by omega)]; exact h2, fun j hj => ?_,
+    by rw [e32]; exact s1, by rw [e32]; exact s2⟩
+  rw [e32]
   have hj' : (j : Int) < blCount lens l := by exact_mod_cast hj
   rw [k _ (by omega) (by omega)]
   exact h3 j hj
@@ -1327,7 +1328,7 @@ theorem decode_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
             subst this
             simp [decodeGo, go_reject] at h
           · obtain ⟨hR1, hm1, hX1, hV1, hk1⟩ := hadv hlk hl15
-            have hT1 := hT.keep (hsane) ht02 hk1 (decSet_out _ _)
+            have hT1 := hT.keep ht02 hk1 (decSet_out _ _)
             rw [← hk1 (X0 b.size om + 2) (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold decSet X0; omega)] at hT1
             obtain ⟨σ', f', hR', hw', hR'', hm', hs', hk'⟩ :=
               (ih (l + 1) (2 * v + x) σ1 f1 s1 (by omega) hw1 hR1 hm1 (by rw [hX1]; push_cast; ring) (by rw [hV1]; push_cast; ring)
@@ -1352,7 +1353,7 @@ theorem decode_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
           by_cases hl15 : l = 15
           · exact ⟨σ1, f1, Reach.step hS, hw1, h15 hlk hl15⟩
           · obtain ⟨hR1, hm1, hX1, hV1, hk1⟩ := hadv hlk hl15
-            have hT1 := hT.keep (hsane) ht02 hk1 (decSet_out _ _)
+            have hT1 := hT.keep ht02 hk1 (decSet_out _ _)
             rw [← hk1 (X0 b.size om + 2) (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold decSet X0; omega)] at hT1
             obtain ⟨σ', f', hR', hw', hm'⟩ :=
               (ih (l + 1) (2 * v + x) σ1 f1 s1 (by omega) hw1 hR1 hm1 (by rw [hX1]; push_cast; ring) (by rw [hV1]; push_cast; ring)
