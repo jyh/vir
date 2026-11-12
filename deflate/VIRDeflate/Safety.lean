@@ -772,4 +772,58 @@ theorem InvG.cursor {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (h
     rw [u _ (by unfold cHLIT; omega) (by unfold cHLIT; omega), u _ (by unfold cHDIST; omega) (by unfold cHDIST; omega),
       u _ (by unfold cHCLEN; omega) (by unfold cHCLEN; omega)]; exact h.hdr_rng }
 
+theorem Watch.trans {f g h : Int → Int} (a : Watch f g) (b : Watch g h) : Watch f h :=
+  ⟨fun i hi => (a.1 i hi).trans (b.1 i hi), fun c hc => (a.2 c hc).trans (b.2 c hc)⟩
+
+/-! ## LOC < W on the invariant (so a step that lowers the W-part may raise LOC to anything it reaches) -/
+
+theorem build_lt {n om : Nat} {f : Int → Int} (hx : f cX = X0 n om) (hr : 0 ≤ f cHLIT ∧ f cHLIT ≤ 288 ∧ 0 ≤ f cHDIST ∧
+    f cHDIST ≤ 32 ∧ 0 ≤ f cHCLEN ∧ f cHCLEN ≤ 19) (hb : buildInv n om f) :
+    bRem (f cPHASE) (f cINDEX) (f (f cX + 6)) +
+      (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) < 4096 := by
+  rw [hx]
+  obtain ⟨ht0, ht2, _, htg, h0, h1, h23, h4, hph⟩ := hb
+  have hnn : f (X0 n om + 6) ≤ 288 := by
+    rcases htg with ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ <;> rw [h] <;> omega
+  have hnn0 : 0 ≤ f (X0 n om + 6) := by
+    rcases htg with ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ | ⟨_, _, h, _⟩ <;> rw [h] <;> omega
+  have hrem : bRem (f cPHASE) (f cINDEX) (f (X0 n om + 6)) ≤ 700 := by
+    unfold bRem
+    rcases hph with h | h | h | h | h
+    · have := h0 h; simp [h]; omega
+    · have := h1 h; simp [h]; omega
+    · have := h23 (by omega) (by omega); simp [h]; omega
+    · have := h23 (by omega) (by omega); simp [h]; omega
+    · have := h4 h; simp [h]; omega
+  have hcont : (if f cTGT = 0 then 1 + chainLD (f cHLIT) (f cHDIST) else if f cTGT = 1 then bfull (f cHDIST) + 1 else 1) ≤ 1000 := by
+    unfold chainLD bfull; split_ifs <;> omega
+  omega
+
+theorem LOC_lt {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} (hg : InvG b om lit f) (hm : InvM b.size om f) :
+    LOC f < 4096 := by
+  have hr := hg.hdr_rng
+  by_cases hb : f cMODE = mBUILD
+  · have hc := hm.cur
+    rw [hb] at hc
+    simp only [facts, mBUILD, mSNLEN, mSCOPY, mFIXLENS] at hc
+    simp only [show ¬ ((11 : Int) = 9) by decide, show ¬ ((11 : Int) = 10) by decide, show ¬ ((11 : Int) = 6) by decide,
+      if_false, if_true] at hc
+    unfold LOC
+    simp only [hb, mBUILD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD,
+      mHDRD, mFIXLENS]
+    simp only [show ¬ ((11 : Int) = 1 ∨ (11 : Int) = 3 ∨ (11 : Int) = 5 ∨ (11 : Int) = 8 ∨ (11 : Int) = 7 ∨ (11 : Int) = 20 ∨
+      (11 : Int) = 21 ∨ (11 : Int) = 13 ∨ (11 : Int) = 16) by decide,
+      show ¬ ((11 : Int) = 15 ∨ (11 : Int) = 10 ∨ (11 : Int) = 19) by decide, show ¬ ((11 : Int) = 9 ∨ (11 : Int) = 18) by decide,
+      show ¬ ((11 : Int) = 17) by decide, show ¬ ((11 : Int) = 4) by decide, show ¬ ((11 : Int) = 6) by decide, if_false, if_true]
+    exact build_lt hg.x_eq hr hc
+  · have hc := hm.cur
+    have hmode := hg.mode_ok
+    simp only [validModes, List.mem_cons, List.mem_nil_iff, or_false] at hmode
+    rcases hmode with h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h |
+      h | h | h <;> rw [h] at hc hb <;>
+    simp [LOC, h, facts, bfull, chainLD, locFIX, locCL, mTABLE, mHDR, mREAD, mHDRB, mHDRD, mSHDR, mFIXLENS, mDHDR, mSLEN,
+      mSNLEN, mSCOPY, mBUILD, mLENS, mSYM, mDECODE, mSYMD, mLENX, mDSTD, mDSTX, mCOPY, mDH2, mDH3, mDH4, mCLREAD, mCLPUT,
+      mLSYM, mLREP, mREP, mDONE, mREJECT] at hc hb ⊢ <;>
+    (try split_ifs) <;> omega
+
 end VIRDeflate.Step
