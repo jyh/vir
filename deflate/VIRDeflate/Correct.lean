@@ -216,6 +216,244 @@ theorem init_to_hdr (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) :
   exact ⟨σ, f, hR, hw, hi, hm, hb, by show f 1 = 0; rw [hc 1 (by simp)]; exact z 1 (by norm_num) (by norm_num),
     by show f 2 = 0; rw [hc 2 (by simp)]; exact z 2 (by norm_num) (by norm_num), by show f 3 = 0; rw [hc 3 (by simp)]; exact z 3 (by norm_num) (by norm_num)⟩
 
+/-! ## S-18's relation R, and the step helper -/
+
+/-- **R (S-18):** Safety's invariant, the bit table correct, the bit position, and the output. -/
+structure Rel (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int) (st : St) : Prop where
+  inv : Inv b om lit f
+  bits : BitsUpTo f 2048
+  pos : 8 * f cBY + f cBI = st.pos
+  m : f cM = st.out.size
+  out : ∀ i : Nat, i < st.out.size → f (IN + b.size + i) = st.out.getD i 0
+
+/-- f' agrees with f on the region outside the cells S names. -/
+def Keeps (L : Nat) (f f' : Int → Int) (S : Int → Prop) : Prop := ∀ c : Int, 0 ≤ c → c < L → ¬ S c → f' c = f c
+
+theorem Keeps.trans {L : Nat} {f g h : Int → Int} {S T : Int → Prop} (h₁ : Keeps L f g S) (h₂ : Keeps L g h T)
+    (hST : ∀ c, S c → T c) : Keeps L f h T := fun c h0 h1 hc => (h₂ c h0 h1 hc).trans (h₁ c h0 h1 (fun hs => hc (hST c hs)))
+
+theorem Keeps.refl (L : Nat) (f : Int → Int) (S : Int → Prop) : Keeps L f f S := fun _ _ _ _ => rfl
+
+/-- **A step to a store the mode lemma names exactly:** the next world carries Safety's invariant (by `stepSafe`) and agrees
+on the region with the explicit contents g. -/
+theorem step_to {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f g : Int → Int} (hb : ∀ x ∈ b, x < 256)
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hd : f cMODE ≠ mDONE) (hr : f cMODE ≠ mREJECT)
+    (hS : stepS p σ = some σ') (hg : World σ' p (L0 b.size om) g) :
+    ∃ f', World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ ∀ c : Int, 0 ≤ c → c < L0 b.size om → f' c = g c := by
+  obtain ⟨σ'', f', hS', hw', hi', _⟩ := stepSafe b om lit p σ f hb hw hi hd hr
+  rw [hS] at hS'
+  cases hS'
+  exact ⟨f', hw', hi', fun c h0 h1 => hw'.agree hg h0 h1⟩
+
+/-! ## The bit reader: READ simulates `bitsGo` (S-18's first triple) -/
+
+theorem go_bit (e : Env) (st : St) :
+    go bit e st = if st.pos / 8 < e.inp.size then
+      .ok ((e.inp.getD (st.pos / 8) 0 >>> (st.pos % 8)) &&& 1, { st with pos := st.pos + 1 }) else .error "truncated" := by
+  unfold bit
+  simp only [go_bind, go_read, go_get]
+  split_ifs <;> rfl
+
+theorem go_bitsGo_succ (j i acc : Nat) (e : Env) (st : St) :
+    go (bitsGo (j + 1) i acc) e st = (match go bit e st with
+      | .ok (x, s1) => go (bitsGo j (i + 1) (acc + x * 2 ^ i)) e s1
+      | .error r => .error r) := by
+  simp only [bitsGo]
+  rw [go_bind]
+  rcases go bit e st with r | ⟨x, s1⟩ <;> rfl
+
+def rdSet (c : Int) : Prop := c = 0 ∨ c = 1 ∨ c = 2 ∨ c = 2068 ∨ c = 2069 ∨ c = 2070
+
+/-- **READ, one step, against S's `bit`.** -/
+theorem read_one {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} {σ : Store} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mREAD) :
+    (∀ x s1, go bit ⟨b, om⟩ st = .ok (x, s1) →
+      ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' s1 ∧ s1.out = st.out ∧
+        f' cK = f cK - 1 ∧ f' cACC = f cACC + x * f cWT ∧ f' cWT = 2 * f cWT ∧ f' cRET = f cRET ∧
+        f' cMODE = (if f cK - 1 = 0 then f cRET else mREAD) ∧ Keeps (L0 b.size om) f f' rdSet) ∧
+    (∀ r, go bit ⟨b, om⟩ st = .error r →
+      ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) := by
+  have hL : 2080 + b.size ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mREAD, readN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mREAD, readN) hmem (by decide)
+  have hi := hR.inv
+  have hn := hi.1.n_eq
+  have hbr := hi.1.by_rng
+  have hir := hi.1.bi_rng
+  have hpos := hR.pos
+  have hd : f cMODE ≠ mDONE := by rw [hm]; decide
+  have hrj : f cMODE ≠ mREJECT := by rw [hm]; decide
+  rw [go_bit]
+  by_cases hlt : f cBY < b.size
+  · have hp8 : st.pos / 8 = (f cBY).toNat := by omega
+    have hp8' : st.pos % 8 = (f cBI).toNat := by omega
+    have hsz : st.pos / 8 < (⟨b, om⟩ : Env).inp.size := by simp only; omega
+    rw [if_pos hsz]
+    refine ⟨fun x s1 hx => ?_, fun r hr => by simp at hr⟩
+    simp only [Except.ok.injEq, Prod.mk.injEq] at hx
+    obtain ⟨hx, hs1⟩ := hx
+    subst hs1
+    obtain ⟨hv, hv8⟩ := hi.1.byte hb (f cBY).toNat (by omega)
+    set v := b[(f cBY).toNat]'(by omega) with hvdef
+    have hbiE : ((f cBI).toNat : Int) = f cBI := by omega
+    have ht := hR.bits v (f cBI).toNat hv8 (by omega) (by omega)
+    rw [hbiE] at ht
+    have hxv : (x : Int) = bitAt v (f cBI).toNat := by
+      rw [bitAt_eq v _ hv8 (by omega), ← hx, hp8, hp8']
+      simp [Array.getD, show (f cBY).toNat < b.size by omega, hvdef]
+    have hstep := readbit_step hw (f cBY).toNat (f cBI).toNat b.size v (f cK) (f cACC) (f cWT)
+      (f cRET) (f (BT + (8 * (v : Int) + f cBI))) hL (by omega) (by omega) hn (by omega) (by omega)
+      hv hv8 (by rw [hbiE]) rfl rfl rfl rfl
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 hstep
+    simp only [show ((f cBY).toNat : Int) = f cBY by omega, show ((f cBI).toNat : Int) = f cBI by omega] at hS
+    set t := f (BT + (8 * (v : Int) + f cBI)) with htdef
+    set f1 := Function.update (Function.update (Function.update (Function.update (Function.update f 1
+      (tblNext (f cBY) (f cBI)).1) 2 (tblNext (f cBY) (f cBI)).2) 2069 (f cACC + t * f cWT)) 2070 (2 * f cWT)) 2068
+      (f cK - 1) with hf1
+    have hw1 : World ⟨rdH σ.H p (f cBY) (f cBI) (f cACC) (f cWT) (f cK) t, σ.R⟩ p (L0 b.size om) f1 := by
+      unfold rdH
+      exact ((((hw.store (i := 1) (by norm_num) (by unfold L0; omega)).store (i := 2) (by norm_num) (by unfold L0; omega)).store
+        (i := 2069) (by norm_num) (by unfold L0; omega)).store (i := 2070) (by norm_num) (by unfold L0; omega)).store
+        (i := 2068) (by norm_num) (by unfold L0; omega)
+    set g := if f cK - 1 = 0 then Function.update f1 0 (f cRET) else f1 with hgdef
+    obtain ⟨σ', hS', hwg⟩ : ∃ σ', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) g := by
+      by_cases hk : f cK - 1 = 0
+      · rw [if_pos hk] at hS
+        refine ⟨_, hS, ?_⟩
+        rw [hgdef, if_pos hk]
+        exact hw1.store (i := 0) (by norm_num) (by unfold L0; omega)
+      · rw [if_neg hk] at hS
+        exact ⟨_, hS, by rw [hgdef, if_neg hk]; exact hw1⟩
+    obtain ⟨f', hw', hi', ag⟩ := step_to hb hw hi hd hrj hS' hwg
+    have gf : ∀ c : Int, ¬ rdSet c → g c = f c := by
+      intro c hc
+      unfold rdSet at hc
+      have h0 : c ≠ 0 := by omega
+      have h1 : c ≠ 1 := by omega
+      have h2 : c ≠ 2 := by omega
+      have h3 : c ≠ 2068 := by omega
+      have h4 : c ≠ 2069 := by omega
+      have h5 : c ≠ 2070 := by omega
+      have : f1 c = f c := by rw [hf1, upd_eq _ _ h3, upd_eq _ _ h5, upd_eq _ _ h4, upd_eq _ _ h2, upd_eq _ _ h1]
+      rw [hgdef]; split_ifs
+      · rw [upd_eq _ _ h0, this]
+      · exact this
+    have gne0 : ∀ c : Int, c ≠ 0 → g c = f1 c := by
+      intro c hc; rw [hgdef]; split_ifs
+      · exact upd_eq _ _ hc
+      · rfl
+    have keeps : Keeps (L0 b.size om) f f' rdSet := fun c h0 h1 hc => (ag c h0 h1).trans (gf c hc)
+    have e1 : f' cBY = (tblNext (f cBY) (f cBI)).1 := by
+      rw [ag _ (by decide) (by unfold cBY L0; omega), gne0 _ (by decide)]; simp [hf1, cBY]
+    have e2 : f' cBI = (tblNext (f cBY) (f cBI)).2 := by
+      rw [ag _ (by decide) (by unfold cBI L0; omega), gne0 _ (by decide)]; simp [hf1, cBI]
+    have hnb1 : 8 * (tblNext (f cBY) (f cBI)).1 + (tblNext (f cBY) (f cBI)).2 = 8 * f cBY + f cBI + 1 := by
+      simp only [tblNext]; split_ifs <;> simp <;> omega
+    refine ⟨σ', f', hS', hw', ⟨hi', ?_, ?_, ?_, ?_⟩, rfl, ?_, ?_, ?_, ?_, ?_, keeps⟩
+    · intro v' i' hv' hi7 hlt'
+      rw [keeps _ (by unfold BT; omega) (by unfold BT L0; omega) (by unfold rdSet BT; omega)]
+      exact hR.bits v' i' hv' hi7 hlt'
+    · rw [e1, e2, hnb1, hpos]; push_cast; ring
+    · rw [keeps _ (by decide) (by unfold cM L0; omega) (by unfold rdSet cM; omega)]; exact hR.m
+    · intro i hi2
+      change i < st.out.size at hi2
+      have hm' := hi.1.m_rng
+      have hm2 := hR.m
+      have hc : IN + (b.size : Int) + i < L0 b.size om := by unfold IN L0; push_cast; omega
+      rw [keeps _ (by unfold IN; omega) hc (by unfold rdSet IN; omega)]
+      exact hR.out i hi2
+    · rw [ag _ (by decide) (by unfold cK L0; omega), gne0 _ (by decide)]; simp [hf1, cK]
+    · rw [ag _ (by decide) (by unfold cACC L0; omega), gne0 _ (by decide)]
+      simp [hf1, cACC, Function.update_apply]
+      exact Or.inl (ht.trans hxv.symm)
+    · rw [ag _ (by decide) (by unfold cWT L0; omega), gne0 _ (by decide)]; simp [hf1, cWT, Function.update_apply]
+    · rw [keeps _ (by decide) (by unfold cRET L0; omega) (by unfold rdSet cRET; omega)]
+    · rw [ag _ (by decide) (by unfold cMODE L0; omega), hgdef]
+      by_cases hk : f cK - 1 = 0
+      · rw [if_pos hk, if_pos hk]; simp [cMODE]
+      · rw [if_neg hk, if_neg hk, hf1]; simp [cMODE, Function.update_apply]; exact hm
+  · have hsz : ¬ (st.pos / 8 < (⟨b, om⟩ : Env).inp.size) := by simp only; omega
+    rw [if_neg hsz]
+    refine ⟨fun x s1 hx => by simp at hx, fun r _ => ?_⟩
+    have hstep := readbit_trunc hw (by unfold L0; omega) (f cBY) b.size rfl hn (by omega)
+    have hS := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2 hstep
+    have hwr := (hw.store (i := 14) (v := 1) (by norm_num) (by unfold L0; omega)).store (i := 0) (v := 99) (by norm_num)
+      (by unfold L0; omega)
+    exact ⟨_, _, hS, hwr, by simp [cMODE, mREJECT]⟩
+
+/-- **READ ↔ `bitsGo`.** From a READ world with k = j + 1, acc and wt = 2^i, related to st: if S's `bitsGo (j+1) i acc`
+returns a from st', the iteration reaches the return mode with acc = a, related to st' (the output unchanged), touching only
+the mode, the cursor and READ's own cells; if S rejects, the iteration reaches REJECT. -/
+theorem read_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) :
+    ∀ (j i acc : Nat) (σ : Store) (f : Int → Int) (st : St), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mREAD → f cK = j + 1 → f cACC = acc → f cWT = 2 ^ i →
+      (∀ a st', go (bitsGo (j + 1) i acc) ⟨b, om⟩ st = .ok (a, st') →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st' ∧ f' cMODE = f cRET ∧
+          f' cACC = a ∧ st'.out = st.out ∧ Keeps (L0 b.size om) f f' rdSet) ∧
+      (∀ r, go (bitsGo (j + 1) i acc) ⟨b, om⟩ st = .error r →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) := by
+  have hL : 2080 + b.size ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mREAD, readN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mREAD, readN) hmem (by decide)
+  intro j
+  induction j with
+  | zero =>
+    intro i acc σ f st hw hR hm hk hacc hwt
+    obtain ⟨hok, herr⟩ := read_one hb hw hR hm
+    constructor
+    · intro a st' h
+      rw [go_bitsGo_succ] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r | ⟨x, s1⟩
+      · rw [hbit] at h; simp at h
+      · rw [hbit] at h
+        simp only [bitsGo, go_pure, Except.ok.injEq, Prod.mk.injEq] at h
+        obtain ⟨ha, hs⟩ := h
+        subst hs
+        obtain ⟨σ', f', hS, hw', hR', hout, _, hacc', _, _, hm', keeps⟩ := hok x s1 hbit
+        refine ⟨σ', f', Reach.step hS, hw', hR', ?_, ?_, hout, keeps⟩
+        · rw [hm', if_pos (by rw [hk]; simp)]
+        · rw [hacc', hacc, hwt, ← ha]; push_cast; ring
+    · intro r h
+      rw [go_bitsGo_succ] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r' | ⟨x, s1⟩
+      · obtain ⟨σ', f', hS, hw', hm'⟩ := herr r' hbit
+        exact ⟨σ', f', Reach.step hS, hw', hm'⟩
+      · rw [hbit] at h; simp [bitsGo, go_pure] at h
+  | succ j ih =>
+    intro i acc σ f st hw hR hm hk hacc hwt
+    obtain ⟨hok, herr⟩ := read_one hb hw hR hm
+    have next : ∀ x s1, go bit ⟨b, om⟩ st = .ok (x, s1) → ∃ σ1 f1, stepS p σ = some σ1 ∧
+        World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 s1 ∧ s1.out = st.out ∧ f1 cRET = f cRET ∧
+        Keeps (L0 b.size om) f f1 rdSet ∧ f1 cMODE = mREAD ∧ f1 cK = (j : Int) + 1 ∧
+        f1 cACC = ((acc + x * 2 ^ i : Nat) : Int) ∧ f1 cWT = 2 ^ (i + 1) := by
+      intro x s1 hbit
+      obtain ⟨σ1, f1, hS, hw1, hR1, hout1, hk1, hacc1, hwt1, hrt1, hm1, keeps1⟩ := hok x s1 hbit
+      refine ⟨σ1, f1, hS, hw1, hR1, hout1, hrt1, keeps1, ?_, ?_, ?_, ?_⟩
+      · rw [hm1, if_neg (by rw [hk]; push_cast; omega)]
+      · rw [hk1, hk]; push_cast; ring
+      · rw [hacc1, hacc, hwt]; push_cast; ring
+      · rw [hwt1, hwt]; ring
+    constructor
+    · intro a st' h
+      rw [go_bitsGo_succ] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r | ⟨x, s1⟩
+      · rw [hbit] at h; simp at h
+      · rw [hbit] at h
+        obtain ⟨σ1, f1, hS, hw1, hR1, hout1, hrt1, keeps1, hm1, hk1, hacc1, hwt1⟩ := next x s1 hbit
+        obtain ⟨σ', f', hR', hw', hR'', hmo, hacco, hout', keeps'⟩ :=
+          (ih (i + 1) (acc + x * 2 ^ i) σ1 f1 s1 hw1 hR1 hm1 hk1 hacc1 hwt1).1 a st' h
+        exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', by rw [hmo, hrt1], hacco, by rw [hout', hout1],
+          keeps1.trans keeps' (fun c h => h)⟩
+    · intro r h
+      rw [go_bitsGo_succ] at h
+      rcases hbit : go bit ⟨b, om⟩ st with r' | ⟨x, s1⟩
+      · obtain ⟨σ', f', hS, hw', hm'⟩ := herr r' hbit
+        exact ⟨σ', f', Reach.step hS, hw', hm'⟩
+      · rw [hbit] at h
+        obtain ⟨σ1, f1, hS, hw1, hR1, _, _, _, hm1, hk1, hacc1, hwt1⟩ := next x s1 hbit
+        obtain ⟨σ', f', hR', hw', hm'⟩ := (ih (i + 1) (acc + x * 2 ^ i) σ1 f1 s1 hw1 hR1 hm1 hk1 hacc1 hwt1).2 r h
+        exact ⟨σ', f', (Reach.step hS).trans hR', hw', hm'⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
