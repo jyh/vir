@@ -68,3 +68,13 @@
   the module built in 121 s), and `build_left_end_inR` is the case tree that dispatches to them. Timing probe k5p-probe-010
   (2 leaves, EXIT=0). Audit k5-audit-003: build_left_end_inR, ble_p00, ble_p23 within the three. **K5-2 traces: 46 + the dispatch;
   open: TABLE (BITc).**
+- **TABLE DONE (69th head): `table_inR` (k5/K5/Table.lean), k5p-058 EXIT=0.** The BITc call is carried by a CHECKED-RUN relation
+  `Reach` (k5/K5/Bit.lean: trans, the `let` frame `Reach.letE`, `Reach.srcInRange`) and three inductions mirroring Step.lean:
+  `pow2_reach` (k ≤ 7), `strip_reach` (i + n ≤ 7, 0 ≤ v < 256, with `stripTop_rng`), `bit_reach` (0 ≤ b < 256, i ≤ 7). TABLE's own
+  hypotheses are Safety's `tb_rng` (tb < 256, ti ≤ 7); no rrN is left open in it.
+  Lessons (each cost a probe, k5p-probe-011..025): the walk's evaluator must NOT unfold `inRange` (kernel deep recursion): use
+  `inRange_eq` as a conditional rewrite with `(disch := omega)`; and a lemma whose conclusion carries `2 ^ k` symbolically hits
+  kernel deep recursion at defeq: state it over a plain `v : Int` with bounds and rewrite `2^(k+1) = 2 * 2^k` at the call.
+  Audit k5-audit-004: 17 rows (Audit.lean + build_left_end_inR, pow2_reach, strip_reach, bit_reach, table_inR), all within the three.
+  **K5-2 trace coverage: HDR, READ, 12 + 20 + 11 + 1 mode traces, TABLE, the dispatch. NEXT: K5-2b (RANGE-SITES, 27 modes after
+  READ), then deflate_inrange, then K5-3.**

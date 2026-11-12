@@ -7,3 +7,5 @@ import K5.Dispatch
 import K5.Modes4
 import K5.SafeRead
 import K5.BuildLeftEnd
+import K5.Bit
+import K5.Table

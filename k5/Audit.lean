@@ -11,3 +11,8 @@ import K5
 #print axioms K5.build_syms_end_d_inR
 #print axioms K5.lrep_step_inR
 #print axioms K5.clput_step_inR
+#print axioms K5.build_left_end_inR
+#print axioms K5.pow2_reach
+#print axioms K5.strip_reach
+#print axioms K5.bit_reach
+#print axioms K5.table_inR

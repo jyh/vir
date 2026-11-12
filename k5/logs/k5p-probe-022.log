@@ -1,0 +1,22 @@
+saltqueue: ticket P2 seat=root pid=55027
+K5/Bit.lean:111:34: warning: Variable name `hin` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:111:68: warning: Variable name `hv0` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:111:82: warning: Variable name `hv` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:120:34: warning: Variable name `hin` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+saltbuild EXIT=0
