@@ -92,4 +92,54 @@ theorem Mag_step_slen {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {
       (by unfold tbase LB0; omega) (by unfold tbase LB0; omega) (by unfold tbase LB0; omega)]
     exact hg.f1 t l a1 a2 a3 a4
 
+/-- **Every clause vacuous:** the new mode is neither DECODE nor BUILD, the mode returned to is none of the PEND/DIST modes,
+and the `first[]` cells are those of a world satisfying `Mag` (F1 is the only clause that is not mode-conditioned). -/
+theorem Mag_vac {n om : Nat} {f g : Int → Int} (hg : Mag n om f) (hD : g cMODE ≠ mDECODE) (hB : g cMODE ≠ mBUILD)
+    (he1 : em g ≠ mSNLEN) (he2 : em g ≠ mLENX) (he3 : em g ≠ mDSTD) (he4 : em g ≠ mDSTX) (he5 : em g ≠ mLREP)
+    (hF : ∀ t l : Int, 0 ≤ t → t ≤ 2 → 1 ≤ l → l ≤ 15 → g (tbase n om t + 16 + l) = f (tbase n om t + 16 + l)) :
+    Mag n om g := by
+  refine ⟨fun h => absurd h he1, fun h => absurd h he2, ?_, fun h => absurd h he5, fun h => absurd h he4,
+    fun h => absurd h hD, fun h => absurd h hB, fun h => absurd h hB, ?_⟩
+  · intro h; rcases h with h | h | ⟨h, _⟩
+    · exact absurd h he3
+    · exact absurd h he4
+    · exact absurd h hD
+  · intro t l a1 a2 a3 a4; rw [hF t l a1 a2 a3 a4]; exact hg.f1 t l a1 a2 a3 a4
+
+/-- A READ request (`reqF`) returning to a mode that carries no clause keeps `Mag`, given the cells it changed first. -/
+theorem Mag_reqF_vac {n om : Nat} {f f₁ : Int → Int} (hg : Mag n om f) {k rt : Int}
+    (hrt : rt ≠ mSNLEN ∧ rt ≠ mLENX ∧ rt ≠ mDSTD ∧ rt ≠ mDSTX ∧ rt ≠ mLREP)
+    (hF : ∀ t l : Int, 0 ≤ t → t ≤ 2 → 1 ≤ l → l ≤ 15 → f₁ (tbase n om t + 16 + l) = f (tbase n om t + 16 + l)) :
+    Mag n om (reqF f₁ k rt) := by
+  have gM : reqF f₁ k rt cMODE = mREAD := by simp [reqF, cMODE, mREAD]
+  have gR : reqF f₁ k rt cRET = rt := by simp [reqF, cRET]
+  have gem : em (reqF f₁ k rt) = rt := by rw [em, if_pos gM, gR]
+  refine Mag_vac hg (by rw [gM]; decide) (by rw [gM]; decide) (by rw [gem]; exact hrt.1) (by rw [gem]; exact hrt.2.1)
+    (by rw [gem]; exact hrt.2.2.1) (by rw [gem]; exact hrt.2.2.2.1) (by rw [gem]; exact hrt.2.2.2.2) ?_
+  intro t l a1 a2 a3 a4
+  have : 2080 ≤ tbase n om t + 16 + l := by unfold tbase LB0; omega
+  simp only [reqF, Function.update_apply]
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  exact hF t l a1 a2 a3 a4
+
+theorem Mag_step_hdr {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mHDR)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  obtain ⟨hSe, hwe, -, -⟩ := safe_hdr' (b := b) (om := om) (lit := lit) hw (by unfold L0; omega) hi.1 hm
+  exact Mag_of_explicit hS hSe hw' hwe (Mag_reqF_vac hg (by decide) (fun _ _ _ _ _ _ => rfl))
+
+theorem Mag_step_hdrb {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mHDRB)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  obtain ⟨hSe, hwe, -, -⟩ := safe_hdrb (b := b) (om := om) (lit := lit) hw (by unfold L0; omega) hi.1 hm
+  refine Mag_of_explicit hS hSe hw' hwe (Mag_reqF_vac hg (by decide) ?_)
+  intro t l a1 a2 a3 a4
+  rw [Function.update_apply, if_neg (by unfold tbase LB0; omega)]
+
+theorem Mag_step_dhdr {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mDHDR)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  obtain ⟨hSe, hwe, -, -⟩ := safe_dhdr (b := b) (om := om) (lit := lit) hw (by unfold L0; omega) hi.1 hm
+  exact Mag_of_explicit hS hSe hw' hwe (Mag_reqF_vac hg (by decide) (fun _ _ _ _ _ _ => rfl))
+
 end K5
