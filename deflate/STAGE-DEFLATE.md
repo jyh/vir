@@ -319,7 +319,35 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       HCLEN = acc + 4 ≤ 19, the HLIT/HDIST check into CLREAD or REJECT): **15 of 28.**
       **OWED (14):** FIXLENS, BUILD (the fold invariants), LENS, DECODE (sane table ⇒ indices in range), SYMD, DSTD, DSTX,
       COPY, DH4, CLREAD, CLPUT, LSYM, LREP, REP — then `StepSafe` by cases on the mode, then `safety_of_stepSafe` closes
-      SafetyStmt. The audit file is regenerated from VIRDeflate.lean's imports: the
+      SafetyStmt.
+    - **A third invariant defect, found while planning COPY (65th head, 2026-11-12, before COPY's proof was written):**
+      COPY's `facts` bounded `dist ≤ m` and never `0 ≤ dist`, so the source index 2080 + n + (m − dist) had no upper bound
+      and `copy_byte`'s range premise was unprovable. It holds in the program: DSTD writes dist := DBASE[d] ≥ 1 and DSTX
+      adds acc ≥ 0. Added `0 ≤ dist` to the DSTX and COPY facts (DSTX split from the LENX/DSTD disjunct); built first in
+      df-159 with the existing proofs, so a proof the change breaks shows there.
+    - Written in the 65th head's shift: CLPUT, CLREAD (helpers `order_rng`, `InvG.lw` a lengths-area write in [0, 15],
+      `SymsOK.lw`, `LOC_clput`, `LOC_clread`; CLREAD's end enters BUILD with `buildInv` phase 0 stated as an explicit term).
+      Then LSYM, REP, LREP, LENS, DSTX, COPY, DSTD, SYMD, FIXLENS and DECODE (`facts_*` equations per mode, `sane_congrT`
+      over the table cells only, `InvG.c3`, the READ-K request `reqKF` with k = 0 going straight to the return mode, the
+      LBASE/LEXTRA/DBASE/DEXTRA range lemmas, `watch_updX`, `BITS_next`). Builds: df-159 (3 errors, CLREAD; the `0 ≤ dist`
+      change broke no earlier proof), df-160 (22, all in the new cases: `set` variables against unfolded goals, numeral
+      modes against `mX` patterns, `if False` left by an instance mismatch, a split_ifs timeout), df-161 (1, a wrapped
+      `(by omega)` parsed as an argument), **df-162 EXIT=0. 27 of 28 per-mode cases DONE; `stepSafe_of : ModeSafe mBUILD →
+      StepSafe` and `safety_of_build : ModeSafe mBUILD → SafetyStmt` proved.** df-163 rebuilt the root; **df-audit-027:
+      402 #print rows, every one within the standard three** (axiom_gate reads 401 distinct names: it parses `safe_hdr'`
+      and `safe_hdr` as one, as it did in df-audit-026's 338 for 339 — a limit of the gate's name parse, both rows read).
+    - **BUILD, the one premise left (`stepSafe_of : ModeSafe mBUILD → StepSafe`, `safety_of_build`): the plan.** Twelve
+      step lemmas in Step.lean (build_zero_cell/end, build_count_cell/end, build_next_cell/end, build_left_cell/end,
+      build_syms_cell, build_syms_end_cl/l/d), each against `buildInv`'s phase clause. Owed lemmas, by phase:
+      ZERO: count[j] := 0 keeps `∀ l < j+1, count[l] = 0` (the tables are above the lengths, so `cnt` is untouched).
+      COUNT: cnt f sb l (j+1) = cnt f sb l j + [src[j] = l] (unfold `cnt`); the count cell write keeps every other l's cnt
+      (the source lengths lie below LB0 + 337, the counts at tbase t ≥ LB0 + 337). NEXT: offs/slot[l] = offOf l, and at
+      its end `sane` needs Σ_{l=1..15} cnt l nn ≤ nn (a counting lemma on `cnt`: each source index adds to at most one l),
+      which gives offOf l + count[l] ≤ nn ≤ 288. LEFT: rejects or passes through to SYMS, no table write. SYMS: the slot
+      bound sl < 288 from phase-4's `slot[l] + (cnt l nn − cnt l j) ≤ 288` with cnt l (j+1) = cnt l j + 1 at src[j] = l;
+      the symbol written is j < nn ≤ 288 (InvM.syms). The three ends: CL → LENS (`facts_lens` needs `sane 0`), L → the D
+      build (tg 2 with `sane 1` carried), D → SYM (`sane 1 ∧ sane 2`). LOC: `bRem` drops by one per step (Measure.lean).
+      The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
