@@ -292,3 +292,15 @@ at an index other than m − distance.
 - REP: pending = 0 → mode LENS; else lengths[fill] := last, fill += 1, pending −= 1.
 **What would show this wrong:** a dynamic-header check made before all three fields are read; a repeat that writes past
 `total`; a CL cell left with a previous block's value.
+
+### S-15 (amendment 9, 2026-11-11, the 63rd head). DECLARED before the top-level step's code. The step is ONE dispatch.
+**The step:** load mode (cell 0), then an `ite` chain over the mode numbers in a fixed list — TABLE 0 · HDR 1 · READ 2 · HDRB 3
+· HDRD 4 · SHDR 5 · FIXLENS 6 · DHDR 7 · SLEN 8 · SNLEN 9 · SCOPY 10 · BUILD 11 · LENS 12 · SYM 13 · DECODE 14 · SYMD 15 ·
+LENX 16 · DSTD 17 · DSTX 18 · COPY 19 · DH2 20 · DH3 21 · DH4 22 · CLREAD 23 · CLPUT 24 · LSYM 25 · LREP 26 · REP 27 — each
+branch the mode's own term. **DONE (98), REJECT (99) and any other value fall through to `ret world`: the fixed points.**
+**The carrying lemma, stated so that it is not found in a proof:** a mode term compiled under the dispatch's extra binder `md`
+becomes, after the mode load substitutes md, exactly its standalone compilation (`NT.c ["w"]`) — `Tm.subst` lowers the indices
+above the one it replaces — provided the term never names `md` and its closed atoms (`BITc`) are closed. Every one-step mode
+lemma then transfers to the step at that mode, unchanged.
+**What would show this wrong:** a mode term that names `md`; a mode number in two branches; a value of mode that reaches no
+branch and is not a fixed point.
