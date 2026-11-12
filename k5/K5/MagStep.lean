@@ -565,4 +565,111 @@ theorem Mag_step_snlen {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} 
   split_ifs at hSe
   all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
 
+/-- LBASE's 29 cells (X + 16 …) hold values in [0, 258]. -/
+theorem lbase_rng (b : Array Nat) (om : Nat) (lit : Bool) (k : Int) (h0 : 0 ≤ k) (h1 : k < 29) :
+    0 ≤ initCell b om lit (X0 b.size om + 16 + k) ∧ initCell b om lit (X0 b.size om + 16 + k) ≤ 258 := by
+  obtain ⟨m, rfl⟩ : ∃ m : Nat, k = m := ⟨k.toNat, by omega⟩
+  have hm : m < 29 := by omega
+  have hX : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+  unfold initCell
+  dsimp only
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+    if_pos ⟨by omega, by omega⟩, show (X0 b.size om + 16 + (m : Int) - X0 b.size om - 16).toNat = m by omega]
+  interval_cases m <;> simp [LBASE]
+
+/-- DBASE's 30 cells (X + 74 …) hold values in [0, 24577]. -/
+theorem dbase_rng (b : Array Nat) (om : Nat) (lit : Bool) (k : Int) (h0 : 0 ≤ k) (h1 : k < 30) :
+    0 ≤ initCell b om lit (X0 b.size om + 74 + k) ∧ initCell b om lit (X0 b.size om + 74 + k) ≤ 24577 := by
+  obtain ⟨m, rfl⟩ : ∃ m : Nat, k = m := ⟨k.toNat, by omega⟩
+  have hm : m < 30 := by omega
+  have hX : X0 b.size om = 2080 + b.size + om + 1393 := rfl
+  unfold initCell
+  dsimp only
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+    if_neg (by omega), if_pos ⟨by omega, by omega⟩, show (X0 b.size om + 74 + (m : Int) - X0 b.size om - 74).toNat = m by omega]
+  interval_cases m <;> simp [DBASE]
+
+/-- **The general pinned form** for a step that lands in neither DECODE nor BUILD: each clause is owed only for the mode
+returned to (`e`), over the PEND and DIST values the explicit store holds. -/
+theorem Mag_pinned_gen {b : Array Nat} {om : Nat} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    {H' : Finmap (fun _ : Int => Int)}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hS : stepS p σ = some σ') (hSe : stepS p σ = some ⟨H', σ.R⟩)
+    (hw' : World σ' p (L0 b.size om) f')
+    (hC : ∀ m r v d, H'.lookup (p + cMODE) = some m → H'.lookup (p + cRET) = some r → H'.lookup (p + cPEND) = some v →
+      H'.lookup (p + cDIST) = some d →
+      m ≠ mDECODE ∧ m ≠ mBUILD ∧
+      ((if m = mREAD then r else m) = mSNLEN → 0 ≤ v ∧ v ≤ 65535) ∧
+      ((if m = mREAD then r else m) = mLENX → 0 ≤ v ∧ v ≤ 258) ∧
+      ((if m = mREAD then r else m) = mDSTD ∨ (if m = mREAD then r else m) = mDSTX → 0 ≤ v ∧ v ≤ 289) ∧
+      ((if m = mREAD then r else m) = mLREP → 0 ≤ v ∧ v ≤ 11) ∧
+      ((if m = mREAD then r else m) = mDSTX → 0 ≤ d ∧ d ≤ 24577))
+    (hF : ∀ t l : Int, 0 ≤ t → t ≤ 2 → 1 ≤ l → l ≤ 15 →
+      H'.lookup (p + (tbase b.size om t + 16 + l)) = σ.H.lookup (p + (tbase b.size om t + 16 + l))) :
+    Mag b.size om f' := by
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have eM := cell_after hS hSe hw' cMODE (by decide) (by rw [hL0]; unfold cMODE; omega)
+  have eR := cell_after hS hSe hw' cRET (by decide) (by rw [hL0]; unfold cRET; omega)
+  have eP := cell_after hS hSe hw' cPEND (by decide) (by rw [hL0]; unfold cPEND; omega)
+  have eD := cell_after hS hSe hw' cDIST (by decide) (by rw [hL0]; unfold cDIST; omega)
+  obtain ⟨hD, hB, c1, c2, c3, c4, c5⟩ := hC _ _ _ _ eM eR eP eD
+  have hem : em f' = (if f' cMODE = mREAD then f' cRET else f' cMODE) := rfl
+  refine ⟨fun h => c1 (hem ▸ h), fun h => c2 (hem ▸ h), ?_, fun h => c4 (hem ▸ h), fun h => c5 (hem ▸ h),
+    fun h => absurd h hD, fun h => absurd h hB, fun h => absurd h hB, ?_⟩
+  · intro h; rcases h with h | h | ⟨h, _⟩
+    · exact c3 (Or.inl (hem ▸ h))
+    · exact c3 (Or.inr (hem ▸ h))
+    · exact absurd h hD
+  · intro t l a1 a2 a3 a4
+    have h0 : 0 ≤ tbase b.size om t + 16 + l := by unfold tbase LB0; omega
+    have h1 : tbase b.size om t + 16 + l < (L0 b.size om : Int) := by rw [hL0]; unfold tbase LB0; omega
+    have e := cell_after hS hSe hw' _ h0 h1
+    rw [hF t l a1 a2 a3 a4] at e
+    exact (cell_frame hw h0 h1 e) ▸ hg.f1 t l a1 a2 a3 a4
+
+theorem Mag_step_dstx {b : Array Nat} {om : Nat} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hg : Mag b.size om f) (hm : f cMODE = mDSTX)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hmem : (mDSTX, dstxN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mDSTX, dstxN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+    (dstx_step hw (by unfold L0; omega) _ _ _ _ _ rfl rfl rfl rfl rfl)
+  split_ifs at hSe
+  all_goals exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+
+/-- Read MODE, RET and PEND off a `reqH` store over `H.insert (p + 11) _ |>.insert (p + 5) v`: READ, returning to `rt`. -/
+theorem reqH_cells {H : Finmap (fun _ : Int => Int)} {p x v k rt m r w : Int}
+    (eM : (reqH ((H.insert (p + 11) x).insert (p + 5) v) p k rt).lookup (p + cMODE) = some m)
+    (eR : (reqH ((H.insert (p + 11) x).insert (p + 5) v) p k rt).lookup (p + cRET) = some r)
+    (eP : (reqH ((H.insert (p + 11) x).insert (p + 5) v) p k rt).lookup (p + cPEND) = some w) :
+    m = mREAD ∧ r = rt ∧ w = v := by
+  simp only [reqH, cMODE, cRET, cPEND] at eM eR eP
+  rw [Finmap.lookup_insert] at eM
+  rw [Finmap.lookup_insert_of_ne _ (by omega), Finmap.lookup_insert] at eR
+  rw [Finmap.lookup_insert_of_ne _ (by omega), Finmap.lookup_insert_of_ne _ (by omega),
+    Finmap.lookup_insert_of_ne _ (by omega), Finmap.lookup_insert_of_ne _ (by omega),
+    Finmap.lookup_insert_of_ne _ (by omega), Finmap.lookup_insert] at eP
+  exact ⟨(Option.some.inj eM).symm, (Option.some.inj eR).symm, (Option.some.inj eP).symm⟩
+
+theorem Mag_step_lsym {b : Array Nat} {om : Nat} {lit : Bool} {σ σ' : Store} {p : Int} {f f' : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hg : Mag b.size om f) (hm : f cMODE = mLSYM)
+    (hS : stepS p σ = some σ') (hw' : World σ' p (L0 b.size om) f') : Mag b.size om f' := by
+  have hc := hi.2.cur
+  rw [hm, facts_lsym] at hc
+  obtain ⟨hf0, hfh, hl286, hd30, _⟩ := hc
+  have hh := hi.1.hdr_rng
+  have hL0 : (L0 b.size om : Int) = b.size + om + 3626 := by unfold L0; push_cast; ring
+  have hmem : (mLSYM, lsymN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mLSYM, lsymN) hmem (by decide)
+  have hSe := stepS_of_mode hw (by unfold L0; omega) hm rfl hfit.1 hfit.2
+    (lsym_step hw (by unfold L0; omega) _ _ _ _ _ _ hi.1.x_eq (by unfold X0; omega) (by rw [hL0]; unfold X0; omega) rfl rfl
+      hi.1.n_eq hi.1.om_eq (fun _ => ⟨by omega, by rw [hL0]; omega⟩) (fun _ _ => ⟨by omega, by rw [hL0]; omega⟩) rfl)
+  unfold lsymH at hSe
+  split_ifs at hSe
+  · exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+  · exact Mag_pinned hw hg hS hSe hw' (by mag_mode) (by mag_frameX)
+  all_goals refine Mag_pinned_gen hw hg hS hSe hw' ?_ (by mag_frame)
+  all_goals intro m r v d eM eR eP _
+  all_goals obtain ⟨rfl, rfl, rfl⟩ := reqH_cells eM eR eP
+  all_goals simp [mREAD, mDECODE, mBUILD, mSNLEN, mLENX, mDSTD, mDSTX, mLREP]
+
 end K5
