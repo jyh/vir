@@ -340,4 +340,52 @@ theorem Inv_init (b : Array Nat) (om : Nat) (lit : Bool) : Inv b om lit (initCel
     dec := fun h => by rw [e0] at h; simp [mDECODE] at h
     sym := fun h => by rw [e0] at h; simp [mSYMD, mDSTD, mLSYM] at h }⟩
 
+/-! ## Safety from one safe step (the outer argument, checked before the 28 per-mode cases) -/
+
+/-- What every non-terminal mode must give: its `stepS`, the next world, the invariant kept, Φ strictly lower. -/
+def StepSafe : Prop :=
+  ∀ (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) (σ : Store) (f : Int → Int),
+    World σ p (L0 b.size om) f → Inv b om lit f → f cMODE ≠ mDONE → f cMODE ≠ mREJECT →
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧ Φ f' < Φ f
+
+/-- Φ is never negative on a world satisfying the invariant. -/
+def PhiNonneg : Prop := ∀ (b : Array Nat) (om : Nat) (lit : Bool) (f : Int → Int), Inv b om lit f → 0 ≤ Φ f
+
+theorem modeOf_world {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw : World σ p L f) (hL : 0 < L) :
+    modeOf p σ = f cMODE := by
+  have h0 := hw.cell 0 (le_refl _) (by omega)
+  rw [show p + 0 = p by omega] at h0
+  simp [modeOf, h0, cMODE]
+
+theorem iter_reach (hs : StepSafe) (hnn : PhiNonneg) (b : Array Nat) (om : Nat) (lit : Bool) (p : Int) :
+    ∀ (k : Nat) (σ : Store) (f : Int → Int), World σ p (L0 b.size om) f → Inv b om lit f → Φ f ≤ k →
+      ∃ j σ', j ≤ k ∧ iterS p j σ = some σ' ∧ (modeOf p σ' = mDONE ∨ modeOf p σ' = mREJECT) := by
+  have hL : 0 < L0 b.size om := by unfold L0; omega
+  intro k
+  induction k with
+  | zero =>
+    intro σ f hw hi hk
+    by_cases ht : f cMODE = mDONE ∨ f cMODE = mREJECT
+    · exact ⟨0, σ, le_refl _, rfl, by rw [modeOf_world hw hL]; exact ht⟩
+    · push Not at ht
+      obtain ⟨σ', f', _, _, hi', hlt⟩ := hs b om lit p σ f hw hi ht.1 ht.2
+      have := hnn b om lit f' hi'
+      push_cast at hk
+      omega
+  | succ k ih =>
+    intro σ f hw hi hk
+    by_cases ht : f cMODE = mDONE ∨ f cMODE = mREJECT
+    · exact ⟨0, σ, by omega, rfl, by rw [modeOf_world hw hL]; exact ht⟩
+    · push Not at ht
+      obtain ⟨σ', f', hst, hw', hi', hlt⟩ := hs b om lit p σ f hw hi ht.1 ht.2
+      obtain ⟨j, σ'', hj, hit, hm⟩ := ih σ' f' hw' hi' (by push_cast at hk ⊢; omega)
+      exact ⟨j + 1, σ'', by omega, by simp [iterS, hst, hit], hm⟩
+
+/-- **SAFETY, from one safe step and Φ ≥ 0:** with N = `Nbound`, a function of n and OUTMAX alone. -/
+theorem safety_of_step (hs : StepSafe) (hnn : PhiNonneg) : SafetyStmt := by
+  refine ⟨Nbound, fun b om lit p _ => ?_⟩
+  obtain ⟨j, σ', hj, hit, hm⟩ := iter_reach hs hnn b om lit p (Nbound b.size om) (initStore b om lit p)
+    (initCell b om lit) (initStore_world b om lit p) (Inv_init b om lit) (by rw [Φ_init])
+  exact ⟨j, σ', hj, hit, hm⟩
+
 end VIRDeflate.Step

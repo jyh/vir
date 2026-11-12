@@ -272,7 +272,14 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
         COUNT count[l] = cnt(0, j, l), count[0] = 0 · NEXT count[l] = cnt(0, nn, l) and offset[l] = Σ_{l'<l} count[l']
         below j (offset[0] = tbb + 32 is never written, so it stays 0) · SYMS next[l] + cnt(j, nn, l) ≤ 288 with
         next[l] ≥ 0 — so the symbol being placed has next[l] < 288 (build_syms_cell's premise). After SYMS: `sane tgt`.
-      - LOC < 4096 for READ's return modes needs CLPUT's and LREP's fill ≥ 0 — carried in `facts rt`. The audit file is regenerated from VIRDeflate.lean's imports: the
+      - LOC < 4096 for READ's return modes needs CLPUT's and LREP's fill ≥ 0 — carried in `facts rt`.
+    - **In code (df-110 … df-115):** the invariant as designed (`tbase`, `sane`, `kcap`, `cnt`, `offOf`, `buildInv`, `facts`,
+      `InvM`, `Inv = InvG ∧ InvM`), DEFINED before its proofs; **`Inv_init`**: the initial world satisfies it.
+      **`safety_of_step : StepSafe → PhiNonneg → SafetyStmt`**, with N = `Nbound`: the outer argument (induction on Φ,
+      `iter_reach`; the initial world's Φ is the bound) is PROVED. What remains of Safety is exactly its two premises:
+      `StepSafe` (every non-terminal mode: stepS, next world, Inv kept, Φ lower — the 28 per-mode cases) and `PhiNonneg`.
+      df-111 (EXIT=1): `split_ifs` over `initCell` timed out; an explicit `if_neg` chain replaced it. df-113/114: `p + 0` in
+      World's cell 0 is not rewritten by `simp`; `rw [show p + 0 = p by omega]` was. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
