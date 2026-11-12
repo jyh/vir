@@ -1179,4 +1179,111 @@ theorem safeI_dh3 {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int}
   phisimp
   simp [hm]
 
+theorem safeI_shdr {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mSHDR) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mSHDR, shdrN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mSHDR, shdrN) hmem (by decide)
+  have hr := hi.1.hdr_rng
+  have hbr := hi.1.by_rng
+  have hir := hi.1.bi_rng
+  have hbe := hi.1.by_end
+  set g := Function.update (Function.update f 1 (if f cBI = 0 then f cBY else f cBY + 1)) 2 0 with hg
+  have hgBI : g cBI = 0 := by simp [hg, cBI]
+  refine ⟨_, _, stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (shdr_step hw hL (f cBY) (f cBI) rfl rfl),
+    ((hw.store (i := 1) (by norm_num) (by omega)).store (i := 2) (by norm_num) (by omega)).req (by omega) 16 8,
+    ⟨hi.1.align.req (by rw [upd_eq _ _ (by unfold cMODE; omega), upd_eq _ _ (by unfold cMODE; omega), hm]; decide) 16
+      (by decide),
+     InvM.req (SymsOK.upd (SymsOK.upd hi.2.syms (by norm_num) _) (by norm_num) _)
+       (by rw [upd_eq _ _ (by unfold cHLIT; omega), upd_eq _ _ (by unfold cHLIT; omega)]; exact hr.1)
+       (by simp [facts, mSLEN, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS, mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX,
+         mDSTD, mDSTX, mCOPY]) (by norm_num) (by simp [kcap, mSLEN, mHDRB, mHDRD])
+       (fun _ => by simp [cBI])⟩, Or.inl ?_⟩
+  have u : ∀ c : Int, c ≠ 1 → c ≠ 2 → (c < 2068 ∧ c ≠ 0) ∨ 2071 < c → reqF g 16 8 c = f c := by
+    intro c h1 h2 h3; rw [reqF_eq _ _ _ _ h3, hg, upd_eq _ _ h2, upd_eq _ _ h1]
+  have hT : TBL (reqF g 16 8) = 0 := by unfold TBL; simp [reqF, cMODE, mTABLE]
+  have hTf : TBL f = 0 := by unfold TBL; rw [hm]; simp [mSHDR, mTABLE]
+  have hO : OUT (reqF g 16 8) = OUT f := by
+    unfold OUT; rw [u _ (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega) (by unfold cOUTMAX; omega),
+      u _ (by unfold cM; omega) (by unfold cM; omega) (by unfold cM; omega)]
+  have hB : BITS (reqF g 16 8) ≤ BITS f := by
+    unfold BITS
+    rw [u _ (by unfold cN; omega) (by unfold cN; omega) (by unfold cN; omega),
+      reqF_eq _ _ _ _ (by unfold cBY; omega), reqF_eq _ _ _ _ (by unfold cBI; omega), hgBI]
+    simp only [hg, cBY, Function.update_apply]
+    simp only [show (1 : Int) ≠ 2 by decide, if_false, if_true]
+    simp only [cBI, cBY] at hir hbr ⊢
+    split_ifs <;> omega
+  have hL1 : LOC f = 1 := by unfold LOC; rw [hm]; simp [mSHDR, mHDR, mHDRB]
+  have hL0 : LOC (reqF g 16 8) = 0 := by
+    unfold LOC; rw [show reqF g 16 8 cMODE = 2 by simp [reqF, cMODE]]
+    simp [mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD, mHDRD, mFIXLENS,
+      mBUILD, mLENS, mLSYM, mLREP, mREP, mCLREAD, mCLPUT, mDH4]
+  rw [← hg]; unfold Φ mW; rw [hT, hTf, hO, hL1, hL0]; omega
+
+theorem Φ_lt_of {f f' : Int → Int} (hT : TBL f' = TBL f) (hB : BITS f' = BITS f) (hO : OUT f' = OUT f)
+    (hL : LOC f' < LOC f) : Φ f' < Φ f := by unfold Φ; rw [hT, hB, hO]; omega
+
+/-- A mode switch (cell 0) after writes to cells that neither BITS nor OUT reads keeps TBL (both non-TABLE), BITS, OUT. -/
+theorem TBO_eq {f f' : Int → Int} (hnt : f cMODE ≠ mTABLE) (hnt' : f' cMODE ≠ mTABLE)
+    (e : ∀ c : Int, c = 1 ∨ c = 2 ∨ c = 3 ∨ c = 15 ∨ c = 16 → f' c = f c) :
+    TBL f' = TBL f ∧ BITS f' = BITS f ∧ OUT f' = OUT f := by
+  refine ⟨by unfold TBL; rw [if_neg hnt, if_neg hnt'], ?_, ?_⟩
+  · unfold BITS; rw [e cN (by unfold cN; omega), e cBY (by unfold cBY; omega), e cBI (by unfold cBI; omega)]
+  · unfold OUT; rw [e cOUTMAX (by unfold cOUTMAX; omega), e cM (by unfold cM; omega)]
+
+theorem safeI_hdrd {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int}
+    (hw : World σ p (L0 b.size om) f) (hi : Inv b om lit f) (hm : f cMODE = mHDRD) :
+    ∃ σ' f', stepS p σ = some σ' ∧ World σ' p (L0 b.size om) f' ∧ Inv b om lit f' ∧
+      (Φ f' < Φ f ∨ f' cMODE = mDONE ∨ f' cMODE = mREJECT) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hmem : (mHDRD, hdrdN) ∈ modes := by unfold modes; simp
+  have hfit := modes_fit (mHDRD, hdrdN) hmem (by decide)
+  have hnt : f cMODE ≠ mTABLE := by rw [hm]; decide
+  have hS := stepS_of_mode hw (by omega) hm rfl hfit.1 hfit.2 (hdrd_step hw hL (f cACC) rfl)
+  have hL1 : LOC f = 1 + locFIX 0 := by unfold LOC; rw [hm]; simp [mHDRD, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM,
+    mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN, mDSTX, mDSTD]
+  have hlf : 0 < locFIX 0 := by unfold locFIX bfull; norm_num
+  unfold hdrdH at hS
+  by_cases a0 : f cACC = 0
+  · rw [if_pos a0] at hS
+    refine ⟨_, _, hS, hw.store (i := 0) (by norm_num) (by omega),
+      ⟨hi.1.mode (by decide) (by decide) (fun h => by simp [mREAD] at h) hnt,
+       InvM.mode hi.2.syms (by decide) (by decide) (by simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS,
+         mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY])⟩, Or.inl ?_⟩
+    obtain ⟨t1, t2, t3⟩ := TBO_eq (f' := Function.update f 0 5) hnt (by simp [cMODE, mTABLE])
+      (fun c hc => upd_eq _ _ (by omega))
+    refine Φ_lt_of t1 t2 t3 ?_
+    rw [hL1]; unfold LOC; simp [cMODE, mSHDR, mHDR, mHDRB]; omega
+  by_cases a1 : f cACC = 1
+  · rw [if_neg a0, if_pos a1] at hS
+    refine ⟨_, _, hS, (hw.store (i := 10) (by norm_num) (by omega)).store (i := 0) (by norm_num) (by omega),
+      ⟨(hi.1.upd (by unfold scratch; omega) _).mode (by decide) (by decide) (fun h => by simp [mREAD] at h)
+        (by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact hnt),
+       InvM.mode (SymsOK.upd hi.2.syms (by norm_num) _) (by decide) (by decide)
+         (by simp [facts, mFIXLENS, mSNLEN, mSCOPY, cFILL])⟩, Or.inl ?_⟩
+    obtain ⟨t1, t2, t3⟩ := TBO_eq (f' := Function.update (Function.update f 10 0) 0 6) hnt (by simp [cMODE, mTABLE])
+      (fun c hc => by rw [upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+    refine Φ_lt_of t1 t2 t3 ?_
+    rw [hL1]; unfold LOC
+    simp [cMODE, cFILL, mFIXLENS, mHDR, mHDRB, mSHDR, mSLEN, mDHDR, mDH2, mDH3, mSYM, mLENX, mSYMD, mSCOPY, mCOPY, mSNLEN,
+      mDSTX, mDSTD, mHDRD]
+  by_cases a2 : f cACC = 2
+  · rw [if_neg a0, if_neg a1, if_pos a2] at hS
+    refine ⟨_, _, hS, hw.store (i := 0) (by norm_num) (by omega),
+      ⟨hi.1.mode (by decide) (by decide) (fun h => by simp [mREAD] at h) hnt,
+       InvM.mode hi.2.syms (by decide) (by decide) (by simp [facts, mSNLEN, mSCOPY, mFIXLENS, mBUILD, mCLREAD, mCLPUT, mLENS,
+         mLSYM, mLREP, mREP, mSYM, mSYMD, mLENX, mDSTD, mDSTX, mCOPY])⟩, Or.inl ?_⟩
+    obtain ⟨t1, t2, t3⟩ := TBO_eq (f' := Function.update f 0 7) hnt (by simp [cMODE, mTABLE])
+      (fun c hc => upd_eq _ _ (by omega))
+    refine Φ_lt_of t1 t2 t3 ?_
+    rw [hL1]; unfold LOC; simp [cMODE, mDHDR, mHDR, mHDRB, mSHDR, mSLEN]; omega
+  · rw [if_neg a0, if_neg a1, if_neg a2] at hS
+    exact ⟨_, _, hS, (hw.store (i := 14) (by norm_num) (by omega)).store (i := 0) (by norm_num) (by omega),
+      ⟨(hi.1.upd (by unfold scratch; omega) _).mode (by decide) (by decide) (fun h => by simp [mREJECT, mREAD] at h)
+        (by rw [upd_eq _ _ (by unfold cMODE; omega)]; exact hnt),
+       InvM.term (SymsOK.upd hi.2.syms (by norm_num) _) (Or.inr rfl)⟩, Or.inr (Or.inr (by simp [cMODE, mREJECT]))⟩
+
 end VIRDeflate.Step

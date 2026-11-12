@@ -302,7 +302,12 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
     - **An invariant the design MISSED, found planning SCOPY (df-132 … df-134):** SCOPY's copy advances `by` and never `bi`,
       so at `by = n` the invariant needs `bi = 0` — else BITS < 0 and Φ ≥ 0 fails. It holds because SHDR aligns and the two
       16-bit READs keep `(bi + k) ≡ 0 (mod 8)`. Added as InvM fields `align` (SLEN, SNLEN, SCOPY → bi = 0) and `ralign` (READ
-      returning to SLEN/SNLEN → (bi + k) % 8 = 0); `InvM.req` takes the alignment premise; READ re-proved with both. The audit file is regenerated from VIRDeflate.lean's imports: the
+      returning to SLEN/SNLEN → (bi + k) % 8 = 0); `InvM.req` takes the alignment premise; READ re-proved with both.
+    - DH2, DH3 (header cells in range from the return mode's acc bound), SHDR (alignment: BITS drops or LOC does), HDRD
+      (four branches; REJECT terminal) safe (df-136 … df-141). Helpers `InvG.hdr`, `InvG.align`, `InvM.mode`, `Φ_lt_of`,
+      `TBO_eq`. **9 of 28 DONE:** HDR, HDRB, SLEN, DHDR, READ, DH2, DH3, SHDR, HDRD. A recurring slip, recorded so the next
+      head avoids it: after `simp [cX…]` unfolds a cell name in the GOAL, omega treats `f 8` and `f cHDIST` as different
+      atoms — unfold the names in the hypotheses too. The audit file is regenerated from VIRDeflate.lean's imports: the
     old 205 rows are all present (0 missing as sets), 55 are new, and only the order moved.
 
 ## Findings, recorded before X5 (no oracle has run)
