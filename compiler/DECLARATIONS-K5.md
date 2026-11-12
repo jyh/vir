@@ -39,3 +39,23 @@ statement names DEFLATE. It is a statement ABOUT a program, so K3 (the DRIVER na
 
 ## Order
 K5-1 first: it is generic, and it closes K5-0 for every program, so the router (K7) gets it too. Then K5-2, then K5-3.
+
+## Addendum 1 (68th head, 2026-11-12, BEFORE any K5 Lean file): K5-1 is split at S1, and the split is declared here
+K5-1 is proved in two parts, because Sim2 relates the IR to the word machine and S1 relates the source to the IR.
+- **K5-1a `s2_noovf` (S2, in VIRC/NoOvf.lean).** The in-range predicate is stated on the IR run, i.e. on S1's image of the
+  program. `Opd.InR ρ o`: every `.prim` sub-operand of `o` that evaluates (`Opd.eval ρ`) evaluates to a value whose int, if it
+  has one, satisfies `inRange`. `StepInR I`: the operands the IR step at `I` evaluates are `InR` (`ret o`: o · `letOp _ os _`:
+  every o in os · `app f x`: f and x · `ite o`/`case o`: o · `letE`, `done`: nothing). `InRangeRun I₀ := ∀ n I, IRN n I₀ I →
+  StepInR I`. **Statement:** under `s2_refines`'s hypotheses and `InRangeRun (.run (lowerT e) ρ₀ [], σ)`, every word run from
+  `W₀` (`WN T k W₀ W'`) has `W'.1 ≠ .ovf`. Corollary `s2_refines_noovf`: clause (1) of `s2_refines` without its `∨ .ovf`.
+  Route: (i) a pure word-machine fact: a `stepW` to `.ovf` evaluates some head operand to `.ovf`; (ii) `opd_noovf`, by the same
+  induction as `opd_sim`: a typed, accepted atom whose IR image is `InR` never evaluates to `.ovf` in the word machine (the only
+  `.ovf` sources are `chk` at add/sub/mul, and `InR` gives `inRange` of exactly that result); (iii) `step_noovf` per construct;
+  (iv) the run, by induction on the word run, with `stepW` deterministic.
+  Sim2.lean is NOT edited: K5-1a is new theorems beside it.
+- **K5-1b (S1, owed after K5-1a).** `InRangeRun` on the IR follows from the declared ⟶₂ predicate (every `.p1`/`.p2` int
+  result the source run applies is `inRange`), through S1's `Match`/`TRel` (values preserved). Written as its own declaration
+  before its file, if the transfer is not a one-line corollary of S1.
+- **What would show this wrong:** `s2_noovf` needing a hypothesis beyond `InRangeRun` and `s2_refines`'s own (a finding, K5's
+  third falsifier); or an `.ovf` source in `stepW` that no head operand explains (then (i) is false and Word.lean has a fourth
+  exit path nobody declared).
