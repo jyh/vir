@@ -1006,6 +1006,95 @@ theorem scopy_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x 
     convert hRel using 2
     omega
 
+theorem Sim.align' {b : Array Nat} {om : Nat} {p : Int} {pre : (Int → Int) → St → Prop} :
+    Sim b om p align (fun f st => pre f (alignSt st)) (fun _ f st => pre f st) := by
+  intro σ f st hw hp
+  have e : go align ⟨b, om⟩ st = .ok ((), alignSt st) := rfl
+  refine ⟨fun a st' h => ?_, fun r h => by rw [e] at h; simp at h⟩
+  rw [e] at h
+  simp only [Except.ok.injEq, Prod.mk.injEq] at h
+  obtain ⟨-, rfl⟩ := h
+  exact ⟨σ, f, Reach.refl p σ, hw, hp⟩
+
+theorem Sim.set' {b : Array Nat} {om : Nat} {p : Int} {t : St} {pre : (Int → Int) → St → Prop}
+    {post : PUnit → (Int → Int) → St → Prop}
+    (h : ∀ σ f st, World σ p (L0 b.size om) f → pre f st →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ post ⟨⟩ f' t) :
+    Sim b om p (MonadStateOf.set t : M PUnit) pre post := by
+  intro σ f st hw hp
+  refine ⟨fun a st' h' => ?_, fun r h' => by rw [go_set] at h'; simp at h'⟩
+  rw [go_set] at h'
+  simp only [Except.ok.injEq, Prod.mk.injEq] at h'
+  obtain ⟨-, rfl⟩ := h'
+  cases a
+  exact h σ f st hw hp
+
+theorem cap16 {b : Array Nat} {om : Nat} {lit : Bool} {f : Int → Int} {st : St} (hR : Rel b om lit f st)
+    (hm : f cMODE = mSLEN ∨ f cMODE = mSNLEN) : 0 ≤ f cACC ∧ f cACC < 65536 := by
+  have h := hR.inv.2.ret (by rcases hm with hm | hm <;> rw [hm] <;> simp [readRets])
+  rcases hm with hm | hm <;> rw [hm] at h <;> simpa [kcap, mSLEN, mSNLEN, mHDRB, mHDRD] using h
+
+/-- **S3 is simulated: `stored` from SHDR ends in the block's end mode (S-18's `stored` row).** -/
+theorem stored_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) :
+    BodySim b om lit p stored mSHDR (fun _ => True) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro bf
+  unfold stored
+  refine Sim.step (pre' := fun f st => (fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = (15 : Nat) + 1 ∧
+    f cACC = 0 ∧ f cWT = 1 ∧ f cRET = mSLEN) ∧ f cBF = bf) f (alignSt st)) ?_ ?_
+  · rintro σ f st hw ⟨hR, hm, hbf, -⟩
+    obtain ⟨σ1, f1, hS, hw1, hR1, h1, h2, h3, h4, h5, h6⟩ := shdr_next hb hw hR hm
+    exact ⟨σ1, f1, hS, hw1, ⟨hR1, h1, by rw [h2]; norm_num, h3, h4, h5⟩, by rw [h6, hbf]⟩
+  refine Sim.bind (Sim.align' (pre := fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = (15 : Nat) + 1 ∧
+    f cACC = 0 ∧ f cWT = 1 ∧ f cRET = mSLEN) ∧ f cBF = bf)) (fun _ => ?_)
+  refine Sim.bind (bits_sim' hb 15 mSLEN (fun f _ => f cBF = bf) (fun f _ => f cBF = bf)
+    (fun f st f' st' hq hk _ _ _ => by
+      rw [hk _ (by decide) (by unfold cBF L0; omega) (by unfold rdSet cBF; omega)]; exact hq)) (fun len => ?_)
+  refine Sim.step (pre' := fun f st => (Rel b om lit f st ∧ f cMODE = mREAD ∧ f cK = (15 : Nat) + 1 ∧ f cACC = 0 ∧
+    f cWT = 1 ∧ f cRET = mSNLEN) ∧ (f cBF = bf ∧ f cPEND = len ∧ len < 65536)) ?_ ?_
+  · rintro σ f st hw ⟨hR, hm, ha, hbf⟩
+    have hcap := cap16 hR (Or.inl hm)
+    obtain ⟨σ1, f1, hS, hw1, hR1, h1, h2, h3, h4, h5, h6, h7⟩ := slen_next hb hw hR hm
+    exact ⟨σ1, f1, hS, hw1, ⟨hR1, h1, by rw [h2]; norm_num, h3, h4, h5⟩, by rw [h6, hbf], by rw [h7, ha], by omega⟩
+  refine Sim.bind (bits_sim' hb 15 mSNLEN (fun f _ => f cBF = bf ∧ f cPEND = len ∧ len < 65536)
+    (fun f _ => f cBF = bf ∧ f cPEND = len ∧ len < 65536)
+    (fun f st f' st' hq hk _ _ _ => ⟨by rw [hk _ (by decide) (by unfold cBF L0; omega) (by unfold rdSet cBF; omega)]; exact hq.1,
+      by rw [hk _ (by decide) (by unfold cPEND L0; omega) (by unfold rdSet cPEND; omega)]; exact hq.2.1, hq.2.2⟩))
+    (fun nlen => ?_)
+  refine Sim.step (pre' := fun f st => Rel b om lit f st ∧ f cBF = bf ∧ f cPEND = len ∧ len < 65536 ∧ nlen < 65536 ∧
+    f cMODE = (if (nlen : Int) + len = 65535 then (if (b.size : Int) < st.pos / 8 + len then mREJECT
+      else if (om : Int) < st.out.size + len then mREJECT else mSCOPY) else mREJECT)) ?_ ?_
+  · rintro σ f st hw ⟨hR, hm, ha, hbf, hpd, hlen⟩
+    have hcap := cap16 hR (Or.inr hm)
+    have hbi0 := hR.inv.2.align (Or.inr (Or.inl hm))
+    have hpos := hR.pos
+    obtain ⟨σ1, f1, hS, hw1, hR1, hk1, hmode⟩ := snlen_next hb hw hR hm
+    refine ⟨σ1, f1, hS, hw1, hR1, by rw [hk1 _ (by decide) (by unfold cBF; omega) (by unfold cBF; omega), hbf],
+      by rw [hk1 _ (by decide) (by unfold cPEND; omega) (by unfold cPEND; omega), hpd], hlen, by omega, ?_⟩
+    rw [hmode, ha, hpd, hR.inv.1.n_eq, hR.inv.1.om_eq, hR.m, show f cBY = ((st.pos / 8 : Nat) : Int) by omega]
+    push_cast; rfl
+  refine Sim.ite (fun hc => Sim.reject_bind ?_) (fun hc => ?_)
+  · rintro σ f st hw ⟨-, -, -, hl, hn, hmode⟩
+    refine ⟨σ, f, Reach.refl p σ, hw, ?_⟩
+    rw [hmode, if_neg ((nlen_check len nlen hl hn).mp hc)]
+  have hc' : ∀ (hl : len < 65536) (hn : nlen < 65536), (nlen : Int) + len = 65535 := fun hl hn => by
+    have := (nlen_check len nlen hl hn).not; tauto
+  refine Sim.read (Sim.get (fun s => ?_))
+  refine Sim.ite (fun h2 => Sim.reject_bind ?_) (fun h2 => Sim.ite (fun h3 => Sim.reject_bind ?_) (fun h3 => ?_))
+  · rintro σ f st hw ⟨⟨-, -, -, hl, hn, hmode⟩, rfl⟩
+    refine ⟨σ, f, Reach.refl p σ, hw, ?_⟩
+    rw [hmode, if_pos (hc' hl hn), if_pos (by simp only at h2; omega)]
+  · rintro σ f st hw ⟨⟨-, -, -, hl, hn, hmode⟩, rfl⟩
+    refine ⟨σ, f, Reach.refl p σ, hw, ?_⟩
+    rw [hmode, if_pos (hc' hl hn), if_neg (by simp only at h2; omega), if_pos (by simp only at h3; omega)]
+  · refine Sim.set' ?_
+    rintro σ f st hw ⟨⟨hR, hbf, hpd, hl, hn, hmode⟩, rfl⟩
+    have hm' : f cMODE = mSCOPY := by
+      rw [hmode, if_pos (hc' hl hn), if_neg (by simp only at h2; omega), if_neg (by simp only at h3; omega)]
+    obtain ⟨σ', f', hR', hw', hRel, hmo⟩ := scopy_run hb bf len σ f st hw hR hm' hpd hbf
+      (by simp only at h2; omega) (by simp only at h3; omega)
+    exact ⟨σ', f', hR', hw', hRel, hmo⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
