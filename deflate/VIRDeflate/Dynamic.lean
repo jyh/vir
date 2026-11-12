@@ -844,4 +844,108 @@ theorem rep_req {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x �
     exact hF.2.2.2.2.2.2.2.1 _ (by have := hne h; omega)
   · rw [if_neg h, hv.2 h]; rfl
 
+/-- **S6's `lensLoop` is simulated** (LENS … REP), from LENS with the lengths so far in the lengths area. -/
+theorem lens_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int) (hl hd : Nat)
+    (htot : hl + hd ≤ 316) (cl : Array Nat) :
+    ∀ fuel (lens : Array Nat), Sim b om p (lensLoop (assign cl) (hl + hd) fuel lens)
+      (LPre b om lit bf hl hd cl lens fuel) (LPost b om lit bf hl hd cl) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro fuel
+  induction fuel with
+  | zero => intro lens; rintro σ f st hw ⟨_, h⟩; omega
+  | succ fuel ih =>
+    intro lens
+    rw [lensLoop_succ]
+    refine Sim.ite (fun hlt => ?_) (fun hge => Sim.pure (fun f st ⟨⟨hRm, hF⟩, _⟩ =>
+      ⟨⟨hRm, hF⟩, by have := hF.2.2.2.2.2.2.1; omega⟩))
+    refine Sim.step (pre' := fun f st => (DecReady b om lit f st 0 mLSYM ∧ TblRel b.size om f 0 cl) ∧
+      (f cFILL = lens.size ∧ LFrame b om bf hl hd cl lens f ∧ 8 * b.size - st.pos < fuel + 1)) ?_ ?_
+    · rintro σ f st hw ⟨⟨⟨hR, hm, hfl⟩, hF⟩, hfu⟩
+      obtain ⟨σ1, f1, hS, hw1, hD, hk1⟩ := lens_req_next hb hw hR hm (by rw [hfl, hF.1, hF.2.1]; exact_mod_cast hlt)
+      have hF1 := hF.keep hk1 (by omega) (fun c hc => by unfold decReqSet at hc; unfold tbase LB0 X0 at *; omega)
+      exact ⟨σ1, f1, hS, hw1, ⟨hD, hF1.2.2.2.2.2.1⟩,
+        by rw [hk1 _ (by decide) (by unfold cFILL; omega) (by unfold decReqSet cFILL X0; omega)]; exact hfl, hF1, hfu⟩
+    refine Sim.bind (decode_Sim hb cl 0 mLSYM
+      (fun f st => f cFILL = lens.size ∧ LFrame b om bf hl hd cl lens f ∧ 8 * b.size - st.pos < fuel + 1)
+      (fun f st => f cFILL = lens.size ∧ LFrame b om bf hl hd cl lens f ∧ 8 * b.size - st.pos < fuel)
+      (fun f st f' st' hq hk hlt' hin =>
+        ⟨by rw [hk _ (by decide) (by unfold cFILL L0; omega) (by unfold decSet cFILL X0; omega)]; exact hq.1,
+          hq.2.1.keep hk (by omega) (fun c hc => by unfold decSet at hc; unfold tbase LB0 X0 at *; omega),
+          by have := hq.2.2; omega⟩)) (fun s => ?_)
+    unfold lbody
+    refine Sim.ite (fun h15 => ?_) (fun h15 => Sim.ite (fun h16 => ?_) (fun h16 => Sim.ite (fun h17 => ?_) (fun h17 => ?_)))
+    · refine Sim.step (pre' := LPre b om lit bf hl hd cl (lens.push s) fuel) ?_ ?_
+      · rintro σ f st hw ⟨hR, hm, hs, hfl, hF, hfu⟩
+        obtain ⟨hl15, -, -⟩ := lsym_next hb hw hR hm s lens.size hs hfl (by omega)
+        obtain ⟨σ1, f1, hS, hw1, hR1, h1, h2, h3, hk1⟩ := hl15 h15
+        have hF1 := hF.keep hk1 (by omega) (fun c hc => by unfold tbase LB0 at *; omega)
+        refine ⟨σ1, f1, hS, hw1, ⟨⟨hR1, h1, by rw [h2, Array.size_push]; push_cast; ring⟩, ?_⟩, hfu⟩
+        exact hF1.pushN s 1 (by omega) (by omega) (fun j hj => by rw [show j = 0 by omega]; simpa using h3)
+      refine Sim.bind (mid := fun lens' f st => lens' = lens.push s ∧ LPre b om lit bf hl hd cl (lens.push s) fuel f st)
+        (Sim.pure fun f st h => ⟨rfl, h⟩) (fun lens' => ?_)
+      unfold lnext
+      refine Sim.ite (fun hc => Sim.reject_bind ?_) (fun hc => (ih lens').mono (fun f st ⟨e, h⟩ => e ▸ h) (fun _ _ _ h => h))
+      rintro σ f st hw ⟨e, _⟩
+      subst e
+      simp at hc
+      omega
+    · refine Sim.ite (fun h0 => Sim.reject_bind ?_) (fun h0 => ?_)
+      · rintro σ f st hw ⟨hR, hm, hs, hfl, hF, hfu⟩
+        obtain ⟨-, hrej, -⟩ := lsym_next hb hw hR hm s lens.size hs hfl (by omega)
+        obtain ⟨σ1, f1, hS, hw1, hm1⟩ := hrej h16 h0
+        exact ⟨σ1, f1, Reach.step hS, hw1, hm1⟩
+      · exact rep_req hb bf hl hd htot cl fuel ih lens hlt s 1 3 (lens.getD (lens.size - 1) 0) (by omega) (fun _ => h0)
+          (by rw [if_pos h16]; norm_num) (by rw [if_neg (by omega)]; norm_num) ⟨fun _ => rfl, fun h => absurd h16 h⟩
+    · exact rep_req hb bf hl hd htot cl fuel ih lens hlt s 2 3 0 (by omega) (fun h => absurd h h16)
+        (by rw [if_neg h16, if_pos h17]; norm_num) (by rw [if_neg (by omega)]; norm_num) ⟨fun h => absurd h h16, fun _ => rfl⟩
+    · exact rep_req hb bf hl hd htot cl fuel ih lens hlt s 6 11 0 (by omega) (fun h => absurd h h16)
+        (by rw [if_neg h16, if_neg h17]; norm_num) (by rw [if_pos (by omega)]; norm_num) ⟨fun h => absurd h h16, fun _ => rfl⟩
+
+/-- `fuelNow` binds the unread bits plus one, and touches nothing. -/
+theorem Sim.fuel {b : Array Nat} {om : Nat} {p : Int} {α : Type} {k : Nat → M α} {pre : (Int → Int) → St → Prop}
+    {post : α → (Int → Int) → St → Prop}
+    (h : ∀ s : St, Sim b om p (k (8 * b.size - s.pos + 1)) (fun f st => pre f st ∧ st = s) post) :
+    Sim b om p (fuelNow >>= k) pre post := by
+  intro σ f st hw hp
+  have := h st σ f st hw ⟨hp, rfl⟩
+  refine ⟨fun a st' h' => this.1 a st' ?_, fun r h' => this.2 r ?_⟩ <;> rw [go_bind, go_fuelNow] at h' <;> exact h'
+
+/-- **The CL build** (S6's `code cl .strict`, BUILD target 0), then BUILD's end: LENS with no lengths yet. -/
+theorem cl_build_sim {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (bf : Int) (hl hd : Nat)
+    (htot : hl + hd ≤ 316) (cl : Array Nat) :
+    Sim b om p (code cl .strict) (ClStart b om lit bf hl hd cl)
+      (fun C f st => C = assign cl ∧ (Rel b om lit f st ∧ f cMODE = mLENS ∧ f cFILL = (#[] : Array Nat).size) ∧
+        LFrame b om bf hl hd cl #[] f) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro σ f st hw h0
+  obtain ⟨hR, hm, htg, h5, h6, h7, h8, hph, hj, hfl, hbf, hhl, hhd, hdy, hchk, hsz, h8b, hcl⟩ := h0
+  have h15 : ∀ i, i < cl.size → cl.getD i 0 ≤ 15 := fun i _ => by have := h8b i; omega
+  obtain ⟨hok, herr⟩ := code_Sim (lit := lit) hb cl .strict f st h15 σ f st hw
+    ⟨rfl, rfl, hR, hm, hph, hj, by rw [h6, hsz]; rfl, fun i hi => by rw [h5]; exact hcl i (by omega), hchk,
+      by rw [h8]; rfl⟩
+  refine ⟨fun C st' h => ?_, herr⟩
+  obtain ⟨σ1, f1, hR1, hw1, hC, rfl, hB⟩ := hok C st' h
+  obtain ⟨hRb, hmb, hphb, hjb, hT, hk⟩ := hB
+  rw [htg] at hT; rw [h7] at hk
+  have kk : ∀ c : Int, 0 ≤ c → c < L0 b.size om → ¬ bset (tbase b.size om 0) c → f1 c = f c := hk
+  have e6 : f1 (X0 b.size om + 6) = 19 := by
+    rw [kk _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold bset tbase LB0 X0; omega)]; exact h6
+  have etg : f1 cTGT = 0 := by
+    rw [kk _ (by decide) (by unfold cTGT; omega) (by unfold bset tbase LB0 cTGT; omega)]; exact htg
+  obtain ⟨σ2, f2, hS, hw2, hR2, hL2, -, -⟩ := build_end_next hb hw1 hRb hmb hphb (by rw [hjb, e6, hsz]; rfl)
+  obtain ⟨hm2, hk2⟩ := hL2 etg
+  have kc : ∀ c : Int, 0 ≤ c → c < 2075 → c ≠ 0 → c ≠ 12 → c ≠ 13 → c ≠ 14 → f2 c = f c := fun c a0 a1 a2 a3 a4 a5 => by
+    rw [hk2 c a0 (by omega) a2, kk c a0 (by omega) (by unfold bset tbase LB0; omega)]
+  refine ⟨σ2, f2, hR1.trans (Reach.step hS), hw2, hC, ⟨hR2, hm2, ?_⟩, ?_, ?_, ?_, ?_, ?_,
+    hT.keep (by norm_num) hk2 (fun c hc => by unfold tbase LB0; omega), by simp, fun i hi => by simp at hi,
+    fun i hi => by simp at hi⟩
+  · rw [kc _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide), hfl]; rfl
+  · rw [kc _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; exact hhl
+  · rw [kc _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; exact hhd
+  · rw [kc _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)]; exact hbf
+  · rw [hk2 _ (by decide) (by unfold cDYN; omega) (by unfold cDYN; omega),
+      kk _ (by decide) (by unfold cDYN; omega) (by unfold bset tbase LB0 cDYN; omega)]; exact hdy
+  · rw [hk2 _ (by decide) (by unfold cCHK; omega) (by unfold cCHK; omega),
+      kk _ (by decide) (by unfold cCHK; omega) (by unfold bset tbase LB0 cCHK; omega)]; exact hchk
+
 end VIRDeflate.Step
