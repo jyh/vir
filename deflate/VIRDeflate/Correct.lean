@@ -2266,6 +2266,137 @@ theorem nextCodes_ncode (lens : Array Nat) (l : Nat) (hl : l ≤ 15) :
     | succ i ih => simp only [ncode]; positivity
   simp [Array.getD, show l < 16 by omega, Int.toNat_of_nonneg (hnn l)]
 
+/-! ## BUILD's LEFT phase: S4's two checks -/
+
+/-- S4's `left` fold over any counts: `none` is "over-subscribed". -/
+def leftF (c : Nat → Int) : Nat → Option Int
+  | 0 => some 1
+  | k + 1 => match leftF c k with
+    | none => none
+    | some left => if 2 * left - c (k + 1) < 0 then none else some (2 * left - c (k + 1))
+
+def restS (c : Nat → Int) : Nat → Int
+  | 0 => 0
+  | k + 1 => restS c k + (if 2 ≤ k + 1 then c (k + 1) else 0)
+
+def totS (c : Nat → Int) : Nat → Int
+  | 0 => 0
+  | k + 1 => totS c k + c (k + 1)
+
+theorem leftAfter_leftF (lens : Array Nat) : leftAfter lens = leftF (fun l => (blCount lens l : Int)) 15 := by
+  have key : ∀ k, (List.range' 1 k).foldl
+      (fun (acc : Option Int) l => match acc with
+        | none => none
+        | some left => let left' := 2 * left - (blCount lens l : Int); if left' < 0 then none else some left')
+      (some 1) = leftF (fun l => (blCount lens l : Int)) k := by
+    intro k
+    induction k with
+    | zero => rfl
+    | succ k ih =>
+      rw [List.range'_concat, List.foldl_append, ih]
+      simp only [List.foldl_cons, List.foldl_nil, leftF, show 1 + 1 * k = k + 1 by omega]
+  exact key 15
+
+theorem leftF_none {c : Nat → Int} : ∀ {j k : Nat}, j ≤ k → leftF c j = none → leftF c k = none := by
+  intro j k hjk h
+  induction k with
+  | zero => have : j = 0 := by omega
+            subst this; simp [leftF] at h
+  | succ k ih =>
+    by_cases hj : j = k + 1
+    · subst hj; exact h
+    · simp only [leftF, ih (by omega)]
+
+/-- **LEFT, to j = 16, or REJECT at the first negative `left`** (cf: the table's counts, fixed through LEFT). -/
+theorem left_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) (tbb : Int) (cf : Nat → Int) :
+    ∀ (r : Nat) (σ : Store) (f : Int → Int) (st : St) (j : Nat), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mBUILD → f cPHASE = 3 → f cINDEX = j → 1 ≤ j → j + r = 16 → f (X0 b.size om + 7) = tbb →
+      (∀ k : Nat, k < 16 → f (tbb + k) = cf k) →
+      leftF cf (j - 1) = some (f cLEFT) → f cREST = restS cf (j - 1) → f cTOTAL = totS cf (j - 1) →
+      (leftF cf 15 = none → ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ f' cMODE = mREJECT) ∧
+      (∀ v, leftF cf 15 = some v →
+        ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st ∧ f' cMODE = mBUILD ∧
+          f' cPHASE = 3 ∧ f' cINDEX = 16 ∧ f' cLEFT = v ∧ f' cREST = restS cf 15 ∧ f' cTOTAL = totS cf 15 ∧
+          Keeps (L0 b.size om) f f' (fun c => c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  intro r
+  induction r with
+  | zero =>
+    intro σ f st j hw hR hm hph hj hj1 hjr htb hcf hl hrs hts
+    have hj16 : j = 16 := by omega
+    subst hj16
+    refine ⟨fun h => by rw [h] at hl; simp at hl, fun v hv => ⟨σ, f, Reach.refl p σ, hw, hR, hm, hph, by rw [hj]; rfl, ?_,
+      hrs, hts, Keeps.refl _ _ _⟩⟩
+    rw [hv] at hl; exact (Option.some.inj hl).symm
+  | succ r ih =>
+    intro σ f st j hw hR hm hph hj hj1 hjr htb' hcf hl hrs hts
+    have hB := buildInv_of hR hm
+    obtain ⟨hsb0, hnn0, hsbn, ht0, ht2, htb⟩ := build_src hB hR.inv.1.hdr_rng.1
+    rw [htb'] at htb
+    have htL : tbb + 352 ≤ L0 b.size om := by rw [htb]; unfold tbase LB0 L0; omega
+    have ht0' : 0 ≤ tbb := by rw [htb]; unfold tbase LB0; omega
+    have htbig : 2417 ≤ tbb := by rw [htb]; unfold tbase LB0; omega
+    obtain ⟨jj, rfl⟩ : ∃ jj, j = jj + 1 := ⟨j - 1, by omega⟩
+    set left := f cLEFT with hleftd
+    have hcj : f (tbb + ((jj + 1 : Nat) : Int)) = cf (jj + 1) := hcf (jj + 1) (by omega)
+    have hS := stepS_fit hw (by omega) hm rfl build_mem (by decide)
+      (build_left_cell hw hL (jj + 1 : Nat) (X0 b.size om) tbb left (f cREST) (f cTOTAL) (cf (jj + 1)) hph hj
+        hR.inv.1.x_eq htb' (by unfold X0; omega) hXL (by omega) (by omega) ht0' htL rfl rfl rfl hcj)
+    have hl' : leftF cf jj = some left := by simpa using hl
+    have hstep : leftF cf (jj + 1) = if 2 * left - cf (jj + 1) < 0 then none else some (2 * left - cf (jj + 1)) := by
+      simp only [leftF, hl']
+    by_cases hneg : 2 * left - cf (jj + 1) < 0
+    · rw [if_pos hneg] at hS
+      have hg := (hw.store (i := 14) (v := 5) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num) (by omega)
+      have hnone : leftF cf (jj + 1) = none := by rw [hstep, if_pos hneg]
+      refine ⟨fun _ => ⟨_, _, Reach.step hS, hg, by simp [cMODE, mREJECT]⟩, fun v hv => ?_⟩
+      rw [leftF_none (by omega) hnone] at hv; simp at hv
+    · rw [if_neg hneg] at hS
+      set g := Function.update (Function.update (Function.update (Function.update f 2076 (2 * left - cf (jj + 1))) 2078
+        (f cTOTAL + cf (jj + 1))) 2077 (if 2 ≤ ((jj + 1 : Nat) : Int) then f cREST + cf (jj + 1) else f cREST)) 13
+        (((jj + 1 : Nat) : Int) + 1) with hgd
+      have hg : World _ p (L0 b.size om) g :=
+        (((hw.store (i := 2076) (by norm_num) (by omega)).store (i := 2078) (by norm_num) (by omega)).store (i := 2077)
+          (by norm_num) (by omega)).store (i := 13) (by norm_num) (by omega)
+      obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+        (S := fun c => c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) (fun c _ _ hc => by
+          rw [hgd, upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega), upd_eq _ _ (by omega)])
+        (fun c hc => by unfold ctl; omega)
+      have nb : ∀ c : Int, 0 ≤ c → c < L0 b.size om → c ≠ 13 → (c < 2076 ∨ 2078 < c) → f1 c = f c :=
+        fun c h0 h1 a1 a2 => hk1 c h0 h1 (by omega)
+      have hm1 : f1 cMODE = mBUILD := by rw [nb _ (by decide) (by unfold cMODE; omega) (by decide) (by decide)]; exact hm
+      have hp1 : f1 cPHASE = 3 := by rw [nb _ (by decide) (by unfold cPHASE; omega) (by decide) (by decide)]; exact hph
+      have ht1 : f1 (X0 b.size om + 7) = tbb := by
+        rw [nb _ (by unfold X0; omega) (by unfold X0 L0; omega) (by unfold X0; omega) (by unfold X0; omega)]; exact htb'
+      have hcf1 : ∀ k : Nat, k < 16 → f1 (tbb + k) = cf k := fun k hk => by
+        rw [nb _ (by omega) (by omega) (by omega) (by omega)]; exact hcf k hk
+      have hj1' : f1 cINDEX = (jj + 1 + 1 : Nat) := by rw [ag _ (by decide) (by unfold cINDEX; omega)]; simp [hgd, cINDEX]
+      have hl1 : f1 cLEFT = 2 * left - cf (jj + 1) := by
+        rw [ag _ (by decide) (by unfold cLEFT; omega)]; simp [hgd, cLEFT, Function.update_apply]
+      have ht1' : f1 cTOTAL = f cTOTAL + cf (jj + 1) := by
+        rw [ag _ (by decide) (by unfold cTOTAL; omega)]; simp [hgd, cTOTAL, Function.update_apply]
+      have hr1 : f1 cREST = (if 2 ≤ ((jj + 1 : Nat) : Int) then f cREST + cf (jj + 1) else f cREST) := by
+        rw [ag _ (by decide) (by unfold cREST; omega)]; simp [hgd, cREST, Function.update_apply]
+      have hsome : leftF cf (jj + 1) = some (f1 cLEFT) := by rw [hstep, if_neg hneg, hl1]
+      obtain ⟨hno, hso⟩ := ih _ f1 st (jj + 1 + 1) hw1 hR1 hm1 hp1 hj1' (by omega) (by omega) ht1 hcf1
+        (by simpa using hsome)
+        (by
+          have hrs' : f cREST = restS cf jj := by simpa using hrs
+          rw [hr1, show jj + 1 + 1 - 1 = jj + 1 by omega, restS, hrs']
+          by_cases h2 : 2 ≤ jj + 1
+          · rw [if_pos (by exact_mod_cast h2), if_pos h2]
+          · rw [if_neg (by exact_mod_cast h2), if_neg h2]; ring)
+        (by
+          have hts' : f cTOTAL = totS cf jj := by simpa using hts
+          rw [ht1', show jj + 1 + 1 - 1 = jj + 1 by omega, totS, hts'])
+      refine ⟨fun h => ?_, fun v hv => ?_⟩
+      · obtain ⟨σ', f', hR', hw', hm'⟩ := hno h
+        exact ⟨σ', f', (Reach.step hS).trans hR', hw', hm'⟩
+      · obtain ⟨σ', f', hR', hw', hR'', hm', hp', hj', hl', hr', ht', hk'⟩ := hso v hv
+        have hk1' : Keeps (L0 b.size om) f f1 (fun c => c = 13 ∨ (2076 ≤ c ∧ c ≤ 2078)) := hk1
+        exact ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', hp', hj', hl', hr', ht', hk1'.trans hk' (fun c h => h)⟩
+
 /-! ## CorrectStmt from the forward statement -/
 
 /-- **The forward statement (S-18 (F-ok), (F-err)):** what the spec does, the iteration reaches. -/
