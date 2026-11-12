@@ -1,0 +1,782 @@
+saltqueue: ticket P2 seat=root pid=11313
+probes/ReadProbe2.lean:59:2: error: unsolved goals
+case pos
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx bi n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hn32 : n < 2 ^ 32
+hby : f 1 = ↑bx
+hbi : f 2 = ↑bi
+hn : f 15 = ↑n
+hbyn : bx < n
+hbi7 : bi ≤ 7
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+ht : f (20 + (8 * ↑v + ↑bi)) = t
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+r7 : inRange (t * wt) = true
+r8 : inRange (acc + t * wt) = true
+r9 : inRange (2 * wt) = true
+r10 : inRange (k - 1) = true
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h2 : Finmap.lookup (p + 2) σ.H = some ↑bi
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hit : Finmap.lookup (p + (20 + (8 * ↑v + ↑bi))) σ.H = some t
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+htL : 20 + (8 * ↑v + ↑bi) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + ↑bi)
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+r1 : inRange (2080 + ↑bx) = true
+r2 : inRange (8 * ↑v) = true
+r3 : inRange (8 * ↑v + ↑bi) = true
+r4 : inRange (20 + (8 * ↑v + ↑bi)) = true
+r5 : inRange (↑bx + 1) = true
+r6 : inRange (↑bi + 1) = true
+h7 : ¬bi = 7
+h7' : ¬↑bi = 7
+hk1 : k - 1 = 0
+⊢ (match
+      if -9223372036854775808 ≤ 2080 + ↑bx ∧ 2080 + ↑bx < 9223372036854775808 then
+        some
+          (Tm.letOp Op.load
+              [Atom.const (Const.cap p),
+                Atom.prim L1.Prim.add
+                  [Atom.const (Const.int 20),
+                    Atom.prim L1.Prim.add
+                      [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.const (Const.int ↑v)],
+                        Atom.const (Const.int ↑bi)]]]
+              tint
+              (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2068)] tint
+                (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2069)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2070)] tint
+                    (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2071)] tint
+                      (Tm.letE (Ty.prod tint tint)
+                        (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 7)])
+                          (Tm.ret
+                            ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                              (Atom.const (Const.int 0))))
+                          (Tm.ret
+                            ((Atom.const (Const.int ↑bx)).pair
+                              (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+                        (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                          (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                            (Tm.letOp Op.store
+                              [Atom.var 0, Atom.const (Const.int 2069),
+                                Atom.prim L1.Prim.add [Atom.var 5, Atom.prim L1.Prim.mul [Atom.var 7, Atom.var 4]]]
+                              tcap
+                              (Tm.letOp Op.store
+                                [Atom.var 0, Atom.const (Const.int 2070),
+                                  Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 5]]
+                                tcap
+                                (Tm.letOp Op.store
+                                  [Atom.var 0, Atom.const (Const.int 2068),
+                                    Atom.prim L1.Prim.sub [Atom.var 8, Atom.const (Const.int 1)]]
+                                  tcap
+                                  (Tm.ite
+                                    (Atom.prim L1.Prim.eq
+                                      [Atom.prim L1.Prim.sub [Atom.var 9, Atom.const (Const.int 1)],
+                                        Atom.const (Const.int 0)])
+                                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.var 6] tcap
+                                      (Tm.ret (Atom.var 0)))
+                                    (Tm.ret (Atom.var 0))))))))))))),
+            σ)
+      else none with
+    | some c' =>
+      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+      | some c' =>
+        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+        | some c' =>
+          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+          | some c' =>
+            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+            | some c' =>
+              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+              | some c' =>
+                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                | some c' =>
+                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                  | some c' =>
+                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                    | some c' =>
+                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                      | some c' =>
+                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                        | some c' =>
+                          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                          | some c' =>
+                            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                            | some c' =>
+                              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                              | some c' =>
+                                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                | some c' =>
+                                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                  | some c' =>
+                                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                    | some c' =>
+                                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                      | some c' =>
+                                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                        | some c' =>
+                                          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                          | some c' =>
+                                            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                            | some c' =>
+                                              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                              | some c' =>
+                                                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                | some c' =>
+                                                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                  | some c' =>
+                                                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                    | some c' =>
+                                                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                      | some c' =>
+                                                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                        | some c' =>
+                                                          match
+                                                            if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                          | some c' =>
+                                                            match
+                                                              if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                            | some c' =>
+                                                              match
+                                                                if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                else none with
+                                                              | some c' =>
+                                                                match
+                                                                  if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                  else none with
+                                                                | some c' =>
+                                                                  match
+                                                                    if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                    else none with
+                                                                  | some c' =>
+                                                                    match
+                                                                      if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                      else none with
+                                                                    | some c' =>
+                                                                      match
+                                                                        if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                        else none with
+                                                                      | some c' =>
+                                                                        match
+                                                                          if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                          else none with
+                                                                        | some c' =>
+                                                                          match
+                                                                            if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                            else none with
+                                                                          | some c' => c'
+                                                                          | none => c'
+                                                                        | none => c'
+                                                                      | none => c'
+                                                                    | none => c'
+                                                                  | none => c'
+                                                                | none => c'
+                                                              | none => c'
+                                                            | none => c'
+                                                          | none => c'
+                                                        | none => c'
+                                                      | none => c'
+                                                    | none => c'
+                                                  | none => c'
+                                                | none => c'
+                                              | none => c'
+                                            | none => c'
+                                          | none => c'
+                                        | none => c'
+                                      | none => c'
+                                    | none => c'
+                                  | none => c'
+                                | none => c'
+                              | none => c'
+                            | none => c'
+                          | none => c'
+                        | none => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.load
+          [Atom.const (Const.cap p), Atom.prim L1.Prim.add [Atom.const (Const.int 2080), Atom.const (Const.int ↑bx)]]
+          tint
+          (Tm.letOp Op.load
+            [Atom.const (Const.cap p),
+              Atom.prim L1.Prim.add
+                [Atom.const (Const.int 20),
+                  Atom.prim L1.Prim.add
+                    [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.var 0], Atom.const (Const.int ↑bi)]]]
+            tint
+            (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2068)] tint
+              (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2069)] tint
+                (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2070)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2071)] tint
+                    (Tm.letE (Ty.prod tint tint)
+                      (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 7)])
+                        (Tm.ret
+                          ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                            (Atom.const (Const.int 0))))
+                        (Tm.ret
+                          ((Atom.const (Const.int ↑bx)).pair
+                            (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+                      (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                        (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                          (Tm.letOp Op.store
+                            [Atom.var 0, Atom.const (Const.int 2069),
+                              Atom.prim L1.Prim.add [Atom.var 5, Atom.prim L1.Prim.mul [Atom.var 7, Atom.var 4]]]
+                            tcap
+                            (Tm.letOp Op.store
+                              [Atom.var 0, Atom.const (Const.int 2070),
+                                Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 5]]
+                              tcap
+                              (Tm.letOp Op.store
+                                [Atom.var 0, Atom.const (Const.int 2068),
+                                  Atom.prim L1.Prim.sub [Atom.var 8, Atom.const (Const.int 1)]]
+                                tcap
+                                (Tm.ite
+                                  (Atom.prim L1.Prim.eq
+                                    [Atom.prim L1.Prim.sub [Atom.var 9, Atom.const (Const.int 1)],
+                                      Atom.const (Const.int 0)])
+                                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.var 6] tcap
+                                    (Tm.ret (Atom.var 0)))
+                                  (Tm.ret (Atom.var 0)))))))))))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert p rt
+            (Finmap.insert (p + 2068) 0
+              (Finmap.insert (p + 2070) (2 * wt)
+                (Finmap.insert (p + 2069) (acc + t * wt)
+                  (Finmap.insert (p + 2) (↑bi + 1) (Finmap.insert (p + 1) (↑bx) σ.H))))),
+        R := σ.R })
+
+case neg
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx bi n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hn32 : n < 2 ^ 32
+hby : f 1 = ↑bx
+hbi : f 2 = ↑bi
+hn : f 15 = ↑n
+hbyn : bx < n
+hbi7 : bi ≤ 7
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+ht : f (20 + (8 * ↑v + ↑bi)) = t
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+r7 : inRange (t * wt) = true
+r8 : inRange (acc + t * wt) = true
+r9 : inRange (2 * wt) = true
+r10 : inRange (k - 1) = true
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h2 : Finmap.lookup (p + 2) σ.H = some ↑bi
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hit : Finmap.lookup (p + (20 + (8 * ↑v + ↑bi))) σ.H = some t
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+htL : 20 + (8 * ↑v + ↑bi) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + ↑bi)
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+r1 : inRange (2080 + ↑bx) = true
+r2 : inRange (8 * ↑v) = true
+r3 : inRange (8 * ↑v + ↑bi) = true
+r4 : inRange (20 + (8 * ↑v + ↑bi)) = true
+r5 : inRange (↑bx + 1) = true
+r6 : inRange (↑bi + 1) = true
+h7 : ¬bi = 7
+h7' : ¬↑bi = 7
+hk1 : ¬k - 1 = 0
+⊢ (match
+      if -9223372036854775808 ≤ 2080 + ↑bx ∧ 2080 + ↑bx < 9223372036854775808 then
+        some
+          (Tm.letOp Op.load
+              [Atom.const (Const.cap p),
+                Atom.prim L1.Prim.add
+                  [Atom.const (Const.int 20),
+                    Atom.prim L1.Prim.add
+                      [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.const (Const.int ↑v)],
+                        Atom.const (Const.int ↑bi)]]]
+              tint
+              (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2068)] tint
+                (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2069)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2070)] tint
+                    (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2071)] tint
+                      (Tm.letE (Ty.prod tint tint)
+                        (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 7)])
+                          (Tm.ret
+                            ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                              (Atom.const (Const.int 0))))
+                          (Tm.ret
+                            ((Atom.const (Const.int ↑bx)).pair
+                              (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+                        (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                          (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                            (Tm.letOp Op.store
+                              [Atom.var 0, Atom.const (Const.int 2069),
+                                Atom.prim L1.Prim.add [Atom.var 5, Atom.prim L1.Prim.mul [Atom.var 7, Atom.var 4]]]
+                              tcap
+                              (Tm.letOp Op.store
+                                [Atom.var 0, Atom.const (Const.int 2070),
+                                  Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 5]]
+                                tcap
+                                (Tm.letOp Op.store
+                                  [Atom.var 0, Atom.const (Const.int 2068),
+                                    Atom.prim L1.Prim.sub [Atom.var 8, Atom.const (Const.int 1)]]
+                                  tcap
+                                  (Tm.ite
+                                    (Atom.prim L1.Prim.eq
+                                      [Atom.prim L1.Prim.sub [Atom.var 9, Atom.const (Const.int 1)],
+                                        Atom.const (Const.int 0)])
+                                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.var 6] tcap
+                                      (Tm.ret (Atom.var 0)))
+                                    (Tm.ret (Atom.var 0))))))))))))),
+            σ)
+      else none with
+    | some c' =>
+      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+      | some c' =>
+        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+        | some c' =>
+          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+          | some c' =>
+            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+            | some c' =>
+              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+              | some c' =>
+                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                | some c' =>
+                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                  | some c' =>
+                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                    | some c' =>
+                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                      | some c' =>
+                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                        | some c' =>
+                          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                          | some c' =>
+                            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                            | some c' =>
+                              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                              | some c' =>
+                                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                | some c' =>
+                                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                  | some c' =>
+                                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                    | some c' =>
+                                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                      | some c' =>
+                                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                        | some c' =>
+                                          match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                          | some c' =>
+                                            match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                            | some c' =>
+                                              match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                              | some c' =>
+                                                match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                | some c' =>
+                                                  match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                  | some c' =>
+                                                    match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                    | some c' =>
+                                                      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                      | some c' =>
+                                                        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                        | some c' =>
+                                                          match
+                                                            if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                          | some c' =>
+                                                            match
+                                                              if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+                                                            | some c' =>
+                                                              match
+                                                                if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                else none with
+                                                              | some c' =>
+                                                                match
+                                                                  if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                  else none with
+                                                                | some c' =>
+                                                                  match
+                                                                    if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                    else none with
+                                                                  | some c' =>
+                                                                    match
+                                                                      if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                      else none with
+                                                                    | some c' =>
+                                                                      match
+                                                                        if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                        else none with
+                                                                      | some c' =>
+                                                                        match
+                                                                          if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                          else none with
+                                                                        | some c' =>
+                                                                          match
+                                                                            if headB c'.1 = true then stepFn₂ c'.1 c'.2
+                                                                            else none with
+                                                                          | some c' => c'
+                                                                          | none => c'
+                                                                        | none => c'
+                                                                      | none => c'
+                                                                    | none => c'
+                                                                  | none => c'
+                                                                | none => c'
+                                                              | none => c'
+                                                            | none => c'
+                                                          | none => c'
+                                                        | none => c'
+                                                      | none => c'
+                                                    | none => c'
+                                                  | none => c'
+                                                | none => c'
+                                              | none => c'
+                                            | none => c'
+                                          | none => c'
+                                        | none => c'
+                                      | none => c'
+                                    | none => c'
+                                  | none => c'
+                                | none => c'
+                              | none => c'
+                            | none => c'
+                          | none => c'
+                        | none => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.load
+          [Atom.const (Const.cap p), Atom.prim L1.Prim.add [Atom.const (Const.int 2080), Atom.const (Const.int ↑bx)]]
+          tint
+          (Tm.letOp Op.load
+            [Atom.const (Const.cap p),
+              Atom.prim L1.Prim.add
+                [Atom.const (Const.int 20),
+                  Atom.prim L1.Prim.add
+                    [Atom.prim L1.Prim.mul [Atom.const (Const.int 8), Atom.var 0], Atom.const (Const.int ↑bi)]]]
+            tint
+            (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2068)] tint
+              (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2069)] tint
+                (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2070)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap p), Atom.const (Const.int 2071)] tint
+                    (Tm.letE (Ty.prod tint tint)
+                      (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 7)])
+                        (Tm.ret
+                          ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                            (Atom.const (Const.int 0))))
+                        (Tm.ret
+                          ((Atom.const (Const.int ↑bx)).pair
+                            (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+                      (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                        (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                          (Tm.letOp Op.store
+                            [Atom.var 0, Atom.const (Const.int 2069),
+                              Atom.prim L1.Prim.add [Atom.var 5, Atom.prim L1.Prim.mul [Atom.var 7, Atom.var 4]]]
+                            tcap
+                            (Tm.letOp Op.store
+                              [Atom.var 0, Atom.const (Const.int 2070),
+                                Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 5]]
+                              tcap
+                              (Tm.letOp Op.store
+                                [Atom.var 0, Atom.const (Const.int 2068),
+                                  Atom.prim L1.Prim.sub [Atom.var 8, Atom.const (Const.int 1)]]
+                                tcap
+                                (Tm.ite
+                                  (Atom.prim L1.Prim.eq
+                                    [Atom.prim L1.Prim.sub [Atom.var 9, Atom.const (Const.int 1)],
+                                      Atom.const (Const.int 0)])
+                                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.var 6] tcap
+                                    (Tm.ret (Atom.var 0)))
+                                  (Tm.ret (Atom.var 0)))))))))))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert (p + 2068) (k - 1)
+            (Finmap.insert (p + 2070) (2 * wt)
+              (Finmap.insert (p + 2069) (acc + t * wt)
+                (Finmap.insert (p + 2) (↑bi + 1) (Finmap.insert (p + 1) (↑bx) σ.H)))),
+        R := σ.R })
+probes/ReadProbe2.lean:64:6: warning: This simp argument is unused:
+  hit
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv, ̲h̲i̲k̲,̲
+        hit̵,̵ ̵h̵i̵k̵,̵ ̵h̵i̵a, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:64:11: warning: This simp argument is unused:
+  hik
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲ h̵i̵k̵,̵  ̲ ̲ ̲ ̲hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:64:16: warning: This simp argument is unused:
+  hia
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia̵,̵ ̵h̵i̵w, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:64:21: warning: This simp argument is unused:
+  hiw
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw̵,̵ ̵h̵i̵r, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:64:26: warning: This simp argument is unused:
+  hir
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, h̵i̵r̵,̵ ̵Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:16: warning: This simp argument is unused:
+  htL
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲ h̵t̵L̵,̵  ̲ ̲ ̲ ̲ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:21: warning: This simp argument is unused:
+  ht0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON, ̲h̲i̲L̲,̲ ̲h̲i̲0̲,̲
+        hi̵L̵,̵ ̵h̵i̵0̵,̵ ̵h̵tL̵L̲, ht̵0̵,̵ ̵h̵L1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:42: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0,̵ ̵h̵L̵0̵', hLk, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:47: warning: This simp argument is unused:
+  hL0'
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0̵'̵,̵ ̵h̵L̵k, hLa, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:53: warning: This simp argument is unused:
+  hLk
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk̵,̵ ̵h̵L̵a, hLw, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:58: warning: This simp argument is unused:
+  hLa
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa̵,̵ ̵h̵L̵w, hLr, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:63: warning: This simp argument is unused:
+  hLw
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw̵,̵ ̵h̵L̵r, inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe2.lean:66:68: warning: This simp argument is unused:
+  hLr
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, h̵L̵r̵,̵ ̵inRange]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

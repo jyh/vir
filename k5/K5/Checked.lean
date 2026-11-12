@@ -116,6 +116,17 @@ theorem srcInRange_runC : ∀ (k : Nat) (c : Config), SrcInRange (run₂C k c) �
             exact ih S h₂
         · cases hc
 
+
+/-- One checked step at a time: the proof term of a walk built from this is a chain, never a 40-deep nested `match` (the
+nested form overflows the kernel: k5p-004/005, probes 001–003). -/
+theorem srcInRange_step {c : Config} (hb : headB c.1 = true) (hs : (stepFn₂ c.1 c.2).isSome = true)
+    (h : SrcInRange ((stepFn₂ c.1 c.2).getD c)) : SrcInRange c := by
+  obtain ⟨c', hc'⟩ := Option.isSome_iff_exists.mp hs
+  rw [hc'] at h
+  refine srcInRange_runC 1 c ?_
+  simp only [run₂C, stepFn₂C, hb, if_true, hc']
+  exact h
+
 /-- The form a mode trace takes: a checked run that reaches `ret ⟨p⟩`. -/
 theorem srcInRange_of_runC {k : Nat} {c : Config} {p : Int} {σ' : Store}
     (h : run₂C k c = (.ret (.const (.cap p)), σ')) : SrcInRange c :=
