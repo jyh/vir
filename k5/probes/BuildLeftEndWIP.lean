@@ -13,8 +13,8 @@ theorem build_left_end_inR {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (h
     (hleft : f cLEFT = left) (hrest : f cREST = rest) (htot : f cTOTAL = tot) (hc1 : f (tbb + 1) = c1)
     (hvar : f (X + 8) = var)
     (rr1 : inRange (X + 7) = true)
-    (rr2 : inRange (tbb + 1) = true) (rr3 : inRange (X + 7) = true)
-    (rr4 : inRange (X + 8) = true) (rr5 : inRange (X + 7) = true) (rr6 : inRange (tbb + 1) = true) :
+    (rr2 : inRange (tbb + 1) = true)
+    (rr4 : inRange (X + 8) = true) :
     SrcInRange (closeAt p buildT, σ) := by
   simp only [cPHASE, cINDEX, cX, cLEFT, cREST, cTOTAL] at hph hj hX hleft hrest htot
   have g12 := hw.get (i := 12) (by decide) (by omega) hph
@@ -28,7 +28,7 @@ theorem build_left_end_inR {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (h
   have g8 := hw.get (i := X + 8) (by omega) (by omega) hvar
   by_cases a1 : c1 = 1 <;> by_cases a2 : rest = 0 <;> by_cases a3 : var = 1 <;> by_cases a4 : var = 2 <;>
     by_cases a5 : tot = 0 <;> by_cases a6 : 0 < left <;>
-    repeat (first | exact srcInRange_ret trivial | refine srcInRange_step ?_ ?_ ?_ <;> simp [headB, aInR, aInRL, cInR, rr4, rr5, rr6, rr2, rr3, rr1, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7, g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, stepFn₂,
+    repeat (first | exact srcInRange_ret trivial | refine srcInRange_step ?_ ?_ ?_ <;> simp [headB, aInR, aInRL, cInR, rr4, rr1, rr2, a1, a2, a3, a4, a5, a6, g12, g13, g79, g7, g76, g77, g78, gc1, g8, hj15, closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, stepFn₂,
       stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
       Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bLeftN, bRestN, bExempt, cREASON, rINCOMP, cMODE, mREJECT,
       show (12 : Int) < L by omega, show (13 : Int) < L by omega, show (2079 : Int) < L by omega,
