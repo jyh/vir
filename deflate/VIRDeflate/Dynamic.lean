@@ -480,4 +480,218 @@ theorem clzero_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x
       ⟨⟨hR1, h1, by rw [h2]; push_cast; ring⟩, hF1⟩
     exact ⟨σ', f', (Reach.step hS).trans hR', hw', hst⟩
 
+/-! ## The lengths loop, machine side: LENS, LSYM, LREP, REP -/
+
+/-- **LENS, a length still owed:** a decode request in table 0, returning to LSYM. -/
+theorem lens_req_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mLENS)
+    (hlt : f cFILL < f cHLIT + f cHDIST) :
+    ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ DecReady b om lit f1 st 0 mLSYM ∧
+      Keeps (L0 b.size om) f f1 (decReqSet b.size om) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hX4 : X0 b.size om + 4 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl lens_mem (by decide)
+    (lens_req hw hL (f cFILL) (f cHLIT) (f cHDIST) (X0 b.size om) b.size om rfl rfl rfl hR.inv.1.x_eq hR.inv.1.n_eq
+      hR.inv.1.om_eq hlt (by unfold X0; omega) (by unfold X0 L0; omega))
+  obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS
+    (hw.reqDec (by unfold X0; omega) hX4 0 25) (reqDecF_keeps _ b.size om f 0 25)
+    (fun c hc => by unfold decReqSet at hc; unfold ctl IN X0 at *; omega)
+  obtain ⟨v1, v2, v3, v4, v5⟩ := reqDecF_vals f (X0 b.size om) 0 25 (by unfold X0; omega)
+  refine ⟨_, f1, hS, hw1, ⟨hR1, ?_, ?_, ?_, ?_, ?_⟩, hk1⟩
+  · rw [ag _ (by decide) (by unfold cMODE; omega)]; exact v1
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v2
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; simpa using v3
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v4
+  · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; exact v5
+
+/-- **LSYM:** by the decoded symbol s — a length (≤ 15) written at FILL; 16 with FILL 0 REJECTs; 16 / 17 / 18 set LAST and
+PENDING and READ 2 / 3 / 7 bits, returning to LREP. -/
+theorem lsym_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mLSYM)
+    (s fl : Nat) (hs : f (X0 b.size om + 4) = s) (hfl : f cFILL = fl) (hfl3 : fl < 318) :
+    (s ≤ 15 → ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧ f1 cMODE = mLENS ∧
+      f1 cFILL = fl + 1 ∧ f1 (LB0 b.size om + fl) = s ∧
+      Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 10 ∨ c = LB0 b.size om + fl)) ∧
+    (s = 16 → fl = 0 → ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ f1 cMODE = mREJECT) ∧
+    (16 ≤ s → (s = 16 → fl ≠ 0) → ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧
+      f1 cMODE = mREAD ∧ f1 cACC = 0 ∧ f1 cWT = 1 ∧ f1 cRET = mLREP ∧
+      f1 cK = (if s = 16 then 2 else if s = 17 then 3 else 7) ∧ f1 cPEND = (if s = 18 ∨ 18 < s then 11 else 3) ∧
+      f1 cLAST = (if s = 16 then f (LB0 b.size om + (fl - 1 : Int)) else 0) ∧
+      Keeps (L0 b.size om) f f1 (fun c => c = 5 ∨ c = 11 ∨ c = 0 ∨ (2068 ≤ c ∧ c ≤ 2071))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl lsym_mem (by decide)
+    (lsym_step hw hL (X0 b.size om) s fl b.size om (f (LB0 b.size om + (fl - 1 : Int))) hR.inv.1.x_eq
+      (by unfold X0; omega) hXL hs hfl hR.inv.1.n_eq hR.inv.1.om_eq (fun _ => ⟨by omega, by unfold L0; omega⟩)
+      (fun _ h0 => ⟨by omega, by unfold L0; omega⟩) rfl)
+  refine ⟨fun h15 => ?_, fun h16 h0 => ?_, fun h16 hne => ?_⟩
+  · rw [show lsymH σ.H p s fl b.size om (f (LB0 b.size om + (fl - 1 : Int))) =
+      ((σ.H.insert (p + (2080 + b.size + om + fl)) s).insert (p + 10) ((fl : Int) + 1)).insert (p + 0) 12 by
+        unfold lsymH; rw [if_pos (by exact_mod_cast h15)]] at hS
+    have hg := ((hw.store (i := LB0 b.size om + fl) (v := s) (by unfold LB0; omega) (by unfold LB0 L0; omega)).store
+      (i := 10) (v := (fl : Int) + 1) (by norm_num) (by omega)).store (i := 0) (v := 12) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0 ∨ c = 10 ∨ c = LB0 b.size om + fl)
+      (fun c _ _ hc => by simp only [Function.update_apply]; rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)])
+      (fun c hc => by unfold ctl LB0 IN at *; omega)
+    refine ⟨_, f1, hS, hw1, hR1, ?_, ?_, ?_, hk1⟩
+    · rw [ag _ (by decide) (by unfold cMODE; omega)]; updv
+    · rw [ag _ (by decide) (by unfold cFILL; omega)]; updv
+    · rw [ag _ (by unfold LB0; omega) (by unfold LB0 L0; omega)]; updv
+  · subst h16; subst h0
+    rw [show lsymH σ.H p ((16 : Nat) : Int) ((0 : Nat) : Int) b.size om (f (LB0 b.size om + ((0 : Nat) - 1 : Int))) =
+      (σ.H.insert (p + 14) 13).insert (p + 0) 99 by unfold lsymH; simp] at hS
+    exact ⟨_, _, hS, (hw.store (i := 14) (v := 13) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num)
+      (by omega), by simp [cMODE, mREJECT]⟩
+  · set pv := f (LB0 b.size om + (fl - 1 : Int)) with hpv
+    have key : ∀ (K Pd La : Int), lsymH σ.H p s fl b.size om pv = reqH ((σ.H.insert (p + 11) La).insert (p + 5) Pd) p K 26 →
+        K = (if s = 16 then 2 else if s = 17 then 3 else 7) → Pd = (if s = 18 ∨ 18 < s then 11 else 3) →
+        La = (if s = 16 then pv else 0) →
+        ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧
+          f1 cMODE = mREAD ∧ f1 cACC = 0 ∧ f1 cWT = 1 ∧ f1 cRET = mLREP ∧
+          f1 cK = (if s = 16 then 2 else if s = 17 then 3 else 7) ∧ f1 cPEND = (if s = 18 ∨ 18 < s then 11 else 3) ∧
+          f1 cLAST = (if s = 16 then pv else 0) ∧
+          Keeps (L0 b.size om) f f1 (fun c => c = 5 ∨ c = 11 ∨ c = 0 ∨ (2068 ≤ c ∧ c ≤ 2071)) := by
+      intro K Pd La e eK ePd eLa
+      rw [e] at hS
+      obtain ⟨f1, hw1, hR1, h1, h2, h3, h4, h5, hk1, ag⟩ :=
+        req_next (σ1 := ⟨(σ.H.insert (p + 11) La).insert (p + 5) Pd, σ.R⟩) (S := fun c => c = 5 ∨ c = 11) hb hw hR
+          (by rw [hm]; decide) (by rw [hm]; decide) K 26 hS
+          ((hw.store (i := 11) (v := La) (by norm_num) (by omega)).store (i := 5) (v := Pd) (by norm_num) (by omega))
+          (fun c _ _ hc => by simp only [Function.update_apply]; rw [if_neg (by omega), if_neg (by omega)])
+          (fun c hc => by unfold ctl; omega)
+      refine ⟨_, f1, hS, hw1, hR1, h1, h3, h4, h5, by rw [h2, eK], ?_, ?_,
+        fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (or_assoc.mp h))⟩
+      · rw [ag _ (by decide) (by unfold cPEND; omega) (by decide) (by decide), ← ePd]; updv
+      · rw [ag _ (by decide) (by unfold cLAST; omega) (by decide) (by decide), ← eLa]; updv
+    by_cases e16 : s = 16
+    · subst e16
+      exact key 2 3 pv (by unfold lsymH; rw [if_neg (by decide), if_pos (by norm_num), if_neg (by exact_mod_cast hne rfl)]) (by simp)
+        (by simp) (by simp)
+    · by_cases e17 : s = 17
+      · subst e17
+        exact key 3 3 0 (by unfold lsymH; simp) (by simp) (by simp) (by simp)
+      · exact key 7 11 0 (by
+          unfold lsymH
+          rw [if_neg (by omega), if_neg (by exact_mod_cast e16), if_neg (by exact_mod_cast e17)])
+          (by rw [if_neg e16, if_neg e17]) (by rw [if_pos (by omega)]) (by rw [if_neg e16])
+
+/-- **LREP:** FILL + PENDING + acc past HLIT + HDIST REJECTs; else PENDING += acc, REP. -/
+theorem lrep_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mLREP) :
+    (f cHLIT + f cHDIST < f cFILL + (f cPEND + f cACC) →
+      ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ f1 cMODE = mREJECT) ∧
+    (¬ f cHLIT + f cHDIST < f cFILL + (f cPEND + f cACC) →
+      ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧ f1 cMODE = mREP ∧
+        f1 cPEND = f cPEND + f cACC ∧ Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 5)) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl lrep_mem (by decide)
+    (lrep_step hw hL (f cPEND) (f cACC) (f cFILL) (f cHLIT) (f cHDIST) rfl rfl rfl rfl rfl)
+  refine ⟨fun hc => ?_, fun hc => ?_⟩
+  · rw [if_pos hc] at hS
+    exact ⟨_, _, hS, (hw.store (i := 14) (v := 14) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num)
+      (by omega), by simp [cMODE, mREJECT]⟩
+  · rw [if_neg hc] at hS
+    have hg := (hw.store (i := 5) (v := f cPEND + f cACC) (by norm_num) (by omega)).store (i := 0) (v := 27) (by norm_num)
+      (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0 ∨ c = 5)
+      (fun c _ _ hc => by simp only [Function.update_apply]; rw [if_neg (by omega), if_neg (by omega)])
+      (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, hS, hw1, hR1, ?_, ?_, hk1⟩
+    · rw [ag _ (by decide) (by unfold cMODE; omega)]; updv
+    · rw [ag _ (by decide) (by unfold cPEND; omega)]; updv
+
+/-- **REP, run to its end:** PENDING copies of LAST written from FILL on, then LENS. -/
+theorem rep_run {b : Array Nat} {om : Nat} {lit : Bool} {p : Int} (hb : ∀ x ∈ b, x < 256) :
+    ∀ (k : Nat) (σ : Store) (f : Int → Int) (st : St) (fl : Nat), World σ p (L0 b.size om) f → Rel b om lit f st →
+      f cMODE = mREP → f cPEND = k → f cFILL = fl → fl + k ≤ 318 →
+      ∃ σ' f', Reach p σ σ' ∧ World σ' p (L0 b.size om) f' ∧ Rel b om lit f' st ∧ f' cMODE = mLENS ∧
+        f' cFILL = fl + k ∧ (∀ j : Nat, j < k → f' (LB0 b.size om + (fl + j : Nat)) = f cLAST) ∧
+        Keeps (L0 b.size om) f f' (fun c => c = 0 ∨ c = 5 ∨ c = 10 ∨
+          (LB0 b.size om + fl ≤ c ∧ c < LB0 b.size om + fl + k)) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  intro k
+  induction k with
+  | zero =>
+    intro σ f st fl hw hR hm hpd hfl _
+    have hS := stepS_fit hw (by omega) hm rfl rep_mem (by decide) (rep_end hw hL (by rw [hpd]; rfl))
+    have hg := hw.store (i := 0) (v := 12) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0) (fun c _ _ hc => upd_eq _ _ hc) (fun c hc => by unfold ctl; omega)
+    refine ⟨_, f1, Reach.step hS, hw1, hR1, ?_, ?_, fun j hj => by omega, fun c h0 h1 hc => hk1 c h0 h1 (fun h => hc (Or.inl h))⟩
+    · rw [ag _ (by decide) (by unfold cMODE; omega)]; updv
+    · rw [hk1 _ (by decide) (by unfold cFILL; omega) (by unfold cFILL; omega), hfl]; simp
+  | succ k ih =>
+    intro σ f st fl hw hR hm hpd hfl hk
+    have hS := stepS_fit hw (by omega) hm rfl rep_mem (by decide)
+      (rep_byte hw hL (k + 1 : Nat) fl (f cLAST) b.size om hpd (by omega) hfl rfl hR.inv.1.n_eq hR.inv.1.om_eq
+        (by omega) (by unfold L0; omega))
+    have hg := ((hw.store (i := LB0 b.size om + fl) (v := f cLAST) (by unfold LB0; omega) (by unfold LB0 L0; omega)).store
+      (i := 10) (v := (fl : Int) + 1) (by norm_num) (by omega)).store (i := 5) (v := ((k + 1 : Nat) : Int) - 1)
+      (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 5 ∨ c = 10 ∨ c = LB0 b.size om + fl)
+      (fun c _ _ hc => by simp only [Function.update_apply]; rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)])
+      (fun c hc => by unfold ctl LB0 IN at *; omega)
+    have e1 : f1 (LB0 b.size om + fl) = f cLAST := by rw [ag _ (by unfold LB0; omega) (by unfold LB0 L0; omega)]; updv
+    have eL : f1 cLAST = f cLAST := hk1 _ (by decide) (by unfold cLAST; omega) (by unfold cLAST LB0; omega)
+    obtain ⟨σ', f', hR', hw', hR'', hm', hfl', hc', hk'⟩ := ih _ f1 st (fl + 1) hw1 hR1
+      (by rw [hk1 _ (by decide) (by unfold cMODE; omega) (by unfold cMODE LB0; omega)]; exact hm)
+      (by rw [ag _ (by decide) (by unfold cPEND; omega)]; updv)
+      (by rw [ag _ (by decide) (by unfold cFILL; omega)]; updv) (by omega)
+    refine ⟨σ', f', (Reach.step hS).trans hR', hw', hR'', hm', by rw [hfl']; omega, fun j hj => ?_, fun c h0 h1 hc => ?_⟩
+    · by_cases hj0 : j = 0
+      · subst hj0
+        rw [hk' _ (by unfold LB0; omega) (by unfold LB0 L0; omega) (by unfold LB0; push_cast; omega)]
+        simpa using e1
+      · have := hc' (j - 1) (by omega)
+        rw [show fl + 1 + (j - 1) = fl + j by omega, eL] at this
+        exact this
+    · rw [hk' c h0 h1 (by push_cast at hc ⊢; omega), hk1 c h0 h1 (by push_cast at hc ⊢; omega)]
+
+/-- **LENS, the lengths complete:** lengths[256] = 0 REJECTs; else BUILD for L (target 1) from LB0, HLIT symbols. -/
+theorem lens_end_next {b : Array Nat} {om : Nat} {lit : Bool} {σ : Store} {p : Int} {f : Int → Int} {st : St}
+    (hb : ∀ x ∈ b, x < 256) (hw : World σ p (L0 b.size om) f) (hR : Rel b om lit f st) (hm : f cMODE = mLENS)
+    (hge : ¬ f cFILL < f cHLIT + f cHDIST) :
+    (f (LB0 b.size om + 256) = 0 → ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ f1 cMODE = mREJECT) ∧
+    (f (LB0 b.size om + 256) ≠ 0 → ∃ σ1 f1, stepS p σ = some σ1 ∧ World σ1 p (L0 b.size om) f1 ∧ Rel b om lit f1 st ∧
+      f1 cMODE = mBUILD ∧ f1 cTGT = 1 ∧ f1 (X0 b.size om + 5) = LB0 b.size om ∧ f1 (X0 b.size om + 6) = f cHLIT ∧
+      f1 (X0 b.size om + 7) = tbase b.size om 1 ∧ f1 (X0 b.size om + 8) = 0 ∧ f1 cPHASE = 0 ∧ f1 cINDEX = 0 ∧
+      Keeps (L0 b.size om) f f1 (fun c => c = 0 ∨ c = 12 ∨ c = 13 ∨ c = 2074 ∨
+        (X0 b.size om + 5 ≤ c ∧ c ≤ X0 b.size om + 8))) := by
+  have hL : 2080 ≤ L0 b.size om := by unfold L0; omega
+  have hXL : X0 b.size om + 8 < L0 b.size om := by unfold X0 L0; omega
+  have hXL' : X0 b.size om + 5 < L0 b.size om := by unfold X0 L0; omega
+  have hS := stepS_fit hw (by omega) hm rfl lens_mem (by decide)
+    (lens_end hw hL (f cFILL) (f cHLIT) (f cHDIST) (X0 b.size om) b.size om (f (LB0 b.size om + 256)) rfl rfl rfl
+      hR.inv.1.x_eq hR.inv.1.n_eq hR.inv.1.om_eq hge (by unfold X0; omega) hXL (by omega) (by unfold L0; omega) rfl)
+  refine ⟨fun hz => ?_, fun hz => ?_⟩
+  · rw [if_pos hz] at hS
+    exact ⟨_, _, hS, (hw.store (i := 14) (v := 12) (by norm_num) (by omega)).store (i := 0) (v := 99) (by norm_num)
+      (by omega), by simp [cMODE, mREJECT]⟩
+  · rw [if_neg hz] at hS
+    have hg := (((((((hw.store (i := 2074) (v := 1) (by norm_num) (by omega)).store (i := X0 b.size om + 5)
+      (v := 2080 + b.size + om) (by unfold X0; omega) hXL').store (i := X0 b.size om + 6) (v := f cHLIT)
+      (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 7) (v := 2080 + b.size + om + 689)
+      (by unfold X0; omega) (by unfold X0 L0; omega)).store (i := X0 b.size om + 8) (v := 0) (by unfold X0; omega)
+      hXL).store (i := 12) (v := 0) (by norm_num) (by omega)).store (i := 13) (v := 0) (by norm_num) (by omega)).store
+      (i := 0) (v := 11) (by norm_num) (by omega)
+    obtain ⟨f1, hw1, hR1, hk1, ag⟩ := next_rel hb hw hR (by rw [hm]; decide) (by rw [hm]; decide) hS hg
+      (S := fun c => c = 0 ∨ c = 12 ∨ c = 13 ∨ c = 2074 ∨ (X0 b.size om + 5 ≤ c ∧ c ≤ X0 b.size om + 8))
+      (fun c _ _ hc => by
+        simp only [Function.update_apply]
+        rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+          if_neg (by omega), if_neg (by omega), if_neg (by omega)])
+      (fun c hc => by unfold ctl IN X0 at *; omega)
+    refine ⟨_, f1, hS, hw1, hR1, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, hk1⟩
+    · rw [ag _ (by decide) (by unfold cMODE; omega)]; updv
+    · rw [ag _ (by decide) (by unfold cTGT; omega)]; updv
+    · rw [ag _ (by unfold X0; omega) hXL']; updv
+    · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; updv
+    · rw [ag _ (by unfold X0; omega) (by unfold X0 L0; omega)]; updv
+    · rw [ag _ (by unfold X0; omega) hXL]; updv
+    · rw [ag _ (by decide) (by unfold cPHASE; omega)]; updv
+    · rw [ag _ (by decide) (by unfold cINDEX; omega)]; updv
+
 end VIRDeflate.Step
