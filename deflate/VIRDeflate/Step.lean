@@ -1337,7 +1337,7 @@ theorem build_syms_cell {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw :
     (j X tbb sb nn l sl : Int) (hph : f cPHASE = 4) (hj : f cINDEX = j) (hX : f cX = X) (htbb : f (X + 7) = tbb)
     (hsb : f (X + 5) = sb) (hnn : f (X + 6) = nn) (hX0 : 0 ≤ X) (hXL : X + 8 < L) (hjn : j < nn)
     (hs0 : 0 ≤ sb + j) (hsL : sb + j < L) (hl : f (sb + j) = l) (ht0 : 0 ≤ tbb) (htL : tbb + 352 ≤ L)
-    (hl0 : 0 ≤ l) (hl15 : l ≤ 15) (hsl : f (tbb + 48 + l) = sl) (hsl0 : 0 ≤ sl) (hsl288 : sl < 288) :
+    (hl0 : 0 ≤ l) (hl15 : l ≤ 15) (hsl : f (tbb + 48 + l) = sl) (hsl0 : l ≠ 0 → 0 ≤ sl) (hsl288 : l ≠ 0 → sl < 288) :
     Steps₂ (closeAt p buildT, σ)
       (.ret (.const (.cap p)),
         if l = 0 then ⟨σ.H.insert (p + 13) (j + 1), σ.R⟩
@@ -1360,7 +1360,9 @@ theorem build_syms_cell {σ : Store} {p : Int} {L : Nat} {f : Int → Int} (hw :
       show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega,
       show X + 7 < L by omega, show (0 : Int) ≤ X + 5 by omega, show X + 5 < L by omega,
       show (0 : Int) ≤ X + 6 by omega, show X + 6 < L by omega]
-  · simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  · have hsl0' := hsl0 h0
+    have hsl288' := hsl288 h0
+    simp [closeAt, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
       stepFn, opStep, Store.load, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
       Const.toL1, Const.ofL1, Const.toBool, buildT, buildN, cPHASE, cINDEX, cX, cCODE, cCHK, cLEFT, cREST, cTOTAL, bSymsN, bRestN, h0, g12, g13, g79, g7, g5, g6, gl, gsl, hjn, hs0, hsL, show (12 : Int) < L by omega,
       show (13 : Int) < L by omega, show (2079 : Int) < L by omega, show (0 : Int) ≤ X + 7 by omega,

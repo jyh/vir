@@ -341,6 +341,20 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
       and BUILD never writes cell 10. Added `f cFILL = 0` to the tg = 0 disjunct (buildInv_congr carries cell 10; CLREAD's
       end supplies it). With BUILD's helper layer (`facts_build`, `LOC_build`, `bp`, the counting lemmas `sc`, `sc_succN`,
       `sc_le`, `offOf_sc`, **`off_cnt_le` : offset[l] + count[l] ≤ N**, `InvG.tw`, `InvM.bld`, `LOC_build_lt`): df-164 EXIT=0.
+    - **BUILD SAFE, AND SAFETY PROVED (65th head, 2026-11-12): `safety : SafetyStmt` (df-173 EXIT=0).** BUILD by phase:
+      ZERO and COUNT (`bstatic`, `sane_tab`, the `cnt` fold step; df-168), NEXT (`off_next`: offs[j−1] + count[j−1] is offOf
+      at j), LEFT, and the entry into SYMS (`ph4_entry`: with the counts and offsets in place the table is sane and every
+      slot leaves room, from `off_cnt_le`), SYMS (a symbol j < nn ≤ 288 at slot < 288) and its three ends (CL → LENS,
+      L → the D build, D → SYM) (df-171, df-172). `safeI_build`, then `stepSafe : StepSafe` and `safety`.
+      - A step lemma stronger than its code, corrected (Step.lean, not the frozen object): `build_syms_cell` demanded
+        0 ≤ slot < 288 even at l = 0, where the program never reads the slot and `buildInv` bounds no slot 0. Its two
+        premises are now `l ≠ 0 → …`, used only in the l ≠ 0 branch of its proof; nothing else called it.
+      - Builds: df-165 … df-174 (df-166 2 errors, df-167 an unchanged rebuild of mine, df-169 a theorem without a type,
+        df-170 4, df-171 2, all in new code). **df-audit-028: 436 #print rows, every one within the standard three**
+        (axiom_gate 435 distinct, the `safe_hdr'` parse); `safety` itself: propext · Classical.choice · Quot.sound.
+        Positive control df-audit-control-003: `control_sorry` shows `sorryAx`, the gate reports it as the control.
+      - LIMIT: no mutant was run against Safety's proofs this shift; the per-mode lemmas' mutants (Fit, Typing, Step)
+        stand from earlier rows. Safety's statement is the declared `SafetyStmt` (Statements.lean, written before).
     - **BUILD, the one premise left (`stepSafe_of : ModeSafe mBUILD → StepSafe`, `safety_of_build`): the plan.** Twelve
       step lemmas in Step.lean (build_zero_cell/end, build_count_cell/end, build_next_cell/end, build_left_cell/end,
       build_syms_cell, build_syms_end_cl/l/d), each against `buildInv`'s phase clause. Owed lemmas, by phase:
