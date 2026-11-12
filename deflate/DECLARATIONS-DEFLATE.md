@@ -304,3 +304,37 @@ above the one it replaces — provided the term never names `md` and its closed 
 lemma then transfers to the step at that mode, unchanged.
 **What would show this wrong:** a mode term that names `md`; a mode number in two branches; a value of mode that reaches no
 branch and is not a fixed point.
+
+### S-16 (amendment 10, 2026-11-11, the 64th head). DECLARED before Safety's invariant and measure exist in code (Fit.lean has every mode's `stepS`; no `Inv`, no measure). The measure D3 scores, and the invariant it rides on.
+**The measure.** With W = 4096:
+`Φ(σ) = W · (TBL + BITS + OUT) + LOC`, where
+- TBL = 2048 − (8·tb + ti) in mode TABLE, else 0 (the bit table's cells still to fill);
+- BITS = 8·(n − by) − bi (input bits not yet consumed);
+- **OUT = OUTMAX − m (the output side; D3's prediction, stated here at its sha before any proof)**;
+- LOC = a function of the mode and its own cursor cells, 0 ≤ LOC < W: the bookkeeping steps left before the next step that
+  fills a table cell, consumes an input bit or writes an output byte. Per mode:
+  READ, DECODE 0 · HDR, HDRB, SHDR, SLEN, DHDR, DH2, DH3, SYM, LENX, CLREAD (i < HCLEN) 1 · SYMD, SCOPY (pend = 0), COPY
+  (pend = 0) 2 · SNLEN, DSTX 3 · DSTD 4 · BUILD the rest of the current build by phase and index (ZERO 16 + 1, COUNT nn + 1,
+  NEXT 15 + 1, LEFT 15 + 1, SYMS nn + 1), plus the builds and steps that follow it before the next decode (target L: a full D
+  build and SYM; target D: SYM; target CL: LENS) · FIXLENS (318 − i) + 1 + a full L build (nn 288) + a full D build (nn 30) +
+  SYM · HDRD 1 + the largest of its successors · CLREAD (i ≥ HCLEN) and CLPUT, the zero-fill and the CL build to LENS · LENS,
+  LSYM, LREP, REP: 1, 2, 141, pend + 2 above the L + D builds for (HLIT, HDIST) · DH4 1 + CLREAD at 0. Its exact definition is
+  written in Safety.lean BEFORE any proof that uses it; a full build for nn symbols is 2·nn + 51 steps.
+- Every step strictly decreases Φ: TABLE decreases TBL; READ and DECODE consume a bit (BITS − 1), SHDR's alignment and SCOPY
+  consume ≥ 0 and 8 bits; a literal and every copy byte write one output byte (OUT − 1); every other step decreases LOC. A step
+  that decreases the W-part may raise LOC by anything below W.
+- **N(n, OUTMAX) = Φ(initStore) = W · (2048 + 8n + OUTMAX)** (LOC(TABLE) = 0). Safety's ∃ N is this function.
+**The invariant `Inv σ`, conjunct by conjunct** (each is a premise some Step.lean lemma names):
+1. the world: ONE region at p of L0 = n + OUTMAX + 3626 cells; n, OUTMAX, X, the reading flag never change; the input cells
+   are bytes and are never written; the read-only area (S7's tables, ORDER) is never written;
+2. the bit table: in TABLE, tb < 256 and ti ≤ 7, and every cell before (tb, ti) is a bit; outside TABLE, all 2048 cells are
+   bits (0 or 1) — a non-bit would put a decode index out of range;
+3. the cursor: 0 ≤ by ≤ n, 0 ≤ bi ≤ 7, by = n → bi = 0; 0 ≤ m ≤ OUTMAX; mode ∈ the 28 numbers ∪ {DONE, REJECT};
+4. per mode: READ k ≥ 1 and its return mode is one of those READ is requested with; SCOPY by + pend ≤ n and m + pend ≤ OUTMAX;
+   COPY m + pend ≤ OUTMAX and dist ≤ m; FIXLENS i ≤ 318; CLREAD/CLPUT i ≤ 19; after DH4, HLIT ≤ 286 and HDIST ≤ 30; LENS/LSYM
+   fl ≤ HLIT + HDIST; REP fl + pend ≤ HLIT + HDIST; BUILD's phase ∈ 0..4 with its index in range and its table parameters
+   (symbol base, nn ≤ 288, table base) inside the region;
+5. every BUILT code table is sane: counts ≥ 0 with Σ count ≤ nn, and every syms entry a symbol < nn — so every decode index is
+   inside its table.
+**What would show this wrong:** a step that decreases none of TBL, BITS, OUT and LOC; a LOC value ≥ W on a state satisfying
+Inv; a conjunct a step breaks; a premise of a Step.lean lemma that Inv does not imply; N found to depend on the bytes.
