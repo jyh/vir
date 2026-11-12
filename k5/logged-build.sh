@@ -27,7 +27,16 @@ sb=${SALTBUILD:-$here/../../saltbuild.sh}
 [ -x "$sb" ] || { echo "logged-build: saltbuild not found at $sb" >&2; exit 4; }
 set -o noclobber
 : > "$log" || { echo "logged-build: REFUSED — could not create $log without clobbering" >&2; exit 3; }
-cd "$lean" && "$sb" "$@" >> "$log" 2>&1
+# From k5p-121 on (k5/LOGS-FILTER.md, STATUS-vir 299): saltbuild writes to a raw file outside the tree, and the committed log is
+# that file with each REPLAYED module's re-printed warning body replaced by one hash line (tools/replay_filter.py). Header lines,
+# every line containing "error", and the `saltbuild EXIT=` line are copied byte for byte. If the filter fails, the RAW log is kept.
+raw=$(mktemp "${TMPDIR:-/tmp}/logged-build-$name.XXXXXX") || { echo "logged-build: no raw temp file" >&2; exit 5; }
+cd "$lean" && "$sb" "$@" > "$raw" 2>&1
 rc=$?
+if ! python3 -I "$here/tools/replay_filter.py" "$raw" - >> "$log"; then
+  echo "logged-build: replay_filter FAILED; the raw log is kept whole" >&2
+  : >| "$log"; cat "$raw" >> "$log"
+fi
+rm -f -- "${raw:?}"
 grep -F 'saltbuild EXIT=' "$log" | tail -1
 exit $rc
