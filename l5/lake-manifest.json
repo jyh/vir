@@ -122,6 +122,15 @@
   {
    "type": "path",
    "scope": "",
+   "name": "deflate",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../deflate",
+   "configFile": "lakefile.toml"
+  },
+  {
+   "type": "path",
+   "scope": "",
    "name": "l2",
    "manifestFile": "lake-manifest.json",
    "inherited": true,

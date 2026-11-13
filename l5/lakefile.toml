@@ -13,5 +13,10 @@ rev = "v4.32.0-rc1"
 name = "l3"
 path = "../l3"
 
+# bitR (STATUS 317): DEFLATE's bit arithmetic `bitAt` and its closed `BITc` atom are REUSED, imported by path (deflate is never edited).
+[[require]]
+name = "deflate"
+path = "../deflate"
+
 [[lean_lib]]
 name = "VIRL5"
