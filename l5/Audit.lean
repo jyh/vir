@@ -20,3 +20,8 @@ open VIRL5
 #print axioms cmpR_spec
 #print axioms scanR_spec
 #print axioms copyWithinR_spec
+#print axioms fillR_typed
+#print axioms copyR_typed
+#print axioms cmpR_typed
+#print axioms scanR_typed
+#print axioms copyWithinR_typed

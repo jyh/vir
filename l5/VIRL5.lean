@@ -17,3 +17,4 @@ import VIRL5.Copy
 import VIRL5.Cmp
 import VIRL5.Scan
 import VIRL5.CopyWithin
+import VIRL5.RoutineTypes
