@@ -29,3 +29,7 @@ open VIRL5
 #print axioms appFix_rule₅
 #print axioms bitR_spec
 #print axioms bitR_typed
+#print axioms stepFn₅_complete
+#print axioms stepFn₅_sound
+#print axioms step₅_det
+#print axioms run₅_steps

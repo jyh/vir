@@ -1,0 +1,468 @@
+saltqueue: ticket P2 seat=root pid=98731
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 5s — attempting acquisition
+⚠ [4/588] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [621/759] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [625/759] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/759] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [733/759] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [734/759] Replayed VIRL5.Weak5
+warning: VIRL5/Weak5.lean:17:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [735/759] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [736/759] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [737/759] Replayed VIRL5.Subst5
+warning: VIRL5/Subst5.lean:14:64: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL5/Subst5.lean:14:64: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL5/Subst5.lean:144:67: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Subst5.lean:154:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [741/759] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [742/759] Replayed VIRL5.RTSubst5
+warning: VIRL5/RTSubst5.lean:155:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:167:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:252:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:273:77: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [743/759] Replayed VIRL5.SemBase5
+warning: VIRL5/SemBase5.lean:38:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL5/SemBase5.lean:38:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [745/759] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [749/759] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [753/759] Replayed VIRL5.CE
+warning: VIRL5/CE.lean:70:51: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✖ [759/759] Building VIRL5.Run5 (1.9s)
+trace: .> LEAN_PATH=~/fleet/vir/l5/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean:~/fleet/vir/l5/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l5/VIRL5/Run5.lean -o ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/Run5.olean -i ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/Run5.ilean -c ~/fleet/vir/l5/.lake/build/ir/VIRL5/Run5.c --setup ~/fleet/vir/l5/.lake/build/ir/VIRL5/Run5.setup.json --json
+error: VIRL5/Run5.lean:69:8: unsolved goals
+case letStep.letOp
+c c' : Config₅
+τ : Ty₅
+e₁' e₂ : Tm₅
+σ σ' : Store
+o✝ : Op
+as✝ : List Atom₅
+τ✝ : Ty₅
+e✝ : Tm₅
+hs : Step₅ (Tm₅.letOp o✝ as✝ τ✝ e✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.letOp o✝ as✝ τ✝ e✝, σ).1 (Tm₅.letOp o✝ as✝ τ✝ e✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.letOp o✝ as✝ τ✝ e✝) σ = some (e₁', σ')
+⊢ ((Atom₅.evalL as✝).bind fun a =>
+      Option.map ((fun c => (Tm₅.letE τ c.1 e₂, c.2)) ∘ fun p => (Tm₅.subst 0 p.1 e✝, p.2)) (opStep₅ o✝ a σ)) =
+    some (Tm₅.letE τ e₁' e₂, σ')
+error: VIRL5/Run5.lean:69:8: unsolved goals
+case letStep.app
+c c' : Config₅
+τ : Ty₅
+e₁' e₂ : Tm₅
+σ σ' : Store
+a₁✝ a₂✝ : Atom₅
+hs : Step₅ (Tm₅.app a₁✝ a₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.app a₁✝ a₂✝, σ).1 (Tm₅.app a₁✝ a₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.app a₁✝ a₂✝) σ = some (e₁', σ')
+⊢ (match a₁✝.eval, a₂✝.eval with
+    | some (Atom₅.lam τ 0 e), some v => some (Tm₅.subst 0 v e, σ)
+    | some (Atom₅.fix τ₁ 0 τ₂ e), some v => some (Tm₅.subst 0 (Atom₅.fix τ₁ 0 τ₂ e) (Tm₅.subst 0 v e), σ)
+    | x, x_1 => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:69:8: unsolved goals
+case letStep.ite
+c c' : Config₅
+τ : Ty₅
+e₁' e₂ : Tm₅
+σ σ' : Store
+a✝ : Atom₅
+e₁✝ e₂✝ : Tm₅
+hs : Step₅ (Tm₅.ite a✝ e₁✝ e₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.ite a✝ e₁✝ e₂✝, σ).1 (Tm₅.ite a✝ e₁✝ e₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.ite a✝ e₁✝ e₂✝) σ = some (e₁', σ')
+⊢ (match a✝.eval with
+    | some (Atom₅.const c) =>
+      match c.toBool with
+      | some true => some (e₁✝, σ)
+      | some false => some (e₂✝, σ)
+      | none => none
+    | x => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:69:8: unsolved goals
+case letStep.case
+c c' : Config₅
+τ : Ty₅
+e₁' e₂ : Tm₅
+σ σ' : Store
+a✝ : Atom₅
+e₁✝ e₂✝ : Tm₅
+hs : Step₅ (Tm₅.case a✝ e₁✝ e₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.case a✝ e₁✝ e₂✝, σ).1 (Tm₅.case a✝ e₁✝ e₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.case a✝ e₁✝ e₂✝) σ = some (e₁', σ')
+⊢ (match a✝.eval with
+    | some (Atom₅.inl τ₂ v) => some (Tm₅.subst 0 v e₁✝, σ)
+    | some (Atom₅.inr τ₁ v) => some (Tm₅.subst 0 v e₂✝, σ)
+    | x => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:69:8: unsolved goals
+case letStep.appK
+c c' : Config₅
+τ : Ty₅
+e₁' e₂ : Tm₅
+σ σ' : Store
+a₁✝ a₂✝ : Atom₅
+cs✝ : List Atom₅
+hs : Step₅ (Tm₅.appK a₁✝ a₂✝ cs✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.appK a₁✝ a₂✝ cs✝, σ).1 (Tm₅.appK a₁✝ a₂✝ cs✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.appK a₁✝ a₂✝ cs✝) σ = some (e₁', σ')
+⊢ (match a₁✝.eval, a₂✝.eval, Atom₅.evalL cs✝ with
+    | some (Atom₅.lam τ k e), some v, some qs => if qs.length = k then some (Tm₅.substAll (v :: qs) e, σ) else none
+    | some (Atom₅.fix τ₁ k τ₂ e), some v, some qs =>
+      if qs.length = k then some (Tm₅.substAll (Atom₅.fix τ₁ k τ₂ e :: v :: qs) e, σ) else none
+    | x, x_1, x_2 => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:87:8: unsolved goals
+case letKStep.letOp
+c c' : Config₅
+τ : Ty₅
+j : ℕ
+e₁' e₂ : Tm₅
+σ σ' : Store
+o✝ : Op
+as✝ : List Atom₅
+τ✝ : Ty₅
+e✝ : Tm₅
+hs : Step₅ (Tm₅.letOp o✝ as✝ τ✝ e✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.letOp o✝ as✝ τ✝ e✝, σ).1 (Tm₅.letOp o✝ as✝ τ✝ e✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.letOp o✝ as✝ τ✝ e✝) σ = some (e₁', σ')
+⊢ ((Atom₅.evalL as✝).bind fun a =>
+      Option.map ((fun c => (Tm₅.letK τ j c.1 e₂, c.2)) ∘ fun p => (Tm₅.subst 0 p.1 e✝, p.2)) (opStep₅ o✝ a σ)) =
+    some (Tm₅.letK τ j e₁' e₂, σ')
+error: VIRL5/Run5.lean:87:8: unsolved goals
+case letKStep.app
+c c' : Config₅
+τ : Ty₅
+j : ℕ
+e₁' e₂ : Tm₅
+σ σ' : Store
+a₁✝ a₂✝ : Atom₅
+hs : Step₅ (Tm₅.app a₁✝ a₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.app a₁✝ a₂✝, σ).1 (Tm₅.app a₁✝ a₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.app a₁✝ a₂✝) σ = some (e₁', σ')
+⊢ (match a₁✝.eval, a₂✝.eval with
+    | some (Atom₅.lam τ 0 e), some v => some (Tm₅.subst 0 v e, σ)
+    | some (Atom₅.fix τ₁ 0 τ₂ e), some v => some (Tm₅.subst 0 (Atom₅.fix τ₁ 0 τ₂ e) (Tm₅.subst 0 v e), σ)
+    | x, x_1 => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:87:8: unsolved goals
+case letKStep.ite
+c c' : Config₅
+τ : Ty₅
+j : ℕ
+e₁' e₂ : Tm₅
+σ σ' : Store
+a✝ : Atom₅
+e₁✝ e₂✝ : Tm₅
+hs : Step₅ (Tm₅.ite a✝ e₁✝ e₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.ite a✝ e₁✝ e₂✝, σ).1 (Tm₅.ite a✝ e₁✝ e₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.ite a✝ e₁✝ e₂✝) σ = some (e₁', σ')
+⊢ (match a✝.eval with
+    | some (Atom₅.const c) =>
+      match c.toBool with
+      | some true => some (e₁✝, σ)
+      | some false => some (e₂✝, σ)
+      | none => none
+    | x => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:87:8: unsolved goals
+case letKStep.case
+c c' : Config₅
+τ : Ty₅
+j : ℕ
+e₁' e₂ : Tm₅
+σ σ' : Store
+a✝ : Atom₅
+e₁✝ e₂✝ : Tm₅
+hs : Step₅ (Tm₅.case a✝ e₁✝ e₂✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.case a✝ e₁✝ e₂✝, σ).1 (Tm₅.case a✝ e₁✝ e₂✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.case a✝ e₁✝ e₂✝) σ = some (e₁', σ')
+⊢ (match a✝.eval with
+    | some (Atom₅.inl τ₂ v) => some (Tm₅.subst 0 v e₁✝, σ)
+    | some (Atom₅.inr τ₁ v) => some (Tm₅.subst 0 v e₂✝, σ)
+    | x => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:87:8: unsolved goals
+case letKStep.appK
+c c' : Config₅
+τ : Ty₅
+j : ℕ
+e₁' e₂ : Tm₅
+σ σ' : Store
+a₁✝ a₂✝ : Atom₅
+cs✝ : List Atom₅
+hs : Step₅ (Tm₅.appK a₁✝ a₂✝ cs✝, σ) (e₁', σ')
+ih : stepFn₅ (Tm₅.appK a₁✝ a₂✝ cs✝, σ).1 (Tm₅.appK a₁✝ a₂✝ cs✝, σ).2 = some (e₁', σ')
+ih' : stepFn₅ (Tm₅.appK a₁✝ a₂✝ cs✝) σ = some (e₁', σ')
+⊢ (match a₁✝.eval, a₂✝.eval, Atom₅.evalL cs✝ with
+    | some (Atom₅.lam τ k e), some v, some qs => if qs.length = k then some (Tm₅.substAll (v :: qs) e, σ) else none
+    | some (Atom₅.fix τ₁ k τ₂ e), some v, some qs =>
+      if qs.length = k then some (Tm₅.substAll (Atom₅.fix τ₁ k τ₂ e :: v :: qs) e, σ) else none
+    | x, x_1, x_2 => none) =
+    some (e₁', σ')
+error: VIRL5/Run5.lean:109:56: Application type mismatch: The argument
+  h₁
+has type
+  a₂.eval = some v
+but is expected to have type
+  a₁.eval = some (Atom₅.lam ?m.245 0 e)
+in the application
+  Step₅.appLam h₁
+error: VIRL5/Run5.lean:110:60: Application type mismatch: The argument
+  h₁
+has type
+  a₂.eval = some v
+but is expected to have type
+  a₁.eval = some (Atom₅.fix τ₁ 0 τ₂ e)
+in the application
+  Step₅.appFix h₁
+error: VIRL5/Run5.lean:119:2: Too many variable names provided at alternative `case15`: 12 provided, but 11 expected
+error: VIRL5/Run5.lean:120:4: Tactic `split` failed: Could not split an `if` or `match` expression in the type
+  some (Tm₅.substAll (e :: v) k, σ) = some c
+of `h`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case case15
+a₁ a₂ : Atom₅
+cs : List Atom₅
+σ : Store
+τ : Ty₅
+k : Tm₅
+e : Atom₅
+v : List Atom₅
+qs : Atom₅.evalL cs = some v
+h₁ : a₂.eval = some e
+h₂ : a₁.eval = some (Atom₅.lam τ v.length k)
+c : Config₅
+h : some (Tm₅.substAll (e :: v) k, σ) = some c
+⊢ Step₅ (Tm₅.appK a₁ a₂ cs, σ) c
+error: VIRL5/Run5.lean:124:4: Tactic `split` failed: Could not split an `if` or `match` expression in the type `none = some c` of `h`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case case16
+a₁ a₂ : Atom₅
+cs : List Atom₅
+σ : Store
+τ₁ : Ty₅
+k : ℕ
+τ₂ : Tm₅
+e : Atom₅
+v : List Atom₅
+qs : Atom₅.evalL cs = some v
+h₁ : a₂.eval = some e
+h₂ : a₁.eval = some (Atom₅.lam τ₁ k τ₂)
+h₃ : ¬v.length = k
+c : Config₅
+h : none = some c
+⊢ Step₅ (Tm₅.appK a₁ a₂ cs, σ) c
+error: VIRL5/Run5.lean:127:11: unsolved goals
+case case17.refl
+a₁✝ a₂✝ : Atom₅
+cs✝ : List Atom₅
+σ✝ : Store
+τ₁✝ τ₂✝ : Ty₅
+e✝ : Tm₅
+v✝ : Atom₅
+qs✝ : List Atom₅
+x✝² : Atom₅.evalL cs✝ = some qs✝
+x✝¹ : a₂✝.eval = some v✝
+x✝ : a₁✝.eval = some (Atom₅.fix τ₁✝ qs✝.length τ₂✝ e✝)
+⊢ Step₅ (Tm₅.appK a₁✝ a₂✝ cs✝, σ✝) (Tm₅.substAll (Atom₅.fix τ₁✝ qs✝.length τ₂✝ e✝ :: v✝ :: qs✝) e✝, σ✝)
+error: VIRL5/Run5.lean:129:4: Tactic `split` failed: Could not split an `if` or `match` expression in the type `none = some c` of `h`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case case18
+τ j : Atom₅
+a : List Atom₅
+ds : Store
+e₂ : Ty₅
+σ : ℕ
+v : Ty₅
+qs : Tm₅
+h₁ : Atom₅
+h₂ : List Atom₅
+x✝² : Atom₅.evalL a = some h₂
+x✝¹ : j.eval = some h₁
+x✝ : τ.eval = some (Atom₅.fix e₂ σ v qs)
+h✝ : ¬h₂.length = σ
+c : Config₅
+h : none = some c
+⊢ Step₅ (Tm₅.appK τ j a, ds) c
+error: VIRL5/Run5.lean:134:4: `simp` made no progress
+error: VIRL5/Run5.lean:136:4: `simp` made no progress
+error: VIRL5/Run5.lean:98:2: Alternative `case23` has not been provided
+error: VIRL5/Run5.lean:98:2: Alternative `case24` has not been provided
+error: VIRL5/Run5.lean:98:2: Alternative `case25` has not been provided
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL5.Run5
+error: build failed
+saltbuild EXIT=1
