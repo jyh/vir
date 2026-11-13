@@ -37,3 +37,16 @@ DR-2 needs no "regions preserved" premise: the returned capability's `VRel.cap` 
 definitions, but they sit in a namespace the whitelist does not admit. At S3 the driver theorem is assembled from them, so they
 (and `compile_refines_mem`) move to compiler/ under VIRC, declared first in DECLARATIONS-S2's "Added" list. Until then, K3 is not
 scored on them.
+
+## Addendum 2 (same head, BEFORE its file): DR-3, DEFLATE's iteration through the driver's L2 half (STATUS-vir 305)
+- **Statement.** `deflate_driver` (k7/K7/DeflateDriver.lean): for bytes < 256, n and OUTMAX < 2³², either reading, the region placed
+  at 0 ≤ p with p + L0 ≤ 2⁶⁰, and every k and σ with `iterS p k (initStore b om lit p) = some σ`: the compiled step, run k times
+  from the scaled loader's image of the initial store (`scaleMem (initStore …)`, argument words `capWords scaleLay p L0`), each run
+  fed the previous run's returned words, FINISHES all k times (`WDone`), and the final memory is related to σ (`MemRel scaleLay σ m'`).
+  No overflow branch, and the hypotheses are those of `deflate_noovf_loaded`.
+- **Route.** Induction on k through `iterS_succ'`, carrying `WDone`, `MemRel` and the EnvRel of the next argument words. Per step:
+  `compile_refines_mem` at the reached σ_k (from the source run that `stepS` packs, returning `cap p`). Its overflow branch is
+  excluded by `deflate_noovf` at σ_k, whose argument words are `capWords scaleLay p L0` because the returned cap's VRel gives
+  σ_k's region length and `reach_shape` gives `σ_k.R = {p ↦ L0}`. A `WDone.snoc` lemma appends the new call.
+- **What would show it wrong:** a reached σ_k whose returned words are not `capWords scaleLay p L0` (the region changed: a finding
+  against reach_shape); an overflow branch that deflate_noovf does not exclude (a gap between K5's statement and the driver).
