@@ -1,0 +1,20 @@
+name = "k7"
+defaultTargets = ["K7"]
+
+# O95, amend-23 K7 (compiler/DECLARATIONS-K7.md): K7-a, the L3 router through S1∘S2 with k5's generic loader. A SEPARATE project
+# requiring the compiler, L3 and k5 by path, so none is edited and none's counts move. Packages APFS-cloned from k5/, manifest
+# written by edit; never a bare lake update.
+[[require]]
+name = "compiler"
+path = "../compiler"
+
+[[require]]
+name = "l3"
+path = "../l3"
+
+[[require]]
+name = "k5"
+path = "../k5"
+
+[[lean_lib]]
+name = "K7"
