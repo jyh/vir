@@ -1,0 +1,34 @@
+saltqueue: ticket P2 seat=root pid=79825
+saltqueue: QUEUED behind 3 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     2138s      math         89386
+  P2     2137s      root         89799
+  P2     1679s      verso        26130
+  P2     302s       root         79825
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     2440s      math         89386
+  P2     2438s      root         89799
+  P2     1980s      verso        26130
+  P2     604s       root         79825
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     2742s      math         89386
+  P2     2740s      root         89799
+  P2     2282s      verso        26130
+  P2     905s       root         79825
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     3043s      math         89386
+  P2     3042s      root         89799
+  P2     2584s      verso        26130
+  P2     1207s      root         79825
+saltqueue: still queued (1500s) —
+  CLASS  AGE        SEAT         PID
+  P2     2886s      verso        26130
+  P2     1509s      root         79825
+  P2     38s        root         7241
+saltqueue: HEAD OF QUEUE after 1505s — attempting acquisition
+error: unknown target `build`
+saltbuild EXIT=1

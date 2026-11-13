@@ -60,3 +60,14 @@ removed. READ's and DECODE's collapse is the table READ per bit, replaced by the
 SCOPY is `scopy_next` (one byte) + `scopy_run` (induction on k). Chunked, it becomes c ≤ 32 bytes per step, and Rel holds at each
 chunk boundary (pos + 8c, out.push of c bytes). COPY has the same shape (Correct.lean around line 1719). Both changes stay inside
 the mode's own lemmas.
+
+## ADDENDUM 3 (the 73rd head, before Deflate5): the lift, bridge (i), and why chunking keeps N
+- **Lift5.lean**: `run₅_ι : run₅ n (ιC c) = ιC (run₂ n c)` at every fuel n, from `stepFn₅_ι` (CE both ways plus the soundness and
+  completeness of both step functions). Every lifted mode's `stepS` fact therefore carries by one rewrite at KSTEP.
+- **Bridge5.lean** (bridge (i)): `Sole σ p L` (the store owns one region and no other cell). `RegionAt.world` and `World.regionAt`
+  convert between the routines' absolute contents and DEFLATE's relative ones on a Sole store. `initStore_sole` holds. Every step
+  must also preserve Sole: that is owed per mode, alongside its World lemma.
+- **Chunking keeps the statements' bounds.** SafetyStmt is `∃ k ≤ N b.size om` and CorrectStmt is `∃ k`. Both bound the step count
+  from ABOVE, so a run that takes fewer steps (≤ 32 bytes per SCOPY/COPY step) satisfies the same N. Correct.lean consumes SCOPY and
+  COPY only through `scopy_run` (l.980) and `copy_run` (l.1717), and their callers (l.1094, l.1945) use only the end state.
+  Bridge (ii) is therefore those two inductions plus one chunk-step lemma each, as Addendum 2 priced it.

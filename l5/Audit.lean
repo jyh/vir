@@ -40,3 +40,9 @@ open VIRL5
 #print axioms copyWithinR_cost
 #print axioms cost_embed₅
 #print axioms bitR_cost
+#print axioms stepFn₅_ι
+#print axioms run₅_ι
+#print axioms run₅_ιE
+#print axioms RegionAt.world
+#print axioms World.regionAt
+#print axioms initStore_sole
