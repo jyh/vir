@@ -1,0 +1,106 @@
+saltqueue: ticket P2 seat=root pid=61469
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 35s — attempting acquisition
+⚠ [5/267] Replayed VIRL1.Semantics
+[replay_filter: dropped 5 lines (243 bytes) sha256/16=7b4d9f345d6cdb4b]
+⚠ [621/852] Replayed VIRL1.L1
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=8529f3b7fecc5094]
+⚠ [625/852] Replayed VIRL2.Sig2
+[replay_filter: dropped 3 lines (174 bytes) sha256/16=780f8bb5a3e5867c]
+⚠ [729/852] Replayed VIRL2.Step2
+[replay_filter: dropped 5 lines (239 bytes) sha256/16=62789eecf67292c9]
+⚠ [732/852] Replayed VIRL2.Axioms
+[replay_filter: dropped 3 lines (147 bytes) sha256/16=bc72b474001432b0]
+⚠ [735/852] Replayed VIRL2.Denot2
+[replay_filter: dropped 14 lines (450 bytes) sha256/16=019a0409b19d2290]
+⚠ [737/852] Replayed VIRL2.Triples
+[replay_filter: dropped 21 lines (825 bytes) sha256/16=14cdccf42c4596f5]
+⚠ [739/852] Replayed VIRL2.Adequacy2
+[replay_filter: dropped 6 lines (307 bytes) sha256/16=508b4650232bab24]
+⚠ [740/852] Replayed VIRL2.Conservative
+[replay_filter: dropped 10 lines (479 bytes) sha256/16=336a1071e7076d3a]
+⚠ [742/852] Replayed VIRL2.SemBase
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=70ba3b3d0d6642dc]
+⚠ [743/852] Replayed VIRL2.MaskLemmas
+[replay_filter: dropped 19 lines (1143 bytes) sha256/16=b49371008c5127a3]
+⚠ [744/852] Replayed VIRL2.Subst2
+[replay_filter: dropped 23 lines (1003 bytes) sha256/16=7725c0a861f971ce]
+⚠ [747/852] Replayed VIRL2.RTSubst
+[replay_filter: dropped 28 lines (1078 bytes) sha256/16=63a107cfe3cb7d2f]
+⚠ [754/852] Replayed VIRL3.Typing
+[replay_filter: dropped 20 lines (971 bytes) sha256/16=ab867ab908b86064]
+⚠ [768/852] Replayed VIRC.Sim
+[replay_filter: dropped 15 lines (794 bytes) sha256/16=db7f200245125f82]
+⚠ [769/852] Replayed VIRC.S1
+[replay_filter: dropped 14 lines (468 bytes) sha256/16=618ea2df615c4029]
+⚠ [771/852] Replayed VIRC.Sim2
+[replay_filter: dropped 22 lines (1083 bytes) sha256/16=5a1990c3a2abca8c]
+⚠ [773/852] Replayed VIRC.NoOvf
+[replay_filter: dropped 22 lines (1068 bytes) sha256/16=edb80afbb8b3884c]
+⚠ [775/852] Replayed VIRC.NoOvfSrc
+[replay_filter: dropped 14 lines (480 bytes) sha256/16=4c68996c157712df]
+⚠ [3043/3085] Replayed VIRDeflate.Bits
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=67eb0cd1b4985dc3]
+⚠ [3044/3085] Replayed VIRDeflate.Huffman
+[replay_filter: dropped 28 lines (1290 bytes) sha256/16=c00b7258606d108c]
+⚠ [3045/3085] Replayed VIRDeflate.Spec
+[replay_filter: dropped 12 lines (691 bytes) sha256/16=8120ed8ef5a9a87e]
+⚠ [3046/3085] Replayed VIRDeflate.Step
+[replay_filter: dropped 26810 lines (2764956 bytes) sha256/16=3be83f67f0bc6431]
+⚠ [3047/3085] Replayed VIRDeflate.Dispatch
+[replay_filter: dropped 99 lines (5100 bytes) sha256/16=019755f1def785a2]
+⚠ [3049/3085] Replayed K5.Checked
+[replay_filter: dropped 14 lines (837 bytes) sha256/16=097c56fd6747df4f]
+⚠ [3050/3085] Replayed K5.Read
+[replay_filter: dropped 172 lines (11989 bytes) sha256/16=900f3b3d6d52dc06]
+⚠ [3051/3085] Replayed K5.Modes1
+[replay_filter: dropped 9461 lines (697722 bytes) sha256/16=456eec939faefadd]
+⚠ [3052/3085] Replayed K5.Modes2
+[replay_filter: dropped 30726 lines (2971534 bytes) sha256/16=bdd97610b3e3c9d6]
+⚠ [3053/3085] Replayed K5.Modes3
+[replay_filter: dropped 6864 lines (462425 bytes) sha256/16=48600206d718ce18]
+⚠ [3054/3085] Replayed VIRDeflate.Fit
+[replay_filter: dropped 149 lines (8728 bytes) sha256/16=aaef74aca096b6b4]
+⚠ [3056/3085] Replayed VIRDeflate.Safety
+[replay_filter: dropped 593 lines (30706 bytes) sha256/16=9163355b15a2c1d0]
+⚠ [3057/3085] Replayed K5.Bit
+[replay_filter: dropped 44 lines (2065 bytes) sha256/16=8123a541cfab637e]
+⚠ [3058/3085] Replayed K5.Table
+[replay_filter: dropped 66 lines (3598 bytes) sha256/16=38a5ed7aa3cd0a19]
+⚠ [3059/3085] Replayed K5.BuildLeftEnd
+[replay_filter: dropped 2870 lines (178765 bytes) sha256/16=60ed5e35cb3f493f]
+⚠ [3060/3085] Replayed K5.BuildZero
+[replay_filter: dropped 175 lines (10494 bytes) sha256/16=eef4fc1b4da281c3]
+⚠ [3061/3085] Replayed K5.Dispatch
+[replay_filter: dropped 96 lines (5058 bytes) sha256/16=c5a0cb577fb51515]
+⚠ [3062/3085] Replayed VIRDeflate.Correct
+[replay_filter: dropped 418 lines (20544 bytes) sha256/16=5c35130419594ff7]
+⚠ [3063/3085] Replayed VIRDeflate.Typing
+[replay_filter: dropped 9 lines (392 bytes) sha256/16=392b1711254df83d]
+⚠ [3065/3085] Replayed K5.RunShape
+[replay_filter: dropped 16 lines (745 bytes) sha256/16=42d415791a73af18]
+⚠ [3066/3085] Replayed K5.Modes4
+[replay_filter: dropped 76135 lines (7594236 bytes) sha256/16=0adfe29e9de504fa]
+⚠ [3069/3085] Replayed K5.Safe2
+[replay_filter: dropped 3 lines (146 bytes) sha256/16=b1a373d6ec6d6808]
+⚠ [3070/3085] Replayed K5.Safe3
+[replay_filter: dropped 21 lines (1045 bytes) sha256/16=1fb6528f75ea8ec0]
+⚠ [3071/3085] Replayed K5.Safe4
+[replay_filter: dropped 12 lines (584 bytes) sha256/16=dfac7afd76a4dc0a]
+⚠ [3073/3085] Replayed K5.SafeBuild
+[replay_filter: dropped 6 lines (328 bytes) sha256/16=17427bb36fe97bfc]
+⚠ [3075/3085] Replayed K5.MagStep
+[replay_filter: dropped 22 lines (1043 bytes) sha256/16=f482ad2791b5fbcc]
+⚠ [3076/3085] Replayed K5.MagBuild
+[replay_filter: dropped 249 lines (13395 bytes) sha256/16=e046af3e4cc21e04]
+⚠ [3077/3085] Replayed K5.MagAll
+[replay_filter: dropped 348 lines (18511 bytes) sha256/16=837dfba8873bf228]
+⚠ [3078/3085] Replayed K5.DeflateInRange
+[replay_filter: dropped 7 lines (335 bytes) sha256/16=a69a606e00763d7a]
+⚠ [3081/3085] Replayed K5.DeflateLoaded
+[replay_filter: dropped 6 lines (323 bytes) sha256/16=27192b64b48643a0]
+✔ [3082/3085] Built K7.Driver (2.7s)
+✔ [3083/3085] Built K7.DeflateDriver (7.6s)
+✔ [3084/3085] Built K7 (1.6s)
+Build completed successfully (3085 jobs).
+saltbuild EXIT=0

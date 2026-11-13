@@ -50,3 +50,6 @@ scored on them.
   σ_k's region length and `reach_shape` gives `σ_k.R = {p ↦ L0}`. A `WDone.snoc` lemma appends the new call.
 - **What would show it wrong:** a reached σ_k whose returned words are not `capWords scaleLay p L0` (the region changed: a finding
   against reach_shape); an overflow branch that deflate_noovf does not exclude (a gap between K5's statement and the driver).
+
+## Addendum 3 (same head): the homing of Addendum 1 DONE
+Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statements unchanged; under the derived-namespace k3_check, `VIRC.driver_l2` and `VIRC.compile_refines_mem` read OK (k7/logs/k7-probe-K3-002.log).

@@ -46,3 +46,9 @@
 - **Audit k7-audit-003:** 15 rows (8 within the three, 2 [propext, Quot.sound], 5 [propext]), 0 sorryAx. **Going red, weak form**
   (k7-probe-mut-003): the same proof with `n < 2³²` dropped is refused at its 4 uses of the bound. That shows the proof DEPENDS on
   it, not that the theorem is false without it.
+- **Row 307, the K3 homing DONE (k3home branch).** The driver's generic definitions and theorems MOVED to compiler/VIRC/Driver.lean
+  (namespace VIRC; declared first in DECLARATIONS-S2 "Added"), unchanged in statement: drv-001 EXIT=0 (compiler log, raw: the replay
+  filter is declared for k5/k7 only). k7/K7/Driver.lean is now an import stub, and DeflateDriver uses VIRC.WDone.snoc. Root k7-010
+  EXIT=0; audit k7-audit-004 15 rows within the three, 0 sorryAx. **K3 re-read (k7-probe-K3-002, derived whitelist):
+  `VIRC.driver_l2` OK (56 constants), `VIRC.compile_refines_mem` OK (60); control router_refines FALSIFIED.** The driver
+  statement's L2 half now names only whitelisted constants. K3 itself is still scored at S3, on the assembled driver theorem.

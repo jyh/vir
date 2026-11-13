@@ -65,3 +65,8 @@ of `Layout.lean`'s premise, discharged by the caller's setup.
 - `VIRC/Compose.lean` (added before it exists, after S2 closed): S1 ∘ S2 as ONE statement about the SOURCE program. The source
   term is the program with its caller parameters instantiated (`instL`); S1's simulation starts from an environment of those
   parameters (`TRel.inst`, by `TRel.subst` outermost-first). Its logs are `s2c-*`, beside S2's count and not in it.
+- `VIRC/Driver.lean` (added before it exists, 2026-11-12 by the 70th head; STATUS-vir 307, DECLARATIONS-DRIVER Addendum 1): the
+  driver's generic definitions and theorems MOVED here from k7/K7/Driver.lean unchanged in statement: `stepW_done_mem`,
+  `stepIR_done_store`, `compile_refines_mem` (DR-1), `IterRel`, `WDone`, `WDone.snoc`, `good_cap1`, `driver_l2` (DR-2), now in
+  namespace VIRC so the driver statement names only whitelisted constants (K3). Its logs are `drv-*`, beside every stage count
+  and in none. k7/ then imports it, and its DEFLATE/router files are unchanged in statement.
