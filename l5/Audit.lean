@@ -27,7 +27,5 @@ open VIRL5
 #print axioms copyWithinR_typed
 #print axioms embed_rule₅
 #print axioms appFix_rule₅
-#print axioms div8_spec
-#print axioms div8_typed
 #print axioms bitR_spec
 #print axioms bitR_typed
