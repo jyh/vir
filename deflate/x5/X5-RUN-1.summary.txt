@@ -1,0 +1,19 @@
+X5 population 313; oracle 232 ACCEPT / 81 REJECT
+inflateLit (S literal, D1): {'AGREE': 266, 'VERDICT': 47}
+inflate (E1 repaired):      {'AGREE': 313}
+control: i-stored-empty-final with one oracle byte altered -> BYTES (must be BYTES)
+reasons (zlib msg | inflate reason) on double REJECT:
+    53  (no message) | truncated
+    12  invalid distance too far back | distance too far back
+     2  invalid code lengths set | incomplete
+     2  invalid literal/length code | invalid literal/length code
+     2  invalid literal/lengths set | over-subscribed
+     2  invalid code -- missing end-of-block | missing end-of-block
+     1  invalid literal/lengths set | incomplete
+     1  invalid distance code | invalid code
+     1  invalid bit length repeat | invalid bit length repeat
+     1  invalid block type | invalid block type
+     1  invalid stored block lengths | invalid stored block lengths
+     1  too many length or distance symbols | too many length or distance symbols
+     1  invalid code lengths set | over-subscribed
+     1  invalid bit length repeat | repeat with no first length

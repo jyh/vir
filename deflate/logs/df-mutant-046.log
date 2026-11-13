@@ -1,0 +1,14 @@
+saltqueue: ticket P2 seat=root pid=5263
+mutants/TypLin.lean:93:42: error: unsolved goals
+case refine_2.refine_2.refine_2.refine_3.refine_2
+⊢ HasType₂ [Ty.prod tint tint, tcap, tint, tint, tint, tint, tcap]
+    (decide (Ty.prod tint tint = tcap) ::
+      true :: [decide (tint = tcap), false, false, false, true].set (0 + 1 + 1 + 1 + 1) false)
+    (Tm.letOp Op.store [Atom.var (0 + 1 + 1 + 1 + 1 + 1 + 1), Atom.const (Const.int cTB), (Atom.var 0).fst] tcap
+      (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cTI), (Atom.var (0 + 1)).snd] tcap
+        (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var (0 + 1 + 1)).fst, Atom.const (Const.int 256)])
+          (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int cMODE), Atom.const (Const.int mHDR)] tcap
+            (Tm.ret (Atom.var 0)))
+          (Tm.ret (Atom.var 0)))))
+    tcap
+saltbuild EXIT=1

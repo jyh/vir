@@ -1,0 +1,183 @@
+saltqueue: ticket P2 seat=root pid=2950
+⚠ [2973/2976] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✖ [2976/2976] Building VIRDeflate.Run (19s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Run.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Run.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Run.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Run.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Run.setup.json --json
+error: VIRDeflate/Run.lean:24:105: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:25:111: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:26:0: ("i-stored-empty-final", "ACCEPT 0 bytes", "ACCEPT 0 bytes")
+error: VIRDeflate/Run.lean:30:103: Tactic `decide` failed for proposition
+  acceptsWith (inflate i_fixed_empty_final 65536) #[] = true
+because its `Decidable` instance
+  instDecidableEqBool (acceptsWith (inflate i_fixed_empty_final 65536) #[]) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match acceptsWith (inflate i_fixed_empty_final 65536) #[], true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: VIRDeflate/Run.lean:31:104: Tactic `decide` failed for proposition
+  rejects (inflateLit i_fixed_empty_final 65536) = true
+because its `Decidable` instance
+  instDecidableEqBool (rejects (inflateLit i_fixed_empty_final 65536)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Int.decLt`, `Int.decNonneg`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match rejects (inflateLit i_fixed_empty_final 65536), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+info: VIRDeflate/Run.lean:32:0: ("i-fixed-empty-final", "ACCEPT 0 bytes", "REJECT incomplete")
+error: VIRDeflate/Run.lean:36:105: Tactic `decide` failed for proposition
+  acceptsWith (inflate i_fixed_one_literal 65536) #[97] = true
+because its `Decidable` instance
+  instDecidableEqBool (acceptsWith (inflate i_fixed_one_literal 65536) #[97]) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match acceptsWith (inflate i_fixed_one_literal 65536) #[97], true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: VIRDeflate/Run.lean:37:104: Tactic `decide` failed for proposition
+  rejects (inflateLit i_fixed_one_literal 65536) = true
+because its `Decidable` instance
+  instDecidableEqBool (rejects (inflateLit i_fixed_one_literal 65536)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Int.decLt`, `Int.decNonneg`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match rejects (inflateLit i_fixed_one_literal 65536), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+info: VIRDeflate/Run.lean:38:0: ("i-fixed-one-literal", "ACCEPT 1 bytes", "REJECT incomplete")
+error: VIRDeflate/Run.lean:42:119: Tactic `decide` failed for proposition
+  acceptsWith (inflate i_fixed_overlap_copy 65536) #[97, 97, 97, 97] = true
+because its `Decidable` instance
+  instDecidableEqBool (acceptsWith (inflate i_fixed_overlap_copy 65536) #[97, 97, 97, 97]) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match acceptsWith (inflate i_fixed_overlap_copy 65536) #[97, 97, 97, 97], true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: VIRDeflate/Run.lean:43:106: Tactic `decide` failed for proposition
+  rejects (inflateLit i_fixed_overlap_copy 65536) = true
+because its `Decidable` instance
+  instDecidableEqBool (rejects (inflateLit i_fixed_overlap_copy 65536)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Int.decLt`, `Int.decNonneg`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match rejects (inflateLit i_fixed_overlap_copy 65536), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+info: VIRDeflate/Run.lean:44:0: ("i-fixed-overlap-copy", "ACCEPT 4 bytes", "REJECT incomplete")
+error: VIRDeflate/Run.lean:48:97: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:49:103: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:50:0: ("i-two-blocks", "ACCEPT 2 bytes", "ACCEPT 2 bytes")
+info: VIRDeflate/Run.lean:56:0: ("iii-btype-11", "REJECT invalid block type", "REJECT invalid block type")
+error: VIRDeflate/Run.lean:60:95: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:61:101: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:62:0: ("iii-stored-bad-nlen", "REJECT invalid stored block lengths", "REJECT invalid stored block lengths")
+error: VIRDeflate/Run.lean:66:97: Tactic `decide` failed for proposition
+  rejects (inflate iii_distance_too_far 65536) = true
+because its `Decidable` instance
+  instDecidableEqBool (rejects (inflate iii_distance_too_far 65536)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match rejects (inflate iii_distance_too_far 65536), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: VIRDeflate/Run.lean:67:103: Tactic `decide` failed for proposition
+  rejects (inflateLit iii_distance_too_far 65536) = true
+because its `Decidable` instance
+  instDecidableEqBool (rejects (inflateLit iii_distance_too_far 65536)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool`, `instDecidableEqNat`, `Bool.decEq`, `Int.decLt`, `Int.decNonneg`, `Nat.decEq`, `Nat.decLe`, and `Nat.decLt`, reduction got stuck at the `Decidable` instance
+  match rejects (inflateLit iii_distance_too_far 65536), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+info: VIRDeflate/Run.lean:68:0: ("iii-distance-too-far", "REJECT distance too far back", "REJECT incomplete")
+info: VIRDeflate/Run.lean:74:0: ("iii-hlit-too-many", "REJECT too many length or distance symbols", "REJECT too many length or distance symbols")
+error: VIRDeflate/Run.lean:78:99: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:79:105: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:80:0: ("iii-cl-oversubscribed", "REJECT over-subscribed", "REJECT over-subscribed")
+error: VIRDeflate/Run.lean:84:91: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:85:97: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:86:0: ("iii-cl-incomplete", "REJECT incomplete", "REJECT incomplete")
+error: VIRDeflate/Run.lean:90:95: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: VIRDeflate/Run.lean:91:101: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: VIRDeflate/Run.lean:92:0: ("iii-repeat-no-first", "REJECT truncated", "REJECT truncated")
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Run
+error: build failed
+saltbuild EXIT=1

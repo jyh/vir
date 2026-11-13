@@ -1,0 +1,558 @@
+saltqueue: ticket P2 seat=root pid=15377
+⚠ [4/663] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/663] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/663] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/760] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [732/760] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [735/760] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [737/760] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [739/760] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [740/760] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [742/760] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [743/760] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [744/760] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [747/760] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [760/760] Building VIRC.Sim2 (1.5s)
+trace: .> LEAN_PATH=~/fleet/vir/compiler/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/compiler/VIRC/Sim2.lean -o ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim2.olean -i ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim2.ilean -c ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim2.c --setup ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim2.setup.json --json
+warning: VIRC/Sim2.lean:64:59: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+error: VIRC/Sim2.lean:158:66: Invalid dotted identifier notation: The expected type of `.const` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Function.const`
+  [apply] `InfHom.const`
+  [apply] `OrderHom.const`
+  [apply] `ScottContinuous.const`
+  [apply] `ScottContinuousOn.const`
+  [apply] `Stream'.const`
+  [apply] `SupHom.const`
+  [apply] `Aesop.ElabRuleTerm.const`
+  [apply] `Aesop.RuleTerm.const`
+  [apply] `Lean.Expr.const`
+  [apply] `Lean.HeadIndex.const`
+  [apply] `Lean.ParserDescr.const`
+  [apply] `OmegaCompletePartialOrder.ContinuousHom.const`
+  [apply] `OmegaCompletePartialOrder.ωScottContinuous.const`
+  [apply] `Atom.const`
+  [apply] `HasTypeA.const`
+  [apply] `Lean.Lsp.CompletionIdentifier.const`
+  [apply] `Lean.Lsp.RefIdent.const`
+  [apply] `Lean.Omega.LinearCombo.const`
+  [apply] `Lean.Parser.AliasValue.const`
+  [apply] `Std.Do.ExceptConds.const`
+  [apply] `Std.Do.PredTrans.const`
+  [apply] `HasTypeA.below.const`
+  [apply] `Lean.Compiler.LCNF.LetValue.const`
+  [apply] `Lean.Elab.Term.LValResolution.const`
+  [apply] `Lean.Meta.DiscrTree.Key.const`
+  [apply] `Lean.Meta.LazyDiscrTree.ImportFailure.const`
+  [apply] `Lean.Meta.LazyDiscrTree.Key.const`
+  [apply] `Lean.Meta.RefinedDiscrTree.Key.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremArgs.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremType.const`
+  [apply] `Mathlib.Tactic.Push.Head.const`
+  [apply] `Lean.Elab.Tactic.Grind.ExtraTheorem.const`
+error: VIRC/Sim2.lean:159:50: Invalid dotted identifier notation: The expected type of `.const` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Function.const`
+  [apply] `InfHom.const`
+  [apply] `OrderHom.const`
+  [apply] `ScottContinuous.const`
+  [apply] `ScottContinuousOn.const`
+  [apply] `Stream'.const`
+  [apply] `SupHom.const`
+  [apply] `Aesop.ElabRuleTerm.const`
+  [apply] `Aesop.RuleTerm.const`
+  [apply] `Lean.Expr.const`
+  [apply] `Lean.HeadIndex.const`
+  [apply] `Lean.ParserDescr.const`
+  [apply] `OmegaCompletePartialOrder.ContinuousHom.const`
+  [apply] `OmegaCompletePartialOrder.ωScottContinuous.const`
+  [apply] `Atom.const`
+  [apply] `HasTypeA.const`
+  [apply] `Lean.Lsp.CompletionIdentifier.const`
+  [apply] `Lean.Lsp.RefIdent.const`
+  [apply] `Lean.Omega.LinearCombo.const`
+  [apply] `Lean.Parser.AliasValue.const`
+  [apply] `Std.Do.ExceptConds.const`
+  [apply] `Std.Do.PredTrans.const`
+  [apply] `HasTypeA.below.const`
+  [apply] `Lean.Compiler.LCNF.LetValue.const`
+  [apply] `Lean.Elab.Term.LValResolution.const`
+  [apply] `Lean.Meta.DiscrTree.Key.const`
+  [apply] `Lean.Meta.LazyDiscrTree.ImportFailure.const`
+  [apply] `Lean.Meta.LazyDiscrTree.Key.const`
+  [apply] `Lean.Meta.RefinedDiscrTree.Key.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremArgs.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremType.const`
+  [apply] `Mathlib.Tactic.Push.Head.const`
+  [apply] `Lean.Elab.Tactic.Grind.ExtraTheorem.const`
+error: VIRC/Sim2.lean:160:39: Invalid dotted identifier notation: The expected type of `.const` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Function.const`
+  [apply] `InfHom.const`
+  [apply] `OrderHom.const`
+  [apply] `ScottContinuous.const`
+  [apply] `ScottContinuousOn.const`
+  [apply] `Stream'.const`
+  [apply] `SupHom.const`
+  [apply] `Aesop.ElabRuleTerm.const`
+  [apply] `Aesop.RuleTerm.const`
+  [apply] `Lean.Expr.const`
+  [apply] `Lean.HeadIndex.const`
+  [apply] `Lean.ParserDescr.const`
+  [apply] `OmegaCompletePartialOrder.ContinuousHom.const`
+  [apply] `OmegaCompletePartialOrder.ωScottContinuous.const`
+  [apply] `Atom.const`
+  [apply] `HasTypeA.const`
+  [apply] `Lean.Lsp.CompletionIdentifier.const`
+  [apply] `Lean.Lsp.RefIdent.const`
+  [apply] `Lean.Omega.LinearCombo.const`
+  [apply] `Lean.Parser.AliasValue.const`
+  [apply] `Std.Do.ExceptConds.const`
+  [apply] `Std.Do.PredTrans.const`
+  [apply] `HasTypeA.below.const`
+  [apply] `Lean.Compiler.LCNF.LetValue.const`
+  [apply] `Lean.Elab.Term.LValResolution.const`
+  [apply] `Lean.Meta.DiscrTree.Key.const`
+  [apply] `Lean.Meta.LazyDiscrTree.ImportFailure.const`
+  [apply] `Lean.Meta.LazyDiscrTree.Key.const`
+  [apply] `Lean.Meta.RefinedDiscrTree.Key.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremArgs.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremType.const`
+  [apply] `Mathlib.Tactic.Push.Head.const`
+  [apply] `Lean.Elab.Tactic.Grind.ExtraTheorem.const`
+error: VIRC/Sim2.lean:161:81: Invalid dotted identifier notation: The expected type of `.const` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Function.const`
+  [apply] `InfHom.const`
+  [apply] `OrderHom.const`
+  [apply] `ScottContinuous.const`
+  [apply] `ScottContinuousOn.const`
+  [apply] `Stream'.const`
+  [apply] `SupHom.const`
+  [apply] `Aesop.ElabRuleTerm.const`
+  [apply] `Aesop.RuleTerm.const`
+  [apply] `Lean.Expr.const`
+  [apply] `Lean.HeadIndex.const`
+  [apply] `Lean.ParserDescr.const`
+  [apply] `OmegaCompletePartialOrder.ContinuousHom.const`
+  [apply] `OmegaCompletePartialOrder.ωScottContinuous.const`
+  [apply] `Atom.const`
+  [apply] `HasTypeA.const`
+  [apply] `Lean.Lsp.CompletionIdentifier.const`
+  [apply] `Lean.Lsp.RefIdent.const`
+  [apply] `Lean.Omega.LinearCombo.const`
+  [apply] `Lean.Parser.AliasValue.const`
+  [apply] `Std.Do.ExceptConds.const`
+  [apply] `Std.Do.PredTrans.const`
+  [apply] `HasTypeA.below.const`
+  [apply] `Lean.Compiler.LCNF.LetValue.const`
+  [apply] `Lean.Elab.Term.LValResolution.const`
+  [apply] `Lean.Meta.DiscrTree.Key.const`
+  [apply] `Lean.Meta.LazyDiscrTree.ImportFailure.const`
+  [apply] `Lean.Meta.LazyDiscrTree.Key.const`
+  [apply] `Lean.Meta.RefinedDiscrTree.Key.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremArgs.const`
+  [apply] `Mathlib.Meta.FunProp.LambdaTheoremType.const`
+  [apply] `Mathlib.Tactic.Push.Head.const`
+  [apply] `Lean.Elab.Tactic.Grind.ExtraTheorem.const`
+error: VIRC/Sim2.lean:163:33: Invalid dotted identifier notation: The expected type of `.code` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.Doc.Block.code`
+  [apply] `Lean.Doc.Inline.code`
+  [apply] `Lean.Doc.Parser.code`
+  [apply] `Lean.Doc.Syntax.code`
+  [apply] `Lean.JsonRpc.ResponseError.code`
+  [apply] `Lean.Server.RequestError.code`
+  [apply] `Lean.Compiler.LCNF.DeclValue.code`
+  [apply] `Lean.Elab.Term.Do.CodeBlock.code`
+error: VIRC/Sim2.lean:165:64: Invalid dotted identifier notation: The expected type of `.code` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.Doc.Block.code`
+  [apply] `Lean.Doc.Inline.code`
+  [apply] `Lean.Doc.Parser.code`
+  [apply] `Lean.Doc.Syntax.code`
+  [apply] `Lean.JsonRpc.ResponseError.code`
+  [apply] `Lean.Server.RequestError.code`
+  [apply] `Lean.Compiler.LCNF.DeclValue.code`
+  [apply] `Lean.Elab.Term.Do.CodeBlock.code`
+error: VIRC/Sim2.lean:167:34: Invalid dotted identifier notation: The expected type of `.pair` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `IsChain.pair`
+  [apply] `OmegaCompletePartialOrder.Chain.pair`
+  [apply] `Atom.pair`
+  [apply] `HasTypeA.pair`
+  [apply] `HasTypeA₂.pair`
+  [apply] `HasTypeA.below.pair`
+  [apply] `HasTypeA₂.below.pair`
+error: VIRC/Sim2.lean:169:33: Invalid dotted identifier notation: The expected type of `.inl` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `AddMonoidHom.inl`
+  [apply] `MonoidHom.inl`
+  [apply] `Or.inl`
+  [apply] `PSum.inl`
+  [apply] `Sum.inl`
+  [apply] `Finset.Nonempty.inl`
+  [apply] `Function.Embedding.inl`
+  [apply] `Set.Nonempty.inl`
+  [apply] `Sum.Lex.inl`
+  [apply] `Sum.LiftRel.inl`
+  [apply] `Atom.inl`
+  [apply] `HasTypeA.inl`
+  [apply] `HasTypeA₂.inl`
+  [apply] `HasTypeA.below.inl`
+  [apply] `HasTypeA₂.below.inl`
+error: VIRC/Sim2.lean:171:33: Invalid dotted identifier notation: The expected type of `.inr` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `AddMonoidHom.inr`
+  [apply] `MonoidHom.inr`
+  [apply] `Or.inr`
+  [apply] `PSum.inr`
+  [apply] `Sum.inr`
+  [apply] `Finset.Nonempty.inr`
+  [apply] `Function.Embedding.inr`
+  [apply] `Set.Nonempty.inr`
+  [apply] `Sum.Lex.inr`
+  [apply] `Sum.LiftRel.inr`
+  [apply] `Atom.inr`
+  [apply] `HasTypeA.inr`
+  [apply] `HasTypeA₂.inr`
+  [apply] `HasTypeA.below.inr`
+  [apply] `HasTypeA₂.below.inr`
+error: VIRC/Sim2.lean:173:44: don't know how to synthesize implicit argument `Val`
+  @VRel T lay σ ?m.11 τ v ws
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+τ : Ty₂
+v : ?m.11
+ws : List W
+⊢ Sort ?u.6
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:173:37: Failed to infer type of binder `v`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:174:2: Invalid pattern
+  ?m.11
+error: VIRC/Sim2.lean:188:46: don't know how to synthesize implicit argument `Val`
+  @EnvRel T lay σ ?m.17 Γ ρ ρw
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.17
+ρw : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:188:39: Failed to infer type of binder `ρ`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:4: don't know how to synthesize implicit argument `α`
+  @Exists ?m.50 fun v => ∃ ws, ρ[n]? = some v ∧ VRel T lay σ τ v ws ∧ evalW ρw (varSlice Γ n) = WRes.ok ws
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:29: don't know how to synthesize implicit argument `Val`
+  @VRel T lay σ ?m.50 τ v ws
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:12: don't know how to synthesize implicit argument `α`
+  @Eq (Option ?m.50) ρ[n]? (some v)
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:20: don't know how to synthesize implicit argument `α`
+  @some ?m.50 v
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:12: don't know how to synthesize implicit argument `self`
+  @getElem? (List ?m.50) ℕ ?m.50 (fun as i => i < as.length) List.instGetElem?NatLtLength ρ n
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ GetElem? (List ?m.50) ℕ ?m.50 fun as i => i < as.length
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:12: don't know how to synthesize implicit argument `valid`
+  @getElem? (List ?m.50) ℕ ?m.50 (fun as i => i < as.length) List.instGetElem?NatLtLength ρ n
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ List ?m.50 → ℕ → Prop
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:12: don't know how to synthesize implicit argument `elem`
+  @getElem? (List ?m.50) ℕ ?m.50 (fun as i => i < as.length) List.instGetElem?NatLtLength ρ n
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:12: don't know how to synthesize implicit argument `coll`
+  @getElem? (List ?m.50) ℕ ?m.50 (fun as i => i < as.length) List.instGetElem?NatLtLength ρ n
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+n : ℕ
+τ : Ty₂
+v : ?m.50
+ws : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:194:6: Failed to infer type of binder `v`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:193:46: don't know how to synthesize implicit argument `Val`
+  @EnvRel T lay σ ?m.50 Γ ρ ρw
+context:
+T : Table
+lay : ℤ → W
+σ : Store
+Γ : Ctx S₂
+ρ : List ?m.50
+ρw : List W
+⊢ Type ?u.10
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: VIRC/Sim2.lean:193:39: Failed to infer type of binder `ρ`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRC.Sim2
+error: build failed
+saltbuild EXIT=1

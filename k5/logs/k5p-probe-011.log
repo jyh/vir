@@ -1,0 +1,248 @@
+saltqueue: ticket P2 seat=root pid=65246
+K5/Bit.lean:44:6: error: unsolved goals
+case letOp
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+c' : Config
+o✝ : S₂.O
+as✝ : List (Atom S₂)
+τ✝ : Ty S₂.B
+e✝ : Tm S₂
+h : stepFn₂ (Tm.letOp o✝ as✝ τ✝ e✝) σ = some c'
+⊢ ((Atom.evalL as✝).bind fun a =>
+      Option.map ((fun c => (Tm.letE τ c.1 e₂, c.2)) ∘ fun x => (Tm.subst 0 x.1 e✝, x.2)) (opStep o✝ a σ)) =
+    some (Tm.letE τ c'.1 e₂, c'.2)
+K5/Bit.lean:44:6: error: unsolved goals
+case app
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+c' : Config
+a₁✝ a₂✝ : Atom S₂
+h : stepFn₂ (Tm.app a₁✝ a₂✝) σ = some c'
+⊢ stepFn (Tm.app a₁✝ a₂✝) = some c'.1 ∧ σ = c'.2
+K5/Bit.lean:44:6: error: unsolved goals
+case ite
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+c' : Config
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+h : stepFn₂ (Tm.ite a✝ e₁✝ e₂✝) σ = some c'
+⊢ stepFn (Tm.ite a✝ e₁✝ e₂✝) = some c'.1 ∧ σ = c'.2
+K5/Bit.lean:44:6: error: unsolved goals
+case case
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+c' : Config
+a✝ : Atom S₂
+e₁✝ e₂✝ : Tm S₂
+h : stepFn₂ (Tm.case a✝ e₁✝ e₂✝) σ = some c'
+⊢ stepFn (Tm.case a✝ e₁✝ e₂✝) = some c'.1 ∧ σ = c'.2
+K5/Bit.lean:62:79: error: Ambiguous term
+  ci
+Possible interpretations:
+  VIRDeflate.Step.ci ↑k : Atom₂
+  
+  VIRL2.ci ↑k : Atom₂
+K5/Bit.lean:63:88: error: Ambiguous term
+  ci
+Possible interpretations:
+  VIRDeflate.Step.ci (2 ^ k) : Atom₂
+  
+  VIRL2.ci (2 ^ k) : Atom₂
+K5/Bit.lean:67:37: error(lean.unknownIdentifier): Unknown identifier `stripTop✝`
+K5/Bit.lean:67:34: error: unsolved goals
+a : Atom₂
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+ha : Atom.eval a = some (sorry ())
+hra : aInR a = true
+⊢ (match
+      if
+          aInR
+                (Atom.subst (sorry ()) 0
+                  (Atom.fix tint tint
+                    (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                      (Tm.ret (VIRDeflate.Step.ci 1))
+                      (Tm.letE tint
+                        (Tm.app (VIRDeflate.Step.vr 1)
+                          (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                        (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0])))))) =
+              true ∧
+            (match
+                ((Atom.subst (sorry ()) 0
+                            (Atom.fix tint tint
+                              (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                                (Tm.ret (VIRDeflate.Step.ci 1))
+                                (Tm.letE tint
+                                  (Tm.app (VIRDeflate.Step.vr 1)
+                                    (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                                  (Tm.ret
+                                    (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0])))))).eval.bind
+                      fun a => some [a, Atom.const (Const.int 0)]).bind
+                  fun a =>
+                  (constsOf a).bind fun a =>
+                    (List.mapM Const.toL1 a).bind fun a =>
+                      Option.map (Atom.const ∘ Const.ofL1)
+                        (match L1.Prim.le, a with
+                        | L1.Prim.add, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a + b))
+                        | L1.Prim.sub, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a - b))
+                        | L1.Prim.mul, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a * b))
+                        | L1.Prim.lt, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a < b)))
+                        | L1.Prim.le, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a ≤ b)))
+                        | L1.Prim.eq, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a = b)))
+                        | L1.Prim.and, [L1.Const.bool a, L1.Const.bool b] => some (L1.Const.bool (a && b))
+                        | L1.Prim.or, [L1.Const.bool a, L1.Const.bool b] => some (L1.Const.bool (a || b))
+                        | L1.Prim.not, [L1.Const.bool a] => some (L1.Const.bool !a)
+                        | L1.Prim.max, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (max a b))
+                        | x, x_1 => none) with
+              | some (Atom.const (Const.int n)) => decide (-9223372036854775808 ≤ n) && decide (n < 9223372036854775808)
+              | x => true) =
+              true then
+        Option.map ((fun c => (Tm.letE τ c.1 e₂, c.2)) ∘ fun e' => (e', σ))
+          (match
+            ((Atom.subst (sorry ()) 0
+                        (Atom.fix tint tint
+                          (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                            (Tm.ret (VIRDeflate.Step.ci 1))
+                            (Tm.letE tint
+                              (Tm.app (VIRDeflate.Step.vr 1)
+                                (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                              (Tm.ret
+                                (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0])))))).eval.bind
+                  fun a => some [a, Atom.const (Const.int 0)]).bind
+              fun a =>
+              (constsOf a).bind fun a =>
+                (List.mapM Const.toL1 a).bind fun a =>
+                  Option.map (Atom.const ∘ Const.ofL1)
+                    (match L1.Prim.le, a with
+                    | L1.Prim.add, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a + b))
+                    | L1.Prim.sub, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a - b))
+                    | L1.Prim.mul, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (a * b))
+                    | L1.Prim.lt, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a < b)))
+                    | L1.Prim.le, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a ≤ b)))
+                    | L1.Prim.eq, [L1.Const.int a, L1.Const.int b] => some (L1.Const.bool (decide (a = b)))
+                    | L1.Prim.and, [L1.Const.bool a, L1.Const.bool b] => some (L1.Const.bool (a && b))
+                    | L1.Prim.or, [L1.Const.bool a, L1.Const.bool b] => some (L1.Const.bool (a || b))
+                    | L1.Prim.not, [L1.Const.bool a] => some (L1.Const.bool !a)
+                    | L1.Prim.max, [L1.Const.int a, L1.Const.int b] => some (L1.Const.int (max a b))
+                    | x, x_1 => none) with
+          | some (Atom.const c) =>
+            match
+              match c with
+              | Const.bool b => some b
+              | x => none with
+            | some true => some (Tm.ret (Atom.const (Const.int 1)))
+            | some false =>
+              some
+                (Tm.letE tint
+                  (Tm.app
+                    (Atom.fix tint tint
+                      (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                        (Tm.ret (VIRDeflate.Step.ci 1))
+                        (Tm.letE tint
+                          (Tm.app (VIRDeflate.Step.vr 1)
+                            (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                          (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0])))))
+                    (Atom.prim L1.Prim.sub
+                      [Atom.subst (sorry ()) 0
+                          (Atom.fix tint tint
+                            (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                              (Tm.ret (VIRDeflate.Step.ci 1))
+                              (Tm.letE tint
+                                (Tm.app (VIRDeflate.Step.vr 1)
+                                  (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                                (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0]))))),
+                        Atom.const (Const.int 1)]))
+                  (Tm.ret (Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 0])))
+            | none => none
+          | x => none)
+      else none with
+    | some c' =>
+      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+      | some c' => c'
+      | none => c'
+    | none =>
+      (Tm.letE τ
+          (Tm.ite
+            (Atom.prim L1.Prim.le
+              [Atom.subst (sorry ()) 0
+                  (Atom.fix tint tint
+                    (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                      (Tm.ret (VIRDeflate.Step.ci 1))
+                      (Tm.letE tint
+                        (Tm.app (VIRDeflate.Step.vr 1)
+                          (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                        (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0]))))),
+                Atom.const (Const.int 0)])
+            (Tm.ret (Atom.const (Const.int 1)))
+            (Tm.letE tint
+              (Tm.app
+                (Atom.fix tint tint
+                  (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                    (Tm.ret (VIRDeflate.Step.ci 1))
+                    (Tm.letE tint
+                      (Tm.app (VIRDeflate.Step.vr 1)
+                        (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                      (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0])))))
+                (Atom.prim L1.Prim.sub
+                  [Atom.subst (sorry ()) 0
+                      (Atom.fix tint tint
+                        (Tm.ite (Atom.prim L1.Prim.le [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 0])
+                          (Tm.ret (VIRDeflate.Step.ci 1))
+                          (Tm.letE tint
+                            (Tm.app (VIRDeflate.Step.vr 1)
+                              (Atom.prim L1.Prim.sub [VIRDeflate.Step.vr 0, VIRDeflate.Step.ci 1]))
+                            (Tm.ret (Atom.prim L1.Prim.mul [VIRDeflate.Step.ci 2, VIRDeflate.Step.vr 0]))))),
+                    Atom.const (Const.int 1)]))
+              (Tm.ret (Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 0]))))
+          e₂,
+        σ)) =
+    (Tm.subst 0 (sorry ()) e₂, σ)
+K5/Bit.lean:73:50: error: Ambiguous term
+  ci
+Possible interpretations:
+  VIRDeflate.Step.ci ↑(k + 1) : Atom₂
+  
+  VIRL2.ci ↑(k + 1) : Atom₂
+K5/Bit.lean:73:77: error: Ambiguous term
+  ci
+Possible interpretations:
+  VIRDeflate.Step.ci 1 : Atom₂
+  
+  VIRL2.ci 1 : Atom₂
+K5/Bit.lean:73:98: error: Ambiguous term
+  ci
+Possible interpretations:
+  VIRDeflate.Step.ci 2 : Atom₂
+  
+  VIRL2.ci 2 : Atom₂
+K5/Bit.lean:73:105: error: Ambiguous term
+  vr
+Possible interpretations:
+  VIRDeflate.Step.vr 0 : Atom₂
+  
+  VIRL2.vr 0 : Atom₂
+K5/Bit.lean:74:10: error(lean.unknownIdentifier): Unknown identifier `stripTop✝`
+K5/Bit.lean:74:10: error: Tactic `simp` failed with a nested error:
+(deterministic) timeout at `simp`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+K5/Bit.lean:72:4: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+K5/Bit.lean:61:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+saltbuild EXIT=1

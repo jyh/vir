@@ -1,0 +1,315 @@
+# generator gen_corpus.py; compressor zlib 1.2.12 (python 3.14.4); 313 files
+name	class	bytes	sha256	note
+i-stored-empty-final	i	5	f067985d352d2da6dfaef4844a66d06c5371ecbd9530a4d195ac599fef8b3427	ACCEPT empty
+i-fixed-empty-final	i	2	9b4fb24edd6d1d8830e272398263cdbf026b97392cc35387b991dc0248a628f9	ACCEPT empty
+i-fixed-one-literal	i	3	59fced9a2ff83dabdd7055cf3abd6c12b802e6397b6fba5b8251cdf95d2bc991	ACCEPT a
+i-fixed-overlap-copy	i	4	b02c908162e0798ac0dc525aab085c34481020a9c6a6992826d7ee7a0e7e1567	ACCEPT aaaa
+i-two-blocks	i	12	c85849438cdc86dcafa149ee29b3e96e44c775d77a80bf54ea45f9d1a01d194e	ACCEPT hi
+ii-seed-raw	seed	40000	60b5d8d6e8dc7a40d4c221a2b0f13be7500c647389c55271f82ace31698fff6a	the uncompressed seed text (not a stream)
+ii-l0-default	ii	40010	bd6a5ef80833c23a5935c2f35ed23eff0a65b04285bcf3e35637237f275edb11	ACCEPT seed
+ii-l0-filtered	ii	40010	bd6a5ef80833c23a5935c2f35ed23eff0a65b04285bcf3e35637237f275edb11	ACCEPT seed
+ii-l0-huffman	ii	40010	bd6a5ef80833c23a5935c2f35ed23eff0a65b04285bcf3e35637237f275edb11	ACCEPT seed
+ii-l0-rle	ii	40010	bd6a5ef80833c23a5935c2f35ed23eff0a65b04285bcf3e35637237f275edb11	ACCEPT seed
+ii-l0-fixed	ii	40010	bd6a5ef80833c23a5935c2f35ed23eff0a65b04285bcf3e35637237f275edb11	ACCEPT seed
+ii-l1-default	ii	869	f80f8dbe1589e51b226a60a7188fcd38877e06356bf460c6cd7a3f0834df4fa0	ACCEPT seed
+ii-l1-filtered	ii	869	f80f8dbe1589e51b226a60a7188fcd38877e06356bf460c6cd7a3f0834df4fa0	ACCEPT seed
+ii-l1-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l1-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l1-fixed	ii	955	a35e4d9b3a84b0ba3f5203aa0dad6ea6f27e8ef4fbef2f585cf38dfde9144b3c	ACCEPT seed
+ii-l2-default	ii	860	3406050e7af38857ce77d8ea4fe792d88a3d850d7edcad5384577a1f164097db	ACCEPT seed
+ii-l2-filtered	ii	860	3406050e7af38857ce77d8ea4fe792d88a3d850d7edcad5384577a1f164097db	ACCEPT seed
+ii-l2-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l2-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l2-fixed	ii	947	636921bd86f3e54087d78c14b9ef4aad894f8aad48414d4e9bc80fb1b0106654	ACCEPT seed
+ii-l3-default	ii	856	7e13fd9958f4201cd4bc27e5524ec82f61515bbbac4feed9ae98aeee8b2341d6	ACCEPT seed
+ii-l3-filtered	ii	856	7e13fd9958f4201cd4bc27e5524ec82f61515bbbac4feed9ae98aeee8b2341d6	ACCEPT seed
+ii-l3-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l3-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l3-fixed	ii	943	8e3b84650f8e8eef6f8c4ef8d3e43190d4d75fcd983de78217db1c655d50d99e	ACCEPT seed
+ii-l4-default	ii	792	9907257bb26df0a7cc142658adb12387467860602cf71f8aeb5477c4d062f562	ACCEPT seed
+ii-l4-filtered	ii	802	6a3757fe05da66f547a34f9c26fac12aea7219762c9639b7880d3955e701bf1f	ACCEPT seed
+ii-l4-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l4-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l4-fixed	ii	968	7aaf6db35ed04ce4d87806b756158bcc054bce7e871ec753d7029a073d99963b	ACCEPT seed
+ii-l5-default	ii	646	12ac49c7b97e191e7aa64889e8133134cefe0da3fb7ac2835cb71b0c6c398026	ACCEPT seed
+ii-l5-filtered	ii	646	c27882a4fd4eab79297a409d484e3eafffdbeafeecd0091298d731a7bd95066c	ACCEPT seed
+ii-l5-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l5-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l5-fixed	ii	774	929fa524b960b11294659916d91015d482a770cf90481f44c8ee5ad858340b70	ACCEPT seed
+ii-l6-default	ii	643	06746387d9cddcf838afccc12d7c27a45a28926007d7d1b145979e279aa4a3f3	ACCEPT seed
+ii-l6-filtered	ii	644	302375616749293c7cbe19c1223fcaf9f75d93ddccb53a4300b8a4cebb6362e8	ACCEPT seed
+ii-l6-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l6-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l6-fixed	ii	771	5bc50a6d0040fbf5700da03fb79743334f0add3d5695c7a4c97eb5eeadca3e83	ACCEPT seed
+ii-l7-default	ii	645	7139a7ca5170b07d86186ce3b8096231afbef6c6d298da0c1916c480a6128ecb	ACCEPT seed
+ii-l7-filtered	ii	645	52834c26f80ea9f59a58cff29fbd8c5c1944c781232898a6662af7918f25a5e5	ACCEPT seed
+ii-l7-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l7-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l7-fixed	ii	771	243a4c917fe54f3d139ee8abcec407f6a3f6e3ca2d9dda4122a777f163d18dec	ACCEPT seed
+ii-l8-default	ii	644	b7d73f5ba629f3269532258d2b6196d1b55328d2ad509f64499b0743805a1961	ACCEPT seed
+ii-l8-filtered	ii	643	2174216044e232e017eb3554e1fa7ffb0ac3c2945f04cde64a355474cb2141db	ACCEPT seed
+ii-l8-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l8-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l8-fixed	ii	770	1ef648459cba385b5e8cecbc98aca2ed45d74043ee8ef2ae46e97643b27fbfc8	ACCEPT seed
+ii-l9-default	ii	644	b7d73f5ba629f3269532258d2b6196d1b55328d2ad509f64499b0743805a1961	ACCEPT seed
+ii-l9-filtered	ii	643	2174216044e232e017eb3554e1fa7ffb0ac3c2945f04cde64a355474cb2141db	ACCEPT seed
+ii-l9-huffman	ii	25158	950c10f34c519f86a8a1d126f8d0fe0638b9ec26f2dc4b533cadac40e3fcee4c	ACCEPT seed
+ii-l9-rle	ii	24872	2407cc223d5e18d9add62df46edd14006c0cb0abd602cdf749b2afd1a19d6542	ACCEPT seed
+ii-l9-fixed	ii	770	1ef648459cba385b5e8cecbc98aca2ed45d74043ee8ef2ae46e97643b27fbfc8	ACCEPT seed
+iii-flip-000	iii	644	6d1c3dae0be27b6cc7a1fa1d325009ea6f200b0011f4d9fa9ab434ebb5534625	flip of ii-l6-filtered at bit 3934
+iii-flip-001	iii	771	487f1942262b9223fd254d9e20133f9dcb09698733c2ec6595b44f9fc5defaa1	flip of ii-l7-fixed at bit 3188
+iii-flip-002	iii	25158	1618e3cb9452362f68770209bd0e1a6476414f44bf619a21163cef8bf4dc61f1	flip of ii-l9-huffman at bit 102314
+iii-flip-003	iii	24872	2c518069422826db779ccba25ada56126c61ed467b4f9d7503ee7278c28e5173	flip of ii-l2-rle at bit 95256
+iii-flip-004	iii	25158	8db0d495eeefde7571f6815ac64c8479b5190826d33080dcfb75deed400329c1	flip of ii-l9-huffman at bit 165686
+iii-flip-005	iii	644	bd1995ee676cfbd0f7272ed984a0996afea74d234df98777de580c2a6498e83b	flip of ii-l6-filtered at bit 4132
+iii-flip-006	iii	25158	267cf506293f7cd41173851e272256661c426f41f9a2a7cb11185ab34c92da79	flip of ii-l7-huffman at bit 172018
+iii-flip-007	iii	40010	d4a731283b82fdcdcdf2658ed7ec693e8bdbe380b9684cef40f53349731c4178	flip of ii-l0-rle at bit 136080
+iii-flip-008	iii	25158	ba43f11dd685340db2dab21a5d827a852b20d2af10e7e08d25ed2735e33e7c62	flip of ii-l7-huffman at bit 136686
+iii-flip-009	iii	25158	18b7ce6a7aaaaffb8b5583d30bb46aa365df7ae9cfb881c689e69af431b410b3	flip of ii-l5-huffman at bit 190140
+iii-flip-010	iii	771	7dcd85f85fc235bfe6de9101328578b655d628ddcf69ec9bfc3e3ec0a8df3879	flip of ii-l7-fixed at bit 1050
+iii-flip-011	iii	24872	b7cbb29ed1738067d56c81028a118fc3a23230fc2a8dc02c807a64f4b2a57ea5	flip of ii-l6-rle at bit 119112
+iii-flip-012	iii	869	e65c80f3d2d6c2842419e7f7789b20608aa25f1008c32b5f28752c2b8a1a9a6f	flip of ii-l1-default at bit 990
+iii-flip-013	iii	40010	9641330daad8ad58ff12aea7b8e88cc18d134d2649957a8b7f99eff7986b98b7	flip of ii-l0-rle at bit 197780
+iii-flip-014	iii	943	46ca64456bc69b1e35475c48485ca42d22218cf1e53629864a0cc52d1d2f80fe	flip of ii-l3-fixed at bit 6130
+iii-flip-015	iii	774	69e9c674a17dea62bba4ad15381bcbeb5973ff2cc1bf901d4044e13f016cc420	flip of ii-l5-fixed at bit 5328
+iii-flip-016	iii	24872	9a92f88645af458691e501a18bc916ab4a1aeb4f2958715e1e1e5f8158c25d8d	flip of ii-l6-rle at bit 116574
+iii-flip-017	iii	955	5241de2a89c0a21beb5aa9e2c63c134bebbfa3846ab90b4b376b633b24188eca	flip of ii-l1-fixed at bit 804
+iii-flip-018	iii	25158	bde06166c731e253c156b5e074d895ca818983f42a7f1f69c2590a455eee218d	flip of ii-l5-huffman at bit 86730
+iii-flip-019	iii	25158	e7422bbebee87f5bab628f9ad55c300e88dafd2a9d563dacb683f730dd37f278	flip of ii-l1-huffman at bit 121576
+iii-flip-020	iii	24872	407d6a2c66316e8d0cb8911f2dcc0c322e90d71a5aef7aee075d1a10bbdbf95e	flip of ii-l8-rle at bit 89270
+iii-flip-021	iii	943	653ce4233b233c0b08bace79dc23f9a71f0da2d875db56a3f4fbecbe23e24c8c	flip of ii-l3-fixed at bit 4308
+iii-flip-022	iii	774	49aabefebdd877a72838ac4bf7abb494651dd3c22c7af921f67af8c39159c9c2	flip of ii-l5-fixed at bit 2322
+iii-flip-023	iii	25158	b4899e33163abca753a6f7c968972a8f56768be7a2e1d09331102e21c54120e9	flip of ii-l7-huffman at bit 196160
+iii-flip-024	iii	25158	69247bfe65cbfe76f14add628287e7090a16e1821991a6ae726408190382a350	flip of ii-l3-huffman at bit 123902
+iii-flip-025	iii	802	86c0f74e61f2d3eb45b1a164f539fa3047f41f64044c388e750289f2ed8b5b76	flip of ii-l4-filtered at bit 1004
+iii-flip-026	iii	40010	4cf666af23f52b109336e728fbbcb504fd32037f3a17095cc2ab3c65161c7fec	flip of ii-l0-filtered at bit 205946
+iii-flip-027	iii	860	b6acca51a82d9e22c52baa95f4020e5e4439fb6ef71d96636bb01cce53c9b78b	flip of ii-l2-filtered at bit 5928
+iii-flip-028	iii	644	d9b8bec4aedabf034fc7c3d26cd44b29c8fc66e3d82f9d26547326724fa15ef1	flip of ii-l9-default at bit 3686
+iii-flip-029	iii	40010	38c2f73a8c83a62b630a7575cbe1840efe100a731323f09d405a5d1f347df938	flip of ii-l0-rle at bit 291252
+iii-flip-030	iii	643	cecac53e78935c96dcfed9f1b45e3818c22f7f4a91ab09c9df22198dbe0c4d31	flip of ii-l8-filtered at bit 3434
+iii-flip-031	iii	25158	83e7ba5625617f5de3e79e3871114a7d240cd721f5375953bf2b2532a10aae99	flip of ii-l9-huffman at bit 197712
+iii-flip-032	iii	24872	c16ef6299da1d0447cf6219164d90e0d09c37718cc7ebc9e440b2c6ee4b222c6	flip of ii-l6-rle at bit 174910
+iii-flip-033	iii	644	0cbef15d1c715f35a8beaea704ce6e76b466e008dedf9d5d01076ca5a3fa455d	flip of ii-l6-filtered at bit 4236
+iii-flip-034	iii	860	c7a7a05a1283473f5f94db0defe84dc3d2144c52664882c05b3d26713213b911	flip of ii-l2-filtered at bit 842
+iii-flip-035	iii	644	fd2822576b282c4817314f3e1739f82935663fde76ae8730e3909b5f9b3382f1	flip of ii-l9-default at bit 3960
+iii-flip-036	iii	643	929faf916267379a8d2f7e4403f3e51dd48d64a7fe7456768d2a5b5ef2609b06	flip of ii-l8-filtered at bit 4998
+iii-flip-037	iii	646	0a291c1205dcf430a4c5fe330740d129e428bdbd309b006e406e2999f8bc9c9b	flip of ii-l5-default at bit 4436
+iii-flip-038	iii	774	bb75880e9df6b02818ef39200c87ba3c8fb9ec88bf3a75957559778baac5dacb	flip of ii-l5-fixed at bit 4498
+iii-flip-039	iii	774	7e97d21540e7ecc737f5e117311da5b9a2da3bf231beedf5dbdb6cc18a31fa31	flip of ii-l5-fixed at bit 80
+iii-flip-040	iii	943	9704e06a36ea62ffa3059e858ead242894ea771449a2b8810602f18b63239fe9	flip of ii-l3-fixed at bit 422
+iii-flip-041	iii	25158	3be0bd680f6cac110baaf28262e3c92673c559c5290da57f2f4d9af524137e9a	flip of ii-l5-huffman at bit 154028
+iii-flip-042	iii	869	82b194ac9323ef46095b0ee4a1affbdff05b84b027021ee1cc31f1d6cd2ab765	flip of ii-l1-default at bit 26
+iii-flip-043	iii	645	02004f3fc62d35c36ad5668ea695dfb774ac6f7658c9f14f2107aedab0d86954	flip of ii-l7-default at bit 200
+iii-flip-044	iii	644	ce41267586e8cd94f53477ed0eb394e1398565e0a953ba8e37144d187d0810be	flip of ii-l9-default at bit 4582
+iii-flip-045	iii	40010	3bcf4fb92662e084041f2328f73c9c5e21efeac171ca851804a1066714aea3f0	flip of ii-l0-rle at bit 293812
+iii-flip-046	iii	25158	d22def8d4ce66a5138d4452180b41c2ae2b4404180f250e7c6a7e1be388cabee	flip of ii-l3-huffman at bit 84482
+iii-flip-047	iii	770	3694ba7da9ba5a8df502572c8c9dfa375e36aea83090a57fb84563cc4db42b65	flip of ii-l9-fixed at bit 3808
+iii-flip-048	iii	643	5dfcd47c1681e91836a94f3705d5546df09319a215bd721cca593a7c64fe812a	flip of ii-l8-filtered at bit 974
+iii-flip-049	iii	24872	498dab9480fb6ea660ad4b15987687b6ea194143b6d11e15acfa58a83eb8e796	flip of ii-l2-rle at bit 36748
+iii-flip-050	iii	774	575501624b27583ab14b022d37819fcdb31930acf0455b3c47db8d448c26cda3	flip of ii-l5-fixed at bit 1818
+iii-flip-051	iii	802	055d70e84e748d75d187560231a7ccfa05a55a7bfc94b06038935f48f9aa3db8	flip of ii-l4-filtered at bit 5960
+iii-flip-052	iii	770	92cb8bdbb4a4c633e5997569e3ac0cdc94f9c08199bca5f1a86cbd018805ae38	flip of ii-l9-fixed at bit 4406
+iii-flip-053	iii	644	6a4a84a8016c1e4eec107a2376a0ffe92d675d82e1ce1beb38759b9221080ab0	flip of ii-l9-default at bit 2372
+iii-flip-054	iii	25158	bd693705aaa1acf9362922caf53594e45fe5979869d22019c06225bb0c1ec307	flip of ii-l3-huffman at bit 50962
+iii-flip-055	iii	869	79d599d71ee5687ebde1d6aea40c63b95dd70fc3510eb0ad45bd180cbd7c3761	flip of ii-l1-default at bit 6232
+iii-flip-056	iii	24872	c27cdaadda3d31e2bfca1c731cbb07e5b7edb0e1f09cf650cc0ea2f83446f9ad	flip of ii-l8-rle at bit 101390
+iii-flip-057	iii	860	0e9e8539de27f562ded37d0684b3fe985d650fe85b16434fc8800af6840eb8be	flip of ii-l2-filtered at bit 1692
+iii-flip-058	iii	856	512e3884c7fd3e282306ac3d94f22acfa857b8fe22de0a64683d5740f9d2e906	flip of ii-l3-default at bit 3226
+iii-flip-059	iii	40010	680f1ec16a8854048aaaa8ef05e0b2fe1dd549f796a7d751f99f0e00360873c7	flip of ii-l0-filtered at bit 13176
+iii-flip-060	iii	25158	cdd241d168ccf80bb4ecda6cefd48e5ccebac92a287913860563d3f7be87e0ee	flip of ii-l5-huffman at bit 59958
+iii-flip-061	iii	25158	7ebbaaea2babde727c25ce1797d1a5b1c3f9407f40667906350c91b3faa35bee	flip of ii-l7-huffman at bit 94212
+iii-flip-062	iii	774	5cd1decf01c7ac6410af23ce134cc3e2b302d8aa66ab2fc07ad0d1feea7668af	flip of ii-l5-fixed at bit 4786
+iii-flip-063	iii	644	6ea55188d8b3627ec0f7a1f9515d63cf82ddaf561e8aaef86a2732d6a1928244	flip of ii-l6-filtered at bit 4768
+iii-flip-064	iii	24872	fb97f7882b104deebf14ae92d2fd15021d19bf48647b1673460c5ea9cef4474d	flip of ii-l8-rle at bit 95870
+iii-flip-065	iii	643	09df5aae3c51ed69d5043db5028e135857aec7405ba7eaa2fd35a329988b8179	flip of ii-l8-filtered at bit 2660
+iii-flip-066	iii	25158	d3c0d634ff5b56dcc91d2d420b3b6ed6f1f78ea10c19e69b678ad9e701a4417f	flip of ii-l5-huffman at bit 59114
+iii-flip-067	iii	25158	9b863f327707c11e4326299e3d4518cc126b0f17bced1958092f5179b8e0a8b0	flip of ii-l5-huffman at bit 93320
+iii-flip-068	iii	860	40fd5c7a26e9155545dd43ca88248d5d76a1a8423be5dbbb59194e1d0afcb176	flip of ii-l2-filtered at bit 1974
+iii-flip-069	iii	770	b5ceafbc5e507a26e4cc9a31b78914f32aa9bd026a8a74fa972ecf3f5c48a628	flip of ii-l9-fixed at bit 5156
+iii-flip-070	iii	24872	62419b34844a15f7e32de1321ba22bffe1bae400fd0958ebe3a40ce020fd0cd4	flip of ii-l6-rle at bit 59490
+iii-flip-071	iii	24872	2a434d56a056f77199bf9424cac7c5de090eadcd6919ea87fc5833cea4264459	flip of ii-l6-rle at bit 109040
+iii-flip-072	iii	802	13a52a94d11c05c67d65cac17619e6cf07920e82f3e88ea5923cb6fe8cbaee47	flip of ii-l4-filtered at bit 670
+iii-flip-073	iii	802	cabf7b7012d1642e99455dfaead9f6f16c9bdcb59040dac34061fbd34e112c88	flip of ii-l4-filtered at bit 4604
+iii-flip-074	iii	869	3ab2c969d051c620e625a9cf17df569219a2112c940219387ac7688719096d0d	flip of ii-l1-default at bit 3698
+iii-flip-075	iii	644	b616c3a18eb9f215cc41b1fef2f7db71ada61d346d47ceb6dc1dd9acb56edd24	flip of ii-l9-default at bit 3368
+iii-flip-076	iii	40010	b43e5383eb8b1b7a74d8b5d96517f66b2684ca063806cca97e9983f5a72c5636	flip of ii-l0-rle at bit 293750
+iii-flip-077	iii	860	56ce5d4a8145c93cb4845a9d4a5402ce5d48e94b321aa38c0b211158ec0cc73a	flip of ii-l2-filtered at bit 6516
+iii-flip-078	iii	646	74ce88163b01a4c96b2e0a3e6100c7d83f387ba11035f374d9bee2ec56d071f6	flip of ii-l5-default at bit 962
+iii-flip-079	iii	771	f2e7ec2282d4bfda2c55b1469af8f1fd20427326c3c874bd368ddc8b5b015f3f	flip of ii-l7-fixed at bit 648
+iii-flip-080	iii	25158	5038e6570523127611cb4c6a034ffbaf16b94536a2a4e0040b7716f5f78c2cba	flip of ii-l3-huffman at bit 91470
+iii-flip-081	iii	25158	292e2ee9fdd77cde2d5d700cbaefdad6accadc509f998c4f5acbb1957c63a499	flip of ii-l3-huffman at bit 10652
+iii-flip-082	iii	955	6faa4fe36ffeaceeb6790f11216faa01a620f45825e9881f9f4ca30e8428198e	flip of ii-l1-fixed at bit 4002
+iii-flip-083	iii	770	adc2654c5e800ce08685150f8b584761d7073a35693d5f227ca06b8c9d2c64a1	flip of ii-l9-fixed at bit 5352
+iii-flip-084	iii	869	315f4d46c09632269c5d877e7a91f3a797c8dd9e0d866f8d2737884f67331743	flip of ii-l1-default at bit 358
+iii-flip-085	iii	774	10053b8df81db57563f74efc25673f1350b23eecd874b82e235e1af9c2e1be9f	flip of ii-l5-fixed at bit 4628
+iii-flip-086	iii	25158	498807a7d7e3151cc6c0575acd78ce031eee4a968abdd99c007b2625e99d272c	flip of ii-l5-huffman at bit 25714
+iii-flip-087	iii	645	954b0b8aea6298898dd88b5e8cd6d747b05016fff40981a2799c4d79ae7cb774	flip of ii-l7-default at bit 4744
+iii-flip-088	iii	802	3df409f60889991477c3744693f52b61cd44afd64f5db57d942199d6491af50d	flip of ii-l4-filtered at bit 798
+iii-flip-089	iii	646	6c4cc94e575f03590dc24c8b201778199481d43df522e80e018c0408bfb65447	flip of ii-l5-default at bit 1260
+iii-flip-090	iii	860	c3125c8bb4def4936b022325ab69ad11a983f46577cf1aabccb7fe64ca3a1897	flip of ii-l2-filtered at bit 2522
+iii-flip-091	iii	25158	99f401ccac0c1879162bdc020f782dbc16e18e4d024b49518f07b02925e5db03	flip of ii-l1-huffman at bit 130824
+iii-flip-092	iii	24872	266670b8f47b02a409c42ae8af92524b893ce80f46ae3a8d25c435c29410cce4	flip of ii-l4-rle at bit 26918
+iii-flip-093	iii	25158	08ab50373c3a9394f437497ff9b5ccb7ae162be6464fc63915b9cec76abe2576	flip of ii-l1-huffman at bit 109764
+iii-flip-094	iii	860	810bbf7248a58ea8f908fec0064285dfcddc881b058e4c174fd69bb6a00449e1	flip of ii-l2-filtered at bit 6802
+iii-flip-095	iii	943	66bbe7f9230cc7dfdf6dc8eb00ba3c5fc7ff068fb132ac87f38f736f1e092fbd	flip of ii-l3-fixed at bit 4224
+iii-flip-096	iii	646	a5da8f4bb9fb885c413aeb4d461bbdf293c5e263a8e53bef190362c739b2e860	flip of ii-l5-default at bit 2302
+iii-flip-097	iii	646	1a35f0bd2757dc050c8bb98288d5664dd3b7e6d0614fe5a7fa2ca7badfabbab6	flip of ii-l5-default at bit 1180
+iii-flip-098	iii	771	d6ee3c355309bdeb4031619e475c07397cc9203fdeb6f94d6306b19820f9a38d	flip of ii-l7-fixed at bit 5914
+iii-flip-099	iii	646	7fbe7a05f8dc40a2d7508cc3dfe942b999a7031c14bf7c02f0a2a6a58b696058	flip of ii-l5-default at bit 616
+iii-flip-100	iii	770	b1567b148d6a6c7594adeaeb65e587a56ecdbe8449cb068f5ccb4948ef03f63f	flip of ii-l9-fixed at bit 902
+iii-flip-101	iii	869	b81e293c381c0a0675d4edd6b12c0f1131cba7fa87c676c6814bdd68d6883087	flip of ii-l1-default at bit 1132
+iii-flip-102	iii	860	640203a39cafa62c4a3728f5fd66f280d52dd0907b9d222de565435b922d8ff2	flip of ii-l2-filtered at bit 6434
+iii-flip-103	iii	644	769584e2676b81fc2ca19f7802644434f63b82cf502fdf015bda80658072b300	flip of ii-l6-filtered at bit 3536
+iii-flip-104	iii	40010	b45935b67a76f18df4643892fb647f454d6bfb13fcccc36f22daa066f209d455	flip of ii-l0-rle at bit 248862
+iii-flip-105	iii	856	ed18512182160c95f4e7e4b1bc5f0f87c927b5e414005ca013d27b275e3fe59c	flip of ii-l3-default at bit 5148
+iii-flip-106	iii	646	26b0660bd0c4b9ea0bbb99ffc5d24ebbc32acb7272fc7bec144708e759ee1498	flip of ii-l5-default at bit 314
+iii-flip-107	iii	646	6bafc1400a2bffb89eff410f62cd0a49f0f23b81c234a3a53411329ab658c633	flip of ii-l5-default at bit 3768
+iii-flip-108	iii	25158	bd51c57c61af368ca4dc16de46df24c5fb540a136f4b6740fa9e7a99c1ae43b0	flip of ii-l3-huffman at bit 85398
+iii-flip-109	iii	25158	4c32b64bdd5222158ae62d66f5a9840eaf2c30ecbc2b4088e3bd2d29eccb3fac	flip of ii-l5-huffman at bit 135044
+iii-flip-110	iii	40010	ae7be44bacab5fd70153d669e75119baa6cded37224c2610ff5eb0f34b36ac6e	flip of ii-l0-rle at bit 299986
+iii-flip-111	iii	860	6cbd2dfcc1f6eadd24cca18bad07a88aef15ae86923b81b956782dd724c7d8c3	flip of ii-l2-filtered at bit 3968
+iii-flip-112	iii	856	ea6d2fa0485409e7e77325aaeb6fe423161343e764d91d2d28ce631f43d95619	flip of ii-l3-default at bit 6558
+iii-flip-113	iii	856	3b4b227dba93db6acaa709f1d226872ca6a0ab1c03620e04881e904fa28a7257	flip of ii-l3-default at bit 6412
+iii-flip-114	iii	644	ef2269edf75725db6061fe5cdacbde2daea7b2e4bb23faf346a918a18c9d097b	flip of ii-l9-default at bit 3018
+iii-flip-115	iii	24872	769ee9aacee25a21334bab950a4e20f54f11c072f69ad8f2f9142a97da578fc8	flip of ii-l8-rle at bit 188024
+iii-flip-116	iii	771	06c2c7abcbdbe42d67ae7352a91c76771aa6d0eb92efaac1aa82f1adad1ce686	flip of ii-l7-fixed at bit 3606
+iii-flip-117	iii	856	7ba977a2b3dcea319b77590f4af8607a9cce9084b1ea791bd3162dde3ea1df67	flip of ii-l3-default at bit 3748
+iii-flip-118	iii	25158	e372e8ce80f3e4694c63b768821eb0b772e0c05fa8a0f987cea5e1fe63b249dd	flip of ii-l1-huffman at bit 55106
+iii-flip-119	iii	645	c90dffe0cf22a926e1e1b9b689a6f3492ec2b88281c9c500b7966046a48242d9	flip of ii-l7-default at bit 4576
+iii-flip-120	iii	40010	73ccfc1b64bbbc9d84343bde5332aebfc7bf60c27f7336403bf99290856683fa	flip of ii-l0-rle at bit 158686
+iii-flip-121	iii	869	bfdaa61c79629e566c8a24cfb6470d10dbf449f3772b45ce6e79bf938ae7b15e	flip of ii-l1-default at bit 484
+iii-flip-122	iii	955	c7366d097bc81ddee97f973aab1300ba3c19ad174730e2b4f7c58133963b3544	flip of ii-l1-fixed at bit 5738
+iii-flip-123	iii	644	f79b9c7bac55723a0b4bcdf16daf4c419e4ced56a473fc72f51850ac30f3b97a	flip of ii-l6-filtered at bit 808
+iii-flip-124	iii	869	8c30dfde522f29e03e233282cb369064286ef370949a38c5304dc17266108255	flip of ii-l1-default at bit 3110
+iii-flip-125	iii	25158	63907fe88854cb0478a761d4f2f4174d85e2f4ac088635c17d21331216fee03d	flip of ii-l9-huffman at bit 91924
+iii-flip-126	iii	774	1ff2dcec07b2b562df9d3f43ece6a31997e50984ccddb361ea49be7373d5869c	flip of ii-l5-fixed at bit 3874
+iii-flip-127	iii	955	ecad503b72f37cc4916087110cdf7a51e8ece370fcd782f4036a97a4787d90a9	flip of ii-l1-fixed at bit 3688
+iii-flip-128	iii	646	7a24a186b74b95b726c1f0203e95b16aa60576c547c1a854e3049a6b61d0bce0	flip of ii-l5-default at bit 4414
+iii-flip-129	iii	25158	23f6ca0ebcff82f5e8ba3d8ac9be81422799d0d9cda90b78d6e7e82e4b8b8965	flip of ii-l3-huffman at bit 162428
+iii-flip-130	iii	24872	5da1ab4382e39db833b40cb40e3a4cb1b23370990f0591ff77c7e1e90e8f4a5c	flip of ii-l2-rle at bit 123210
+iii-flip-131	iii	25158	83edf2a5d9242673511f25646eafa3a777e475953ee0575c76a5f5e356c4abee	flip of ii-l7-huffman at bit 82888
+iii-flip-132	iii	25158	7507fad88cc196425cb05a2c5008d44d3021a5134557ff4de7ecd975af9796d0	flip of ii-l3-huffman at bit 181014
+iii-flip-133	iii	646	6fb2f57b3affd25c398f26798b6085f32ca7c01fbb0c4b5095d4ad622fab0536	flip of ii-l5-default at bit 1220
+iii-flip-134	iii	40010	80135e1ae0864d56c85b1a51cec6cc39fd1e4d337898dda246c46c54bae9977e	flip of ii-l0-rle at bit 103154
+iii-flip-135	iii	856	6a53b80ce5259aa3d4dabee9bea5f33c32cbc2de3d9f36e085d01e4017097dda	flip of ii-l3-default at bit 3376
+iii-flip-136	iii	40010	a9e0704c2960a3faa13f5aee72ac30059c6fdbb2a3afd55e93ec95b57003fdf7	flip of ii-l0-rle at bit 316926
+iii-flip-137	iii	645	869b1fc2a166b13625515cc0b99b192f08fb297c516a988b63e64f993828c3fe	flip of ii-l7-default at bit 1684
+iii-flip-138	iii	25158	2cfcd397461e1a3719ce6e576d83a0fd0ff13521b583b0261f144fe13a6505ea	flip of ii-l5-huffman at bit 181210
+iii-flip-139	iii	860	bb29c683eb090fcd26c8ea0e56986ccd838c4338596c353e0ae67b7ed5e921cd	flip of ii-l2-filtered at bit 5192
+iii-flip-140	iii	24872	5344210288ecc24c7cf3ae637952837a2e60a0bea1d98be3041457811831744e	flip of ii-l8-rle at bit 55622
+iii-flip-141	iii	802	c27a8e1a79f4a98ea7bd047b600bb66422674788ee03306abd91e6240a0ec0c5	flip of ii-l4-filtered at bit 1188
+iii-flip-142	iii	644	0664eb2b36caf950f587f1727bc078d990aa0d51d9c94088e49cf6870daea431	flip of ii-l6-filtered at bit 4946
+iii-flip-143	iii	40010	fc93687d7dc5e743dc9a0db4a45ed01c2a392a612c3bc48cd32ae575fe9eff2c	flip of ii-l0-filtered at bit 268240
+iii-flip-144	iii	802	a18015426aabfada6b099eeae79deae4b243716651a3124b0e50782420198697	flip of ii-l4-filtered at bit 1742
+iii-flip-145	iii	774	877f20f633b285c8d9a6d7ab883609b17605b6fd2755d95a0ee7f6da100d857b	flip of ii-l5-fixed at bit 3884
+iii-flip-146	iii	643	31ea317ff84b706aaaa2897c6c5a2ef634d1b2218f98404e75750dfb6b139976	flip of ii-l8-filtered at bit 154
+iii-flip-147	iii	771	92872c77fa25bb58ba863c3a33b6c987bec8658359c8dc839b4fe533c88aac07	flip of ii-l7-fixed at bit 152
+iii-flip-148	iii	40010	295337ca760b56af69ddf1d11ac821b4b13eb1fccd20845daafc271fd34703d3	flip of ii-l0-rle at bit 319414
+iii-flip-149	iii	802	588706ed26c37d5c7645469cfadb2146afae2bf5105732fcccc53d413e326526	flip of ii-l4-filtered at bit 5620
+iii-flip-150	iii	771	fe2fda8c9622ad35d55f0c34ae031615fff8fd4f00f56a1deb91a472c3f4a5f5	flip of ii-l7-fixed at bit 4738
+iii-flip-151	iii	644	a5c4afe6fea7db36c4b0f4022454ae1b706a179d865c7f5527729605473bd558	flip of ii-l6-filtered at bit 4336
+iii-flip-152	iii	24872	a8f5a701cabc95384cf7538373ef94c84244f9cd9a0c9fcca5dbd376b04f7c16	flip of ii-l2-rle at bit 78222
+iii-flip-153	iii	856	85a137f6200f171df297632d19d0c72c0dd94dd9fe7812385008f81b0b453fa9	flip of ii-l3-default at bit 5628
+iii-flip-154	iii	955	a457c8f9c18d69835506d7f05927cbcea0d3c5d440044016f73e095f5bb89d44	flip of ii-l1-fixed at bit 3874
+iii-flip-155	iii	25158	26e967ca3b3abced9e162f1240e533e38d76f226259820806d714d227720b847	flip of ii-l9-huffman at bit 147592
+iii-flip-156	iii	802	2a1e69b9a8d222f1cdb5fef0fdc6378520669eaed59903391efb34713438bb80	flip of ii-l4-filtered at bit 4790
+iii-flip-157	iii	802	fdd56748a1681f17ae5e4baaee3dbb83eeadfbf6bc24f5f8de2d92e94ddc1612	flip of ii-l4-filtered at bit 3236
+iii-flip-158	iii	25158	e586e270be35cbe8550a2ccb79bac629a7a352e5e96b7838472e2de7e0187350	flip of ii-l1-huffman at bit 136370
+iii-flip-159	iii	646	c548d2c997f73e40fbd75b711b3c9a82d0f920ef9782ad0e2737bb5dd5bed3af	flip of ii-l5-default at bit 3584
+iii-flip-160	iii	955	d02d2593f10eef857d96b709f9a7eaca265144115a2caeb13a9ce2eed94f25db	flip of ii-l1-fixed at bit 3102
+iii-flip-161	iii	25158	12f9a05b877ebacfd5b5528ab4ba0407eedf4a1647826d4c9bf71c4031dd3939	flip of ii-l5-huffman at bit 76
+iii-flip-162	iii	643	1ab5894f727f694457a40daa90c6388c6521c666d8cc782c8baeb54509e2ae63	flip of ii-l8-filtered at bit 4074
+iii-flip-163	iii	644	2b71388930db1b4491188e460f78e31ec6fe1866f8a9ba826b942e99c0ae53f8	flip of ii-l6-filtered at bit 1656
+iii-flip-164	iii	955	169656742df819b5839805374a353b1fce2da2f208f35c4e6c5782b4552442a5	flip of ii-l1-fixed at bit 3902
+iii-flip-165	iii	856	6f9185004252c6aaff4d386175c86ce3d41853f3ece68b569c15ed80a9527a5e	flip of ii-l3-default at bit 4164
+iii-flip-166	iii	802	68068513a573e6fd08c1f6538523f9f2f330d7df974937aec678f248ae26fcdb	flip of ii-l4-filtered at bit 4226
+iii-flip-167	iii	770	f7e28186d1db22495946af6f47e9f52e33ed467b6dfaf7982add3f46110b5ec4	flip of ii-l9-fixed at bit 4624
+iii-flip-168	iii	24872	48841d1e10b58e0f1460b31c37f00eb1960f57bec2e85729ee129c6674aef6c4	flip of ii-l6-rle at bit 174894
+iii-flip-169	iii	644	2ead382cdd411d9d02ace39b4efca4342c616318634b14ecaff918dc285cb09d	flip of ii-l6-filtered at bit 956
+iii-flip-170	iii	644	c39a3898e9de50885a9946a52e3542ad65b4c346602a4907bcbcde68b5b819fa	flip of ii-l9-default at bit 3706
+iii-flip-171	iii	25158	7ef60cdc19451eca3b2a295cbf2cd2f91f3ecfe2c721deb0d14fa5fd5d56dd0e	flip of ii-l3-huffman at bit 89320
+iii-flip-172	iii	25158	414369b23a938f7c9e0c0e7df83792c3f6c7c1fe17f8d19a291fa22f0a9e4835	flip of ii-l3-huffman at bit 694
+iii-flip-173	iii	644	e51e77f42f1a19cd4df11b6b4738e81af648de62b7ad98fb5ab702568893161d	flip of ii-l9-default at bit 1844
+iii-flip-174	iii	25158	0c38f9309ac166b1565656c3fe38907c3e2d729ef443fa63de6b50880917f2dc	flip of ii-l3-huffman at bit 126914
+iii-flip-175	iii	25158	8061eaa47b065664a7ac222b4c3dad829452f5daf0809f186ad1b95658f8e82c	flip of ii-l3-huffman at bit 53408
+iii-flip-176	iii	645	b0915a83478ad3c595f845202e19b61742d5b12bb9926429ba6908f29b7882e4	flip of ii-l7-default at bit 2718
+iii-flip-177	iii	869	cabdcdc99904bc4ccf36c3fbae6924dae2906014db25b0b793072ae8986aac12	flip of ii-l1-default at bit 4676
+iii-flip-178	iii	774	edfdab6eba0c1aa68b7080fdb07b76c3c36fad4fad22edd19b39055ccdfda31a	flip of ii-l5-fixed at bit 826
+iii-flip-179	iii	24872	605bc487384283bb2f4d47f9650d0651ce24971443cc3735bcb516e0f0e65bc4	flip of ii-l8-rle at bit 126968
+iii-flip-180	iii	25158	7a2f6ec951dd23b2761b84f2c5d78adca6d91ad16f457a0cd0943cfc8b980194	flip of ii-l5-huffman at bit 62726
+iii-flip-181	iii	643	2d26b1c767944b74bb969594d62627a79601d4ad0e205b03b1d4aa7ee65f4dd7	flip of ii-l8-filtered at bit 2100
+iii-flip-182	iii	943	b9c9ed1a3fd32e77cb0876d554a3a225f8be10db42e7b90be89964038dcc47f9	flip of ii-l3-fixed at bit 3938
+iii-flip-183	iii	774	c1b61a35cda61b56f55e53e229a2dbda1f9bfccb94b23326d0d74f0acb480421	flip of ii-l5-fixed at bit 1504
+iii-flip-184	iii	770	1dcb961770325844b84a60f97e05be46d115768b38cfacc3f2a1c77df6145e7f	flip of ii-l9-fixed at bit 942
+iii-flip-185	iii	24872	44b00c531ed6f9048e42690d90484ca1a0fde86ed93b73c068df04339529654c	flip of ii-l8-rle at bit 92668
+iii-flip-186	iii	645	cebd46d7e61ac6defbe64e4fa46edfb1986fc12b3e4372355c9725bdc7ed654b	flip of ii-l7-default at bit 4626
+iii-flip-187	iii	869	8f255076735a012d6d8d21d8012addfae717d2f3bbccb195d3a4ee789795a5e4	flip of ii-l1-default at bit 4608
+iii-flip-188	iii	24872	3ee009088a63ace4d3677fb3684a60ff41755c612d12acb1493f3fe67f9473cd	flip of ii-l8-rle at bit 94054
+iii-flip-189	iii	24872	3ee520f7a28d3a4c68e84ba3a56f8c3b42cdc703684db3af29d938c1747b0c03	flip of ii-l2-rle at bit 173524
+iii-flip-190	iii	25158	85025cf0db38fbf247c6a187bd91f3ac392dd51ca8d42dd829df53aba61c89f7	flip of ii-l7-huffman at bit 189906
+iii-flip-191	iii	24872	6b613eb0c43734d3eafc9b88c6988761521d11638cee33b79469a75f658953e0	flip of ii-l2-rle at bit 53824
+iii-flip-192	iii	646	2c94fb36b204554146d09751273693b9ec89687367e9ce98e15c08b89dc1a74a	flip of ii-l5-default at bit 5118
+iii-flip-193	iii	25158	b4c59a649b86320ffcd71cec7f964ab882c2d28af631e0c35b295096f77bdc8d	flip of ii-l7-huffman at bit 181212
+iii-flip-194	iii	771	6b0d3dfe8348e067912be159c0d2d49137e4bde38b54db8778e04337467cc753	flip of ii-l7-fixed at bit 3394
+iii-flip-195	iii	40010	466218fba23991f4391572274c9151bbe6ed21489a478a8175b73701c318b318	flip of ii-l0-rle at bit 231688
+iii-flip-196	iii	771	048efb712f9ba7888cb7b5f3920a1d85bd0e6ee73fc5a9fa65ffc44a9a36d660	flip of ii-l7-fixed at bit 1822
+iii-flip-197	iii	869	7cc2ee0c3782f3a2319d7e24641b186e592ef41f1ac4e1e0c65523590cc1e468	flip of ii-l1-default at bit 5572
+iii-flip-198	iii	955	756a1671e864df83e2f7c9b1584f3ec31a57613807b787d7d117b08eda3077ac	flip of ii-l1-fixed at bit 3346
+iii-flip-199	iii	25158	e6257a3e8659ec0fbe057fa21f3a307e1ea31885ce29d8d017b9525a9a083409	flip of ii-l5-huffman at bit 59200
+iii-trunc-000	iii	110	cd33ee4c1fdfbf307bf80c682643eb015356bf824cd252c381ef7de4b1caed3c	ii-l6-filtered truncated to 110 bytes
+iii-trunc-001	iii	23828	f7e2aa57d428752f7be8031ab7369418cebaf53713ac486d3f5e074181e62de9	ii-l6-rle truncated to 23828 bytes
+iii-trunc-002	iii	261	750a176356dd869d5cd654310d4e0e598ff0c5cf340acdbb3212117ead3ae247	ii-l8-filtered truncated to 261 bytes
+iii-trunc-003	iii	241	cd758a6f209fa49198d3d945124ade6086239af8a100646f39ad9a6d53ae166b	ii-l7-default truncated to 241 bytes
+iii-trunc-004	iii	3874	6881af96042ea128eb6ef7f84b89d587318a87e9f972677810e23756466ae7fd	ii-l9-huffman truncated to 3874 bytes
+iii-trunc-005	iii	15988	05cebd1f9f472755542d2e2192342e0ee257b1ef16f2b81a1ab18406c45bf477	ii-l4-rle truncated to 15988 bytes
+iii-trunc-006	iii	25054	e5f23e05082314131019891156a62634c5c5f66cddffb1dce39ee942ff74edcb	ii-l9-huffman truncated to 25054 bytes
+iii-trunc-007	iii	576	984791dbaabc47b4650e9c6a601fc5bec29a0f32595a834e470b13082a05e711	ii-l9-default truncated to 576 bytes
+iii-trunc-008	iii	18622	0fea4d2066ef1e639f23a16ddaeb11096932632cc84f57c182a65baf328dc50a	ii-l8-rle truncated to 18622 bytes
+iii-trunc-009	iii	828	b3091bd30851fabee155d104e2fa3e6aad25b93a99db3cc4b78ddcd838a334aa	ii-l3-default truncated to 828 bytes
+iii-trunc-010	iii	5866	407b490c85b64f9b8a822f0ef8a6bdd52344b2d19f75fc16b34749506f07f1ee	ii-l2-rle truncated to 5866 bytes
+iii-trunc-011	iii	13406	a9eb7befa20490ff62fd8847639c73abb46250706f3194a95cdbc5b318f96bf0	ii-l7-huffman truncated to 13406 bytes
+iii-trunc-012	iii	354	7b572d7f1f84705c0b5965696acdede8cafaf448d5d5ae2152bb23858a052c5c	ii-l2-filtered truncated to 354 bytes
+iii-trunc-013	iii	372	8e069dc5c0ad94840fabeae5013edbea5bf052951050d763ca95d3d1b7d2c755	ii-l7-fixed truncated to 372 bytes
+iii-trunc-014	iii	13904	617554d57cacc7fb128e5106ac45183a6c988dc7e78c99c9525787d0f1c991b6	ii-l5-huffman truncated to 13904 bytes
+iii-trunc-015	iii	14	5fe8b19f43e884f5ca2b13de9239836398cfbdf0f9bec771e0392b17510f6c5f	ii-l1-default truncated to 14 bytes
+iii-trunc-016	iii	569	8d672e5d4cb0be7973d9ee32f1c44c2207e51335f0fbb478111904a3a20e4ed1	ii-l7-fixed truncated to 569 bytes
+iii-trunc-017	iii	726	b99105a4373198c2da815882604f0f72c67398a0786a7aa805dd4d6ecd5fd558	ii-l1-default truncated to 726 bytes
+iii-trunc-018	iii	165	f489d05e9ea59a8b9340b65f274de47f6d6ab75286b1e3cbe8ad4b32a33bdb2b	ii-l7-default truncated to 165 bytes
+iii-trunc-019	iii	596	c9c727854931993b3feaa2ab5e020da0d9c2c83a736700f423f3071a6938b40e	ii-l6-filtered truncated to 596 bytes
+iii-trunc-020	iii	702	5f93f111d0535dd213fb07c0b069362aaed16f7be1f7b5a6e9459168d6ccadff	ii-l3-huffman truncated to 702 bytes
+iii-trunc-021	iii	25090	8a1632f29c04d4dc7425049d1192ef7241487808c75127fb281d70f48226cf4f	ii-l7-huffman truncated to 25090 bytes
+iii-trunc-022	iii	0	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	ii-l8-filtered truncated to 0 bytes
+iii-trunc-023	iii	21382	7a78daa0bd7e275d199b44379eda4b1c074d2b1c746e4d0f4f9848c0844e151a	ii-l9-huffman truncated to 21382 bytes
+iii-trunc-024	iii	102	07ec1d8a5b21cc4f38ec2272f2e23e56f2448af294c07da0247677a845ed5a93	ii-l7-fixed truncated to 102 bytes
+iii-trunc-025	iii	17802	f74382f1a86fab126deeb45b5f47645361189ac2fbdf1240caefc498fe31becc	ii-l1-huffman truncated to 17802 bytes
+iii-trunc-026	iii	15998	338588d842511d3789915c740b8d4bf3c19e3edd9d99c30e5c6fc0a1391c33c7	ii-l0-filtered truncated to 15998 bytes
+iii-trunc-027	iii	348	be1a4ec7507455c11c1669278ce084239081c130421c96a317a542ce7c613406	ii-l3-fixed truncated to 348 bytes
+iii-trunc-028	iii	14858	0a5cbdf71d883d121bba1f796792740c220b547c1432b2632bd3d0f32598382b	ii-l9-huffman truncated to 14858 bytes
+iii-trunc-029	iii	678	d4ed33c13ebb9d4cbe39adc8121fb8699f87b7076c9f818b527b91958ea5ddd7	ii-l9-fixed truncated to 678 bytes
+iii-trunc-030	iii	626	01c587c44b1baaa2e1bc9b1b20a6914b8ac6f3cef10aee1a4ce1571fff034376	ii-l5-default truncated to 626 bytes
+iii-trunc-031	iii	576	5353be650bd34153bac408cb0bc3612fcd45ce3ecc8c0a0f32bf55e346b10bff	ii-l3-default truncated to 576 bytes
+iii-trunc-032	iii	254	4de47de85251deeedf66298336b4baec6447201581f8d3bee465546829c7f8f0	ii-l2-filtered truncated to 254 bytes
+iii-trunc-033	iii	561	35eb6fb6c2ebb9868029367bda8207ceff4d9107ded6f8468e3b6ba2896e3914	ii-l8-filtered truncated to 561 bytes
+iii-trunc-034	iii	23844	a7a37b3bf4ab9a878c500f4c5db3631561a76b9d7922c33952ec91318cf77c64	ii-l0-filtered truncated to 23844 bytes
+iii-trunc-035	iii	16376	a03507ba0c60be8fc53791e4dba66d22b94eedcc27b8642e06158e34db19a3b6	ii-l4-rle truncated to 16376 bytes
+iii-trunc-036	iii	757	589442d805182e9bc84a58198861f9bfac9affb60a81b0c2f51e93d32c0c2719	ii-l3-fixed truncated to 757 bytes
+iii-trunc-037	iii	21668	c9bca70105b0e0f3a829a42e6c0867885f200c510c0d04696075cf1a0c48596d	ii-l0-rle truncated to 21668 bytes
+iii-trunc-038	iii	15322	00a9d319d40a449f3a0be5d4ed9150bab8428ef64f0a651c457727b88f609487	ii-l4-rle truncated to 15322 bytes
+iii-trunc-039	iii	596	e81f7ce04049a4feae32fa5315fae131f8e2ca51102d94697af372a9375e90f7	ii-l9-default truncated to 596 bytes
+iii-trunc-040	iii	270	b3d5bbeb6278827d85fd4dbdf7dfd3b3859298d490f9e31d8ffbe623ff172005	ii-l9-fixed truncated to 270 bytes
+iii-trunc-041	iii	23498	ef0683122b7e17a7e9d279175d33c10920d5668ea33e20a1d749858da391634d	ii-l0-rle truncated to 23498 bytes
+iii-trunc-042	iii	800	7971f6b20bb285513d116ea772a186808bf05db6bf646339f0ba712ac7a91160	ii-l4-filtered truncated to 800 bytes
+iii-trunc-043	iii	17262	3f192042acfe53fabe2162fa2d891b2a283848d010bde0a3ee5b74da278777d7	ii-l5-huffman truncated to 17262 bytes
+iii-trunc-044	iii	112	f76d779a2e50e975ec0818cfe0fb091d552af3d5e11f31aa92d1f7121029a16d	ii-l7-default truncated to 112 bytes
+iii-trunc-045	iii	13980	932618c782da4a182fe4b2cbde5e11dcb6fca5dfe8d2404766f47b1c0ae969ed	ii-l2-rle truncated to 13980 bytes
+iii-trunc-046	iii	15594	b391a9376eba0b066fd545ca3209b3ef4842d12f1ebe605dd7eefdb7380d0955	ii-l2-rle truncated to 15594 bytes
+iii-trunc-047	iii	13680	a3f4a7e484e51ae22c9bfd0859cfa364d6c2e0715f58dbc6cecbc521ab5541ae	ii-l2-rle truncated to 13680 bytes
+iii-trunc-048	iii	392	d34d8a2ad4386576768bb944dada45c941f1f141048b50fcbb4741189ee966fc	ii-l5-fixed truncated to 392 bytes
+iii-trunc-049	iii	2028	4c0d0b85b0e1b03eb79b9bc14369f882602a148f553b5dd0def224a8836a29f5	ii-l8-rle truncated to 2028 bytes
+iii-btype-11	iii	1	ca358758f6d27e6cf45272937977a748fd88391db679ceda7dc7bf1f005ee879	REJECT invalid block type
+iii-stored-bad-nlen	iii	7	d3de7f59aa64b9b4d3c505fb64f82f0ab93b511a8e97a7d4d212cd98de70b7e7	REJECT invalid stored block lengths
+iii-distance-too-far	iii	4	2ffe09ba1fb92fd6b726131b6c644462a40320617366cc0ef3bb475c0d805be2	REJECT distance too far back (dist 2 > 1 byte produced)
+iii-hlit-too-many	iii	4	bc4e11ac82294640b57c806a2e243241c0fa5af4b3aa4d1e2d452627e8d5b0f0	REJECT too many length or distance symbols
+iii-cl-oversubscribed	iii	8	eb09fc2b44fcd328506d1ab5c6a5b1c7e0ee7b905f6b40db877d88255bfc9050	REJECT over-subscribed (code-length code)
+iii-cl-incomplete	iii	8	9ec6f2c798be79889df71d32a4b4fd36e13023ae46e0cd1c301cae6ee4a5e47b	REJECT incomplete (code-length code, no exception)
+iii-repeat-no-first	iii	8	226540b97cce2cf214117ae84be2e3a7d71230cc521474f3083e5949642ee3dd	REJECT repeat with no first length

@@ -1,0 +1,35 @@
+saltqueue: ticket P2 seat=root pid=43925
+mutants/HuffRev.lean:137:91: error: unsolved goals
+lens : Array ℕ
+l : ℕ
+⊢ (List.filter (fun b => decide (lens[b]?.getD 0 = l)) (List.range lens.size)).reverse =
+    List.filter (fun b => decide (lens[b]?.getD 0 = l)) (List.range lens.size)
+mutants/HuffRev.lean:148:62: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffRev.lean:149:63: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffRev.lean:198:86: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffRev.lean:213:59: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

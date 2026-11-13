@@ -1,0 +1,173 @@
+saltqueue: ticket P2 seat=root pid=67154
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     1157s      h2c          49321
+  P2     301s       root         67154
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     1459s      h2c          49321
+  P2     604s       root         67154
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     1761s      h2c          49321
+  P2     906s       root         67154
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     2064s      h2c          49321
+  P2     1208s      root         67154
+saltqueue: still queued (1500s) —
+  CLASS  AGE        SEAT         PID
+  P2     2367s      h2c          49321
+  P2     1512s      root         67154
+saltqueue: still queued (1800s) —
+  CLASS  AGE        SEAT         PID
+  P2     2671s      h2c          49321
+  P2     1815s      root         67154
+saltqueue: still queued (2100s) —
+  CLASS  AGE        SEAT         PID
+  P2     2975s      h2c          49321
+  P2     2119s      root         67154
+saltqueue: still queued (2400s) —
+  CLASS  AGE        SEAT         PID
+  P2     3277s      h2c          49321
+  P2     2422s      root         67154
+saltqueue: still queued (2700s) —
+  CLASS  AGE        SEAT         PID
+  P2     3582s      h2c          49321
+  P2     2726s      root         67154
+saltqueue: still queued (3000s) —
+  CLASS  AGE        SEAT         PID
+  P2     3884s      h2c          49321
+  P2     3028s      root         67154
+saltqueue: still queued (3300s) —
+  CLASS  AGE        SEAT         PID
+  P2     4186s      h2c          49321
+  P2     3330s      root         67154
+saltqueue: still queued (3600s) —
+  CLASS  AGE        SEAT         PID
+  P2     4487s      h2c          49321
+  P2     3631s      root         67154
+saltqueue: still queued (3900s) —
+  CLASS  AGE        SEAT         PID
+  P2     4789s      h2c          49321
+  P2     3933s      root         67154
+saltqueue: still queued (4200s) —
+  CLASS  AGE        SEAT         PID
+  P2     5090s      h2c          49321
+  P2     4235s      root         67154
+saltqueue: still queued (4500s) —
+  CLASS  AGE        SEAT         PID
+  P2     5392s      h2c          49321
+  P2     4536s      root         67154
+saltqueue: still queued (4800s) —
+  CLASS  AGE        SEAT         PID
+  P2     5694s      h2c          49321
+  P2     4838s      root         67154
+saltqueue: HEAD OF QUEUE after 5020s — attempting acquisition
+mutants/DispFx.lean:51:31: warning: This simp argument is unused:
+  List.idxOf_nil
+
+Hint: Omit it from the simp argument list.
+  simp [List.idxOf_cons, L̵i̵st̵.̵i̵d̵x̵O̵f̵_̵n̵i̵l̵,̵ ̵s̵how ("md" == x) = false by simpa using Ne.symm hx,
+            show ("w" == x) = false by simpa using Ne.symm hw]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:54:31: warning: This simp argument is unused:
+  List.idxOf_nil
+
+Hint: Omit it from the simp argument list.
+  simp [List.idxOf_cons, L̵i̵s̵t̵.̵i̵d̵x̵O̵f̵_̵n̵i̵l̵,̵ ̵show ("w" == x) = false by simpa using Ne.symm hw]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:128:4: error: Type mismatch
+  Steps₂.refl ?m.83
+has type
+  Steps₂ ?m.83 ?m.83
+but is expected to have type
+  Steps₂ (Tm.ret (ci m), σ) (Tm.ret (capA p), σ)
+mutants/DispFx.lean:175:42: warning: This simp argument is unused:
+  NA.c
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, N̵A̵.̵c̵,̵ ̵List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:175:48: warning: This simp argument is unused:
+  List.idxOf
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.i̵d̵x̵O̵f,̵ ̵L̵is̵t̵.̵f̵i̵ndIdx, List.findIdx.go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:175:60: warning: This simp argument is unused:
+  List.findIdx
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx,̵ ̵L̵i̵s̵t̵.f̵i̵n̵d̵I̵d̵x̵.̵go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:175:74: warning: This simp argument is unused:
+  List.findIdx.go
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, L̵i̵s̵t̵.̵f̵i̵n̵d̵I̵d̵x̵.̵g̵o̵,̵ ̵Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:175:101: warning: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵,̵
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:176:4: warning: This simp argument is unused:
+  Atom.substL
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵,̵
+      Atom.substL̵, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:176:52: warning: This simp argument is unused:
+  hw.reg
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, h̵w̵.̵r̵e̵g,̵ ̵g̵0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:176:60: warning: This simp argument is unused:
+  g0
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g̵0̵,̵ ̵cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:177:105: warning: This simp argument is unused:
+  Store.load
+
+Hint: Omit it from the simp argument list.
+  simp [NA.c, List.idxOf, List.findIdx, List.findIdx.go, Atom.substL, Atom.subst, Atom.eval,
+  ̲  ̲ ̲ ̲Atom.evalL, S̵t̵o̵r̵e̵.̵l̵o̵a̵d̵,̵
+  ̵ ̵ ̵ ̵ ̵hw.reg, hL, show (0 : Int) < L by omega, g0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispFx.lean:178:16: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [NA.c, List.idxOf, List.findIdx, List.findIdx.go, Atom.substL, Atom.subst, Atom.eval,
+  ̲  ̲ ̲ ̲Atom.evalL, Store.load, hw.reg, hL, s̵h̵o̵w̵ ̵(̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵g0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

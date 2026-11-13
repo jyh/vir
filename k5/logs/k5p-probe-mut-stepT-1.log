@@ -1,0 +1,8 @@
+saltqueue: ticket P2 seat=root pid=89104
+probes/MutStepT.lean:5:45: error: Tactic `decide` proved that the proposition
+  Tm.ok2 stepT = false
+is false
+probes/MutStepT.lean:8:61: error: Tactic `decide` proved that the proposition
+  List.length (lower2T [tcap] stepT []).2 < 2
+is false
+saltbuild EXIT=1

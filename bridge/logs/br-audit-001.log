@@ -1,0 +1,8 @@
+saltqueue: ticket P2 seat=root pid=97577
+'VIRBridge.writeN_frame' depends on axioms: [propext, Quot.sound]
+'VIRBridge.writeN_in' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRBridge.readN_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRBridge.readN_writeN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRBridge.readN_writeN_apart' depends on axioms: [propext, Quot.sound]
+'VIRBridge.Rep.store' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0

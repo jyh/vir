@@ -1,0 +1,3 @@
+saltqueue: ticket P2 seat=root pid=19985
+Audit.lean:1:0: error: object file '~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate.olean' of module VIRDeflate does not exist
+saltbuild EXIT=1

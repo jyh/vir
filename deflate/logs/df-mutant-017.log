@@ -1,0 +1,676 @@
+saltqueue: ticket P2 seat=root pid=45896
+mutants/StepRd6.lean:129:28: warning: 'all_goals (push_cast; ring_nf)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepRd6.lean:129:38: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/StepRd6.lean:135:67: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+mutants/StepRd6.lean:152:61: warning: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepRd6.lean:152:71: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/StepRd6.lean:388:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:392:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:392:112: warning: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:399:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:399:112: warning: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:488:2: error: unsolved goals
+case pos
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hby : f 1 = ↑bx
+hn : f 15 = ↑n
+hbyn : bx < n
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+hbi : f 2 = ↑7
+hbi7 : 7 ≤ 7
+ht : f (20 + (8 * ↑v + ↑7)) = t
+h2 : Finmap.lookup (p + 2) σ.H = some 7
+hit : Finmap.lookup (p + (20 + (8 * ↑v + 7))) σ.H = some t
+htL : 20 + (8 * ↑v + 7) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + 7)
+hk1 : k - 1 = 0
+⊢ Finmap.insert p rt
+      (Finmap.insert (p + 2068) 0
+        (Finmap.insert (p + 2070) (2 * wt)
+          (Finmap.insert (p + 2069) (acc + t * wt) (Finmap.insert (p + 2) 8 (Finmap.insert (p + 1) (↑bx) σ.H))))) =
+    Finmap.insert p rt
+      (Finmap.insert (p + 2068) 0
+        (Finmap.insert (p + 2070) (2 * wt)
+          (Finmap.insert (p + 2069) (acc + t * wt) (Finmap.insert (p + 2) 0 (Finmap.insert (p + 1) (↑bx + 1) σ.H)))))
+
+case neg
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hby : f 1 = ↑bx
+hn : f 15 = ↑n
+hbyn : bx < n
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+hbi : f 2 = ↑7
+hbi7 : 7 ≤ 7
+ht : f (20 + (8 * ↑v + ↑7)) = t
+h2 : Finmap.lookup (p + 2) σ.H = some 7
+hit : Finmap.lookup (p + (20 + (8 * ↑v + 7))) σ.H = some t
+htL : 20 + (8 * ↑v + 7) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + 7)
+hk1 : ¬k - 1 = 0
+⊢ Finmap.insert (p + 2068) (k - 1)
+      (Finmap.insert (p + 2070) (2 * wt)
+        (Finmap.insert (p + 2069) (acc + t * wt) (Finmap.insert (p + 2) 8 (Finmap.insert (p + 1) (↑bx) σ.H)))) =
+    Finmap.insert (p + 2068) (k - 1)
+      (Finmap.insert (p + 2070) (2 * wt)
+        (Finmap.insert (p + 2069) (acc + t * wt) (Finmap.insert (p + 2) 0 (Finmap.insert (p + 1) (↑bx + 1) σ.H))))
+mutants/StepRd6.lean:496:2: error: unsolved goals
+case pos
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx bi n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hby : f 1 = ↑bx
+hbi : f 2 = ↑bi
+hn : f 15 = ↑n
+hbyn : bx < n
+hbi7 : bi ≤ 7
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+ht : f (20 + (8 * ↑v + ↑bi)) = t
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h2 : Finmap.lookup (p + 2) σ.H = some ↑bi
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hit : Finmap.lookup (p + (20 + (8 * ↑v + ↑bi))) σ.H = some t
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+htL : 20 + (8 * ↑v + ↑bi) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + ↑bi)
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+h7 : ¬bi = 7
+h7' : ¬↑bi = 7
+hk1 : k - 1 = 0
+⊢ (match
+      Option.map
+        ((fun c =>
+            (Tm.letE (Ty.prod tint tint) c.1
+                (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                    (Tm.letOp Op.store
+                      [Atom.var 0, Atom.const (Const.int 2069),
+                        Atom.prim L1.Prim.add
+                          [Atom.const (Const.int acc),
+                            Atom.prim L1.Prim.mul [Atom.const (Const.int t), Atom.const (Const.int wt)]]]
+                      tcap
+                      (Tm.letOp Op.store
+                        [Atom.var 0, Atom.const (Const.int 2070),
+                          Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.const (Const.int wt)]]
+                        tcap
+                        (Tm.letOp Op.store
+                          [Atom.var 0, Atom.const (Const.int 2068),
+                            Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)]]
+                          tcap
+                          (Tm.ite
+                            (Atom.prim L1.Prim.eq
+                              [Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)],
+                                Atom.const (Const.int 0)])
+                            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int rt)] tcap
+                              (Tm.ret (Atom.var 0)))
+                            (Tm.ret (Atom.var 0)))))))),
+              c.2)) ∘
+          fun e' => (e', σ))
+        (match some (decide (↑bi = 6)) with
+        | some true =>
+          some
+            (Tm.ret
+              ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                (Atom.const (Const.int 0))))
+        | some false =>
+          some
+            (Tm.ret
+              ((Atom.const (Const.int ↑bx)).pair
+                (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)])))
+        | none => none) with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' =>
+        match stepFn₂ c'.1 c'.2 with
+        | some c' =>
+          match stepFn₂ c'.1 c'.2 with
+          | some c' =>
+            match stepFn₂ c'.1 c'.2 with
+            | some c' =>
+              match stepFn₂ c'.1 c'.2 with
+              | some c' =>
+                match stepFn₂ c'.1 c'.2 with
+                | some c' =>
+                  match stepFn₂ c'.1 c'.2 with
+                  | some c' =>
+                    match stepFn₂ c'.1 c'.2 with
+                    | some c' =>
+                      match stepFn₂ c'.1 c'.2 with
+                      | some c' =>
+                        match stepFn₂ c'.1 c'.2 with
+                        | some c' =>
+                          match stepFn₂ c'.1 c'.2 with
+                          | some c' =>
+                            match stepFn₂ c'.1 c'.2 with
+                            | some c' =>
+                              match stepFn₂ c'.1 c'.2 with
+                              | some c' =>
+                                match stepFn₂ c'.1 c'.2 with
+                                | some c' =>
+                                  match stepFn₂ c'.1 c'.2 with
+                                  | some c' =>
+                                    match stepFn₂ c'.1 c'.2 with
+                                    | some c' =>
+                                      match stepFn₂ c'.1 c'.2 with
+                                      | some c' =>
+                                        match stepFn₂ c'.1 c'.2 with
+                                        | some c' =>
+                                          match stepFn₂ c'.1 c'.2 with
+                                          | some c' =>
+                                            match stepFn₂ c'.1 c'.2 with
+                                            | some c' =>
+                                              match stepFn₂ c'.1 c'.2 with
+                                              | some c' =>
+                                                match stepFn₂ c'.1 c'.2 with
+                                                | some c' =>
+                                                  match stepFn₂ c'.1 c'.2 with
+                                                  | some c' =>
+                                                    match stepFn₂ c'.1 c'.2 with
+                                                    | some c' =>
+                                                      match stepFn₂ c'.1 c'.2 with
+                                                      | some c' =>
+                                                        match stepFn₂ c'.1 c'.2 with
+                                                        | some c' =>
+                                                          match stepFn₂ c'.1 c'.2 with
+                                                          | some c' =>
+                                                            match stepFn₂ c'.1 c'.2 with
+                                                            | some c' =>
+                                                              match stepFn₂ c'.1 c'.2 with
+                                                              | some c' => c'
+                                                              | none => c'
+                                                            | none => c'
+                                                          | none => c'
+                                                        | none => c'
+                                                      | none => c'
+                                                    | none => c'
+                                                  | none => c'
+                                                | none => c'
+                                              | none => c'
+                                            | none => c'
+                                          | none => c'
+                                        | none => c'
+                                      | none => c'
+                                    | none => c'
+                                  | none => c'
+                                | none => c'
+                              | none => c'
+                            | none => c'
+                          | none => c'
+                        | none => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letE (Ty.prod tint tint)
+          (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 6)])
+            (Tm.ret
+              ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                (Atom.const (Const.int 0))))
+            (Tm.ret
+              ((Atom.const (Const.int ↑bx)).pair
+                (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+          (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+              (Tm.letOp Op.store
+                [Atom.var 0, Atom.const (Const.int 2069),
+                  Atom.prim L1.Prim.add
+                    [Atom.const (Const.int acc),
+                      Atom.prim L1.Prim.mul [Atom.const (Const.int t), Atom.const (Const.int wt)]]]
+                tcap
+                (Tm.letOp Op.store
+                  [Atom.var 0, Atom.const (Const.int 2070),
+                    Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.const (Const.int wt)]]
+                  tcap
+                  (Tm.letOp Op.store
+                    [Atom.var 0, Atom.const (Const.int 2068),
+                      Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)]]
+                    tcap
+                    (Tm.ite
+                      (Atom.prim L1.Prim.eq
+                        [Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)],
+                          Atom.const (Const.int 0)])
+                      (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int rt)] tcap
+                        (Tm.ret (Atom.var 0)))
+                      (Tm.ret (Atom.var 0)))))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert p rt
+            (Finmap.insert (p + 2068) 0
+              (Finmap.insert (p + 2070) (2 * wt)
+                (Finmap.insert (p + 2069) (acc + t * wt)
+                  (Finmap.insert (p + 2) (↑bi + 1) (Finmap.insert (p + 1) (↑bx) σ.H))))),
+        R := σ.R })
+
+case neg
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+bx bi n v : ℕ
+k acc wt rt t : ℤ
+hL : 2080 + n ≤ L
+hby : f 1 = ↑bx
+hbi : f 2 = ↑bi
+hn : f 15 = ↑n
+hbyn : bx < n
+hbi7 : bi ≤ 7
+hv : f (2080 + ↑bx) = ↑v
+hv8 : v < 256
+ht : f (20 + (8 * ↑v + ↑bi)) = t
+hk : f 2068 = k
+hacc : f 2069 = acc
+hwt : f 2070 = wt
+hrt : f 2071 = rt
+h1 : Finmap.lookup (p + 1) σ.H = some ↑bx
+h2 : Finmap.lookup (p + 2) σ.H = some ↑bi
+h15 : Finmap.lookup (p + 15) σ.H = some ↑n
+hiv : Finmap.lookup (p + (2080 + ↑bx)) σ.H = some ↑v
+hit : Finmap.lookup (p + (20 + (8 * ↑v + ↑bi))) σ.H = some t
+hik : Finmap.lookup (p + 2068) σ.H = some k
+hia : Finmap.lookup (p + 2069) σ.H = some acc
+hiw : Finmap.lookup (p + 2070) σ.H = some wt
+hir : Finmap.lookup (p + 2071) σ.H = some rt
+hlt : ↑bx < ↑n
+hiL : 2080 + ↑bx < ↑L
+hi0 : 0 ≤ 2080 + ↑bx
+htL : 20 + (8 * ↑v + ↑bi) < ↑L
+ht0 : 0 ≤ 20 + (8 * ↑v + ↑bi)
+hL1 : 1 < ↑L
+hL2 : 2 < ↑L
+hL15 : 15 < ↑L
+hL0 : 0 < ↑L
+hL0' : 0 < L
+hLk : 2068 < ↑L
+hLa : 2069 < ↑L
+hLw : 2070 < ↑L
+hLr : 2071 < ↑L
+h7 : ¬bi = 7
+h7' : ¬↑bi = 7
+hk1 : ¬k - 1 = 0
+⊢ (match
+      Option.map
+        ((fun c =>
+            (Tm.letE (Ty.prod tint tint) c.1
+                (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+                    (Tm.letOp Op.store
+                      [Atom.var 0, Atom.const (Const.int 2069),
+                        Atom.prim L1.Prim.add
+                          [Atom.const (Const.int acc),
+                            Atom.prim L1.Prim.mul [Atom.const (Const.int t), Atom.const (Const.int wt)]]]
+                      tcap
+                      (Tm.letOp Op.store
+                        [Atom.var 0, Atom.const (Const.int 2070),
+                          Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.const (Const.int wt)]]
+                        tcap
+                        (Tm.letOp Op.store
+                          [Atom.var 0, Atom.const (Const.int 2068),
+                            Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)]]
+                          tcap
+                          (Tm.ite
+                            (Atom.prim L1.Prim.eq
+                              [Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)],
+                                Atom.const (Const.int 0)])
+                            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int rt)] tcap
+                              (Tm.ret (Atom.var 0)))
+                            (Tm.ret (Atom.var 0)))))))),
+              c.2)) ∘
+          fun e' => (e', σ))
+        (match some (decide (↑bi = 6)) with
+        | some true =>
+          some
+            (Tm.ret
+              ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                (Atom.const (Const.int 0))))
+        | some false =>
+          some
+            (Tm.ret
+              ((Atom.const (Const.int ↑bx)).pair
+                (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)])))
+        | none => none) with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' =>
+        match stepFn₂ c'.1 c'.2 with
+        | some c' =>
+          match stepFn₂ c'.1 c'.2 with
+          | some c' =>
+            match stepFn₂ c'.1 c'.2 with
+            | some c' =>
+              match stepFn₂ c'.1 c'.2 with
+              | some c' =>
+                match stepFn₂ c'.1 c'.2 with
+                | some c' =>
+                  match stepFn₂ c'.1 c'.2 with
+                  | some c' =>
+                    match stepFn₂ c'.1 c'.2 with
+                    | some c' =>
+                      match stepFn₂ c'.1 c'.2 with
+                      | some c' =>
+                        match stepFn₂ c'.1 c'.2 with
+                        | some c' =>
+                          match stepFn₂ c'.1 c'.2 with
+                          | some c' =>
+                            match stepFn₂ c'.1 c'.2 with
+                            | some c' =>
+                              match stepFn₂ c'.1 c'.2 with
+                              | some c' =>
+                                match stepFn₂ c'.1 c'.2 with
+                                | some c' =>
+                                  match stepFn₂ c'.1 c'.2 with
+                                  | some c' =>
+                                    match stepFn₂ c'.1 c'.2 with
+                                    | some c' =>
+                                      match stepFn₂ c'.1 c'.2 with
+                                      | some c' =>
+                                        match stepFn₂ c'.1 c'.2 with
+                                        | some c' =>
+                                          match stepFn₂ c'.1 c'.2 with
+                                          | some c' =>
+                                            match stepFn₂ c'.1 c'.2 with
+                                            | some c' =>
+                                              match stepFn₂ c'.1 c'.2 with
+                                              | some c' =>
+                                                match stepFn₂ c'.1 c'.2 with
+                                                | some c' =>
+                                                  match stepFn₂ c'.1 c'.2 with
+                                                  | some c' =>
+                                                    match stepFn₂ c'.1 c'.2 with
+                                                    | some c' =>
+                                                      match stepFn₂ c'.1 c'.2 with
+                                                      | some c' =>
+                                                        match stepFn₂ c'.1 c'.2 with
+                                                        | some c' =>
+                                                          match stepFn₂ c'.1 c'.2 with
+                                                          | some c' =>
+                                                            match stepFn₂ c'.1 c'.2 with
+                                                            | some c' =>
+                                                              match stepFn₂ c'.1 c'.2 with
+                                                              | some c' => c'
+                                                              | none => c'
+                                                            | none => c'
+                                                          | none => c'
+                                                        | none => c'
+                                                      | none => c'
+                                                    | none => c'
+                                                  | none => c'
+                                                | none => c'
+                                              | none => c'
+                                            | none => c'
+                                          | none => c'
+                                        | none => c'
+                                      | none => c'
+                                    | none => c'
+                                  | none => c'
+                                | none => c'
+                              | none => c'
+                            | none => c'
+                          | none => c'
+                        | none => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letE (Ty.prod tint tint)
+          (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑bi), Atom.const (Const.int 6)])
+            (Tm.ret
+              ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑bx), Atom.const (Const.int 1)]).pair
+                (Atom.const (Const.int 0))))
+            (Tm.ret
+              ((Atom.const (Const.int ↑bx)).pair
+                (Atom.prim L1.Prim.add [Atom.const (Const.int ↑bi), Atom.const (Const.int 1)]))))
+          (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 1), (Atom.var 0).fst] tcap
+            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), (Atom.var 1).snd] tcap
+              (Tm.letOp Op.store
+                [Atom.var 0, Atom.const (Const.int 2069),
+                  Atom.prim L1.Prim.add
+                    [Atom.const (Const.int acc),
+                      Atom.prim L1.Prim.mul [Atom.const (Const.int t), Atom.const (Const.int wt)]]]
+                tcap
+                (Tm.letOp Op.store
+                  [Atom.var 0, Atom.const (Const.int 2070),
+                    Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.const (Const.int wt)]]
+                  tcap
+                  (Tm.letOp Op.store
+                    [Atom.var 0, Atom.const (Const.int 2068),
+                      Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)]]
+                    tcap
+                    (Tm.ite
+                      (Atom.prim L1.Prim.eq
+                        [Atom.prim L1.Prim.sub [Atom.const (Const.int k), Atom.const (Const.int 1)],
+                          Atom.const (Const.int 0)])
+                      (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int rt)] tcap
+                        (Tm.ret (Atom.var 0)))
+                      (Tm.ret (Atom.var 0)))))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert (p + 2068) (k - 1)
+            (Finmap.insert (p + 2070) (2 * wt)
+              (Finmap.insert (p + 2069) (acc + t * wt)
+                (Finmap.insert (p + 2) (↑bi + 1) (Finmap.insert (p + 1) (↑bx) σ.H)))),
+        R := σ.R })
+mutants/StepRd6.lean:495:42: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep,
+  ̲  ̲ ̲ ̲ ̲ ̲Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit, hik, hia, hiw, hir, Atom.eval,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY,
+  ̲  ̲ ̲ ̲ ̲ ̲cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0, htL, ht0, hL1, hL2, hL15,
+  ̲ h̵L̵0̵,̵  ̲ ̲ ̲ ̲hL0', hLk, hLa, hLw, hLr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:502:42: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep,
+  ̲  ̲ ̲ ̲ ̲ ̲Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit, hik, hia, hiw, hir, Atom.eval,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY,
+  ̲  ̲ ̲ ̲ ̲ ̲cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0, htL, ht0, hL1, hL2, hL15,
+  ̲ h̵L̵0̵,̵  ̲ ̲ ̲ ̲hL0', hLk, hLa, hLw, hLr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:502:47: warning: This simp argument is unused:
+  hL0'
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep,
+  ̲  ̲ ̲ ̲ ̲ ̲Store.load, Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit, hik, hia, hiw, hir, Atom.eval,
+  ̲  ̲ ̲ ̲ ̲ ̲Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1, Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY,
+  ̲  ̲ ̲ ̲ ̲ ̲cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0, htL, ht0, hL1, hL2, hL15, hL0,
+  ̲ h̵L̵0̵'̵,̵  ̲ ̲ ̲ ̲hLk, hLa, hLw, hLr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepRd6.lean:521:34: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, hnlt,
+      Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, opStep, Store.load, Store.store,
+  ̲  ̲ ̲ ̲hw.reg, h1, h2, h15,
+  ̵  ̵ ̵ ̵Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲Const.ofL1, Const.toBool,
+  ̵  ̵ ̵ ̵cBY, cBI, cN, cMODE, cREASON, rTRUNC, mREJECT,
+      show (1 : Int) < L by omega, show (2 : Int) < L by omega, show (15 : Int) < L by omega,
+      show (14 : Int) < L by omega, show (̵0 :̵ ̵I̵n̵t̵)̵ ̵< L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

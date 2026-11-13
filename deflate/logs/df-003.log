@@ -1,0 +1,12 @@
+saltqueue: ticket P2 seat=root pid=97710
+⚠ [2973/2975] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✔ [2974/2975] Built VIRDeflate.Huffman (1.7s)
+✔ [2975/2975] Built VIRDeflate.Spec (1.7s)
+Build completed successfully (2975 jobs).
+saltbuild EXIT=0

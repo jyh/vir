@@ -1,0 +1,374 @@
+saltqueue: ticket P2 seat=root pid=56440
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     316s       math         55376
+  P2     302s       root         56440
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     619s       math         55376
+  P2     605s       root         56440
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     922s       math         55376
+  P2     907s       root         56440
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     1225s      math         55376
+  P2     1210s      root         56440
+saltqueue: still queued (1500s) —
+  CLASS  AGE        SEAT         PID
+  P2     1527s      math         55376
+  P2     1513s      root         56440
+  P2     66s        h2c          86767
+saltqueue: still queued (1800s) —
+  CLASS  AGE        SEAT         PID
+  P2     1831s      math         55376
+  P2     1816s      root         56440
+  P2     370s       h2c          86767
+saltqueue: still queued (2100s) —
+  CLASS  AGE        SEAT         PID
+  P2     2135s      math         55376
+  P2     2120s      root         56440
+  P2     674s       h2c          86767
+saltqueue: HEAD OF QUEUE after 2295s — attempting acquisition
+'VIRDeflate.pow2_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.stripTop_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.bitAt_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.decodeGo_succ' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.foldl_push_filter' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.symsOf_eq' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.foldl_count' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.symsL_length' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.blCount_eq' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.assign_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.assign_syms' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.assign_first' depends on axioms: [propext]
+'VIRDeflate.filter_range_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.lookup_codeOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.symsL_nodup' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.lookup_some' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.nextCodes_def' does not depend on any axioms
+'VIRDeflate.blCount_zero' depends on axioms: [propext]
+'VIRDeflate.getD_push_lt' depends on axioms: [propext]
+'VIRDeflate.getD_push_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.ncLoop_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.nextCodes_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.nextCodes_succ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.F_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.F_succ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.F_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.F_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.F_grow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.leftAfter_def' does not depend on any axioms
+'VIRDeflate.foldl_leftStep_none' does not depend on any axioms
+'VIRDeflate.leftLoop_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.fits_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.leftAfter_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.oversubscribed_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.complete_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.prefix_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.codes_fit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.first_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.tile_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.tile' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.complete_covers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.go_bind' does not depend on any axioms
+'VIRDeflate.go_pure' does not depend on any axioms
+'VIRDeflate.go_reject' does not depend on any axioms
+'VIRDeflate.go_read' does not depend on any axioms
+'VIRDeflate.go_get' does not depend on any axioms
+'VIRDeflate.go_set' does not depend on any axioms
+'VIRDeflate.go_fuelNow' does not depend on any axioms
+'VIRDeflate.Adv.mono' does not depend on any axioms
+'VIRDeflate.mono_pure' does not depend on any axioms
+'VIRDeflate.adv_reject' does not depend on any axioms
+'VIRDeflate.mono_reject' does not depend on any axioms
+'VIRDeflate.mono_bind' does not depend on any axioms
+'VIRDeflate.adv_bind_l' does not depend on any axioms
+'VIRDeflate.adv_bind_r' does not depend on any axioms
+'VIRDeflate.mono_ite' does not depend on any axioms
+'VIRDeflate.mono_read' does not depend on any axioms
+'VIRDeflate.mono_get' does not depend on any axioms
+'VIRDeflate.mono_fuelNow' does not depend on any axioms
+'VIRDeflate.adv_bit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_bitsGo' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_bits' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.adv_bits' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_align' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.adv_decodeGo' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.adv_decode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_code' depends on axioms: [propext]
+'VIRDeflate.mf_bind' does not depend on any axioms
+'VIRDeflate.mf_get' does not depend on any axioms
+'VIRDeflate.mf_read' does not depend on any axioms
+'VIRDeflate.mf_set_bind' does not depend on any axioms
+'VIRDeflate.mf_set' does not depend on any axioms
+'VIRDeflate.mf_pure' does not depend on any axioms
+'VIRDeflate.mf_reject' does not depend on any axioms
+'VIRDeflate.mf_reject_bind' does not depend on any axioms
+'VIRDeflate.mf_ite' does not depend on any axioms
+'VIRDeflate.mono_stored' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_huffLoop' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_huff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_readCL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_lensLoop' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_dynamic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.mono_fixedCodes' depends on axioms: [propext]
+'VIRDeflate.ag_bind' does not depend on any axioms
+'VIRDeflate.ag_refl' does not depend on any axioms
+'VIRDeflate.ag_reject_bind' does not depend on any axioms
+'VIRDeflate.ag_ite' does not depend on any axioms
+'VIRDeflate.ag_get' does not depend on any axioms
+'VIRDeflate.ag_read' does not depend on any axioms
+'VIRDeflate.ag_set_bind' does not depend on any axioms
+'VIRDeflate.huffLoop_fuel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.lensLoop_fuel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.blocks_fuel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.huff_adequate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.run_adequate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.lensLoop_adequate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Run.i_stored_empty_final_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.i_stored_empty_final_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_empty_final_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_empty_final_inflateLit_E1' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_one_literal_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_one_literal_inflateLit_E1' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_overlap_copy_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.i_fixed_overlap_copy_inflateLit_E1' depends on axioms: [propext]
+'VIRDeflate.Run.i_two_blocks_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.i_two_blocks_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_btype_11_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_btype_11_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_stored_bad_nlen_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_stored_bad_nlen_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_distance_too_far_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_distance_too_far_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_hlit_too_many_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_hlit_too_many_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_cl_oversubscribed_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_cl_oversubscribed_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_cl_incomplete_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_cl_incomplete_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iii_repeat_no_first_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iii_repeat_no_first_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Run.iiia1_repeat_no_first_inflate' depends on axioms: [propext]
+'VIRDeflate.Run.iiia1_repeat_no_first_inflateLit' depends on axioms: [propext]
+'VIRDeflate.Step.retInt?_eq' depends on axioms: [propext]
+'VIRDeflate.Step.steps_of' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.steps_letRet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.steps_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.pow2_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.strip_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bitProg_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bitProg_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.mask_empty_replicate' depends on axioms: [propext]
+'VIRDeflate.Step.fix_typed' depends on axioms: [propext]
+'VIRDeflate.Step.POW_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.STRIP_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bitProg_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bit_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.BITc_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.World.store' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.smoke_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.BITc_subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.steps_via_bit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.table_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.readbit_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.readbit_trunc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.hdr_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.hdrb_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.hdrd_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.shdr_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.slen_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.snlen_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.scopy_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.scopy_byte' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.fixLenI_eq' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.fixlens_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.fixlens_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.World.get' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_zero_cell' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_zero_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_count_cell' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_count_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_next_cell' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_next_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_left_cell' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_left_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_syms_cell' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_syms_end_cl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_syms_end_l' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_syms_end_d' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.decode_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.decode_trunc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.sym_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.symd_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lenx_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dstd_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dstx_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.copy_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.copy_byte' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dhdr_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dh2_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dh3_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dh4_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.clread_req' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.clread_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.clread_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.clput_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lens_req' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lens_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lsym_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lrep_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.rep_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.rep_byte' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.substL_map' depends on axioms: [propext]
+'VIRDeflate.Step.var_carry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.NA.carry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.NT.carry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.carry_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.modes_keys' depends on axioms: [propext]
+'VIRDeflate.Step.disp_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.modes_ok' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.step_dispatch' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.step_of_mode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.step_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.step_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.lookup_fillF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.initStore_world' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.mask_empty_nil' depends on axioms: [propext]
+'VIRDeflate.Step.mask_empty_cons' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.mask_empty_map' depends on axioms: [propext]
+'VIRDeflate.Step.mask_only_of' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.split_left_empty' does not depend on any axioms
+'VIRDeflate.Step.BITc_typed_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.table_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.hdr_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.read_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.hdrb_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.hdrd_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.shdr_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.fixlens_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dhdr_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.slen_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.snlen_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.scopy_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.build_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.lens_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.sym_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.decode_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.symd_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.lenx_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dstd_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dstx_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.copy_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dh2_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dh3_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.dh4_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.clread_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.clput_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.lsym_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.lrep_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.rep_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.modes_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.disp_typed' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.stepT_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.StepsN.trans' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepsN_of_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.pure_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepFn₂_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.run₂_succ_of' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.run₂_stuck' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.run₂_of_stepsN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepsN_of_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepsN_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.plen_subst' depends on axioms: [propext]
+'VIRDeflate.Step.pure_dec' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.step₂_dec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepsN_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.disp_runN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.modes_length' depends on axioms: [propext]
+'VIRDeflate.Step.step_dispatchN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepS_of_mode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.modes_fit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.StepsN.letE' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepsN_le_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.pow2_stepsN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.strip_stepsN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bit_stepsN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.steps_via_bitN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.table_stepN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepS_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.stepS_hdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.World.req' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.Φ_hdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safe_hdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.initCell_zero' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.Φ_init' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.reqF_eq' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvG.req' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safe_hdr'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.upd_eq' does not depend on any axioms
+'VIRDeflate.Step.InvG.upd' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.safe_hdrb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safe_slen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safe_dhdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.initCell_tail' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.Inv_init' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.modeOf_world' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.iter_reach' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safety_of_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.build_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.LOC_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.Φ_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safety_of_stepSafe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.sane_congr' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.cnt_congr' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.offOf_congr' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.buildInv_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.ite_imp' does not depend on any axioms
+'VIRDeflate.Step.facts_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.watch_reqF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.watch_upd' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.SymsOK.upd' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvM.req' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvM.upd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_hdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_dhdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_hdrb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_slen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvG.mode' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvM.term' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvM.syms_ok' depends on axioms: [propext]
+'VIRDeflate.Step.InvG.byte' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvG.cursor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.Watch.trans' does not depend on any axioms
+'VIRDeflate.Step.build_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.LOC_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.pow_toNat_succ' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.safeI_read' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvG.hdr' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvG.align' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvM.mode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_dh2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_dh3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_shdr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.Φ_lt_of' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.TBO_eq' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.safeI_hdrd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvG.out' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvG.c13' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.safeI_snlen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_scopy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.bitAt_01' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.World.dreq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvG.xc' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.InvG.dreq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.InvM.dreq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.dreq_TBO' depends on axioms: [propext, Quot.sound]
+'VIRDeflate.Step.safeI_sym' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_lenx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRDeflate.Step.safeI_dh4' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0

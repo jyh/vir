@@ -1,0 +1,86 @@
+saltqueue: ticket P2 seat=root pid=40806
+mutants/HuffWide.lean:67:55: error: Function expected at
+  M
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Code
+
+Hint: The identifier `M` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+mutants/HuffWide.lean:69:12: error(lean.unknownIdentifier): Unknown identifier `reject`
+mutants/HuffWide.lean:76:32: error(lean.unknownIdentifier): Unknown identifier `reject`
+mutants/HuffWide.lean:79:44: error: Function expected at
+  M
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Nat
+
+Hint: The identifier `M` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+mutants/HuffWide.lean:80:15: error(lean.unknownIdentifier): Unknown identifier `reject`
+mutants/HuffWide.lean:93:24: error: Function expected at
+  M
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Nat
+
+Hint: The identifier `M` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+mutants/HuffWide.lean:113:4: error: don't know how to synthesize implicit argument `M`
+  @decodeGo (?m.12 C fuel l v) (?m.13 C fuel l v) C (fuel + 1) l v
+context:
+C : Code
+fuel l v : ℕ
+⊢ ?m.12 C fuel l v
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+mutants/HuffWide.lean:113:4: error: don't know how to synthesize implicit argument
+  @decodeGo (?m.12 C fuel l v) (?m.13 C fuel l v) C (fuel + 1) l v
+context:
+C : Code
+fuel l v : ℕ
+⊢ Sort ?u.8
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+mutants/HuffWide.lean:119:2: error: No goals to be solved
+mutants/HuffWide.lean:118:13: warning: declaration uses `sorry`
+mutants/HuffWide.lean:118:13: warning: declaration uses `sorry`
+mutants/HuffWide.lean:118:23: warning: This simp argument is unused:
+  lookup
+
+Hint: Omit it from the simp argument list.
+  simp only [decodeGo,̵ ̵l̵o̵o̵k̵u̵p̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffWide.lean:148:62: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffWide.lean:149:63: warning: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffWide.lean:198:86: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/HuffWide.lean:213:59: warning: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

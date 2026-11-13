@@ -1,0 +1,10 @@
+saltqueue: ticket P2 seat=root pid=78061
+K5/Bit.lean:88:46: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≤ -4611686018427387905
+  0 ≤ b ≤ 6
+where
+ b := ↑k
+ c := 2 ^ k
+K5/Bit.lean:67:8: error: (kernel) deep recursion detected
+saltbuild EXIT=1

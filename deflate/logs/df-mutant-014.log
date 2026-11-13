@@ -1,0 +1,17 @@
+saltqueue: ticket P2 seat=root pid=16120
+mutants/StepLe.lean:126:7: error: unsolved goals
+i n : ℕ
+v : ℤ
+a : Atom₂
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+ha : Atom.eval a = some ((Atom.pair (ci (↑n + 1)) (ci ↑i)).pair (ci v))
+⊢ False
+mutants/StepLe.lean:152:61: warning: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepLe.lean:152:71: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=1

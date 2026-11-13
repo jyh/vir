@@ -1,0 +1,40 @@
+saltqueue: ticket P2 seat=root pid=14068
+probes/ReadProbe3.lean:15:8: warning: declaration uses `sorry`
+probes/ReadProbe3.lean:15:8: error: (kernel) deep recursion detected
+probes/ReadProbe3.lean:62:42: warning: This simp argument is unused:
+  hL0
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0,̵ ̵h̵L̵0̵', hLk, hLa, hLw, hLr, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10,
+  ̲  ̲ ̲ ̲ ̲ ̲r0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/ReadProbe3.lean:62:89: warning: This simp argument is unused:
+  r5
+
+Hint: Omit it from the simp argument list.
+  simp [closeAt, readT, readN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, rdH,
+  ̲  ̲ ̲ ̲ ̲ ̲tblNext, h7', hk1, hlt,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂C, stepFn₂C, headB, aInR,
+  ̲  ̲ ̲ ̲ ̲ ̲aInRL, cInR, stepFn₂, stepFn, opStep, Store.load,
+  ̵  ̵ ̵ ̵ ̵ ̵Store.store, hw.reg, h1, h2, h15, hiv,
+  ̵  ̵ ̵ ̵ ̵ ̵hit,
+  ̲  ̲ ̲ ̲ ̲ ̲hik, hia, hiw, hir, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp, Const.toL1,
+  ̲  ̲ ̲ ̲ ̲ ̲Const.ofL1,
+  ̵  ̵ ̵ ̵ ̵ ̵Const.toBool, cBY, cBI, cN, IN, BT, cK, cACC, cWT, cRET, cMODE, cREASON,
+  ̵  ̵ ̵ ̵ ̵ ̵hiL, hi0,
+  ̲  ̲ ̲ ̲ ̲ ̲htL, ht0, hL1, hL2, hL15, hL0, hL0', hLk, hLa, hLw, hLr, r1, r2, r3, r4, r5̵,̵ ̵r̵6, r7, r8, r9, r10,
+  ̲  ̲ ̲ ̲ ̲ ̲r0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

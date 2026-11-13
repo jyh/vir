@@ -1,0 +1,141 @@
+saltqueue: ticket P2 seat=root pid=40205
+mutants/DispTb.lean:51:31: warning: This simp argument is unused:
+  List.idxOf_nil
+
+Hint: Omit it from the simp argument list.
+  simp [List.idxOf_cons, L̵i̵st̵.̵i̵d̵x̵O̵f̵_̵n̵i̵l̵,̵ ̵s̵how ("md" == x) = false by simpa using Ne.symm hx,
+            show ("w" == x) = false by simpa using Ne.symm hw]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:54:31: warning: This simp argument is unused:
+  List.idxOf_nil
+
+Hint: Omit it from the simp argument list.
+  simp [List.idxOf_cons, L̵i̵s̵t̵.̵i̵d̵x̵O̵f̵_̵n̵i̵l̵,̵ ̵show ("w" == x) = false by simpa using Ne.symm hw]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:159:22: warning: This simp argument is unused:
+  tableN
+
+Hint: Omit it from the simp argument list.
+  simp [NT.ok, NA.ok, t̵a̵b̵l̵e̵N̵,̵ ̵hdrN, readN, hdrbN, hdrdN, shdrN, fixlensN, dhdrN, slenN, snlenN, scopyN,
+  ̲  ̲ ̲ ̲buildN, lensN, symN, decodeN, symdN, lenxN, dstdN, dstxN, copyN, dh2N, dh3N, dh4N, clreadN,
+  ̲  ̲ ̲ ̲clputN, lsymN, lrepN, repN, reqN, reqDecN, reqKN, rejN, bZeroN, bCountN, bNextN, bRestN, bLeftN,
+  ̲  ̲ ̲ ̲bSymsN, BITc_subst]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:161:59: warning: This simp argument is unused:
+  BITc_subst
+
+Hint: Omit it from the simp argument list.
+  simp [NT.ok, NA.ok, tableN, hdrN, readN, hdrbN, hdrdN, shdrN, fixlensN, dhdrN, slenN, snlenN,
+  ̲  ̲ ̲ ̲scopyN, buildN, lensN, symN, decodeN, symdN, lenxN, dstdN, dstxN, copyN, dh2N, dh3N, dh4N,
+  ̲  ̲ ̲ ̲clreadN, clputN, lsymN, lrepN, repN, reqN, reqDecN, reqKN, rejN, bZeroN, bCountN, bNextN,
+  ̲  ̲ ̲ ̲bRestN, bLeftN, b̵S̵y̵m̵s̵N̵,̵ ̵B̵I̵T̵c̵_̵s̵u̵b̵s̵t̵]̵b̲S̲y̲m̲s̲N̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:175:42: warning: This simp argument is unused:
+  NA.c
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, N̵A̵.̵c̵,̵ ̵List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:175:48: warning: This simp argument is unused:
+  List.idxOf
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.i̵d̵x̵O̵f,̵ ̵L̵is̵t̵.̵f̵i̵ndIdx, List.findIdx.go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:175:60: warning: This simp argument is unused:
+  List.findIdx
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx,̵ ̵L̵i̵s̵t̵.f̵i̵n̵d̵I̵d̵x̵.̵go, Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:175:74: warning: This simp argument is unused:
+  List.findIdx.go
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, L̵i̵s̵t̵.̵f̵i̵n̵d̵I̵d̵x̵.̵g̵o̵,̵ ̵Tm.subst, Atom.subst,
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:175:101: warning: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵,̵
+      Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:176:4: warning: This simp argument is unused:
+  Atom.substL
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst, ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵,̵
+      Atom.substL̵, run₂, stepFn₂, opStep, Store.load, hw.reg, g0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:176:52: warning: This simp argument is unused:
+  hw.reg
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, h̵w̵.̵r̵e̵g,̵ ̵g̵0, cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:176:60: warning: This simp argument is unused:
+  g0
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, stepT, stepN, NT.c, NA.c, List.idxOf, List.findIdx, List.findIdx.go, Tm.subst,
+  ̲  ̲ ̲ ̲Atom.subst,
+  ̵  ̵ ̵ ̵Atom.substL, run₂, stepFn₂, opStep, Store.load, hw.reg, g̵0̵,̵ ̵cMODE, capA]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:177:105: warning: This simp argument is unused:
+  Store.load
+
+Hint: Omit it from the simp argument list.
+  simp [NA.c, List.idxOf, List.findIdx, List.findIdx.go, Atom.substL, Atom.subst, Atom.eval,
+  ̲  ̲ ̲ ̲Atom.evalL, S̵t̵o̵r̵e̵.̵l̵o̵a̵d̵,̵
+  ̵ ̵ ̵ ̵ ̵hw.reg, hL, show (0 : Int) < L by omega, g0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:178:16: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [NA.c, List.idxOf, List.findIdx, List.findIdx.go, Atom.substL, Atom.subst, Atom.eval,
+  ̲  ̲ ̲ ̲Atom.evalL, Store.load, hw.reg, hL, s̵h̵o̵w̵ ̵(̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵g0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/DispTb.lean:200:47: error: Type mismatch
+  rfl
+has type
+  ?m.7 = ?m.7
+but is expected to have type
+  List.lookup mTABLE modes = some tableN
+mutants/DispTb.lean:209:39: error: Application type mismatch: The argument
+  table_step hw hL tb ti htb hti htb8 hti8
+has type
+  Steps₂ (closeAt p tableT, σ)
+    (Tm.ret (Atom.const (Const.cap p)),
+      if (tblNext ↑tb ↑ti).1 = 256 then { H := Finmap.insert (p + 0) 1 (tblH σ.H p ↑tb ↑ti), R := σ.R }
+      else { H := tblH σ.H p ↑tb ↑ti, R := σ.R })
+but is expected to have type
+  Steps₂ (closeAt p (NT.c ["w"] hdrN), σ)
+    (Tm.ret (Atom.const (Const.cap p)),
+      if (tblNext ↑tb ↑ti).1 = 256 then { H := Finmap.insert (p + 0) 1 (tblH σ.H p ↑tb ↑ti), R := σ.R }
+      else { H := tblH σ.H p ↑tb ↑ti, R := σ.R })
+in the application
+  step_of_mode hw ?m.45 hmode rfl (table_step hw hL tb ti htb hti htb8 hti8)
+saltbuild EXIT=1

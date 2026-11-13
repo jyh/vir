@@ -1,0 +1,16 @@
+name = "k5"
+defaultTargets = ["K5"]
+
+# O95, amend-23 K5 (compiler/DECLARATIONS-K5.md addendum 3): K5-2 deflate_inrange and K5-3 deflate_noovf. A SEPARATE project that
+# requires the compiler and DEFLATE by path, so neither is edited and neither's counts move. Packages APFS-cloned from bridge/,
+# manifest written by edit; never a bare lake update.
+[[require]]
+name = "compiler"
+path = "../compiler"
+
+[[require]]
+name = "deflate"
+path = "../deflate"
+
+[[lean_lib]]
+name = "K5"

@@ -1,0 +1,571 @@
+saltqueue: ticket P2 seat=root pid=34218
+mutants/StepT7.lean:129:28: warning: 'all_goals (push_cast; ring_nf)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepT7.lean:129:38: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/StepT7.lean:135:67: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+mutants/StepT7.lean:152:61: warning: 'all_goals omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+mutants/StepT7.lean:152:71: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+mutants/StepT7.lean:385:6: error: unsolved goals
+case pos
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb : ℕ
+htb : f 18 = ↑tb
+htb8 : tb < 256
+hb : Finmap.lookup (p + 18) σ.H = some (f 18)
+hi : Finmap.lookup (p + 19) σ.H = some (f 19)
+hti : f 19 = ↑7
+hti8 : 7 ≤ 7
+hidx : 20 + (8 * ↑tb + 7) < ↑L
+hnn : 0 ≤ 20 + (8 * ↑tb + 7)
+h256 : tb + 1 = 256
+h256' : ↑tb + 1 = 256
+⊢ (match
+      if 0 ≤ 20 + (7 * ↑tb + 7) ∧ 20 + (7 * ↑tb + 7) < ↑L then
+        some
+          (Tm.letE (Ty.prod tint tint)
+              (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int 7), Atom.const (Const.int 7)])
+                (Tm.ret
+                  ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                    (Atom.const (Const.int 0))))
+                (Tm.ret
+                  ((Atom.const (Const.int ↑tb)).pair
+                    (Atom.prim L1.Prim.add [Atom.const (Const.int 7), Atom.const (Const.int 1)]))))
+              (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                  (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                      (Tm.ret (Atom.var 0)))
+                    (Tm.ret (Atom.var 0))))),
+            { H := Finmap.insert (p + (20 + (7 * ↑tb + 7))) (bitAt (↑tb) 7) σ.H, R := σ.R })
+      else none with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' =>
+        match stepFn₂ c'.1 c'.2 with
+        | some c' =>
+          match stepFn₂ c'.1 c'.2 with
+          | some c' =>
+            match stepFn₂ c'.1 c'.2 with
+            | some c' =>
+              match stepFn₂ c'.1 c'.2 with
+              | some c' =>
+                match stepFn₂ c'.1 c'.2 with
+                | some c' =>
+                  match stepFn₂ c'.1 c'.2 with
+                  | some c' =>
+                    match stepFn₂ c'.1 c'.2 with
+                    | some c' =>
+                      match stepFn₂ c'.1 c'.2 with
+                      | some c' => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.store
+          [Atom.const (Const.cap p),
+            Atom.prim L1.Prim.add
+              [Atom.const (Const.int 20),
+                Atom.prim L1.Prim.add
+                  [Atom.prim L1.Prim.mul [Atom.const (Const.int 7), Atom.const (Const.int ↑tb)],
+                    Atom.const (Const.int 7)]],
+            ci (bitAt (↑tb) 7)]
+          tcap
+          (Tm.letE (Ty.prod tint tint)
+            (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int 7), Atom.const (Const.int 7)])
+              (Tm.ret
+                ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                  (Atom.const (Const.int 0))))
+              (Tm.ret
+                ((Atom.const (Const.int ↑tb)).pair
+                  (Atom.prim L1.Prim.add [Atom.const (Const.int 7), Atom.const (Const.int 1)]))))
+            (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+              (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                    (Tm.ret (Atom.var 0)))
+                  (Tm.ret (Atom.var 0)))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert p 1
+            (Finmap.insert (p + 19) 0
+              (Finmap.insert (p + 18) 256 (Finmap.insert (p + (20 + (8 * ↑tb + 7))) (bitAt (↑tb) 7) σ.H))),
+        R := σ.R })
+mutants/StepT7.lean:389:6: error: unsolved goals
+case neg
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb : ℕ
+htb : f 18 = ↑tb
+htb8 : tb < 256
+hb : Finmap.lookup (p + 18) σ.H = some (f 18)
+hi : Finmap.lookup (p + 19) σ.H = some (f 19)
+hti : f 19 = ↑7
+hti8 : 7 ≤ 7
+hidx : 20 + (8 * ↑tb + 7) < ↑L
+hnn : 0 ≤ 20 + (8 * ↑tb + 7)
+h256 : ¬tb + 1 = 256
+h256' : ¬↑tb + 1 = 256
+⊢ (match
+      if 0 ≤ 20 + (7 * ↑tb + 7) ∧ 20 + (7 * ↑tb + 7) < ↑L then
+        some
+          (Tm.letE (Ty.prod tint tint)
+              (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int 7), Atom.const (Const.int 7)])
+                (Tm.ret
+                  ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                    (Atom.const (Const.int 0))))
+                (Tm.ret
+                  ((Atom.const (Const.int ↑tb)).pair
+                    (Atom.prim L1.Prim.add [Atom.const (Const.int 7), Atom.const (Const.int 1)]))))
+              (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                  (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                      (Tm.ret (Atom.var 0)))
+                    (Tm.ret (Atom.var 0))))),
+            { H := Finmap.insert (p + (20 + (7 * ↑tb + 7))) (bitAt (↑tb) 7) σ.H, R := σ.R })
+      else none with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' =>
+        match stepFn₂ c'.1 c'.2 with
+        | some c' =>
+          match stepFn₂ c'.1 c'.2 with
+          | some c' =>
+            match stepFn₂ c'.1 c'.2 with
+            | some c' =>
+              match stepFn₂ c'.1 c'.2 with
+              | some c' =>
+                match stepFn₂ c'.1 c'.2 with
+                | some c' =>
+                  match stepFn₂ c'.1 c'.2 with
+                  | some c' =>
+                    match stepFn₂ c'.1 c'.2 with
+                    | some c' =>
+                      match stepFn₂ c'.1 c'.2 with
+                      | some c' => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.store
+          [Atom.const (Const.cap p),
+            Atom.prim L1.Prim.add
+              [Atom.const (Const.int 20),
+                Atom.prim L1.Prim.add
+                  [Atom.prim L1.Prim.mul [Atom.const (Const.int 7), Atom.const (Const.int ↑tb)],
+                    Atom.const (Const.int 7)]],
+            ci (bitAt (↑tb) 7)]
+          tcap
+          (Tm.letE (Ty.prod tint tint)
+            (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int 7), Atom.const (Const.int 7)])
+              (Tm.ret
+                ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                  (Atom.const (Const.int 0))))
+              (Tm.ret
+                ((Atom.const (Const.int ↑tb)).pair
+                  (Atom.prim L1.Prim.add [Atom.const (Const.int 7), Atom.const (Const.int 1)]))))
+            (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+              (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                    (Tm.ret (Atom.var 0)))
+                  (Tm.ret (Atom.var 0)))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert (p + 19) 0
+            (Finmap.insert (p + 18) (↑tb + 1) (Finmap.insert (p + (20 + (8 * ↑tb + 7))) (bitAt (↑tb) 7) σ.H)),
+        R := σ.R })
+mutants/StepT7.lean:393:4: error: unsolved goals
+case neg
+σ : Store
+p : ℤ
+L : ℕ
+f : ℤ → ℤ
+hw : World σ p L f
+hL : 2068 ≤ L
+tb ti : ℕ
+htb : f 18 = ↑tb
+hti : f 19 = ↑ti
+htb8 : tb < 256
+hti8 : ti ≤ 7
+hb : Finmap.lookup (p + 18) σ.H = some (f 18)
+hi : Finmap.lookup (p + 19) σ.H = some (f 19)
+h7 : ¬ti = 7
+h7' : ¬↑ti = 7
+hidx : 20 + (8 * ↑tb + ↑ti) < ↑L
+hnn : 0 ≤ 20 + (8 * ↑tb + ↑ti)
+htb' : ¬↑tb = 256
+⊢ (match
+      if 0 ≤ 20 + (7 * ↑tb + ↑ti) ∧ 20 + (7 * ↑tb + ↑ti) < ↑L then
+        some
+          (Tm.letE (Ty.prod tint tint)
+              (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑ti), Atom.const (Const.int 7)])
+                (Tm.ret
+                  ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                    (Atom.const (Const.int 0))))
+                (Tm.ret
+                  ((Atom.const (Const.int ↑tb)).pair
+                    (Atom.prim L1.Prim.add [Atom.const (Const.int ↑ti), Atom.const (Const.int 1)]))))
+              (Tm.letOp Op.store [Atom.const (Const.cap p), Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+                (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                  (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                      (Tm.ret (Atom.var 0)))
+                    (Tm.ret (Atom.var 0))))),
+            { H := Finmap.insert (p + (20 + (7 * ↑tb + ↑ti))) (bitAt (↑tb) ti) σ.H, R := σ.R })
+      else none with
+    | some c' =>
+      match stepFn₂ c'.1 c'.2 with
+      | some c' =>
+        match stepFn₂ c'.1 c'.2 with
+        | some c' =>
+          match stepFn₂ c'.1 c'.2 with
+          | some c' =>
+            match stepFn₂ c'.1 c'.2 with
+            | some c' =>
+              match stepFn₂ c'.1 c'.2 with
+              | some c' =>
+                match stepFn₂ c'.1 c'.2 with
+                | some c' =>
+                  match stepFn₂ c'.1 c'.2 with
+                  | some c' =>
+                    match stepFn₂ c'.1 c'.2 with
+                    | some c' =>
+                      match stepFn₂ c'.1 c'.2 with
+                      | some c' => c'
+                      | none => c'
+                    | none => c'
+                  | none => c'
+                | none => c'
+              | none => c'
+            | none => c'
+          | none => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letOp Op.store
+          [Atom.const (Const.cap p),
+            Atom.prim L1.Prim.add
+              [Atom.const (Const.int 20),
+                Atom.prim L1.Prim.add
+                  [Atom.prim L1.Prim.mul [Atom.const (Const.int 7), Atom.const (Const.int ↑tb)],
+                    Atom.const (Const.int ↑ti)]],
+            ci (bitAt (↑tb) ti)]
+          tcap
+          (Tm.letE (Ty.prod tint tint)
+            (Tm.ite (Atom.prim L1.Prim.eq [Atom.const (Const.int ↑ti), Atom.const (Const.int 7)])
+              (Tm.ret
+                ((Atom.prim L1.Prim.add [Atom.const (Const.int ↑tb), Atom.const (Const.int 1)]).pair
+                  (Atom.const (Const.int 0))))
+              (Tm.ret
+                ((Atom.const (Const.int ↑tb)).pair
+                  (Atom.prim L1.Prim.add [Atom.const (Const.int ↑ti), Atom.const (Const.int 1)]))))
+            (Tm.letOp Op.store [Atom.var 1, Atom.const (Const.int 18), (Atom.var 0).fst] tcap
+              (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 19), (Atom.var 1).snd] tcap
+                (Tm.ite (Atom.prim L1.Prim.eq [(Atom.var 2).fst, Atom.const (Const.int 256)])
+                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 0), Atom.const (Const.int 1)] tcap
+                    (Tm.ret (Atom.var 0)))
+                  (Tm.ret (Atom.var 0)))))),
+        σ)) =
+    (Tm.ret (Atom.const (Const.cap p)),
+      {
+        H :=
+          Finmap.insert (p + 19) (↑ti + 1)
+            (Finmap.insert (p + 18) (↑tb) (Finmap.insert (p + (20 + (8 * ↑tb + ↑ti))) (bitAt (↑tb) ti) σ.H)),
+        R := σ.R })
+mutants/StepT7.lean:386:36: warning: This simp argument is unused:
+  hidx
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', h̵i̵d̵x̵,̵ ̵hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:386:42: warning: This simp argument is unused:
+  hnn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, h̵n̵n̵,̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:386:97: warning: This simp argument is unused:
+  stepFn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲s̵t̵e̵p̵F̵n̵,̵ ̵opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:387:104: warning: This simp argument is unused:
+  Const.toBool
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, C̵o̵n̵s̵t̵.̵t̵o̵Bo̵o̵l̵,̵ ̵B̵T,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:388:23: warning: This simp argument is unused:
+  show (18 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲ s̵h̵o̵w̵ (̵1̵8̵ :̵ I̵n̵t̵)̵ <̵ L̵ b̵y̵ o̵m̵e̵g̵a̵,̵  ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:388:53: warning: This simp argument is unused:
+  show (19 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (̵1̵9̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵(0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:388:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:388:112: warning: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:390:36: warning: This simp argument is unused:
+  hidx
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', h̵i̵d̵x̵,̵ ̵hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:390:42: warning: This simp argument is unused:
+  hnn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, h̵n̵n̵,̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:390:97: warning: This simp argument is unused:
+  stepFn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲s̵t̵e̵p̵F̵n̵,̵ ̵opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:391:104: warning: This simp argument is unused:
+  Const.toBool
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, C̵o̵n̵s̵t̵.̵t̵o̵Bo̵o̵l̵,̵ ̵B̵T,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:392:23: warning: This simp argument is unused:
+  show (18 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲ s̵h̵o̵w̵ (̵1̵8̵ :̵ I̵n̵t̵)̵ <̵ L̵ b̵y̵ o̵m̵e̵g̵a̵,̵  ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:392:53: warning: This simp argument is unused:
+  show (19 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (̵1̵9̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵(0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:392:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:392:112: warning: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h256', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:397:38: warning: This simp argument is unused:
+  hidx
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hi̵d̵x̵,̵ ̵h̵nn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, stepFn, ̵o̵p̵S̵t̵e̵p̵,̵ ̵S̵t̵o̵r̵e̵.̵s̵t̵o̵r̵e̵,̵
+          o̲p̲S̲t̲e̲p̲,̲ S̲t̲o̲r̲e̲.̲s̲t̲o̲r̲e̲,̲ hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:397:44: warning: This simp argument is unused:
+  hnn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, h̵n̵n̵,̵ ̵Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:397:99: warning: This simp argument is unused:
+  stepFn
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂, ̵s̵t̵e̵p̵F̵n̵,̵ ̵o̵p̵S̵t̵e̵p̵,̵ ̵S̵t̵o̵r̵e̵.̵s̵t̵o̵r̵e̵,̵
+          o̲p̲S̲t̲e̲p̲,̲ S̲t̲o̲r̲e̲.̲s̲t̲o̲r̲e̲,̲ hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:398:104: warning: This simp argument is unused:
+  Const.toBool
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, C̵o̵n̵s̵t̵.̵t̵o̵Bo̵o̵l̵,̵ ̵B̵T,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR, show (18 : Int) < L by omega,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:399:23: warning: This simp argument is unused:
+  show (18 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲ s̵h̵o̵w̵ (̵1̵8̵ :̵ I̵n̵t̵)̵ <̵ L̵ b̵y̵ o̵m̵e̵g̵a̵,̵ ̵show (19 : Int) < L by omega, show (0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:399:53: warning: This simp argument is unused:
+  show (19 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (̵1̵9̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵(0 : Int) < L by omega, show 0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:399:83: warning: This simp argument is unused:
+  show (0 : Int) < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store, hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT, cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (̵0̵ ̵:̵ ̵I̵n̵t̵)̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵0 < L by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+mutants/StepT7.lean:399:112: warning: This simp argument is unused:
+  show 0 < L by omega
+
+Hint: Omit it from the simp argument list.
+  simp [tblH, tblNext, h7', htb', hidx, hnn, Tm.subst, Atom.subst, Atom.substL, run₂, stepFn₂,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲stepFn, opStep, Store.store,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵hw.reg, Atom.eval, Atom.evalL, constsOf, S₂, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲L1.Prim.interp, Const.toL1, Const.ofL1, Const.toBool, BT,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵cMODE, mHDR,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲show (18 : Int) < L by omega, show (19 : Int) < L by omega, show (0 : Int) < L by omega,̵ ̵s̵h̵o̵w̵ ̵0̵ ̵<̵ ̵L̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

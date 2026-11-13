@@ -1,0 +1,45 @@
+saltqueue: ticket P2 seat=root pid=75213
+K5/Bit.lean:88:28: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≤ 64
+  0 ≤ b ≤ 6
+where
+ b := ↑k
+ c := 2 ^ k
+case succ
+k : ℕ
+a : Atom₂
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+ih :
+  k ≤ 7 →
+    ∀ (a : Atom₂),
+      Atom.eval a = some (cI ↑k) →
+        aInR a = true →
+          ∀ (τ : Ty₂) (e₂ : Tm₂) (σ : Store),
+            Reach
+              (Tm.letE τ
+                  (Tm.app
+                    (Atom.fix tint tint
+                      (Tm.ite (Atom.prim L1.Prim.le [vR 0, cI 0]) (Tm.ret (cI 1))
+                        (Tm.letE tint (Tm.app (vR 1) (Atom.prim L1.Prim.sub [vR 0, cI 1]))
+                          (Tm.ret (Atom.prim L1.Prim.mul [cI 2, vR 0])))))
+                    a)
+                  e₂,
+                σ)
+              (Tm.subst 0 (cI (2 ^ k)) e₂, σ)
+hk : k < 7
+ha : Atom.eval a = some (cI (↑k + 1))
+hra : aInR a = true
+h1 : 2 ^ k ≤ 128
+h2 : 2 ^ (k + 1) = 2 * 2 ^ k
+h3 : 2 * 2 ^ k ≤ 128
+⊢ (match
+      if -9223372036854775808 ≤ 2 ^ k * 2 ∧ 2 ^ k * 2 < 9223372036854775808 then
+        some (Tm.subst 0 (Atom.const (Const.int (2 ^ k * 2))) e₂, σ)
+      else none with
+    | some c' => c'
+    | none => (Tm.letE τ (Tm.ret (Atom.prim L1.Prim.mul [Atom.const (Const.int 2), cI (2 ^ k)])) e₂, σ)) =
+    (Tm.subst 0 (cI (2 ^ k * 2)) e₂, σ)
+saltbuild EXIT=1

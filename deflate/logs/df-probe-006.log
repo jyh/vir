@@ -1,0 +1,69 @@
+saltqueue: ticket P2 seat=root pid=73871
+probes/DynProbe2.lean:13:9: error: failed to prove index is valid, possible solutions:
+  - Use `have`-expressions to prove the index is valid
+  - Use `a[i]!` notation instead, runtime check is performed, and 'Panic' error message is produced if index is not valid
+  - Use `a[i]?` notation instead, result is an `Option` type
+  - Use `a[i]'h` notation instead, where `h` is a proof that index is valid
+cl : Array ℕ
+o x j : ℕ
+ho : o < cl.size
+hs : (cl.set! o x).size = cl.size
+hj : j < cl.size
+⊢ j < (cl.setIfInBounds o x).size
+probes/DynProbe2.lean:22:29: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 0
+where
+ b := ↑j
+ c := ↑a.size
+ d := ↑(Array.size ?m.71)
+ e := ↑?m.72
+probes/DynProbe2.lean:34:34: error: don't know how to synthesize implicit argument `α`
+  @bind M ReaderT.instMonad.toBind (?m.53 hlit hdist hclen cl CL fu lens) Unit (reject "missing end-of-block") fun x =>
+    dyn3 lens hlit hdist
+context:
+hlit hdist hclen : ℕ
+cl : Array ℕ
+CL : Code
+fu : ℕ
+lens : Array ℕ
+⊢ Type
+probes/DynProbe2.lean:34:72: error(lean.inferBinderTypeFailed): Failed to infer binder type
+probes/DynProbe2.lean:34:34: error: don't know how to synthesize implicit argument `α`
+  @reject (?m.53 hlit hdist hclen cl CL fu lens) "missing end-of-block"
+context:
+hlit hdist hclen : ℕ
+cl : Array ℕ
+CL : Code
+fu : ℕ
+lens : Array ℕ
+⊢ Type
+probes/DynProbe2.lean:37:41: error: don't know how to synthesize implicit argument `α`
+  @bind M ReaderT.instMonad.toBind (?m.92 a1 a2 a3) Unit (reject "too many length or distance symbols") fun x =>
+    dyn2 (a1 + 257) (a2 + 1) (a3 + 4)
+context:
+a1 a2 a3 : ℕ
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+probes/DynProbe2.lean:37:94: error(lean.inferBinderTypeFailed): Failed to infer binder type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+probes/DynProbe2.lean:37:41: error: don't know how to synthesize implicit argument `α`
+  @reject (?m.92 a1 a2 a3) "too many length or distance symbols"
+context:
+a1 a2 a3 : ℕ
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+probes/DynProbe2.lean:38:47: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+saltbuild EXIT=1

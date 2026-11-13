@@ -1,0 +1,3 @@
+saltqueue: ticket P2 seat=root pid=64325
+'VIRC.s1_refines' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0

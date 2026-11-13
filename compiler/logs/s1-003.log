@@ -1,0 +1,584 @@
+saltqueue: ticket P2 seat=root pid=21160
+⚠ [4/664] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [620/664] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [624/664] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/756] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [732/756] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [735/756] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [737/756] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [739/756] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [740/756] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [742/756] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [743/756] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [744/756] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [747/756] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [753/756] Built VIRC.IR (930ms)
+✔ [754/756] Built VIRC.IRSem (905ms)
+✔ [755/756] Built VIRC.Lower (857ms)
+✖ [756/756] Building VIRC.Sim (2.3s)
+trace: .> LEAN_PATH=~/fleet/vir/compiler/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/compiler/VIRC/Sim.lean -o ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim.olean -i ~/fleet/vir/compiler/.lake/build/lib/lean/VIRC/Sim.ilean -c ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim.c --setup ~/fleet/vir/compiler/.lake/build/ir/VIRC/Sim.setup.json --json
+error: VIRC/Sim.lean:24:108: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑j
+ b := ↑(n - 1)
+error: VIRC/Sim.lean:25:8: No goals to be solved
+error: VIRC/Sim.lean:34:53: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑x✝
+ b := ↑x✝¹
+ c := ↑?m.317
+ d := ↑?m.321
+error: VIRC/Sim.lean:33:41: unsolved goals
+τ✝ : Ty S₂.B
+e : Tm S₂
+x✝¹ x✝ : ℕ
+v w : Atom₂
+hij : x✝¹ ≤ x✝
+hv : Atom.wfB 0 v = true
+hw : Atom.wfB 0 w = true
+⊢ Atom.lam τ✝ (Tm.subst (x✝¹ + 1) v (Tm.subst (x✝ + 1 + 1) w e)) =
+    Atom.lam τ✝ (Tm.subst (x✝ + 1) w (Tm.subst (x✝¹ + 1) v e))
+error: VIRC/Sim.lean:36:53: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑x✝
+ b := ↑x✝¹
+ c := ↑?m.318
+ d := ↑?m.322
+error: VIRC/Sim.lean:35:43: unsolved goals
+τ₁✝ τ₂✝ : Ty S₂.B
+e : Tm S₂
+x✝¹ x✝ : ℕ
+v w : Atom₂
+hij : x✝¹ ≤ x✝
+hv : Atom.wfB 0 v = true
+hw : Atom.wfB 0 w = true
+⊢ Atom.fix τ₁✝ τ₂✝ (Tm.subst (x✝¹ + 2) v (Tm.subst (x✝ + 1 + 2) w e)) =
+    Atom.fix τ₁✝ τ₂✝ (Tm.subst (x✝ + 2) w (Tm.subst (x✝¹ + 2) v e))
+error: VIRC/Sim.lean:52:84: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑x✝
+ b := ↑x✝¹
+ c := ↑?m.487
+ d := ↑?m.491
+error: VIRC/Sim.lean:51:46: unsolved goals
+τ✝ : Ty S₂.B
+e₁ e₂ : Tm S₂
+x✝¹ x✝ : ℕ
+v w : Atom₂
+hij : x✝¹ ≤ x✝
+hv : Atom.wfB 0 v = true
+hw : Atom.wfB 0 w = true
+⊢ Tm.letE τ✝ (Tm.subst x✝ w (Tm.subst x✝¹ v e₁)) (Tm.subst (x✝¹ + 1) v (Tm.subst (x✝ + 1 + 1) w e₂)) =
+    Tm.letE τ✝ (Tm.subst x✝ w (Tm.subst x✝¹ v e₁)) (Tm.subst (x✝ + 1) w (Tm.subst (x✝¹ + 1) v e₂))
+error: VIRC/Sim.lean:54:86: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑x✝
+ b := ↑x✝¹
+ c := ↑?m.488
+ d := ↑?m.492
+error: VIRC/Sim.lean:53:48: unsolved goals
+o✝ : S₂.O
+as : List (Atom S₂)
+τ✝ : Ty S₂.B
+e : Tm S₂
+x✝¹ x✝ : ℕ
+v w : Atom₂
+hij : x✝¹ ≤ x✝
+hv : Atom.wfB 0 v = true
+hw : Atom.wfB 0 w = true
+⊢ Tm.letOp o✝ (Atom.substL x✝ w (Atom.substL x✝¹ v as)) τ✝ (Tm.subst (x✝¹ + 1) v (Tm.subst (x✝ + 1 + 1) w e)) =
+    Tm.letOp o✝ (Atom.substL x✝ w (Atom.substL x✝¹ v as)) τ✝ (Tm.subst (x✝ + 1) w (Tm.subst (x✝¹ + 1) v e))
+error: VIRC/Sim.lean:60:85: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 0
+where
+ b := ↑x✝
+ c := ↑x✝¹
+ d := ↑?m.489
+ e := ↑?m.493
+error: VIRC/Sim.lean:61:33: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 0
+where
+ b := ↑x✝
+ c := ↑x✝¹
+ d := ↑?m.489
+ e := ↑?m.493
+error: VIRC/Sim.lean:59:46: unsolved goals
+a : Atom S₂
+e₁ e₂ : Tm S₂
+x✝¹ x✝ : ℕ
+v w : Atom₂
+hij : x✝¹ ≤ x✝
+hv : Atom.wfB 0 v = true
+hw : Atom.wfB 0 w = true
+⊢ Tm.case ((a.subst x✝¹ v).subst x✝ w) (Tm.subst (x✝¹ + 1) v (Tm.subst (x✝ + 1 + 1) w e₁))
+      (Tm.subst (x✝¹ + 1) v (Tm.subst (x✝ + 1 + 1) w e₂)) =
+    Tm.case ((a.subst x✝¹ v).subst x✝ w) (Tm.subst (x✝ + 1) w (Tm.subst (x✝¹ + 1) v e₁))
+      (Tm.subst (x✝ + 1) w (Tm.subst (x✝¹ + 1) v e₂))
+warning: VIRC/Sim.lean:24:63: This simp argument is unused:
+  show ¬n - 1 < i by omega
+
+Hint: Omit it from the simp argument list.
+  simp [Atom.subst, h1, h2, h3, show n - 1 < j by omega, show ¬̵ ̵n - 1 <̵ ̵i̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵,̵ ̵s̵h̵o̵w̵ ̵n̵ ̵-̵ ̵1̵ ̵≠ i by omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRC/Sim.lean:155:52: omega could not prove the goal:
+No usable constraints found. You may need to unfold definitions so `omega` can see linear arithmetic facts about `Nat` and `Int`, which may also involve multiplication, division, and modular remainder by constants.
+error: VIRC/Sim.lean:155:61: Type mismatch
+  ARel.lam h hf
+has type
+  ARel ?m.749 ?m.750 (Opd.code false (lowerT e)) (Atom.lam ?m.751 e)
+but is expected to have type
+  ARel m (v :: vs✝) (Opd.code false (lowerT e)) (Atom.lam τ✝ (Tm.subst (m + 1) v e))
+error: VIRC/Sim.lean:157:52: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ a ≤ 1
+where
+ a := ↑?m.754
+error: VIRC/Sim.lean:157:61: Type mismatch
+  ARel.fix h hf
+has type
+  ARel ?m.754 ?m.755 (Opd.code true (lowerT e)) (Atom.fix ?m.756 ?m.757 e)
+but is expected to have type
+  ARel m (v :: vs✝) (Opd.code true (lowerT e)) (Atom.fix τ₁✝ τ₂✝ (Tm.subst (m + 2) v e))
+error: VIRC/Sim.lean:205:91: Tactic `rfl` failed: The left-hand side
+  (constsOf ws).bind fun __do_lift => some (c✝ :: __do_lift)
+is not definitionally equal to the right-hand side
+  Option.map (fun x => c✝ :: x) (constsOf ws)
+
+case const
+ws : List Atom₂
+c✝ : S₂.C
+⊢ ((constsOf ws).bind fun __do_lift => some (c✝ :: __do_lift)) = Option.map (fun x => c✝ :: x) (constsOf ws)
+error: VIRC/Sim.lean:207:88: unexpected token 'mutual'; expected 'lemma'
+error: VIRC/Sim.lean:274:94: unexpected token 'mutual'; expected 'lemma'
+error: VIRC/Sim.lean:297:113: unexpected token 'mutual'; expected 'lemma'
+error: VIRC/Sim.lean:343:15: Invalid field notation: Type of
+  cs
+is not known; cannot resolve field `map`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `AddUnits.map`
+  • `Array.map`
+  • `BaseIO.map`
+  • `Codisjoint.map`
+  • `Disjoint.map`
+  • `EIO.map`
+  • `EStateM.map`
+  • `EquivFunctor.map`
+  • `Even.map`
+  • `Except.map`
+  • `ExceptT.map`
+  • `Finset.map`
+  • `Flag.map`
+  • `Functor.map`
+  • `IsAddUnit.map`
+  • `IsCompl.map`
+  • `IsSquare.map`
+  • `IsTrans.map`
+  • `IsUnit.map`
+  • `List.map`
+  • `MLList.map`
+  • `Multiset.map`
+  • `Nondet.map`
+  • `Nonempty.map`
+  • `Option.map`
+  • `PLift.map`
+  • `PSigma.map`
+  • `Part.map`
+  • `Pi.map`
+  • `Prod.map`
+  • `Quot.map`
+  • `Quotient.map`
+  • `Sigma.map`
+  • `StateT.map`
+  • `Stream'.map`
+  • `String.map`
+  • `Subtype.map`
+  • `Sum.map`
+  • `Task.map`
+  • `Thunk.map`
+  • `Trunc.map`
+  • `ULift.map`
+  • `Units.map`
+  • `Vector.map`
+  • `WithBot.map`
+  • `WithTop.map`
+  • `Aesop.EMap.map`
+  • `Aesop.InstMap.map`
+  • `Aesop.Rule.map`
+  • `Aesop.RulePatternCache.map`
+  • `Aesop.VariableMap.map`
+  • `Array.mapFinIdxM.map`
+  • `Finset.Nonempty.map`
+  • `Function.IsFixedPt.map`
+  • `Functor.Comp.map`
+  • `Functor.Const.map`
+  • `Lean.AttributeExtensionState.map`
+  • `Lean.PersistentArray.map`
+  • `Lean.PersistentHashMap.map`
+  • `List.Disjoint.map`
+  • `List.IsInfix.map`
+  • `List.IsPrefix.map`
+  • `List.IsRotated.map`
+  • `List.IsSuffix.map`
+  • `List.Nodup.map`
+  • `List.Pairwise.map`
+  • `List.Perm.map`
+  • `List.Sublist.map`
+  • `List.Subperm.map`
+  • `Multiset.Nodup.map`
+  • `OmegaCompletePartialOrder.Chain.map`
+  • `OmegaCompletePartialOrder.ContinuousHom.map`
+  • `Std.DHashMap.map`
+  • `Std.DTreeMap.map`
+  • `Std.ExtDHashMap.map`
+  • `Std.ExtDTreeMap.map`
+  • `Std.ExtHashMap.map`
+  • `Std.ExtTreeMap.map`
+  • `Std.HashMap.map`
+  • `Std.Iter.map`
+  • `Std.IterM.map`
+  • `Std.Refl.map`
+  • `Std.Symm.map`
+  • `Std.TreeMap.map`
+  • `Vector.mapFinIdxM.map`
+  • `Lean.Language.SnapshotTask.map`
+  • `Lean.Meta.CustomEliminators.map`
+  • `Lean.Meta.FVarSubst.map`
+  • `Lean.Meta.KExprMap.map`
+  • `Lean.Meta.MVarRenaming.map`
+  • `Lean.Omega.Coeffs.map`
+  • `Lean.Omega.Constraint.map`
+  • `Lean.ScopedEnvExtension.ScopedEntries.map`
+  • `Lean.Widget.TaggedText.map`
+  • `OmegaCompletePartialOrder.ContinuousHom.ωScottContinuous.map`
+  • `Std.DHashMap.Equiv.map`
+  • `Std.DHashMap.Raw.map`
+  • `Std.DTreeMap.Equiv.map`
+  • `Std.Do.Spec.map`
+  • `Std.Do.WP.map`
+  • `Std.HashMap.Equiv.map`
+  • `Std.HashMap.Raw.map`
+  • `Std.Internal.Small.map`
+  • `Std.IterM.Equiv.map`
+  • `Std.IterM.InternalCombinators.map`
+  • `Std.Iterators.HetT.map`
+  • `Std.Iterators.PostconditionT.map`
+  • `Std.TreeMap.Equiv.map`
+  • `Lean.Compiler.CSimp.State.map`
+  • `Lean.Meta.Grind.SymbolPriorities.map`
+  • `Lean.Meta.Match.MatchEqnsExtState.map`
+  • `Lean.Meta.Match.Overlaps.map`
+  • `Lean.Meta.Simp.UsedSimps.map`
+  • `Std.DHashMap.Internal.AssocList.map`
+  • `Std.DHashMap.Internal.Raw₀.map`
+  • `Std.DHashMap.Raw.Equiv.map`
+  • `Std.DHashMap.Raw.WF.map`
+  • `Std.DTreeMap.Internal.Impl.map`
+  • `Std.HashMap.Raw.Equiv.map`
+  • `Std.HashMap.Raw.WF.map`
+  • `Std.Internal.List.DistinctKeys.map`
+  • `Lean.Meta.Grind.UnitLike.State.map`
+  • `Lean.Meta.Match.Extension.State.map`
+  • `Std.DTreeMap.Internal.Impl.Balanced.map`
+  • `Std.DTreeMap.Internal.Impl.Equiv.map`
+  • `Std.DTreeMap.Internal.Impl.WF.map`
+error: VIRC/Sim.lean:343:36: unsolved goals
+case h_1
+σ : Store
+r : Atom₂ × Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+n✝ : ℤ
+h✝ :
+  (match Op.alloc, [Atom.const (Const.int n✝)], σ with
+    | Op.alloc, [Atom.const (Const.int n)], σ =>
+      Option.map
+        (fun x =>
+          match x with
+          | (p, σ') => (Atom.const (Const.cap p), σ'))
+        (Store.alloc n σ)
+    | Op.load, [Atom.const (Const.cap p), Atom.const (Const.int i)], σ =>
+      Option.map (fun v => (Atom.const (Const.int v), σ)) (Store.load p i σ)
+    | Op.store, [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)], σ =>
+      Option.map (fun σ' => (Atom.const (Const.cap p), σ')) (Store.store p i v σ)
+    | Op.free, [Atom.const (Const.cap p)], σ => Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p σ)
+    | x, x_1, x_2 => none) =
+    some r
+h : ∃ a b, Store.alloc n✝ σ = some (a, b) ∧ (Atom.const (Const.cap a), b) = r
+⊢ ∃ cs, [Atom.const (Const.int n✝)] = sorry
+
+case h_2
+σ : Store
+r : Atom₂ × Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ : ℤ
+h✝ :
+  (match Op.load, [Atom.const (Const.cap p✝), Atom.const (Const.int i✝)], σ with
+    | Op.alloc, [Atom.const (Const.int n)], σ =>
+      Option.map
+        (fun x =>
+          match x with
+          | (p, σ') => (Atom.const (Const.cap p), σ'))
+        (Store.alloc n σ)
+    | Op.load, [Atom.const (Const.cap p), Atom.const (Const.int i)], σ =>
+      Option.map (fun v => (Atom.const (Const.int v), σ)) (Store.load p i σ)
+    | Op.store, [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)], σ =>
+      Option.map (fun σ' => (Atom.const (Const.cap p), σ')) (Store.store p i v σ)
+    | Op.free, [Atom.const (Const.cap p)], σ => Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p σ)
+    | x, x_1, x_2 => none) =
+    some r
+h : ∃ a, Store.load p✝ i✝ σ = some a ∧ (Atom.const (Const.int a), σ) = r
+⊢ ∃ cs, [Atom.const (Const.cap p✝), Atom.const (Const.int i✝)] = sorry
+
+case h_3
+σ : Store
+r : Atom₂ × Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ v✝ : ℤ
+h✝ :
+  (match Op.store, [Atom.const (Const.cap p✝), Atom.const (Const.int i✝), Atom.const (Const.int v✝)], σ with
+    | Op.alloc, [Atom.const (Const.int n)], σ =>
+      Option.map
+        (fun x =>
+          match x with
+          | (p, σ') => (Atom.const (Const.cap p), σ'))
+        (Store.alloc n σ)
+    | Op.load, [Atom.const (Const.cap p), Atom.const (Const.int i)], σ =>
+      Option.map (fun v => (Atom.const (Const.int v), σ)) (Store.load p i σ)
+    | Op.store, [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)], σ =>
+      Option.map (fun σ' => (Atom.const (Const.cap p), σ')) (Store.store p i v σ)
+    | Op.free, [Atom.const (Const.cap p)], σ => Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p σ)
+    | x, x_1, x_2 => none) =
+    some r
+h : ∃ a, Store.store p✝ i✝ v✝ σ = some a ∧ (Atom.const (Const.cap p✝), a) = r
+⊢ ∃ cs, [Atom.const (Const.cap p✝), Atom.const (Const.int i✝), Atom.const (Const.int v✝)] = sorry
+
+case h_4
+σ : Store
+r : Atom₂ × Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ : ℤ
+h✝ :
+  (match Op.free, [Atom.const (Const.cap p✝)], σ with
+    | Op.alloc, [Atom.const (Const.int n)], σ =>
+      Option.map
+        (fun x =>
+          match x with
+          | (p, σ') => (Atom.const (Const.cap p), σ'))
+        (Store.alloc n σ)
+    | Op.load, [Atom.const (Const.cap p), Atom.const (Const.int i)], σ =>
+      Option.map (fun v => (Atom.const (Const.int v), σ)) (Store.load p i σ)
+    | Op.store, [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)], σ =>
+      Option.map (fun σ' => (Atom.const (Const.cap p), σ')) (Store.store p i v σ)
+    | Op.free, [Atom.const (Const.cap p)], σ => Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p σ)
+    | x, x_1, x_2 => none) =
+    some r
+h : ∃ a, Store.free p✝ σ = some a ∧ (Atom.const Const.unit, a) = r
+⊢ ∃ cs, [Atom.const (Const.cap p✝)] = sorry
+error: VIRC/Sim.lean:350:17: `simp` made no progress
+error: VIRC/Sim.lean:347:8: (kernel) declaration has metavariables 'VIRC.opStep_res'
+error: VIRC/Sim.lean:385:26: Unknown identifier `opStep_consts`
+error: VIRC/Sim.lean:385:13: Tactic `rcases` failed: `x✝ : ?m.175` is not an inductive datatype
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRC.Sim
+error: build failed
+saltbuild EXIT=1

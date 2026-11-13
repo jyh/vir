@@ -1,0 +1,3 @@
+saltqueue: ticket P2 seat=root pid=73067
+K5/Table.lean:6:0: error: object file '~/fleet/vir/k5/.lake/build/lib/lean/K5/Bit.olean' of module K5.Bit does not exist
+saltbuild EXIT=1

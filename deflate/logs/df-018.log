@@ -1,0 +1,170 @@
+saltqueue: ticket P2 seat=root pid=29385
+⚠ [2973/2975] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2974/2975] Replayed VIRDeflate.Huffman
+warning: VIRDeflate/Huffman.lean:148:62: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:149:63: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:198:86: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:213:59: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [2975/2975] Building VIRDeflate.Spec (2.0s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Spec.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.setup.json --json
+error: VIRDeflate/Spec.lean:397:4: Type mismatch
+  mf_bind ?m.59 fun lens' s2 x => ?m.63
+has type
+  MF ?m.57 ?m.58 (?m.55 >>= ?m.56)
+but is expected to have type
+  MF e s1
+    (if x ≤ 15 then do
+      let lens' ← pure (lens.push x)
+      if lens'.size > total then do
+          reject "invalid bit length repeat"
+          lensLoop CL total f lens'
+        else lensLoop CL total f lens'
+    else
+      if x = 16 then
+        if lens.size = 0 then do
+          reject "repeat with no first length"
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+        else do
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+      else
+        if x = 17 then do
+          let r ← bits 3
+          let lens' ← pure (pushN 0 (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+        else do
+          let r ← bits 7
+          let lens' ← pure (pushN 0 (11 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens')
+error: VIRDeflate/Spec.lean:505:4: Type mismatch
+  ag_bind fun lens' s2 h2 => ?m.171
+has type
+  Ag ?m.166 ?m.167 (?m.163 >>= ?m.164) (?m.163 >>= ?m.165)
+but is expected to have type
+  Ag e s1
+    (if x ≤ 15 then do
+      let lens' ← pure (lens.push x)
+      if lens'.size > total then do
+          reject "invalid bit length repeat"
+          lensLoop CL total g lens'
+        else lensLoop CL total g lens'
+    else
+      if x = 16 then
+        if lens.size = 0 then do
+          reject "repeat with no first length"
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total g lens'
+            else lensLoop CL total g lens'
+        else do
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total g lens'
+            else lensLoop CL total g lens'
+      else
+        if x = 17 then do
+          let r ← bits 3
+          let lens' ← pure (pushN 0 (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total g lens'
+            else lensLoop CL total g lens'
+        else do
+          let r ← bits 7
+          let lens' ← pure (pushN 0 (11 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total g lens'
+            else lensLoop CL total g lens')
+    (if x ≤ 15 then do
+      let lens' ← pure (lens.push x)
+      if lens'.size > total then do
+          reject "invalid bit length repeat"
+          lensLoop CL total f lens'
+        else lensLoop CL total f lens'
+    else
+      if x = 16 then
+        if lens.size = 0 then do
+          reject "repeat with no first length"
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+        else do
+          let r ← bits 2
+          let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+      else
+        if x = 17 then do
+          let r ← bits 3
+          let lens' ← pure (pushN 0 (3 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens'
+        else do
+          let r ← bits 7
+          let lens' ← pure (pushN 0 (11 + r) lens)
+          if lens'.size > total then do
+              reject "invalid bit length repeat"
+              lensLoop CL total f lens'
+            else lensLoop CL total f lens')
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Spec
+error: build failed
+saltbuild EXIT=1

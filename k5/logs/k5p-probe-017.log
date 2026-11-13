@@ -1,0 +1,44 @@
+saltqueue: ticket P2 seat=root pid=3745
+K5/Bit.lean:67:26: error: unsolved goals
+a : Atom₂
+ha : Atom.eval a = some (cI 0)
+τ : Ty₂
+e₂ : Tm₂
+σ : Store
+⊢ (match
+      if aInR a = true then
+        some
+          (Tm.letE τ
+              (Tm.ite (Atom.prim L1.Prim.le [Atom.const (Const.int 0), Atom.const (Const.int 0)])
+                (Tm.ret (Atom.const (Const.int 1)))
+                (Tm.letE tint
+                  (Tm.app
+                    (Atom.fix tint tint
+                      (Tm.ite (Atom.prim L1.Prim.le [vR 0, cI 0]) (Tm.ret (cI 1))
+                        (Tm.letE tint (Tm.app (vR 1) (Atom.prim L1.Prim.sub [vR 0, cI 1]))
+                          (Tm.ret (Atom.prim L1.Prim.mul [cI 2, vR 0])))))
+                    (Atom.prim L1.Prim.sub [Atom.const (Const.int 0), Atom.const (Const.int 1)]))
+                  (Tm.ret (Atom.prim L1.Prim.mul [Atom.const (Const.int 2), Atom.var 0]))))
+              e₂,
+            σ)
+      else none with
+    | some c' =>
+      match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+      | some c' =>
+        match if headB c'.1 = true then stepFn₂ c'.1 c'.2 else none with
+        | some c' => c'
+        | none => c'
+      | none => c'
+    | none =>
+      (Tm.letE τ
+          (Tm.app
+            (Atom.fix tint tint
+              (Tm.ite (Atom.prim L1.Prim.le [vR 0, cI 0]) (Tm.ret (cI 1))
+                (Tm.letE tint (Tm.app (vR 1) (Atom.prim L1.Prim.sub [vR 0, cI 1]))
+                  (Tm.ret (Atom.prim L1.Prim.mul [cI 2, vR 0])))))
+            a)
+          e₂,
+        σ)) =
+    (Tm.subst 0 (cI 1) e₂, σ)
+K5/Bit.lean:71:8: error: (kernel) deep recursion detected
+saltbuild EXIT=1

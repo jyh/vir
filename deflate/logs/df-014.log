@@ -1,0 +1,88 @@
+saltqueue: ticket P2 seat=root pid=81290
+⚠ [2973/2975] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [2974/2975] Replayed VIRDeflate.Huffman
+warning: VIRDeflate/Huffman.lean:148:62: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:149:63: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:198:86: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRDeflate/Huffman.lean:213:59: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [2975/2975] Building VIRDeflate.Spec (1.9s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Spec.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Spec.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Spec.setup.json --json
+error: VIRDeflate/Spec.lean:199:18: Tactic `rfl` failed: The left-hand side
+  do
+    let p ← Except.error a✝
+    k p.1 e p.2
+is not definitionally equal to the right-hand side
+  match (ReaderT.run m e).run s with
+  | Except.ok (a, s') => (ReaderT.run (k a) e).run s'
+  | Except.error r => Except.error r
+
+case error
+α β : Type
+m : M α
+k : α → M β
+e : Env
+s : St
+a✝ : String
+⊢ (do
+      let p ← Except.error a✝
+      k p.1 e p.2) =
+    match (ReaderT.run m e).run s with
+    | Except.ok (a, s') => (ReaderT.run (k a) e).run s'
+    | Except.error r => Except.error r
+error: VIRDeflate/Spec.lean:199:18: Tactic `rfl` failed: The left-hand side
+  do
+    let p ← Except.ok a✝
+    k p.1 e p.2
+is not definitionally equal to the right-hand side
+  match (ReaderT.run m e).run s with
+  | Except.ok (a, s') => (ReaderT.run (k a) e).run s'
+  | Except.error r => Except.error r
+
+case ok
+α β : Type
+m : M α
+k : α → M β
+e : Env
+s : St
+a✝ : α × St
+⊢ (do
+      let p ← Except.ok a✝
+      k p.1 e p.2) =
+    match (ReaderT.run m e).run s with
+    | Except.ok (a, s') => (ReaderT.run (k a) e).run s'
+    | Except.error r => Except.error r
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Spec
+error: build failed
+saltbuild EXIT=1

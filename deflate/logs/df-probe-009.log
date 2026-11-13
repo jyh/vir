@@ -1,0 +1,70 @@
+saltqueue: ticket P2 seat=root pid=30254
+lensLoop.eq_2 : ∀ (CL : Code) (total : ℕ) (x : Array ℕ) (k : ℕ),
+  lensLoop CL total k.succ x =
+    if x.size < total then do
+      let s ← decode CL
+      have __do_jp : Array ℕ → M (Array ℕ) := fun lens' =>
+        have __do_jp := fun __r => lensLoop CL total k lens';
+        if lens'.size > total then do
+          let __r ← reject "invalid bit length repeat"
+          __do_jp __r
+        else __do_jp ()
+      if s ≤ 15 then do
+          let lens' ← pure (x.push s)
+          __do_jp lens'
+        else
+          if s = 16 then
+            have __do_jp := fun __r => do
+              let r ← bits 2
+              let lens' ← pure (pushN (x.getD (x.size - 1) 0) (3 + r) x)
+              __do_jp lens';
+            if x.size = 0 then do
+              let __r ← reject "repeat with no first length"
+              __do_jp __r
+            else __do_jp ()
+          else
+            if s = 17 then do
+              let r ← bits 3
+              let lens' ← pure (pushN 0 (3 + r) x)
+              __do_jp lens'
+            else do
+              let r ← bits 7
+              let lens' ← pure (pushN 0 (11 + r) x)
+              __do_jp lens'
+    else pure x
+CL : Code
+total fuel : ℕ
+lens : Array ℕ
+⊢ (if lens.size < total then do
+      let s ← decode CL
+      have __do_jp : Array ℕ → M (Array ℕ) := fun lens' =>
+        have __do_jp := fun __r => lensLoop CL total fuel lens';
+        if lens'.size > total then do
+          let __r ← reject "invalid bit length repeat"
+          __do_jp __r
+        else __do_jp ()
+      if s ≤ 15 then do
+          let lens' ← pure (lens.push s)
+          __do_jp lens'
+        else
+          if s = 16 then
+            have __do_jp := fun __r => do
+              let r ← bits 2
+              let lens' ← pure (pushN (lens.getD (lens.size - 1) 0) (3 + r) lens)
+              __do_jp lens';
+            if lens.size = 0 then do
+              let __r ← reject "repeat with no first length"
+              __do_jp __r
+            else __do_jp ()
+          else
+            if s = 17 then do
+              let r ← bits 3
+              let lens' ← pure (pushN 0 (3 + r) lens)
+              __do_jp lens'
+            else do
+              let r ← bits 7
+              let lens' ← pure (pushN 0 (11 + r) lens)
+              __do_jp lens'
+    else pure lens) =
+    lensLoop CL total (fuel + 1) lens
+saltbuild EXIT=0

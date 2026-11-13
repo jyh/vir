@@ -1,0 +1,34 @@
+saltqueue: ticket P2 seat=root pid=59576
+K5/Bit.lean:111:34: warning: Variable name `hin` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:111:68: warning: Variable name `hv0` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:111:82: warning: Variable name `hv` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:120:34: warning: Variable name `hin` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+K5/Bit.lean:145:22: warning: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+K5/Bit.lean:145:36: warning: 'ring_nf' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+K5/Bit.lean:145:22: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+K5/Bit.lean:145:36: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+saltbuild EXIT=0

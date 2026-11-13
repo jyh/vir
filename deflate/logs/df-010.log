@@ -1,0 +1,116 @@
+saltqueue: ticket P2 seat=root pid=31221
+⚠ [2973/2974] Replayed VIRDeflate.Bits
+warning: VIRDeflate/Bits.lean:104:24: '(push_cast; ring)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRDeflate/Bits.lean:104:24: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+✖ [2974/2974] Building VIRDeflate.Huffman (1.8s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Huffman.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Huffman.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Huffman.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Huffman.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Huffman.setup.json --json
+error: VIRDeflate/Huffman.lean:130:4: unsolved goals
+case neg
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : p x
+h✝ : ¬decide (p x) = true
+⊢ acc.push x ++ (List.filter (fun b => decide (p b)) xs).toArray =
+    acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+error: VIRDeflate/Huffman.lean:126:17: unsolved goals
+case pos
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : ¬p x
+h✝ : decide (p x) = true
+⊢ List.foldl (fun a i => if p i then a.push i else a) acc xs =
+    acc ++ (x :: List.filter (fun b => decide (p b)) xs).toArray
+
+case neg
+p : ℕ → Prop
+inst✝ : DecidablePred p
+x : ℕ
+xs : List ℕ
+ih :
+  ∀ (acc : Array ℕ),
+    List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+acc : Array ℕ
+h : ¬p x
+h✝ : ¬decide (p x) = true
+⊢ List.foldl (fun a i => if p i then a.push i else a) acc xs = acc ++ (List.filter (fun b => decide (p b)) xs).toArray
+error: VIRDeflate/Huffman.lean:147:37: `simp` made no progress
+warning: VIRDeflate/Huffman.lean:147:43: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRDeflate/Huffman.lean:151:50: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  List.countP (?m.18 ∘ ?m.19) ?m.20
+in the target expression
+  List.countP (fun i => decide (lens.getD i 0 = l)) (List.range lens.size) = List.countP (fun x => x == l) lens.toList
+
+lens : Array ℕ
+l : ℕ
+⊢ List.countP (fun i => decide (lens.getD i 0 = l)) (List.range lens.size) = List.countP (fun x => x == l) lens.toList
+error: VIRDeflate/Huffman.lean:181:4: No goals to be solved
+warning: VIRDeflate/Huffman.lean:196:86: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Nat.add_sub_cancel_left, Array.getD, List.size_toArray, hlt', dite_true,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: VIRDeflate/Huffman.lean:221:2: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  j ≥ 0
+  g ≥ 0
+  g ≥ 0
+  g + j ≥ 0
+  f ≥ 0
+  1 ≤ e ≤ 15
+  d ≥ 0
+  d - f ≥ 1
+  c ≥ 0
+  c - g - j ≤ 0
+  c - g ≤ -1
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 1
+  b - g ≥ 1
+  a ≥ 0
+  a - c ≥ 1
+where
+ a := ↑(symsL lens l).length
+ b := ↑(List.filter (fun i => decide (lens.getD i 0 = l)) (List.range lens.size)).length
+ c := ↑(v - (nextCodes lens).getD l 0)
+ d := ↑lens.size
+ e := ↑(lens.getD i 0)
+ f := ↑(List.filter (fun b => decide (lens.getD b 0 = l))
+      (List.range lens.size))[(List.filter (fun b => decide (lens.getD b 0 = l)) (List.range i)).length]
+ g := ↑(v - if h : l < (nextCodes lens).size then (nextCodes lens).getInternal l h else 0)
+ j := ↑(if h : l < (nextCodes lens).size then (nextCodes lens).getInternal l h else 0)
+warning: VIRDeflate/Huffman.lean:211:59: This simp argument is unused:
+  List.getElem_toArray
+
+Hint: Omit it from the simp argument list.
+  simp only [Array.getD, List.size_toArray, hk, dite_true, L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵t̵o̵A̵r̵r̵a̵y̵,̵ ̵Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Huffman
+error: build failed
+saltbuild EXIT=1

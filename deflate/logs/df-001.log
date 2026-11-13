@@ -1,0 +1,37 @@
+saltqueue: ticket P2 seat=root pid=86316
+✖ [2973/2973] Building VIRDeflate.Bits (10s)
+trace: .> LEAN_PATH=~/fleet/vir/deflate/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/deflate/VIRDeflate/Bits.lean -o ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Bits.olean -i ~/fleet/vir/deflate/.lake/build/lib/lean/VIRDeflate/Bits.ilean -c ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Bits.c --setup ~/fleet/vir/deflate/.lake/build/ir/VIRDeflate/Bits.setup.json --json
+error: VIRDeflate/Bits.lean:114:25: linarith failed to find a contradiction
+case neg
+b i : ℕ
+hb : b < 256
+hi : i < 8
+h1 : ↑b < 2 ^ (i + (7 - i) + 1)
+hmod : ↑b % 2 ^ (i + 1) = ↑(b % 2 ^ (i + 1))
+hs : b % 2 ^ (i + 1) = b % 2 ^ i + 2 ^ i * (b / 2 ^ i % 2)
+hlt : ↑(b % 2 ^ i) < 2 ^ i
+hnn : 0 ≤ ↑(b % 2 ^ i)
+h : b / 2 ^ i % 2 = 0
+hc : ¬↑b % 2 ^ i + 2 ^ i * 0 < 2 ^ i
+a✝ : 2 ^ i ≤ ↑b % 2 ^ i + 2 ^ i * 0
+⊢ False
+failed
+error: VIRDeflate/Bits.lean:118:15: linarith failed to find a contradiction
+case pos
+b i : ℕ
+hb : b < 256
+hi : i < 8
+h1 : ↑b < 2 ^ (i + (7 - i) + 1)
+hmod : ↑b % 2 ^ (i + 1) = ↑(b % 2 ^ (i + 1))
+hs : b % 2 ^ (i + 1) = b % 2 ^ i + 2 ^ i * (b / 2 ^ i % 2)
+hlt : ↑(b % 2 ^ i) < 2 ^ i
+hnn : 0 ≤ ↑(b % 2 ^ i)
+h : b / 2 ^ i % 2 = 1
+hc : ↑b % 2 ^ i + 2 ^ i * 1 < 2 ^ i
+⊢ False
+failed
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRDeflate.Bits
+error: build failed
+saltbuild EXIT=1

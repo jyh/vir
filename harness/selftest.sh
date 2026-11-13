@@ -1261,6 +1261,35 @@ if cmp -s "$H/count.py" "$F/mutant57c.py"; then say "ARM57 mutant-c NOT PLANTED"
 elif check57 "$F/mutant57c.py"; then say "ARM57 mutant-c SURVIVED (Q5's comparison reversed)"; fail=1
 else say "ARM57 mutant-c KILLED"; fi
 
+# ARM58 (STATUS-vir 293 (c) scored; amend-23 D5): `--arm deflate`, file-level C5 tokens of the canonical-code group (Huffman.lean +
+# Kraft.lean, deflate/DECLARATIONS-DEFLATE.md "D5's file groups", fixed before the first file) against EVERY .lean of the arm.
+# Fixture D: both canonical files, two others, one of them NOT in the declared list (counted in the denominator and named BESIDE),
+# a line comment and a block comment that must not be counted. Expectations are wc -w of the stripped bodies.
+D58="$F/d58"; mkdir -p "$D58/VIRDeflate"
+B58_H='def huff : Nat := 1'
+B58_K='theorem kraft : True := trivial'
+B58_S='def spec (n : Nat) : Nat := n + 1 + 2'
+B58_X='theorem extra : True := by exact trivial'
+printf -- '-- never counted words here\n%s\n' "$B58_H" > "$D58/VIRDeflate/Huffman.lean"
+printf '/- block\ncomment -/\n%s\n' "$B58_K" > "$D58/VIRDeflate/Kraft.lean"
+printf '%s\n' "$B58_S" > "$D58/VIRDeflate/Spec.lean"
+printf '%s\n' "$B58_X" > "$D58/VIRDeflate/Extra.lean"
+E58_C=$(( $(wc_w "$B58_H") + $(wc_w "$B58_K") )); E58_T=$(( E58_C + $(wc_w "$B58_S") + $(wc_w "$B58_X") ))
+E58_H=$(( 4 * E58_C >= E58_T ? 1 : 0 ))
+check58() {
+  o=$(python3 "$1" --arm deflate "$D58" 2>&1) || return 1
+  [ "$(printf '%s\n' "$o" | awk -F'\t' '$2=="D5.canonical.C5tok"{print $3}')" = "$E58_C" ] &&
+  [ "$(printf '%s\n' "$o" | awk -F'\t' '$2=="D5.total.C5tok"{print $3}')" = "$E58_T" ] &&
+  [ "$(printf '%s\n' "$o" | awk -F'\t' '$2=="D5.held"{print $3}')" = "$E58_H" ] &&
+  printf '%s\n' "$o" | awk -F'\t' '$2=="D5.undeclared"{print $4}' | grep -qF 'Extra.lean'
+}
+if check58 "$H/count.py"; then say "ARM58 deflate fixture OK (canonical $E58_C of $E58_T, held $E58_H)"
+else say "ARM58 deflate fixture FAIL"; python3 "$H/count.py" --arm deflate "$D58"; fail=1; fi
+sed 's/len(l4_strip(read(fp)).split())  # D5-STRIP/len(read(fp).split())/' "$H/count.py" > "$F/mutant58.py"  # comments counted
+if cmp -s "$H/count.py" "$F/mutant58.py"; then say "ARM58 mutant NOT PLANTED"; fail=1
+elif check58 "$F/mutant58.py"; then say "ARM58 mutant SURVIVED (comments counted as tokens)"; fail=1
+else say "ARM58 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
