@@ -1,0 +1,79 @@
+saltqueue: ticket P2 seat=root pid=28467
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 5s — attempting acquisition
+⚠ [4/416] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [621/733] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [625/733] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/733] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [731/733] Building VIRL5.Syntax (4.7s)
+trace: .> LEAN_PATH=~/fleet/vir/l5/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/l5/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l5/VIRL5/Syntax.lean -o ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/Syntax.olean -i ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/Syntax.ilean -c ~/fleet/vir/l5/.lake/build/ir/VIRL5/Syntax.c --setup ~/fleet/vir/l5/.lake/build/ir/VIRL5/Syntax.setup.json --json
+error: VIRL5/Syntax.lean:137:64: Application type mismatch: The argument
+  h.left
+has type
+  ιT a₁ = ιT τ₁✝
+but is expected to have type
+  ιT τ₁✝ = ιT τ₁✝
+in the application
+  ih₁ h.left
+error: VIRL5/Syntax.lean:137:73: Application type mismatch: The argument
+  h.right
+has type
+  ιT a₂ = ιT τ₂✝
+but is expected to have type
+  ιT τ₂✝ = ιT τ₂✝
+in the application
+  ih₂ h.right
+error: VIRL5/Syntax.lean:138:65: Application type mismatch: The argument
+  h.left
+has type
+  ιT a₁ = ιT τ₁✝
+but is expected to have type
+  ιT τ₁✝ = ιT τ₁✝
+in the application
+  ih₁ h.left
+error: VIRL5/Syntax.lean:138:74: Application type mismatch: The argument
+  h.right
+has type
+  ιT a₂ = ιT τ₂✝
+but is expected to have type
+  ιT τ₂✝ = ιT τ₂✝
+in the application
+  ih₂ h.right
+error: VIRL5/Syntax.lean:139:64: Application type mismatch: The argument
+  h.left
+has type
+  ιT a₁ = ιT τ₁✝
+but is expected to have type
+  ιT τ₁✝ = ιT τ₁✝
+in the application
+  ih₁ h.left
+error: VIRL5/Syntax.lean:139:73: Application type mismatch: The argument
+  h.right
+has type
+  ιT a₂ = ιT τ₂✝
+but is expected to have type
+  ιT τ₂✝ = ιT τ₂✝
+in the application
+  ih₂ h.right
+error: VIRL5/Syntax.lean:148:76: unexpected token 'mutual'; expected 'lemma'
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL5.Syntax
+error: build failed
+saltbuild EXIT=1
