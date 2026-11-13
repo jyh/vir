@@ -30,3 +30,10 @@ MemRel lay σ m, and `σ.R.lookup p = some n` ⇒ the word machine's k chained r
 - **What would show it wrong:** DR-1 needing an edit of Sim2 (a run state that reaches done other than by a frame-less `ret`, a
   finding about Sim2's semantics); the next call's ρw₀ differing from the cap's words returned (then the driver loop must re-pack the
   capability, and the machine half must say so); a premise naming a program.
+
+## Addendum 1 (same head, after DR-1 and DR-2 PROVED in k7/K7/Driver.lean): the K3 homing owed
+DR-2 needs no "regions preserved" premise: the returned capability's `VRel.cap` gives the next call's EnvRel. Under K3's whitelist
+(DECLARATIONS-S1.md l.46–50), read by the derived-namespace k3_check, `driver_l2` names `K7.IterRel`/`K7.WDone`. These are generic
+definitions, but they sit in a namespace the whitelist does not admit. At S3 the driver theorem is assembled from them, so they
+(and `compile_refines_mem`) move to compiler/ under VIRC, declared first in DECLARATIONS-S2's "Added" list. Until then, K3 is not
+scored on them.

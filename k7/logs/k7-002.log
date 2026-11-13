@@ -1,0 +1,46 @@
+saltqueue: ticket P2 seat=root pid=38897
+⚠ [5/220] Replayed VIRL1.Semantics
+[replay_filter: dropped 5 lines (243 bytes) sha256/16=7b4d9f345d6cdb4b]
+⚠ [621/684] Replayed VIRL1.L1
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=8529f3b7fecc5094]
+⚠ [625/684] Replayed VIRL2.Sig2
+[replay_filter: dropped 3 lines (174 bytes) sha256/16=780f8bb5a3e5867c]
+⚠ [730/772] Replayed VIRL2.Step2
+[replay_filter: dropped 5 lines (239 bytes) sha256/16=62789eecf67292c9]
+⚠ [733/772] Replayed VIRL2.Axioms
+[replay_filter: dropped 3 lines (147 bytes) sha256/16=bc72b474001432b0]
+⚠ [736/772] Replayed VIRL2.Denot2
+[replay_filter: dropped 14 lines (450 bytes) sha256/16=019a0409b19d2290]
+⚠ [738/772] Replayed VIRL2.Triples
+[replay_filter: dropped 21 lines (825 bytes) sha256/16=14cdccf42c4596f5]
+⚠ [740/772] Replayed VIRL2.Adequacy2
+[replay_filter: dropped 6 lines (307 bytes) sha256/16=508b4650232bab24]
+⚠ [741/772] Replayed VIRL2.Conservative
+[replay_filter: dropped 10 lines (479 bytes) sha256/16=336a1071e7076d3a]
+⚠ [743/772] Replayed VIRL2.SemBase
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=70ba3b3d0d6642dc]
+⚠ [744/772] Replayed VIRL2.MaskLemmas
+[replay_filter: dropped 19 lines (1143 bytes) sha256/16=b49371008c5127a3]
+⚠ [745/772] Replayed VIRL2.Subst2
+[replay_filter: dropped 23 lines (1003 bytes) sha256/16=7725c0a861f971ce]
+⚠ [748/772] Replayed VIRL2.RTSubst
+[replay_filter: dropped 28 lines (1078 bytes) sha256/16=63a107cfe3cb7d2f]
+⚠ [764/772] Replayed VIRC.Sim
+[replay_filter: dropped 15 lines (794 bytes) sha256/16=db7f200245125f82]
+⚠ [765/772] Replayed VIRC.S1
+[replay_filter: dropped 14 lines (468 bytes) sha256/16=618ea2df615c4029]
+⚠ [767/772] Replayed VIRC.Sim2
+[replay_filter: dropped 22 lines (1083 bytes) sha256/16=5a1990c3a2abca8c]
+⚠ [769/772] Replayed VIRC.NoOvf
+[replay_filter: dropped 22 lines (1068 bytes) sha256/16=edb80afbb8b3884c]
+⚠ [771/772] Replayed VIRC.NoOvfSrc
+[replay_filter: dropped 14 lines (480 bytes) sha256/16=4c68996c157712df]
+✖ [772/772] Building K7.Driver (4.7s)
+trace: .> LEAN_PATH=~/fleet/vir/k7/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/k5/.lake/build/lib/lean:~/fleet/vir/k7/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/k7/K7/Driver.lean -o ~/fleet/vir/k7/.lake/build/lib/lean/K7/Driver.olean -i ~/fleet/vir/k7/.lake/build/lib/lean/K7/Driver.ilean -c ~/fleet/vir/k7/.lake/build/ir/K7/Driver.c --setup ~/fleet/vir/k7/.lake/build/ir/K7/Driver.setup.json --json
+error: K7/Driver.lean:25:79: simp_all made no progress
+error: K7/Driver.lean:25:79: simp_all made no progress
+error: Lean exited with code 1
+Some required targets logged failures:
+- K7.Driver
+error: build failed
+saltbuild EXIT=1
