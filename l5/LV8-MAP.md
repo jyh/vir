@@ -51,3 +51,12 @@ step is > 1000 steps, against KSTEP = 512. So **C_bit = 1**: READ takes one bit 
 from the table now. READ's collapse is then the TABLE (dropped, and its 2048 cells' fill steps with it) and the table read per bit
 (replaced by the call); its per-bit loop across steps stays. LV9 counts what is removed; it does not need READ's step count to fall.
 This is the map's own rule ("C is cut by an addendum, never by raising KSTEP"), applied before any code.
+
+## ADDENDUM 2 (the 72nd head, after the unseal and BEFORE any Deflate5 code): TABLE is KEPT, lifted and unread
+Correct.lean's simulation invariant `Rel` carries `bits : BitsUpTo f 2048`, the TABLE's contents (Correct.lean around line 224).
+Dropping TABLE changes Rel and the opening steps of every run, and re-proves the invariant for no gain in LV8's statements. So
+**TABLE stays as `lift tableN`**: it fills the table, and after READ and DECODE call bitR nobody reads it. LV9 does NOT count it as
+removed. READ's and DECODE's collapse is the table READ per bit, replaced by the call. Pricing read at the same time: Correct's
+SCOPY is `scopy_next` (one byte) + `scopy_run` (induction on k). Chunked, it becomes c ≤ 32 bytes per step, and Rel holds at each
+chunk boundary (pos + 8c, out.push of c bytes). COPY has the same shape (Correct.lean around line 1719). Both changes stay inside
+the mode's own lemmas.
