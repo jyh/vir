@@ -109,3 +109,15 @@ of byte by, least significant first; returns (value, (by′, bi′)), the cursor
 SAME function of pos = 8·by + bi as at 5e2782a (`bitsF`), and the cursor as (pos + k) / 8, (pos + k) % 8: the division moves to the
 SPECIFICATION and leaves the code. **Still no premise on the contents (LV7).** `div8` and its triple are removed with it (no other
 routine used it). 5e2782a stays in the history as the record of the first form; its builds and audit-009 are kept and counted.
+
+## ADDENDUM 5 (2026-11-13, the 72nd head, BEFORE any cost file; LV8-MAP.md infrastructure 2): the COST clause
+LV8's statements run the step term at a constant fuel (KSTEP), so a mode that calls a routine fits only if the CALL's step count is
+known, and LV8 forbids learning it by unfolding the routine's body. So each routine gains, beside its triple, a **cost lemma**
+proved WITH the routine (it is the library's own, not the client's):
+`Cost₅ P e n` := for every σ with P σ, framed by any σf (Disj, WF, as in Triple₅), `run₅ n (e, σ ⊎ σf)` is TERMINAL.
+⟶₅ is deterministic (Run5.lean's `step₅_det`), so this says the run stops within n steps; with the triple it says where.
+The routines' costs are LINEAR in their count argument, `a · len + b`, with a and b constants written in the lemma (no big-O).
+For bitR the per-bit constant includes DEFLATE's `BITc` run, counted through the embedding from DEFLATE's own counted steps
+(not re-derived). Composition rules (`letE`, `letK`, `letOp`, `ite`, the calls) add the counts, plus one step per head; they live
+in `Cost5.lean` with the run lemmas they need. The triples are NOT changed: the cost is a second lemma per routine, so nothing
+already scored at 5e2782a…b0c363b is re-proved.
