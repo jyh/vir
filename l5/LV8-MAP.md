@@ -44,3 +44,10 @@ a mode whose collapse needs a lemma about a routine's body (LV8 FALSIFIED: the l
 KSTEP with any value ≥ 1 (the chunked arm fails, and the fork goes back to (B) for his word) · READ's change of cells read
 changing an observable (`CorrectStmt` compares only output and the DONE/REJECT outcome, so it should not) · a statement that has to
 change beyond its language to go through.
+
+## ADDENDUM 1 (same head, same hour, before any Deflate5 or Cost5 code): C_bit = 1, not 4
+DEFLATE's own counted bound for one `BITc` call is `bit_stepsN`: **≤ 250 ⟶₂ steps** (deflate/VIRDeflate/Fit.lean). Four bits per
+step is > 1000 steps, against KSTEP = 512. So **C_bit = 1**: READ takes one bit per step through bitR, as it takes one bit per step
+from the table now. READ's collapse is then the TABLE (dropped, and its 2048 cells' fill steps with it) and the table read per bit
+(replaced by the call); its per-bit loop across steps stays. LV9 counts what is removed; it does not need READ's step count to fall.
+This is the map's own rule ("C is cut by an addendum, never by raising KSTEP"), applied before any code.
