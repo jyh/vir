@@ -1,0 +1,42 @@
+saltqueue: ticket P2 seat=root pid=48310
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 20s — attempting acquisition
+⚠ [5/496] Replayed VIRL1.Semantics
+[replay_filter: dropped 5 lines (243 bytes) sha256/16=7b4d9f345d6cdb4b]
+⚠ [622/772] Replayed VIRL1.L1
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=8529f3b7fecc5094]
+⚠ [626/772] Replayed VIRL2.Sig2
+[replay_filter: dropped 3 lines (174 bytes) sha256/16=780f8bb5a3e5867c]
+⚠ [730/772] Replayed VIRL2.Step2
+[replay_filter: dropped 5 lines (239 bytes) sha256/16=62789eecf67292c9]
+⚠ [733/772] Replayed VIRL2.Axioms
+[replay_filter: dropped 3 lines (147 bytes) sha256/16=bc72b474001432b0]
+⚠ [736/772] Replayed VIRL2.Denot2
+[replay_filter: dropped 14 lines (450 bytes) sha256/16=019a0409b19d2290]
+⚠ [738/772] Replayed VIRL2.Triples
+[replay_filter: dropped 21 lines (825 bytes) sha256/16=14cdccf42c4596f5]
+⚠ [740/772] Replayed VIRL2.Adequacy2
+[replay_filter: dropped 6 lines (307 bytes) sha256/16=508b4650232bab24]
+⚠ [741/772] Replayed VIRL2.Conservative
+[replay_filter: dropped 10 lines (479 bytes) sha256/16=336a1071e7076d3a]
+⚠ [743/772] Replayed VIRL2.SemBase
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=70ba3b3d0d6642dc]
+⚠ [744/772] Replayed VIRL2.MaskLemmas
+[replay_filter: dropped 19 lines (1143 bytes) sha256/16=b49371008c5127a3]
+⚠ [745/772] Replayed VIRL2.Subst2
+[replay_filter: dropped 23 lines (1003 bytes) sha256/16=7725c0a861f971ce]
+⚠ [748/772] Replayed VIRL2.RTSubst
+[replay_filter: dropped 28 lines (1078 bytes) sha256/16=63a107cfe3cb7d2f]
+⚠ [764/772] Replayed VIRC.Sim
+[replay_filter: dropped 15 lines (794 bytes) sha256/16=db7f200245125f82]
+⚠ [765/772] Replayed VIRC.S1
+[replay_filter: dropped 14 lines (468 bytes) sha256/16=618ea2df615c4029]
+⚠ [767/772] Replayed VIRC.Sim2
+[replay_filter: dropped 22 lines (1083 bytes) sha256/16=5a1990c3a2abca8c]
+⚠ [769/772] Replayed VIRC.NoOvf
+[replay_filter: dropped 22 lines (1068 bytes) sha256/16=edb80afbb8b3884c]
+⚠ [771/772] Replayed VIRC.NoOvfSrc
+[replay_filter: dropped 14 lines (480 bytes) sha256/16=4c68996c157712df]
+✔ [772/772] Built K7.Driver (1.5s)
+Build completed successfully (772 jobs).
+saltbuild EXIT=0

@@ -1,0 +1,6 @@
+saltqueue: ticket P2 seat=root pid=2865
+probes/MutDeflateDriver.lean:13:24: error(lean.unknownIdentifier): Unknown identifier `hn32`
+probes/MutDeflateDriver.lean:21:53: error(lean.unknownIdentifier): Unknown identifier `hn32`
+probes/MutDeflateDriver.lean:30:63: error(lean.unknownIdentifier): Unknown identifier `hn32`
+probes/MutDeflateDriver.lean:42:31: error(lean.unknownIdentifier): Unknown identifier `hn32`
+saltbuild EXIT=1
