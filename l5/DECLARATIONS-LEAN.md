@@ -92,3 +92,9 @@ which `letK` accepts at j = 0, but `letKRet` fires only on a `retK`. So ⟶₅ g
 e₂ with x := ⟨a⟩**, the j = 0 reading of `letKRet` (no capability comes back). It is a gap in the Lean arm's step relation, not in the
 object or L5-E1, and it is recorded here before the progress theorem that found it is written. Files changed: Step5 (the rule), CE (its
 impossibility on ι's image, like the other three), Preservation5 (its case, `letKRet` with no constants). No amend-24 row moves.
+
+## ADDENDUM 3 (2026-11-13, the same head, BEFORE Progress5 is committed; its first build l5-023 found it): the mirror-image gap
+`letE τ (retK a []) e₂` is typable too: a `retK` with the empty list is at (τ, 0), which `letE`'s head accepts, but `letRet` fires
+only on `ret`. So ⟶₅ gains **`letRetK0`: `letE τ (retK a []) e₂` steps to e₂ with x := ⟨a⟩** (`retK a []` is `ret a`). The same
+files change as for Addendum 2. Two gaps of one class in one hour: the step relation was written from the term formers, not from
+the typing rules' (τ, k) pairs, and progress is the theorem that reads it the second way.

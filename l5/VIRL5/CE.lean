@@ -229,6 +229,12 @@ theorem ce_bwd {c c' : Config₅} (h : Step₅ c c') :
   | appKLam _ _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | appKFix _ _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | letKRet _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
+  | letRetK0 _ =>
+      intro e σ hc
+      cases e <;> simp [ιE] at hc
+      obtain ⟨⟨rfl, he₁, rfl⟩, rfl⟩ := hc
+      rename_i e₁ _
+      cases e₁ <;> simp [ιE] at he₁
   | letKRet0 _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | letKStep _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
 
