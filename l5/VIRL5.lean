@@ -15,3 +15,4 @@ import VIRL5.Ops5
 import VIRL5.Fill
 import VIRL5.Copy
 import VIRL5.Cmp
+import VIRL5.Scan

@@ -18,3 +18,4 @@ open VIRL5
 #print axioms fillR_spec
 #print axioms copyR_spec
 #print axioms cmpR_spec
+#print axioms scanR_spec
