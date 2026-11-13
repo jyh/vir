@@ -11,14 +11,14 @@ memory: Sim2's `SRel.done` carries `VRel` only, while `SRel.run` carries `Layout
 step needs `MemRel lay σ₁ m₁` at the first call's end, so the iterate cannot be read off the compiler as built. This is not a
 defect in what is proved. The end-state clause was never stated, and the driver is the first use that needs it.
 
-## DR-1, the end-state clause (generic, compiler side; Sim2.lean and S2.lean NOT edited)
+## DR-1, the end-state clause (generic; in k7/K7/Driver.lean, so compiler/ and its counts are NOT edited)
 `s2_refines_mem`: under s2_refines' hypotheses, an IR run that FINISHES with v at σ' is matched by a word run that finishes with words
 ws at memory m' such that `VRel T lay σ' τ v ws ∧ Layout σ' lay ∧ MemRel lay σ' m'`, or reaches OVERFLOW. Route: the IR run's last
 step is a `ret` with an empty frame stack from a run state (n − 1 steps). There, s2_run gives `SRel.run`, which carries Layout and MemRel.
 That `ret` leaves the store unchanged on the IR side and the memory unchanged on the word side. Then `compile_refines_mem` at the
 source, as compile_refines is built from s2_refines (Compose.lean's route).
 
-## DR-2, the L2 half of the driver (generic over step-shaped programs; names no program, K3)
+## DR-2, the L2 half of the driver (generic over step-shaped programs; names no program, K3; k7/K7/Driver.lean)
 A step-shaped program is `e` with `HasType₂ [tcap] [true] e tcap` and compile_refines' side conditions. `IterRel e p k σ σ'`: k ⟶₂ runs
 of `instL 0 [cap p] e`, each from the previous one's store, each returning `cap p`. `WIter`: k word runs of `lower2T [tcap] e []`,
 each from the previous one's final memory, each FINISHING with the cap's two words. **`driver_l2`:** IterRel k σ σ', Layout σ lay,
