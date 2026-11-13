@@ -13,3 +13,4 @@ import VIRL5.Y5L5
 import VIRL5.Logic5
 import VIRL5.Ops5
 import VIRL5.Fill
+import VIRL5.Copy

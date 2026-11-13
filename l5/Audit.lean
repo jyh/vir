@@ -16,3 +16,4 @@ open VIRL5
 #print axioms letK_rule₅
 #print axioms letOp_rule₅
 #print axioms fillR_spec
+#print axioms copyR_spec
