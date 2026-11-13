@@ -12,3 +12,7 @@ open VIRL5
 #print axioms progress₅
 #print axioms rt_triple₅
 #print axioms y5_closed₅
+#print axioms frame₅
+#print axioms letK_rule₅
+#print axioms letOp_rule₅
+#print axioms fillR_spec
