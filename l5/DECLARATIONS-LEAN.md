@@ -98,3 +98,14 @@ impossibility on ι's image, like the other three), Preservation5 (its case, `le
 only on `ret`. So ⟶₅ gains **`letRetK0`: `letE τ (retK a []) e₂` steps to e₂ with x := ⟨a⟩** (`retK a []` is `ret a`). The same
 files change as for Addendum 2. Two gaps of one class in one hour: the step relation was written from the term formers, not from
 the typing rules' (τ, k) pairs, and progress is the theorem that reads it the second way.
+
+## ADDENDUM 4 (2026-11-13, the 72nd head, AFTER bitR at (pos_bit, k) was built (vir 5e2782a, l5-047) and BEFORE any LV8 file): bitR's cursor
+The declared argument `pos_bit` forces the routine to divide by 8 on every bit, and with L2's prims (no division) that is a loop
+LINEAR in pos_bit (5e2782a's `div8`, by repeated subtraction). A bit reader whose cost per bit grows with the input is the wrong
+library routine, and at LV8 it cannot sit inside DEFLATE's step, whose fuel is a constant (`KSTEP`). DEFLATE already keeps its cursor
+as (byte, bit) (cells `cBY`, `cBI`). So **`bitR : (int × (int × int)) →[1] (int × (int × int))`, (by, bi, k): the k bits from bit bi
+of byte by, least significant first; returns (value, (by′, bi′)), the cursor k bits on**, the region unchanged. Pre: `0 ≤ by`,
+`0 ≤ bi ≤ 7`, `8·by + bi + k ≤ 8·n`, k = the count (no k ≤ 16 bound: the proof does not need it). The post states the value as the
+SAME function of pos = 8·by + bi as at 5e2782a (`bitsF`), and the cursor as (pos + k) / 8, (pos + k) % 8: the division moves to the
+SPECIFICATION and leaves the code. **Still no premise on the contents (LV7).** `div8` and its triple are removed with it (no other
+routine used it). 5e2782a stays in the history as the record of the first form; its builds and audit-009 are kept and counted.
