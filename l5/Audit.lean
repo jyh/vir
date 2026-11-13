@@ -33,3 +33,7 @@ open VIRL5
 #print axioms stepFn₅_sound
 #print axioms step₅_det
 #print axioms run₅_steps
+#print axioms cost_letE₅
+#print axioms cost_letK₅
+#print axioms cost_letOp₅
+#print axioms fillR_cost

@@ -21,3 +21,5 @@ import VIRL5.RoutineTypes
 import VIRL5.Embed5
 import VIRL5.Bit
 import VIRL5.Run5
+import VIRL5.Cost5
+import VIRL5.Costs
