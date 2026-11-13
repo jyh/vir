@@ -1,0 +1,17 @@
+saltqueue: ticket P2 seat=root pid=2684
+'K7.F_wfB' depends on axioms: [propext]
+'K7.F_fnOk' depends on axioms: [propext]
+'K7.F_ok2' depends on axioms: [propext]
+'K7.F_table' depends on axioms: [propext]
+'K7.envRel_cap1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.router_refines' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.stepW_done_mem' depends on axioms: [propext, Quot.sound]
+'K7.stepIR_done_store' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.compile_refines_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.good_cap1' depends on axioms: [propext]
+'K7.driver_l2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.stepS_steps_p' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.WDone.snoc' depends on axioms: [propext, Quot.sound]
+'K7.envRel_cap_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'K7.deflate_driver' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0

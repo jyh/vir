@@ -37,3 +37,12 @@
   provisional reading stands.
   ⇒ **OWED at S3** (where K3 is scored): home `IterRel`, `WDone` and `compile_refines_mem` in compiler/ (VIRC), as a file declared in
   DECLARATIONS-S2's "Added" list before it exists, so that the driver theorem's statement names only whitelisted constants.
+- **DR-3 `deflate_driver` PROVED** (k7/K7/DeflateDriver.lean, k7-008 EXIT=0; root k7-009; declared in DECLARATIONS-DRIVER Addendum 2
+  at 4046221). For bytes < 256, n and OUTMAX < 2³², a region at 0 ≤ p with p + L0 ≤ 2⁶⁰, and every k with `iterS p k init = some σ`:
+  the compiled step run k times by the driver loop from `scaleMem init` (each call fed the previous call's returned words) FINISHES all
+  k times, and the final memory satisfies `MemRel scaleLay σ m'`. There is NO overflow branch, because `deflate_noovf` excludes it at
+  every reached σ_k. The returned words are `capWords scaleLay p L0` at each call (`envRel_cap_inv` plus `reach_shape`). This is the
+  word-machine (S2) half of C0 (a) for DEFLATE; the x86 machine half is paris's (S3).
+- **Audit k7-audit-003:** 15 rows (8 within the three, 2 [propext, Quot.sound], 5 [propext]), 0 sorryAx. **Going red, weak form**
+  (k7-probe-mut-003): the same proof with `n < 2³²` dropped is refused at its 4 uses of the bound. That shows the proof DEPENDS on
+  it, not that the theorem is false without it.

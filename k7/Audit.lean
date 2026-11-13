@@ -10,3 +10,7 @@ import K7
 #print axioms K7.compile_refines_mem
 #print axioms K7.good_cap1
 #print axioms K7.driver_l2
+#print axioms K7.stepS_steps_p
+#print axioms K7.WDone.snoc
+#print axioms K7.envRel_cap_inv
+#print axioms K7.deflate_driver
