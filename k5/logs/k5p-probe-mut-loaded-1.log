@@ -1,0 +1,22 @@
+saltqueue: ticket P2 seat=root pid=23459
+probes/MutLoaded.lean:12:19: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d + e ≥ 1152921504606846977
+  0 ≤ c ≤ 4294967295
+  0 ≤ a ≤ 4294967295
+where
+ a := ↑b.size
+ c := ↑om
+ d := q
+ e := ↑(L0 b.size om)
+probes/MutLoaded.lean:16:18: error: Tactic `assumption` failed
+
+c c' : Config
+hs : Step₂ c c'
+hi : Tm.HeadInR c.1
+R₀ : Finmap fun x => ℕ
+hS : Shape R₀ c.2
+⊢ tmOk c.1 = true
+saltbuild EXIT=1
