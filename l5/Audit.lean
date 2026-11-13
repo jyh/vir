@@ -37,3 +37,6 @@ open VIRL5
 #print axioms cost_letK₅
 #print axioms cost_letOp₅
 #print axioms fillR_cost
+#print axioms copyWithinR_cost
+#print axioms cost_embed₅
+#print axioms bitR_cost
