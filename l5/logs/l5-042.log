@@ -1,0 +1,407 @@
+saltqueue: ticket P2 seat=root pid=85829
+⚠ [4/564] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [621/766] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [625/766] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/766] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [734/766] Replayed VIRL5.CE
+warning: VIRL5/CE.lean:70:51: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [735/766] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [736/766] Replayed VIRL5.Weak5
+warning: VIRL5/Weak5.lean:17:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [737/766] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [738/766] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [739/766] Replayed VIRL5.Subst5
+warning: VIRL5/Subst5.lean:14:64: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL5/Subst5.lean:14:64: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL5/Subst5.lean:144:67: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Subst5.lean:154:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [742/766] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [743/766] Replayed VIRL5.RTSubst5
+warning: VIRL5/RTSubst5.lean:155:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:167:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:252:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:273:77: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [744/766] Replayed VIRL5.SemBase5
+warning: VIRL5/SemBase5.lean:38:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL5/SemBase5.lean:38:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [746/766] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [750/766] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [761/766] Replayed VIRL5.Copy
+warning: VIRL5/Copy.lean:68:20: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, C̵o̵n̵s̵t̵.̵o̵f̵L̵1̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵C̲o̲n̲s̲t̲.̲o̲f̲L̲1̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Copy.lean:79:20: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, C̵o̵n̵s̵t̵.̵o̵f̵L̵1̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵C̲o̲n̲s̲t̲.̲o̲f̲L̲1̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Copy.lean:82:86: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL, Atom₅.eval,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Copy.lean:89:105: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲A̵t̵o̵m̵₅̵.̵e̵v̵a̵l̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵A̲t̲o̲m̲₅̲.̲e̲v̲a̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Copy.lean:104:97: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [762/766] Replayed VIRL5.Cmp
+warning: VIRL5/Cmp.lean:32:84: Variable name `i` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: VIRL5/Cmp.lean:57:20: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, C̵o̵n̵s̵t̵.̵o̵f̵L̵1̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵C̲o̲n̲s̲t̲.̲o̲f̲L̲1̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Cmp.lean:68:20: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, C̵o̵n̵s̵t̵.̵o̵f̵L̵1̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵C̲o̲n̲s̲t̲.̲o̲f̲L̲1̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Cmp.lean:70:86: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL, Atom₅.eval,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Cmp.lean:76:86: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL, Atom₅.eval,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Cmp.lean:95:109: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [763/766] Replayed VIRL5.Scan
+warning: VIRL5/Scan.lean:39:99: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵s̵c̵a̵n̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:43:32: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval,̵ ̵s̵c̵a̵n̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:50:99: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵s̵c̵a̵n̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:53:86: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL, Atom₅.eval,̵ ̵s̵c̵a̵n̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:61:22: This simp argument is unused:
+  Atom₅.subst
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, Const.ofL1, A̵t̵o̵m̵₅̵.̵s̵u̵b̵s̵t̵,̵ ̵scanArg, heq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:61:35: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, Const.ofL1, Atom₅.subst, s̵c̵a̵n̵A̵r̵g̵,̵ ̵heq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:65:34: This simp argument is unused:
+  Atom₅.subst
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, A̵t̵o̵m̵₅̵.̵s̵u̵b̵s̵t̵,̵ ̵scanArg]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:65:47: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.subst,̵ ̵s̵c̵a̵n̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:69:22: This simp argument is unused:
+  Atom₅.subst
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, Const.ofL1, A̵t̵o̵m̵₅̵.̵s̵u̵b̵s̵t̵,̵ ̵scanArg, heq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:69:35: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.toL1, L1.Prim.interp, Const.ofL1, Atom₅.subst, s̵c̵a̵n̵A̵r̵g̵,̵ ̵heq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:76:109: This simp argument is unused:
+  Atom₅.subst
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, A̵t̵o̵m̵₅̵.̵s̵u̵b̵s̵t̵,̵scanArg]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Scan.lean:77:10: This simp argument is unused:
+  scanArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Const.ofL1, A̵t̵o̵m̵₅̵.̵s̵u̵b̵s̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵s̵c̵a̵n̵A̵r̵g̵]̵A̲t̲o̲m̲₅̲.̲s̲u̲b̲s̲t̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [764/766] Built VIRL5.CopyWithin (1.8s)
+warning: VIRL5/CopyWithin.lean:39:99: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/CopyWithin.lean:47:99: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/CopyWithin.lean:49:85: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL, Atom₅.eval,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/CopyWithin.lean:55:103: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.evalL,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲A̵t̵o̵m̵₅̵.̵e̵v̵a̵l̵,̵ ̵c̵o̵p̵y̵A̵r̵g̵]̵A̲t̲o̲m̲₅̲.̲e̲v̲a̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/CopyWithin.lean:65:97: This simp argument is unused:
+  copyArg
+
+Hint: Omit it from the simp argument list.
+  simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1,̵ ̵c̵o̵p̵y̵A̵r̵g̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [765/766] Built VIRL5 (895ms)
+Build completed successfully (766 jobs).
+saltbuild EXIT=0
