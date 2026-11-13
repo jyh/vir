@@ -71,3 +71,17 @@ systematize; tactic-building time is a separate ledger line.
 (LV3) · `VIRL5/Runtime5.lean`, `Preservation5.lean`, `Progress5.lean`, `Y5L5.lean` (semantic typing; LV4 per case) ·
 `VIRL5/Routines.lean` (the six terms and their typings) · `VIRL5/Specs.lean` (their triples; LV7) · `VIRL5/Deflate5.lean`,
 `VIRL5/Router5.lean` (LV8, LV9) · `Audit.lean` (`#print axioms` over every theorem; LV2).
+
+## ADDENDUM 1 (2026-11-13, the same head, BEFORE any `.lean` file under `l5/`): three representation facts the text above left loose
+Writing `Syntax.lean` against L1's substitution showed three places where the text above cannot be implemented as written. Each is a
+representation choice inside L5-E1, not a change of it; nothing in amend-24 moves.
+1. **The capability lists are ATOMS, not indices.** `ds`/`cs` are `List Atom₅`: `.var n` at typing time, `⟨p⟩` (`.const (.cap p)`)
+   after substitution, exactly as L2's op operands are (`load(.var n, a)`). Index lists could not be substituted.
+2. **The judgement carries the count:** `HasType₅ Γ Δ e τ k` reads "e returns a τ and hands back k capabilities". `ret` and L2's
+   `retCap` are k = 0; `retK a ds` is k = |ds| with Δ = exactly the ds (distinct); `letE`'s bound term is k = 0; `ite`/`case` give
+   both branches the same (τ, k).
+3. **The lending call is TWO formers, not one:** `appK a₁ a₂ cs` (a TAIL call that lends cs = exactly its Δ and returns the callee's
+   (τ₂, k)) and `letK τ j e₁ e₂` (`let x:τ, c₁′ … c_j′ ⇐ e₁ in e₂`; e₁ at (τ, j) with Δ₁, e₂ with Δ₂ plus the j new capabilities; x =
+   #j, cᵢ′ = #(j−i)). The `callK τ a₁ a₂ cs e` named above is the derived form `letK τ |cs| (appK a₁ a₂ cs) e`. ⟶₅ then needs NO
+   return frame: `letK τ j (retK v qs) e₂` steps to e₂ with x := v and the cᵢ′ := qᵢ, and `letK` steps under its first term as `letE`
+   does. L2's `app` stays a former (k = 0, Δ = ∅), so ι is the identity on every L2 former.
