@@ -1,0 +1,6 @@
+saltqueue: ticket P2 seat=root pid=72835
+saltqueue: QUEUED behind 3 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 80s — attempting acquisition
+AuditControl.lean:2:8: warning: declaration uses `sorry`
+'control_sorry' depends on axioms: [sorryAx]
+saltbuild EXIT=0

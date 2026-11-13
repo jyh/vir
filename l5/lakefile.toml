@@ -1,0 +1,22 @@
+name = "l5"
+defaultTargets = ["VIRL5"]
+
+# O95, PREDICTIONS-amend-24 (LV1-LV11): layer L5 (OBJECT-L5), the standard library, L1' first, Lean arm. A SEPARATE project beside
+# l1/ .. l4/, so their counts stay put. L5 extends L2 (L3 imported for the router); L1-L4 are never edited (LV1, base vir 4017931;
+# l5/DECLARATIONS-LEAN.md). mathlib at salt's pin (packages APFS-cloned from l4, manifest written by edit; never a bare lake update).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.0-rc1"
+
+[[require]]
+name = "l3"
+path = "../l3"
+
+# bitR (STATUS 317): DEFLATE's bit arithmetic `bitAt` and its closed `BITc` atom are REUSED, imported by path (deflate is never edited).
+[[require]]
+name = "deflate"
+path = "../deflate"
+
+[[lean_lib]]
+name = "VIRL5"

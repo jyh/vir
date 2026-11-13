@@ -1,0 +1,215 @@
+saltqueue: ticket P2 seat=root pid=60359
+saltqueue: QUEUED behind 1 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: HEAD OF QUEUE after 5s — attempting acquisition
+⚠ [4/602] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [621/745] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [625/745] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [729/745] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [734/745] Replayed VIRL5.CE
+warning: VIRL5/CE.lean:70:51: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [735/745] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [736/745] Replayed VIRL5.Weak5
+warning: VIRL5/Weak5.lean:17:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [737/745] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [738/745] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [739/745] Replayed VIRL5.Subst5
+warning: VIRL5/Subst5.lean:14:64: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL5/Subst5.lean:14:64: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL5/Subst5.lean:144:67: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/Subst5.lean:154:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [742/745] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [743/745] Building VIRL5.RTSubst5 (6.1s)
+trace: .> LEAN_PATH=~/fleet/vir/l5/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/l5/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/l5/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/l5/VIRL5/RTSubst5.lean -o ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/RTSubst5.olean -i ~/fleet/vir/l5/.lake/build/lib/lean/VIRL5/RTSubst5.ilean -c ~/fleet/vir/l5/.lake/build/ir/VIRL5/RTSubst5.c --setup ~/fleet/vir/l5/.lake/build/ir/VIRL5/RTSubst5.setup.json --json
+error: VIRL5/RTSubst5.lean:67:93: unsolved goals
+k : ℕ
+p : ℤ
+ds : List Atom₅
+hf' : ∀ d ∈ ds, CapForm d
+n : ℕ
+hf : ∀ d ∈ Atom₅.var n :: ds, CapForm d
+hk : k ∈ n :: capVars ds
+hnd : n ∉ capVars ds ∧ (capVars ds).Nodup
+hn : ¬n = k
+hk' : k ∈ capVars ds
+ih :
+  capVars (Atom₅.substL k (Atom₅.const (Const.cap p)) ds) = List.map (dropIdx k) ((capVars ds).erase k) ∧
+    (capPtrs (Atom₅.substL k (Atom₅.const (Const.cap p)) ds)).Perm (p :: capPtrs ds) ∧
+      ∀ d ∈ Atom₅.substL k (Atom₅.const (Const.cap p)) ds, CapForm d
+⊢ (?m.227 == ?m.226) = false
+error: VIRL5/RTSubst5.lean:69:35: Tactic `assumption` failed
+
+k : ℕ
+p : ℤ
+ds : List Atom₅
+hf' : ∀ d ∈ ds, CapForm d
+n : ℕ
+hf : ∀ d ∈ Atom₅.var n :: ds, CapForm d
+hk : k ∈ n :: capVars ds
+hnd : n ∉ capVars ds ∧ (capVars ds).Nodup
+hn : ¬n = k
+hk' : k ∈ capVars ds
+ih :
+  capVars (Atom₅.substL k (Atom₅.const (Const.cap p)) ds) = List.map (dropIdx k) ((capVars ds).erase k) ∧
+    (capPtrs (Atom₅.substL k (Atom₅.const (Const.cap p)) ds)).Perm (p :: capPtrs ds) ∧
+      ∀ d ∈ Atom₅.substL k (Atom₅.const (Const.cap p)) ds, CapForm d
+⊢ dropIdx k n :: List.map (dropIdx k) ((capVars ds).erase k) = List.map (dropIdx k) ((n :: capVars ds).erase k)
+warning: VIRL5/RTSubst5.lean:68:12: This simp argument is unused:
+  List.map_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [Atom₅.substL, subst_var_ne₅ hn, capVars, capPtrs,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲List.erase_cons_tail (by simp [hn]), L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵ih.1]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:67:102: This simp argument is unused:
+  hn
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵n̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:155:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:167:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:252:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL5/RTSubst5.lean:273:77: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- VIRL5.RTSubst5
+error: build failed
+saltbuild EXIT=1
