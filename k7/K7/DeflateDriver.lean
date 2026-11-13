@@ -20,11 +20,6 @@ theorem stepS_steps_p {p : Int} {σ σ' : Store} (h : stepS p σ = some σ') :
     exact steps_run KSTEP hr
   · cases h
 
-theorem WDone.snoc {T : Table} {wc : WCode} : ∀ {k ρw m ρw₁ m₁}, WDone T wc k ρw m ρw₁ m₁ →
-    ∀ {j ws m₂}, WN T j (.run wc ρw₁ [], m₁) (.done ws, m₂) → WDone T wc (k + 1) ρw m ws m₂
-  | _, _, _, _, _, .zero _ _, _, _, _, h => .succ h (.zero _ _)
-  | _, _, _, _, _, .succ h₁ hr, _, _, _, h => .succ h₁ (WDone.snoc hr h)
-
 theorem envRel_cap_inv {T : Table} {lay : Int → W} {σ : Store} {p : Int} {ρw : List W}
     (h : EnvRel T lay σ [tcap] ([(Atom.const (.cap p) : Atom₂)].map valOf) ρw) :
     ∃ n, σ.R.lookup p = some n ∧ ρw = capWords lay p n := by
