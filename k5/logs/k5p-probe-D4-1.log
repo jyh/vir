@@ -1,0 +1,6 @@
+saltqueue: ticket P2 seat=root pid=35055
+(4,
+  ["VIRL1.L1.Prim.eq", "VIRL1.L1.Prim.le", "VIRL1.L1.Prim.sub", "VIRL1.L1.Prim.mul", "VIRL1.L1.Prim.add",
+    "VIRL1.L1.Prim.lt"])
+1
+saltbuild EXIT=0

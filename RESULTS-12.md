@@ -2,7 +2,8 @@
 
 **Frame written 2026-11-12 by the 70th vir head (STATUS-vir 302).** Every cell below is COPIED from the record that scored it, with
 that record named, so a reader can check each verdict at its source. No verdict is first made here. A row whose source has not
-scored it reads **OWED**, and this frame does not fill it.
+scored it reads **OWED**, and this frame does not fill it. (D4 was scored at its source by the same head after this frame was first
+written; its cell was copied from there.)
 amend-23's own notes ride with every row. There is ONE arm, the Lean one (the MetaPRL arm builds neither object). The writer of the
 predictions is the builder of the arm. Each row is a count or a verdict read from artifacts.
 
@@ -17,7 +18,7 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
 | D1 | S agrees with zlib on ACCEPT/REJECT over X5 (0 errata on accept/reject); disagrees on REASON on ≥ 1 rejected input | **FALSIFIED** on accept/reject (S literal, `inflateLit`, disagrees on 47 of 313 streams, all fixed blocks: erratum DEFLATE-E1). **HOLDS** on reason (Addendum A1's stream). The E1-repaired `inflate` agrees on 313/313 | deflate/x5/X5-RUN-1.md; deflate/STAGE-DEFLATE.md "Findings"; errata/ERRATA-DEFLATE.md |
 | D2 | no change to L1 or L2 | **HOLDS**: 0 commits under l1/ l2/ over the branch (control: 121 under deflate/); 0 DEFLATE rows in ERRATA-L1/L2 | deflate/STAGE-DEFLATE.md "D5 and D6, SCORED" |
 | D3 | the input cursor alone is not the termination measure | **HOLDS**: Φ f = mW·(TBL + BITS + OUT) + LOC with OUT = OUTMAX − m (Measure.lean:62–65) | same section |
-| D4 | bit extraction uses no new primitive; ≥ 1 `fix` | **OWED as a score.** The stage record READS it (POW/STRIP are pure `fix` terms over Int sub/lt/add; "that is D4's ≥ 1 fix") but has no SCORED line | deflate/STAGE-DEFLATE.md l.42–58 |
+| D4 | bit extraction uses no new primitive; ≥ 1 `fix` | **HOLDS** †: stepT has 4 `fix` nodes and applies {add, sub, mul, lt, le, eq} ⊆ P; P unchanged (D2) | deflate/STAGE-DEFLATE.md "D4 HOLDS"; k5/probes/D4Fix.lean, k5p-probe-D4-1 |
 | D5 | canonical code ≥ 25 % of the arm's C5 tokens | **FALSIFIED**: 3,743 / 184,961 = 2.0 % (2.3 % over the nine declared files only) | deflate/out/counts-d5.tsv + .cmd; STAGE-DEFLATE "SCORED" |
 | D6 | > 109 builds to correctness | **HOLDS**: 404 `saltbuild EXIT=` lines to df-audit-031 (builds alone: 310) | STAGE-DEFLATE "SCORED" |
 | D7 | Safety on every input with no premise on the bytes | **OWED**: `SafetyStmt` carries `∀ x ∈ b, x < 256`; byte TYPE or premise is a NON-AUTHOR call (STATUS-vir 297; the author recommends the type) | STAGE-DEFLATE "SCORED", last bullets |

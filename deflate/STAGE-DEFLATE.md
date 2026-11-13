@@ -487,6 +487,11 @@ DECLARATIONS-DEFLATE.md says, with packages APFS-cloned from `compiler/` and the
 - **D3 HOLDS.** Termination is proved (`safety_of_step`, `iter_reach`) by `Φ f = mW · (TBL f + BITS f + OUT f) + LOC f`
   (Measure.lean:65), with `OUT f = OUTMAX − m` (:62) and TBL the table prefix. That is not a function of the input bit position
   alone, which is D3's falsifier.
+- **D4 HOLDS (SCORED 2026-11-12 by the 70th head, at its instrument "the program's term").** k5/probes/D4Fix.lean (k5p-probe-D4-1,
+  EXIT=0) walks stepT. It finds **4** `fix` nodes (predicted ≥ 1; control: a one-`fix` term reads 1), and the primitives it applies are
+  {add, sub, mul, lt, le, eq}, a subset of L1's P = {add, sub, mul, lt, le, eq, and, or, not, max}. P is unchanged: D2's count is 0
+  commits under l1/ l2/. The bits come from L2 terms: POW/STRIP are pure `fix` terms, and `bitProg` steps to S1's bit (l.42–58).
+  LIMIT: the walker is `partial` and counts syntactically. A `fix` inside a λ body counts once per occurrence in the term, not per run.
 - **Owed, not scored here: D7.** `SafetyStmt` carries `∀ x ∈ b, x < 256`. A scorer must rule which it is: the byte TYPE (b :
   Array Nat models a byte string, and S-5 says "every byte string b"), or a premise on the bytes, which D7 forbids. The author
   recommends the first, and leaves the call to a non-author read. D1 has its own row (X5's run, STATUS 288; Findings below).
