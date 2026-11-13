@@ -1,0 +1,30 @@
+saltqueue: ticket P2 seat=root pid=55342
+probes/OpInv.lean:10:57: warning: This simp argument is unused:
+  opStep
+
+Hint: Omit it from the simp argument list.
+  simp [̵o̵p̵S̵t̵e̵p̵]̵ ̵at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/OpInv.lean:12:8: warning: '(rename_i c₁; cases c₁ <;> simp [opStep] at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/OpInv.lean:12:8: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/OpInv.lean:10:70: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+probes/OpInv.lean:17:61: error: unexpected token 'by'; expected '?', '_', '{' or tactic
+probes/OpInv.lean:17:59: error: unsolved goals
+vs : List Atom₂
+σ σ' : Store
+v : Atom₂
+h✝ : opStep Op.store vs σ = some (v, σ')
+p i w : ℤ
+h : opStep Op.store [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int w)] σ = some (v, σ')
+⊢ ∃ p_1 i_1 w_1,
+    [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int w)] =
+        [Atom.const (Const.cap p_1), Atom.const (Const.int i_1), Atom.const (Const.int w_1)] ∧
+      Store.store p_1 i_1 w_1 σ = some σ' ∧ v = Atom.const (Const.cap p_1)
+saltbuild EXIT=1

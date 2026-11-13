@@ -1,0 +1,142 @@
+saltqueue: ticket P2 seat=root pid=49992
+case h_1
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+n✝ : ℤ
+heq✝ : Op.load = Op.alloc
+h :
+  Option.map
+      (fun x =>
+        match x with
+        | (p, σ') => (Atom.const (Const.cap p), σ'))
+      (Store.alloc n✝ x✝³) =
+    some (v, σ')
+⊢ False
+case h_2
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ : ℤ
+heq✝ : Op.load = Op.load
+h : Option.map (fun v => (Atom.const (Const.int v), x✝³)) (Store.load p✝ i✝ x✝³) = some (v, σ')
+⊢ False
+case h_3
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ v✝ : ℤ
+heq✝ : Op.load = Op.store
+h : Option.map (fun σ' => (Atom.const (Const.cap p✝), σ')) (Store.store p✝ i✝ v✝ x✝³) = some (v, σ')
+⊢ False
+case h_4
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ : ℤ
+heq✝ : Op.load = Op.free
+h : Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p✝ x✝³) = some (v, σ')
+⊢ False
+case h_5
+σ' : Store
+v : Atom₂
+x✝⁸ : List Atom₂
+x✝⁷ : Store
+x✝⁶ : Op
+x✝⁵ : List Atom₂
+x✝⁴ : Store
+x✝³ : ∀ (n : ℤ), Op.load = Op.alloc → x✝⁸ = [Atom.const (Const.int n)] → False
+x✝² : ∀ (p i : ℤ), Op.load = Op.load → x✝⁸ = [Atom.const (Const.cap p), Atom.const (Const.int i)] → False
+x✝¹ :
+  ∀ (p i v : ℤ),
+    Op.load = Op.store → x✝⁸ = [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)] → False
+x✝ : ∀ (p : ℤ), Op.load = Op.free → x✝⁸ = [Atom.const (Const.cap p)] → False
+h : none = some (v, σ')
+⊢ False
+probes/OpSplit.lean:3:0: warning: declaration uses `sorry`
+probes/OpSplit.lean:6:2: warning: 'all_goals trace_state' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+case h_1
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+n✝ : ℤ
+heq✝ : Op.store = Op.alloc
+h :
+  Option.map
+      (fun x =>
+        match x with
+        | (p, σ') => (Atom.const (Const.cap p), σ'))
+      (Store.alloc n✝ x✝³) =
+    some (v, σ')
+⊢ False
+case h_2
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ : ℤ
+heq✝ : Op.store = Op.load
+h : Option.map (fun v => (Atom.const (Const.int v), x✝³)) (Store.load p✝ i✝ x✝³) = some (v, σ')
+⊢ False
+case h_3
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ i✝ v✝ : ℤ
+heq✝ : Op.store = Op.store
+h : Option.map (fun σ' => (Atom.const (Const.cap p✝), σ')) (Store.store p✝ i✝ v✝ x✝³) = some (v, σ')
+⊢ False
+case h_4
+σ' : Store
+v : Atom₂
+x✝³ : Store
+x✝² : Op
+x✝¹ : List Atom₂
+x✝ : Store
+p✝ : ℤ
+heq✝ : Op.store = Op.free
+h : Option.map (fun σ' => (Atom.const Const.unit, σ')) (Store.free p✝ x✝³) = some (v, σ')
+⊢ False
+case h_5
+σ' : Store
+v : Atom₂
+x✝⁸ : List Atom₂
+x✝⁷ : Store
+x✝⁶ : Op
+x✝⁵ : List Atom₂
+x✝⁴ : Store
+x✝³ : ∀ (n : ℤ), Op.store = Op.alloc → x✝⁸ = [Atom.const (Const.int n)] → False
+x✝² : ∀ (p i : ℤ), Op.store = Op.load → x✝⁸ = [Atom.const (Const.cap p), Atom.const (Const.int i)] → False
+x✝¹ :
+  ∀ (p i v : ℤ),
+    Op.store = Op.store → x✝⁸ = [Atom.const (Const.cap p), Atom.const (Const.int i), Atom.const (Const.int v)] → False
+x✝ : ∀ (p : ℤ), Op.store = Op.free → x✝⁸ = [Atom.const (Const.cap p)] → False
+h : none = some (v, σ')
+⊢ False
+probes/OpSplit.lean:8:0: warning: declaration uses `sorry`
+probes/OpSplit.lean:11:2: warning: 'all_goals trace_state' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+saltbuild EXIT=0

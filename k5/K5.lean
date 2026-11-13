@@ -22,3 +22,4 @@ import K5.MagBuild
 import K5.MagAll
 import K5.DeflateInRange
 import K5.DeflateNoOvf
+import K5.DeflateLoaded

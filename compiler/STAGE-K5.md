@@ -143,3 +143,17 @@
     before the compiler). That reading is withdrawn. **LIMIT beside the verdict:** no caller setup that discharges `Layout`/`MemRel`
     for DEFLATE's store exists yet, so deflate_noovf is conditional on its loader. That is STATUS-vir row 298 (a generic construction),
     a strengthening and not K6's subject.
+- **Row 298 PROVED (70th head, branch k6-layout): `deflate_noovf_loaded`, the loader premise DISCHARGED for DEFLATE (Addendum 7,
+  declared at f4a9c74 before its files).** k5p-133 EXIT=0 (K5.DeflateLoaded), root k5p-134 EXIT=0.
+  - L-1 `loader_ok` (k5/K5/Loader.lean, generic): a WF store whose regions lie in [0, 2⁶⁰) and whose cells are in range satisfies
+    `Layout σ scaleLay` and `MemRel scaleLay σ (scaleMem σ)` (cell i of region p at byte 8·(p + i)).
+  - L-2 `run_shape` (k5/K5/RunShape.lean, generic over L2 programs): a ⟶₂ run of a `tmOk` term (no alloc/free, int literals in
+    range) under `SrcInRange` keeps σ.R, WF, and every cell in range. Through `eval_ok` (an evaluated atom of an ok, in-range
+    atom is ok), substitution, and `opStep_load_inv`/`opStep_store_inv`.
+  - D-1 (k5/K5/DeflateLoaded.lean): `tmOk stepT` by `decide`; `initCell` in range from bytes < 256 and n, OUTMAX < 2³²; every
+    reached σ has `σ.R = {p ↦ L0 n om}` (`reach_shape`). Hypotheses of deflate_noovf_loaded: bytes < 256, n, OUTMAX < 2³², and
+    the PLACEMENT `0 ≤ p`, `p + L0 n om ≤ 2⁶⁰`. No hypothesis is on the bytes' content, and none is a loader premise.
+  - Audit k5-audit-010: 78 rows (63 within the three, 4 [propext, Quot.sound], 11 [propext]), 0 sorryAx. Going red:
+    k5p-probe-mut-loaded-1 drops the placement bound (refused at the `Placed` step, line 12, omega) and the `tmOk` premise (refused
+    at line 16), so both hypotheses are used. The first logs through the replay filter are k5p-122 onward (k5/LOGS-FILTER.md).
+  - Builds of this row: k5p-120 (stopped while queued), 121 (empty: wrapper defect), 122–133 (8 failed, then green), 134 root.
