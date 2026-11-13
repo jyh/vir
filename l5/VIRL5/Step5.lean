@@ -73,6 +73,7 @@ inductive Step₅ : Config₅ → Config₅ → Prop where
       Step₅ (.appK a₁ a₂ cs, σ) (Tm₅.substAll (.fix τ₁ k τ₂ e :: v :: qs) e, σ)
   | letKRet {τ j a ds e₂ v qs σ} : Atom₅.eval a = some v → Atom₅.evalL ds = some qs → qs.length = j →
       Step₅ (.letK τ j (.retK a ds) e₂, σ) (Tm₅.substAll (v :: qs) e₂, σ)
+  | letKRet0 {τ a e₂ v σ} : Atom₅.eval a = some v → Step₅ (.letK τ 0 (.ret a) e₂, σ) (e₂.subst 0 v, σ)
   | letKStep {τ j e₁ e₁' e₂ σ σ'} : Step₅ (e₁, σ) (e₁', σ') → Step₅ (.letK τ j e₁ e₂, σ) (.letK τ j e₁' e₂, σ')
 
 /-- ⟶₅*. -/

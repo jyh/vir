@@ -109,6 +109,20 @@ theorem pres₅ : ∀ {c c' : Config₅}, Step₅ c c' → ∀ {Ω τ k σq σf}
         obtain ⟨Ω', hp', ht'⟩ := RT₅.substCaps ps ht₂
         refine ⟨Ω', σq, RT₅.substV (Γ₁ := []) (Δ₁ := []) rfl ht' (.inl hwt), OwnAll.perm ?_ _ hown, hd, hσ, hσ ▸ hwf⟩
         exact hp.trans ((hps.append_right _).trans hp'.symm)
+  | letKRet0 hv =>
+    intro Ω τ k σq σf hrt hown hd hwf hσ
+    dsimp only at hrt hσ ⊢
+    cases hrt with
+    | letK hs hp hc ht₁ ht₂ =>
+      cases hs
+      cases ht₁ with
+      | ret _ ha =>
+        obtain ⟨w, hw, -, hwt⟩ := eval_total₅ _ ha
+        rw [hw] at hv; cases hv
+        exact ⟨_, σq, RT₅.substV (Γ₁ := []) (Δ₁ := []) rfl ht₂ (.inl hwt), OwnAll.perm (by simpa using hp) _ hown,
+          hd, hσ, hσ ▸ hwf⟩
+      | retCap hΓ _ => simp at hΓ
+      | retCapC _ => simp [Ty₅.hasCap, t5cap] at hc
   | op hvs hop =>
     intro Ω τ k σq σf hrt hown hd hwf hσ
     dsimp only at hrt hσ ⊢

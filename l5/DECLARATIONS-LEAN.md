@@ -85,3 +85,10 @@ representation choice inside L5-E1, not a change of it; nothing in amend-24 move
    #j, cᵢ′ = #(j−i)). The `callK τ a₁ a₂ cs e` named above is the derived form `letK τ |cs| (appK a₁ a₂ cs) e`. ⟶₅ then needs NO
    return frame: `letK τ j (retK v qs) e₂` steps to e₂ with x := v and the cᵢ′ := qᵢ, and `letK` steps under its first term as `letE`
    does. L2's `app` stays a former (k = 0, Δ = ∅), so ι is the identity on every L2 former.
+
+## ADDENDUM 2 (2026-11-13, the same head, after Step5/Preservation5 built and BEFORE Progress5 exists): ⟶₅ was missing one rule
+Porting L2's progress showed a typable configuration with no step: `letK τ 0 (ret a) e₂`. Its head is typed at (τ, 0) by `ret` (k = 0),
+which `letK` accepts at j = 0, but `letKRet` fires only on a `retK`. So ⟶₅ gains **`letKRet0`: `letK τ 0 (ret a) e₂` steps to
+e₂ with x := ⟨a⟩**, the j = 0 reading of `letKRet` (no capability comes back). It is a gap in the Lean arm's step relation, not in the
+object or L5-E1, and it is recorded here before the progress theorem that found it is written. Files changed: Step5 (the rule), CE (its
+impossibility on ι's image, like the other three), Preservation5 (its case, `letKRet` with no constants). No amend-24 row moves.

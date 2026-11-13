@@ -229,6 +229,7 @@ theorem ce_bwd {c c' : Config₅} (h : Step₅ c c') :
   | appKLam _ _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | appKFix _ _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | letKRet _ _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
+  | letKRet0 _ => intro e σ hc; cases e <;> simp [ιE] at hc
   | letKStep _ _ => intro e σ hc; cases e <;> simp [ιE] at hc
 
 /-- LV3 on ⟶, stated whole: an embedded L2 configuration steps under ⟶₅ to c' iff it steps under ⟶₂ to a configuration whose
