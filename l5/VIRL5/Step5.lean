@@ -41,14 +41,14 @@ def Atom₅.evalL : List Atom₅ → Option (List Atom₅)
   | a :: as => (Atom₅.eval a).bind fun v => (Atom₅.evalL as).map (v :: ·)
 end
 
-/-- One O₂ operation on VALUES (L2's `opStep`, over Atom₅). -/
-def opStep₅ : Op → List Atom₅ → Store → Option (Atom₅ × Store)
-  | .alloc, [.const (.int n)], σ => (Store.alloc n σ).map fun (p, σ') => (.const (.cap p), σ')
-  | .load, [.const (.cap p), .const (.int i)], σ => (Store.load p i σ).map fun v => (.const (.int v), σ)
-  | .store, [.const (.cap p), .const (.int i), .const (.int v)], σ =>
-      (Store.store p i v σ).map fun σ' => (.const (.cap p), σ')
-  | .free, [.const (.cap p)], σ => (Store.free p σ).map fun σ' => (.const .unit, σ')
-  | _, _, _ => none
+/-- A value that is an L2 constant, lowered to L2 (L4's `lowerV`, over Atom₅). -/
+def lowerV : Atom₅ → Option Atom₂
+  | .const c => some (.const c)
+  | _ => none
+
+/-- One O₂ operation on VALUES: L2's `opStep` itself, on the lowered operands (as L4 did), its result raised by ι. -/
+def opStep₅ (o : Op) (vs : List Atom₅) (σ : Store) : Option (Atom₅ × Store) :=
+  (vs.mapM lowerV).bind fun ws => (opStep o ws σ).map fun p => (ιA p.1, p.2)
 
 abbrev Config₅ := Tm₅ × Store
 
