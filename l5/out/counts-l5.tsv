@@ -1,0 +1,43 @@
+l5	L5.LV4.arms	32	MEASURED:pres₅ 15 + progress₅ 17
+l5	L5.LV4.pres.letRet.C5tok	145	MEASURED:19 lines
+l5	L5.LV4.pres.letStep.C5tok	140	MEASURED:15 lines
+l5	L5.LV4.pres.letKStep.C5tok	140	MEASURED:15 lines
+l5	L5.LV4.pres.letKRet.C5tok	112	MEASURED:16 lines
+l5	L5.LV4.pres.letRetK0.C5tok	114	MEASURED:17 lines
+l5	L5.LV4.pres.letKRet0.C5tok	100	MEASURED:14 lines
+l5	L5.LV4.pres.op.C5tok	722	MEASURED:79 lines
+l5	L5.LV4.pres.appLam.C5tok	99	MEASURED:13 lines
+l5	L5.LV4.pres.appFix.C5tok	113	MEASURED:15 lines
+l5	L5.LV4.pres.appKLam.C5tok	136	MEASURED:19 lines
+l5	L5.LV4.pres.appKFix.C5tok	151	MEASURED:20 lines
+l5	L5.LV4.pres.iteT.C5tok	35	MEASURED:4 lines
+l5	L5.LV4.pres.iteF.C5tok	35	MEASURED:4 lines
+l5	L5.LV4.pres.caseL.C5tok	67	MEASURED:8 lines
+l5	L5.LV4.pres.caseR.C5tok	67	MEASURED:8 lines
+l5	L5.LV4.prog.ret.C5tok	15	MEASURED:1 lines
+l5	L5.LV4.prog.retCap.C5tok	17	MEASURED:1 lines
+l5	L5.LV4.prog.retCapC.C5tok	14	MEASURED:1 lines
+l5	L5.LV4.prog.letE.C5tok	160	MEASURED:21 lines
+l5	L5.LV4.prog.alloc.C5tok	85	MEASURED:9 lines
+l5	L5.LV4.prog.load.C5tok	19	MEASURED:1 lines
+l5	L5.LV4.prog.loadC.C5tok	132	MEASURED:12 lines
+l5	L5.LV4.prog.store.C5tok	20	MEASURED:1 lines
+l5	L5.LV4.prog.storeC.C5tok	133	MEASURED:13 lines
+l5	L5.LV4.prog.free.C5tok	18	MEASURED:1 lines
+l5	L5.LV4.prog.freeC.C5tok	61	MEASURED:6 lines
+l5	L5.LV4.prog.app.C5tok	63	MEASURED:7 lines
+l5	L5.LV4.prog.ite.C5tok	50	MEASURED:7 lines
+l5	L5.LV4.prog.case.C5tok	53	MEASURED:6 lines
+l5	L5.LV4.prog.retK.C5tok	16	MEASURED:1 lines
+l5	L5.LV4.prog.appK.C5tok	76	MEASURED:8 lines
+l5	L5.LV4.prog.letK.C5tok	163	MEASURED:22 lines
+l5	L5.LV4.fixCase	151	MEASURED:pres.appKFix
+l5	L5.LV4.nextCase	722	MEASURED:pres.op
+l5	L5.LV4.ratioPermille	209	MEASURED:floor(1000 x fix / next)
+l5	L5.LV4.fixSum	264	BESIDE:appFix + appKFix (not the verdict)
+l5	L5.LV4.direction	FALSIFIED	MEASURED:larger fix arm alone > every other arm
+l5	L5.LV2.audit	40	MEASURED:audit-040.log
+l5	L5.LV2.rows	243	MEASURED
+l5	L5.LV2.outside	0	MEASURED:none
+l5	L5.LV2.sorryAx	0	MEASURED
+l5	L5.LV2.direction	HOLDS	MEASURED:every row within propext, Classical.choice, Quot.sound

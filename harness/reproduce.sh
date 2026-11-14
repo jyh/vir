@@ -107,6 +107,15 @@ else
   echo "  PINNED   l5/ (LV9) at its counts commit ${LV9SHA:0:12}"
   chk "$V/l5/out/counts-lv9.tsv" --arm lv9 "$M/lv9at/l5"
 fi
+# amend-24 LV2 + LV4 (STATUS-vir 316; Addendum 7), read from l5/ at the commit that wrote counts-l5.tsv (sources, logs and out/)
+L5SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-l5.tsv)
+if [ -z "$L5SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-l5.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/l5at" && git -C "$V" archive "$L5SHA" l5/VIRL5 l5/logs l5/out | tar -x -C "$M/l5at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $L5SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV2, LV4) at its counts commit ${L5SHA:0:12}"
+  chk "$V/l5/out/counts-l5.tsv" --arm l5 "$M/l5at/l5"
+fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here

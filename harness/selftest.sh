@@ -1324,6 +1324,45 @@ if cmp -s "$H/count.py" "$F/mutant59.py"; then say "ARM59 mutant NOT PLANTED"; f
 elif check59 "$F/mutant59.py"; then say "ARM59 mutant SURVIVED (removed = L5 - L2)"; fail=1
 else say "ARM59 mutant KILLED"; fi
 
+# ARM60 (STATUS-vir 316; l5/DECLARATIONS-LEAN Addendum 7): `--arm l5`, LV4 per case (top-level arms of pres₅ and progress₅, C5 tokens
+# after comment strip; a NESTED `|` stays in its arm; the fix case = the larger of appFix/appKFix ALONE) and LV2 from the newest
+# non-control audit log. Expectations are wc -w of the arm texts as built here.
+D60="$F/d60"; mkdir -p "$D60/VIRL5" "$D60/logs"
+P60_A='  | letRet hv => exact foo'
+P60_B='  | appFix h₁ h₂ => exact bar baz'
+P60_C='  | appKFix h₁ h₂ =>
+    cases h₁ with
+    | inner x => exact qux one two three four five six
+    | other y => exact quux'
+P60_D='  | _, _, .ret _ _ => .inl trivial'
+P60_E='  | _, σ, .app h₁ h₂ => by exact zap zip zop'
+{ printf 'theorem pres₅ : ∀ {c c'"'"'}, Step₅ c c'"'"' → True\n'; printf '%s\n' "$P60_A"; printf '%s -- never counted words\n' "$P60_B"; printf '%s\n' "$P60_C"
+  printf '\ntheorem after : True := trivial\n'; } > "$D60/VIRL5/Preservation5.lean"
+{ printf 'theorem progress₅ : ∀ {e}, RT₅ e → True\n'; printf '%s\n' "$P60_D" "$P60_E"; printf 'end VIRL5\n'; } > "$D60/VIRL5/Progress5.lean"
+printf "saltqueue: ticket P1\n'VIRL5.a' depends on axioms: [propext]\n'VIRL5.b' depends on axioms: [propext, Classical.choice, Quot.sound]\n'VIRL5.c' does not depend on any axioms\nsaltbuild EXIT=0\n" > "$D60/logs/audit-002.log"
+printf "'control_sorry' depends on axioms: [sorryAx]\nsaltbuild EXIT=0\n" > "$D60/logs/audit-002c.log"
+printf "'VIRL5.z' depends on axioms: [sorryAx]\nsaltbuild EXIT=0\n" > "$D60/logs/audit-001.log"
+E60_A=$(wc_w "$P60_A"); E60_B=$(wc_w "$P60_B"); E60_C=$(wc_w "$P60_C"); E60_D=$(wc_w "$P60_D"); E60_E=$(wc_w "$P60_E")
+E60_FIX=$(( E60_B > E60_C ? E60_B : E60_C )); E60_SUM=$(( E60_B + E60_C ))
+E60_NEXT=$(printf '%s\n' "$E60_A" "$E60_D" "$E60_E" | sort -n | tail -1)
+E60_DIR=$( [ "$E60_FIX" -gt "$E60_NEXT" ] && echo HOLDS || echo FALSIFIED )
+check60() {
+  o=$(python3 "$1" --arm l5 "$D60" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v L5.LV4.arms)" = 5 ] && [ "$(v L5.LV4.pres.letRet.C5tok)" = "$E60_A" ] && [ "$(v L5.LV4.pres.appFix.C5tok)" = "$E60_B" ] \
+  && [ "$(v L5.LV4.pres.appKFix.C5tok)" = "$E60_C" ] && [ "$(v L5.LV4.prog.ret.C5tok)" = "$E60_D" ] && [ "$(v L5.LV4.prog.app.C5tok)" = "$E60_E" ] \
+  && [ "$(v L5.LV4.fixCase)" = "$E60_FIX" ] && [ "$(v L5.LV4.nextCase)" = "$E60_NEXT" ] && [ "$(v L5.LV4.fixSum)" = "$E60_SUM" ] \
+  && [ "$(v L5.LV4.direction)" = "$E60_DIR" ] && [ "$(v L5.LV4.ratioPermille)" = $(( 1000 * E60_FIX / E60_NEXT )) ] \
+  && [ "$(v L5.LV2.audit)" = 2 ] && [ "$(v L5.LV2.rows)" = 3 ] && [ "$(v L5.LV2.outside)" = 0 ] && [ "$(v L5.LV2.sorryAx)" = 0 ] \
+  && [ "$(v L5.LV2.direction)" = HOLDS ]
+}
+if check60 "$H/count.py"; then say "ARM60 l5 fixture OK (LV4 fix $E60_FIX vs next $E60_NEXT $E60_DIR, sum $E60_SUM beside; LV2 audit-002 3 rows, control refused)"
+else say "ARM60 l5 fixture FAIL"; python3 "$H/count.py" --arm l5 "$D60"; fail=1; fi
+sed "s/LV4_ARM_RE = re.compile(r'^  \\\\| ')  # LV4-ARM/LV4_ARM_RE = re.compile(r'^\\\\s+\\\\| ')/" "$H/count.py" > "$F/mutant60.py"  # nested arms split
+if cmp -s "$H/count.py" "$F/mutant60.py"; then say "ARM60 mutant NOT PLANTED"; fail=1
+elif check60 "$F/mutant60.py"; then say "ARM60 mutant SURVIVED (a nested | read as a top-level arm)"; fail=1
+else say "ARM60 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

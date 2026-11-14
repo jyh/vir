@@ -2185,9 +2185,81 @@ def lv9(d):
     return rows
 
 
+# amend-24 LV4 + LV2 on the Lean arm (l5/DECLARATIONS-LEAN Addendum 7; selftest ARM60). DIR is the l5 project. LV4: the top-level
+# arms of pres₅ and progress₅, C5 tokens per arm after l4_strip; the fix case is the LARGER of appFix/appKFix ALONE, against every
+# other arm; their sum is BESIDE. LV2: the newest non-control logs/audit-NNN.log.
+LV4_ARM_RE = re.compile(r'^  \| ')  # LV4-ARM
+LV2_AUDIT_RE = re.compile(r'^audit-(\d+)\.log$')
+LV2_OK = {'propext', 'Classical.choice', 'Quot.sound'}
+
+
+def lv4_arms(path, thm, prog):
+    if not os.path.isfile(path):
+        return None
+    lines = l4_strip(read(path)).splitlines()
+    start = next((i for i, l in enumerate(lines) if l.startswith('theorem ' + thm + ' ')), None)
+    if start is None:
+        return None
+    arms, cur = [], None
+    for l in lines[start + 1:]:
+        if l and not l[0].isspace():
+            break
+        if LV4_ARM_RE.match(l):
+            if prog:
+                m = re.search(r'\.([A-Za-z][A-Za-z0-9_]*)', l)
+            else:
+                m = re.match(r'^\s*\|\s*([A-Za-z][A-Za-z0-9_]*)', l)
+            cur = [m.group(1) if m else '?', []]
+            arms.append(cur)
+        if cur is not None:
+            cur[1].append(l)
+    return [(n, len(' '.join(t).split()), len([x for x in t if x.strip()])) for n, t in arms]
+
+
+def leanl5(d):
+    d = os.path.abspath(d)
+    rows = []
+    pres = lv4_arms(os.path.join(d, 'VIRL5', 'Preservation5.lean'), 'pres₅', False)
+    prog = lv4_arms(os.path.join(d, 'VIRL5', 'Progress5.lean'), 'progress₅', True)
+    if pres is None or prog is None:
+        rows.append(('L5.LV4.arms', 0, 'EMPTY:pres₅ or progress₅ not found'))
+    else:
+        allarms = [('pres', n, t, ln) for n, t, ln in pres] + [('prog', n, t, ln) for n, t, ln in prog]
+        rows.append(('L5.LV4.arms', len(allarms), 'MEASURED:pres₅ %d + progress₅ %d' % (len(pres), len(prog))))
+        for th, n, t, ln in allarms:
+            rows.append(('L5.LV4.%s.%s.C5tok' % (th, n), t, 'MEASURED:%d lines' % ln))
+        fix = [(t, n) for th, n, t, _ in allarms if th == 'pres' and n in ('appFix', 'appKFix')]
+        rest = [(t, '%s.%s' % (th, n)) for th, n, t, _ in allarms if not (th == 'pres' and n in ('appFix', 'appKFix'))]
+        if fix and rest:
+            ft, fn_ = max(fix); nt, nn = max(rest)
+            rows += [('L5.LV4.fixCase', ft, 'MEASURED:pres.' + fn_),
+                     ('L5.LV4.nextCase', nt, 'MEASURED:' + nn),
+                     ('L5.LV4.ratioPermille', (1000 * ft) // nt if nt else 0, 'MEASURED:floor(1000 x fix / next)'),
+                     ('L5.LV4.fixSum', sum(t for t, _ in fix), 'BESIDE:appFix + appKFix (not the verdict)'),
+                     ('L5.LV4.direction', 'HOLDS' if ft > nt else 'FALSIFIED', 'MEASURED:larger fix arm alone > every other arm')]
+        else:
+            rows.append(('L5.LV4.direction', 'EMPTY', 'EMPTY:no fix arm or no other arm'))
+    logs = os.path.join(d, 'logs')
+    got = sorted((int(m.group(1)), f) for f in (os.listdir(logs) if os.path.isdir(logs) else []) for m in [LV2_AUDIT_RE.match(f)] if m)
+    if not got:
+        return rows + [('L5.LV2.audit', 0, 'EMPTY:no audit log')]
+    n, f = got[-1]
+    lines = read(os.path.join(logs, f)).splitlines()
+    if 'saltbuild EXIT=0' not in (l.strip() for l in lines):
+        return rows + [('L5.LV2.audit', n, 'REFUSED:%s has no saltbuild EXIT=0' % f)]
+    ax = [l for l in lines if 'depends on axioms' in l or 'does not depend on any axioms' in l]
+    outside = [l for l in ax if 'depends on axioms' in l and not set(x.strip() for x in l.split('[', 1)[1].rstrip(']').split(',')) <= LV2_OK]
+    sorry = sum(1 for l in ax if 'sorryAx' in l)
+    rows += [('L5.LV2.audit', n, 'MEASURED:' + f), ('L5.LV2.rows', len(ax), 'MEASURED'),
+             ('L5.LV2.outside', len(outside), 'MEASURED:' + (outside[0][:80] if outside else 'none')),
+             ('L5.LV2.sorryAx', sorry, 'MEASURED'),
+             ('L5.LV2.direction', 'HOLDS' if ax and not outside else 'FALSIFIED', 'MEASURED:every row within propext, Classical.choice, Quot.sound')]
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2217,6 +2289,8 @@ def main():
         rows = deflate(a.dir)
     elif a.arm == 'lv9':
         rows = lv9(a.dir)
+    elif a.arm == 'l5':
+        rows = leanl5(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
     elif a.arm == 'metaprll2':
