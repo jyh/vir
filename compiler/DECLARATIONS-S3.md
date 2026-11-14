@@ -203,3 +203,15 @@ evaluated into BUF slots 0…, and rdx is loaded from slot `need x` after both: 
 `need x + need f ≤ |BUF|`. As in Addendum 8, `sim_app` takes that f's evaluation is not BAD: S2 answers OVF for (BAD, OVF), and the
 machine code of a BAD operand has no claimed behaviour. Lower3's `gen` and `gsz` change in their `app` case only, and every
 `app`-free proof is unaffected. This file's main text is not edited; this addendum is its erratum.
+
+## ADDENDUM 12 (2026-11-14, the 78th head, before Step3.lean): one step for every code form, then runs
+- **`sim_step`** dispatches on the code form to the seven `sim_*` lemmas. Its RES side is stated once, of the PRE-state
+  `run c ρ k`, as `ResWhy`: either `EnvOver L ρ k (grow c)`, i.e. `env0 − envLo < 8·(|ρ| + Σ over k of |ρᵢ| + grow c)`, or
+  `StkOver L ((c, ρ) :: k)`. Here `grow` is the step's static prepend bound: ret o ↦ wid o, app f x ↦ wid x + 1, load ↦ 1,
+  store ↦ 2, case o ↦ wid o, ite and letE ↦ 0. This is Addendum 2's S3-S with n made static. Each step's own condition implies it,
+  because EnvOver is monotone in n, and a ret's or an app's successor bound counts Σ over k and not ρ, so it is only weaker.
+- **`StepOk`** collects the per-step premises the lemmas take: the `need` bounds against |BUF|, CapLive (Addendum 7), and the
+  operand that must not be BAD (Addenda 8 and 11). `s3_run` takes `StepOk` at every state the word run reaches. Discharging it
+  from S2's `SRel` and S3's `Fragment3.ok` is the composition's job (next), and none of it is a premise on stored values.
+- **`s3_run`**: for a word run `WN tbl n W Wf` from an R3 state, the machine reaches R3 at Wf in m ≥ n steps (divergence is kept:
+  every word step takes at least one machine step), OR it returns RES at some reached state Wr whose `ResWhy` holds.
