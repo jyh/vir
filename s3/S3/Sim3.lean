@@ -206,4 +206,53 @@ theorem chk_sub (x y : W) : chk (x.toInt - y.toInt) = if BitVec.ssubOverflow x y
     simp
   · rfl
 
+/-! ## Fetch-and-step for the register arithmetic forms and the conditional branch -/
+
+theorem add_sub_self' (x a : W) : x + (a - x) = a := by rw [BitVec.add_comm, BitVec.sub_add_cancel]
+
+theorem live_of {s : Cpu} (hs : s.stopped = false) : Live s := live_of_not_stopped (by simp [hs])
+
+theorem stepP_add_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .add .q (.reg r) (.reg r')) :: l)) :
+    stepP p s = { s with regs := s.regs.set r (s.regs.get r + s.regs.get r'), flags := Flags.add .q (s.regs.get r) (s.regs.get r') s.flags, rip := nxt C s.rip (.op (.bin .add .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_add_reg_reg .q r r' (live_of hs)]
+  simp [Value.writeView, Flags.addResult, Cpu.getReg, nxt, AI.size]
+
+theorem stepP_sub_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .sub .q (.reg r) (.reg r')) :: l)) :
+    stepP p s = { s with regs := s.regs.set r (s.regs.get r - s.regs.get r'), flags := Flags.sub .q (s.regs.get r) (s.regs.get r') s.flags, rip := nxt C s.rip (.op (.bin .sub .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_sub_reg_reg .q r r' (live_of hs)]
+  simp [Value.writeView, Flags.subResult, Cpu.getReg, nxt, AI.size]
+
+theorem stepP_cmp_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .cmp .q (.reg r) (.reg r')) :: l)) :
+    stepP p s = { s with flags := Flags.sub .q (s.regs.get r) (s.regs.get r') s.flags, rip := nxt C s.rip (.op (.bin .cmp .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_cmp_reg_reg .q r r' (live_of hs)]
+  simp [Cpu.getReg, nxt, AI.size]
+
+theorem stepP_setcc {C : Ctx3} {p : Program} {s : Cpu} {c : Cc} {r : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.setcc c (.reg r)) :: l)) :
+    stepP p s = { s with regs := s.regs.set r (Value.writeView .b (s.regs.get r) (if c.eval s.flags then 1 else 0)), rip := nxt C s.rip (.op (.setcc c (.reg r))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_setcc_reg c r (live_of hs)]
+  simp [nxt, AI.size]
+
+/-- `jccA c a`: to `a` when `c` holds, else the next instruction. The target is canonical (a layout fact). -/
+theorem stepP_jccA {C : Ctx3} {p : Program} {s : Cpu} {c : Cc} {a : W} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.jccA c a :: l)) (hcan : canonical a = true) :
+    stepP p s = { s with rip := if c.eval s.flags then a else s.rip + 6 } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_jcc c _ (live_of hs) (fun _ => by
+    have e : s.rip + 6#64 + (a - (s.rip + 6)) = a := by bv_omega
+    rw [e]; exact hcan)]
+  by_cases he : c.eval s.flags <;> simp [he, add_sub_self']
+
 end S3

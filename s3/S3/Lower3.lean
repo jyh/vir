@@ -74,21 +74,27 @@ def movi (r : GPR) (v : W) : AI := .op (.mov .q (.reg r) (.imm v))
 /-- The byte offset of word slot `t`. -/
 def slot (t : Nat) : W := BitVec.ofNat 64 (8 * t)
 
-/-- One arithmetic operator, its operands at BUF slots t and t+1, its result at t (S3-I). -/
+/-- One arithmetic operator, its operands at BUF slots t and t+1 (loaded into rax and rcx), its result at t (S3-I). Register
+    forms only: x86lean states the reg-reg equations for add, sub, cmp, and, or (and imul with any source). -/
 def arithCode (C : Ctx3) (t : Nat) : AOp → List AI
-  | .add => [ld .rax .r14 (slot t), .op (.bin .add .q (.reg .rax) (memAt .r14 (slot (t + 1)))), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .sub => [ld .rax .r14 (slot t), .op (.bin .sub .q (.reg .rax) (memAt .r14 (slot (t + 1)))), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .mul => [ld .rax .r14 (slot t), .op (.imulr .q .rax (memAt .r14 (slot (t + 1))) none), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .lt => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .l (.reg .rcx)), st .r14 (slot t) .rcx]
-  | .le => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .le (.reg .rcx)), st .r14 (slot t) .rcx]
-  | .eq => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .e (.reg .rcx)), st .r14 (slot t) .rcx]
+  | .add => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .add .q (.reg .rax) (.reg .rcx)), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .sub => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .mul => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.imulr .q .rax (.reg .rcx) none), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .lt => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .l (.reg .rdx)), st .r14 (slot t) .rdx]
+  | .le => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .le (.reg .rdx)), st .r14 (slot t) .rdx]
+  | .eq => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .e (.reg .rdx)), st .r14 (slot t) .rdx]
   | .max => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
       .op (.cmov .le .q .rax (.reg .rcx)), st .r14 (slot t) .rax]
-  | .band => [ld .rax .r14 (slot t), .op (.bin .and .q (.reg .rax) (memAt .r14 (slot (t + 1)))), st .r14 (slot t) .rax]
-  | .bor => [ld .rax .r14 (slot t), .op (.bin .or .q (.reg .rax) (memAt .r14 (slot (t + 1)))), st .r14 (slot t) .rax]
+  | .band => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .and .q (.reg .rax) (.reg .rcx)),
+      st .r14 (slot t) .rax]
+  | .bor => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .or .q (.reg .rax) (.reg .rcx)),
+      st .r14 (slot t) .rax]
 
 /-- Copy BUF slots `s..s+n` to `d..d+n`, ascending (safe for a move DOWN, `d ≤ s`). -/
 def moves (s d : Nat) : Nat → List AI
@@ -100,7 +106,8 @@ def evalTo (C : Ctx3) : Nat → WOpd → List AI
   | t, .slice off len => (List.range len).flatMap fun j => [ld .rax .r12 (slot (off + j)), st .r14 (slot (t + j)) .rax]
   | t, .imm ws => ws.zipIdx.flatMap fun p => [movi .rax p.1, st .r14 (slot (t + p.2)) .rax]
   | t, .arith op a b => evalTo C t a ++ evalTo C (t + 1) b ++ arithCode C t op
-  | t, .bnot a => evalTo C t a ++ [movi .rax 1, .op (.bin .sub .q (.reg .rax) (memAt .r14 (slot t))), st .r14 (slot t) .rax]
+  | t, .bnot a => evalTo C t a ++
+      [movi .rax 1, ld .rcx .r14 (slot t), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax]
   | t, .cat a b => evalTo C t a ++ evalTo C (t + wid a) b
   | t, .take _ a => evalTo C t a
   | t, .drop n a => evalTo C t a ++ moves (t + n) t (wid a - n)

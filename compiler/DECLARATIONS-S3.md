@@ -135,3 +135,9 @@ proceeds on it.
 - **The program is ONE contiguous placement** (`allCode`, `lower3 = asm base allCode`): entry stub, FAULT, OVF, RES, main, then the
   table's bodies in order. Instruction fetch is proved once, by `CodeAt` over that list, given that its total size is below 2⁶⁴
   (`asm_nodup`, `at?_of_nodup`). It is then split per piece by `codeAt_left`/`codeAt_right`.
+
+## ADDENDUM 4 (2026-11-14, the 77th head, before any proof about arithCode): register operand forms
+S3-L's arithmetic now loads BOTH operands (BUF slots t and t+1) into rax and rcx and uses register forms: add/sub/cmp/and/or
+`rax, rcx`, `imul rax, rcx`; lt/le/eq set rdx (zeroed first, since rcx holds an operand); `bnot` loads x into rcx and computes
+`1 − x` as `sub rax, rcx`. x86lean states its equations for the reg-reg forms of sub, cmp, and and or, not for reg-mem. With these
+forms every arithmetic step is one of x86lean's lemmas, cited and not re-proved. No count or claim depended on the earlier forms.
