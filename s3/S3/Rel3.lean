@@ -36,6 +36,7 @@ def inLive (L : Lay3) (a : W) : Prop := ∃ c, L.live c ∧ Region c 8 a
 structure Lay3.Ok (L : Lay3) : Prop where
   env_nowrap : L.envLo.toNat ≤ L.envTop.toNat
   stk_nowrap : L.rsp0.toNat + 16 < 2 ^ 64
+  stk_lo_le : L.stkLo.toNat ≤ L.rsp0.toNat
   buf_nowrap : L.buf.toNat + 8 * L.bufN < 2 ^ 64
   cb_nowrap : L.cb.toNat + 32 < 2 ^ 64
   env_stk : ∀ a, inEnv L a → ¬ inStk L a

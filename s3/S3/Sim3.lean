@@ -1401,4 +1401,103 @@ theorem frames_agree {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {m m' : Mem
     · rw [hag rsp (fun i hi => buf_stk_apart hL hi hsl (by omega))]; exact h1
     · rw [hag (rsp + 8) (fun i hi => buf_stk_apart hL hi (by omega) (by omega))]; exact h2
 
+/-! ## R3 is kept by a change confined to BUF and scratch registers; cmp with an immediate; ret; the exits -/
+
+theorem cb_off (L : Lay3) (m : Nat) : L.cb + BitVec.ofNat 64 (8 * m) = L.cb + BitVec.ofNat 64 (8 * m) := rfl
+
+/-- **r3_of_buf.** A machine state that differs from an R3 state only in BUF words and in rax, rcx, rdx (and the flags, rip and
+    oracle) is an R3 state at the same ρ and continuations, for any code it is placed at. -/
+theorem r3_of_buf {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WCode} {ρ : List W} {k : List (WCode × List W)}
+    {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s) (hm : AgreeBuf L s.mem u.mem)
+    (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) (hus : u.stopped = false)
+    (hcu : CodeAt C p u.rip (gen C u.rip c')) : R3 C p L (.run c' ρ k, wm) u := by
+  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl⟩ := hR
+  have g12 := hreg .r12 (by decide) (by decide) (by decide)
+  have gsp := hreg .rsp (by decide) (by decide) (by decide)
+  refine ⟨hus, hcu, ⟨by rw [hreg .r14 (by decide) (by decide) (by decide), hB],
+    by rw [hreg .rbx (by decide) (by decide) (by decide), hX], ⟨?_, ?_, ?_⟩, ?_⟩, by rw [g12]; exact hlo,
+    by rw [g12]; exact hhi, by rw [g12]; exact wordsAt_agree hL hm hlo hhi hw,
+    by rw [g12, gsp]; exact frames_agree hL hm k _ _ hlo hsl hfr, by rw [gsp]; exact hsl⟩
+  · rw [hm (L.cb + 8) (fun i hi => buf_cb_apart hL hi (m := 1) (by decide))]; exact hc1
+  · rw [hm (L.cb + 16) (fun i hi => buf_cb_apart hL hi (m := 2) (by decide))]; exact hc2
+  · rw [hm (L.cb + 24) (fun i hi => buf_cb_apart hL hi (m := 3) (by decide))]; exact hc3
+  · intro a ha
+    have := hm a (fun i hi => buf_live_apart hL hi ha)
+    simp only [rd] at this; rw [this]; exact hRep a ha
+
+theorem stepP_cmp_ri {C : Ctx3} {p : Program} {s : Cpu} {r : GPR} {v : W} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .cmp .q (.reg r) (.imm v)) :: l)) :
+    stepP p s = { s with flags := Flags.sub .q (s.regs.get r) v s.flags, rip := nxt C s.rip (.op (.bin .cmp .q (.reg r) (.imm v))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_cmp_reg_imm .q r v (live_of hs)]
+  simp [Cpu.getReg, nxt, AI.size]
+
+theorem stepP_ret {C : Ctx3} {p : Program} {s : Cpu} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op .ret :: l)) (hcan : canonical (rd s.mem (s.regs.get .rsp)) = true) :
+    stepP p s = { s with regs := s.regs.set .rsp (s.regs.get .rsp + 8), rip := rd s.mem (s.regs.get .rsp) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_ret_taken (live_of hs) (by simpa [Cpu.readMem, Mem.readSize, Size.bytes, rd] using hcan)]
+  simp [Cpu.setReg, Cpu.readMem, Mem.readSize, Size.bytes, rd, Value.writeView]
+
+/-- **exit_run.** From an exit's first instruction (FAULT, OVF or RES) with the control block in place, the driver's slot holding its
+    return address, and the word memory represented: 4 steps return to the driver with STATUS = `code`, and `Common` still holds. -/
+theorem exit_run {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {code : W} {wm : WMem} {s : Cpu} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (exitCode code ++ rest)) (hcom : Common L wm s)
+    (hret : rd s.mem L.rsp0 = L.ret0) (hcan : canonical L.ret0 = true) :
+    ∃ u, runP p 4 s = u ∧ Returned L code u ∧ Common L wm u := by
+  obtain ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩ := hcom
+  have c0 : CodeAt C p s.rip (movi .rax code :: st .rbx 0 .rax :: ld .rsp .rbx 8 :: .op .ret :: rest) := by
+    simpa [exitCode] using hc
+  have e1 := stepP_movi hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (st .rbx 0 .rax :: ld .rsp .rbx 8 :: .op .ret :: rest) := by rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_st h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (ld .rsp .rbx 8 :: .op .ret :: rest) := by rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_ld h2 c2
+  set s3 := stepP p s2
+  have h3 : s3.stopped = false := by rw [e3]; exact h2
+  have c3 : CodeAt C p s3.rip (.op .ret :: rest) := by rw [e3]; exact codeAt_tail c2
+  have hcbN := hL.cb_nowrap
+  have a01 : VIRBridge.Apart L.cb (L.cb + 8) := by
+    have := slot_apart (b := L.cb) (N := 4) (by omega) (i := 0) (j := 1) (by decide) (by decide) (by decide)
+    simpa [slot] using this
+  have a02 : VIRBridge.Apart L.cb (L.cb + 16) := by
+    have := slot_apart (b := L.cb) (N := 4) (by omega) (i := 0) (j := 2) (by decide) (by decide) (by decide)
+    simpa [slot] using this
+  have a03 : VIRBridge.Apart L.cb (L.cb + 24) := by
+    have := slot_apart (b := L.cb) (N := 4) (by omega) (i := 0) (j := 3) (by decide) (by decide) (by decide)
+    simpa [slot] using this
+  have cbw0 : ∀ k, k < 8 → inCb L (L.cb + BitVec.ofNat 64 k) := fun k hk => ⟨k, by omega, rfl⟩
+  have hR0 := L.rsp0.isLt
+  have hst := hL.stk_nowrap
+  have a0s : VIRBridge.Apart L.cb L.rsp0 := apart_of_disjoint (fun a h1 h2 => hL.stk_cb a h2 h1) cbw0 (by
+    intro j hj
+    have e : (L.rsp0 + BitVec.ofNat 64 j).toNat = L.rsp0.toNat + j := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+    simp only [inStk, e]; constructor
+    · have := hL.stk_lo_le; omega
+    · omega)
+  have mem2 : s2.mem = s.mem.writeSize .q L.cb code := by rw [e2, e1]; simp [hX]
+  have rsp3 : s3.regs.get .rsp = L.rsp0 := by
+    rw [e3, e2]; simp [e1, hX]
+    exact (rd_write_apart _ _ _ _ a01).trans hc1
+  have e4 := stepP_ret h3 c3 (by rw [rsp3, show s3.mem = s2.mem by rw [e3], mem2, rd_write_apart _ _ _ _ a0s, hret]; exact hcan)
+  refine ⟨stepP p s3, rfl, ⟨by rw [e4]; exact h3, ?_, ?_, ?_⟩, ⟨?_, ?_, ⟨?_, ?_, ?_⟩, ?_⟩⟩
+  · rw [e4, rsp3, show s3.mem = s2.mem by rw [e3], mem2, rd_write_apart _ _ _ _ a0s, hret]
+  · rw [e4]; simp [rsp3]
+  · rw [e4, show s3.mem = s2.mem by rw [e3], mem2]; exact rd_write_same _ _ _
+  · rw [e4, e3, e2, e1]; simp [hB]
+  · rw [e4, e3, e2, e1]; simp [hX]
+  · rw [e4, show s3.mem = s2.mem by rw [e3], mem2, rd_write_apart _ _ _ _ a01]; exact hc1
+  · rw [e4, show s3.mem = s2.mem by rw [e3], mem2, rd_write_apart _ _ _ _ a02]; exact hc2
+  · rw [e4, show s3.mem = s2.mem by rw [e3], mem2, rd_write_apart _ _ _ _ a03]; exact hc3
+  · intro a ha
+    rw [e4, show s3.mem = s2.mem by rw [e3], mem2]
+    have := rd_write_apart s.mem L.cb a code (apart_of_disjoint hL.cb_live cbw0 (live_word L ha))
+    simp only [rd] at this; rw [this]; exact hRep a ha
+
 end S3
