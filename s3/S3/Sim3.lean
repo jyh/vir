@@ -1729,4 +1729,68 @@ theorem envRoom_run {C : Ctx3} {p : Program} {s : Cpu} {n : Nat} {lo : W} {rest 
       simp only [nxt, envRoom, ld, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
       all_goals rfl
 
+/-! ## The static prepend: room check, `lea r12`, then BUF → ENV copies -/
+
+theorem stepP_lea_dec {C : Ctx3} {p : Program} {s : Cpu} {n : Nat} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.lea .q .r12 { base := some .r12, disp := -(slot n) }) :: l)) :
+    stepP p s = { s with regs := s.regs.set .r12 (s.regs.get .r12 - slot n), rip := nxt C s.rip (.op (.lea .q .r12 { base := some .r12, disp := -(slot n) })) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_lea .q .r12 _ (live_of hs) rfl]
+  simp [Value.writeView, Ea.offset, nxt, AI.size, BitVec.sub_eq_add_neg]
+
+theorem prep_eq_copyL (sb n : Nat) :
+    ((List.range n).flatMap fun j => [ld .rax .r14 (slot (sb + j)), st .r12 (slot j) .rax]) =
+      copyL .r14 .r12 (fun j => slot (sb + j)) (fun j => slot j) n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [List.range_succ, List.flatMap_append, ih]; simp [copyL]
+
+/-- **prependBuf_run, success.** When `r12 − envLo ≥ 8n`: in 6 + 2n steps r12 drops by 8n and ENV words 0…n−1 at the new r12 hold
+    BUF slots sb… as they were; words apart from those n keep their value; registers other than rax, rcx, r12 are unchanged. -/
+theorem prependBuf_ok {C : Ctx3} {p : Program} {s : Cpu} {sb n : Nat} {lo : W} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (prependBuf C sb n ++ rest)) (hcb : rd s.mem (s.regs.get .rbx + 16) = lo)
+    (hge : lo.toNat + 8 * n ≤ (s.regs.get .r12).toNat) (hcan : canonical C.res = true)
+    (hap : ∀ i j, i < n → j < n → VIRBridge.Apart (s.regs.get .r12 - slot n + slot i) (s.regs.get .r14 + slot (sb + j))) :
+    ∃ u, runP p (5 + 1 + 2 * n) s = u ∧ u.stopped = false ∧ u.rip = s.rip + BitVec.ofNat 64 (bytes C (prependBuf C sb n)) ∧
+      u.regs.get .r12 = s.regs.get .r12 - slot n ∧
+      (∀ j, j < n → rd u.mem (s.regs.get .r12 - slot n + slot j) = rd s.mem (s.regs.get .r14 + slot (sb + j))) ∧
+      (∀ a, (∀ j, j < n → VIRBridge.Apart (s.regs.get .r12 - slot n + slot j) a) → rd u.mem a = rd s.mem a) ∧
+      ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .r12 → u.regs.get r = s.regs.get r := by
+  have hR := (s.regs.get .r12).isLt
+  have h8n : 8 * n < 2 ^ 64 := by omega
+  have hc' : CodeAt C p s.rip (envRoom C n ++ (.op (.lea .q .r12 { base := some .r12, disp := -(slot n) }) ::
+      (copyL .r14 .r12 (fun j => slot (sb + j)) (fun j => slot j) n ++ rest))) := by
+    have := hc; simp only [prependBuf, prep_eq_copyL, List.append_assoc] at this; simpa using this
+  obtain ⟨u1, hr1, hs1, hm1, hreg1, hrip1⟩ := envRoom_run hs hc' hcb (by omega) h8n hcan
+  have hnot : ¬ ((s.regs.get .r12).toNat - lo.toNat < 8 * n) := by omega
+  rw [if_neg hnot] at hrip1
+  have c1 : CodeAt C p u1.rip (.op (.lea .q .r12 { base := some .r12, disp := -(slot n) }) ::
+      (copyL .r14 .r12 (fun j => slot (sb + j)) (fun j => slot j) n ++ rest)) := by rw [hrip1]; exact codeAt_right hc'
+  have e2 := stepP_lea_dec hs1 c1
+  set u2 := stepP p u1 with hu2
+  have h2 : u2.stopped = false := by rw [e2]; exact hs1
+  have c2 : CodeAt C p u2.rip (copyL .r14 .r12 (fun j => slot (sb + j)) (fun j => slot j) n ++ rest) := by
+    rw [e2]; exact codeAt_tail c1
+  have r12_1 : u1.regs.get .r12 = s.regs.get .r12 := hreg1 .r12 (by decide) (by decide)
+  have r14_1 : u1.regs.get .r14 = s.regs.get .r14 := hreg1 .r14 (by decide) (by decide)
+  have r12_2 : u2.regs.get .r12 = s.regs.get .r12 - slot n := by rw [e2]; simp [r12_1]
+  have r14_2 : u2.regs.get .r14 = s.regs.get .r14 := by rw [e2]; simp [r14_1]
+  have hE : (s.regs.get .r12 - slot n).toNat = (s.regs.get .r12).toNat - 8 * n := by
+    simp only [slot, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+  obtain ⟨u3, hr3, hs3, hrip3, hreg3, _, hcp3, hfr3⟩ := copy_run (C := C) .r14 .r12 (by decide) (by decide) _ _ n u2 rest h2 c2
+    (fun i j _ hj => by rw [r12_2, r14_2]; exact hap i j (by omega) hj)
+    (fun i j hi hj hij => by rw [r12_2]; exact slot_apart (by omega) hi hj hij)
+  refine ⟨u3, ?_, hs3, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [show 5 + 1 + 2 * n = 5 + (1 + 2 * n) by omega, runP_add, hr1, runP_add, show runP p 1 u1 = u2 from rfl, hr3]
+  · rw [hrip3, e2, hrip1]
+    simp only [prependBuf, prep_eq_copyL, nxt, bytes_append, bytes_cons, bytes_nil, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [hreg3 .r12 (by decide), r12_2]
+  · intro j hj
+    rw [← r12_2, hcp3 j hj, r14_2, e2, hm1]
+  · intro a ha
+    rw [hfr3 a (fun j hj => by rw [r12_2]; exact ha j hj), e2, hm1]
+  · intro r ha hc' h12
+    rw [hreg3 r ha, e2]; simp only [Regs.get_set_ne _ _ _ _ (Ne.symm h12)]; exact hreg1 r ha hc'
+
 end S3
