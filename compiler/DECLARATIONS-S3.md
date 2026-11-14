@@ -127,3 +127,11 @@ proceeds on it.
   claimed: RES is reached only when `8·(|ρ| + Σ over k of |ρᵢ| + n)` exceeds ENV's size for the n words being prepended, or
   `16·(|k| + 1) + 8` exceeds STACK's. Sharing only lowers occupancy, so this is the true bound's contrapositive and is still a
   measure of the state.
+
+## ADDENDUM 3 (2026-11-14, the 77th head, after Lower3's first green and BEFORE any Rel3 code): two small facts of the code shape
+- **S3-E, clamped.** An instruction's length is `max 1 (…)`, the rel32 branch lengths or `ilen`. Positivity is then a fact, and no
+  proof splits over x86lean's `Op` (a `split` over that match hit Lean's recursion limit in s3-005). Under Addendum 2's premise
+  1 ≤ `ilen` the clamp changes nothing.
+- **The program is ONE contiguous placement** (`allCode`, `lower3 = asm base allCode`): entry stub, FAULT, OVF, RES, main, then the
+  table's bodies in order. Instruction fetch is proved once, by `CodeAt` over that list, given that its total size is below 2⁶⁴
+  (`asm_nodup`, `at?_of_nodup`). It is then split per piece by `codeAt_left`/`codeAt_right`.

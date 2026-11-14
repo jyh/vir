@@ -35,12 +35,15 @@ structure Ctx3 where
   tblLen : Nat
 
 /-- S3-E: an instruction's length. Branches are rel32 forms of fixed length; everything else is `ilen`. -/
-def blen (ilen : Op → Nat) : Op → Nat
+def blen0 (ilen : Op → Nat) : Op → Nat
   | .jcc _ _ => 6
   | .jmp (.rel _) => 5
   | .call (.rel _) => 5
   | .ret => 1
   | o => ilen o
+
+/-- Clamped to at least one byte, so positivity needs no case split over `Op` (S3-E's 1 ≤ `ilen` premise is then a fact). -/
+def blen (ilen : Op → Nat) (o : Op) : Nat := max 1 (blen0 ilen o)
 
 def AI.size (C : Ctx3) : AI → Nat
   | .op o => blen C.ilen o
@@ -251,14 +254,15 @@ def ctxOf (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Ctx3 :=
 /-- The main code's address in a layout (the entry stub's call target). -/
 def mainAddr (C : Ctx3) : W := C.res + BitVec.ofNat 64 (bytes C (exitCode stRes))
 
+/-- The whole program's code, CONTIGUOUS from the code base: entry stub, FAULT, OVF, RES, main, then the table's bodies in order. -/
+def allCode (C : Ctx3) (tbl : Table) (main : WCode) : List AI :=
+  entryStub (mainAddr C) ++ exitCode stFault ++ exitCode stOvf ++ exitCode stRes ++ gen C (mainAddr C) main ++
+    tbl.zipIdx.flatMap fun p => gen C (C.body p.2) p.1.2
+
 /-- **lower3**: the x86lean `Program` for a word program: table `tbl`, main code `main`, code base `base`. -/
 def lower3 (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Program :=
   let C := ctxOf ilen tbl main base
-  let pM := mainAddr C
-  let pieces : List (W × List AI) :=
-    [(base, entryStub pM), (C.fault, exitCode stFault), (C.ovf, exitCode stOvf), (C.res, exitCode stRes),
-     (pM, gen C pM main)] ++ (tbl.zipIdx.map fun p => (C.body p.2, gen C (C.body p.2) p.1.2))
-  { code := pieces.flatMap fun p => asm C p.1 p.2 }
+  { code := asm C base (allCode C tbl main) }
 
 /-! ## S3-E's consequence: a sub-term's code size is a function of the sub-term (`bytes_gen`), and of the context only through
     `ilen`, the fix flags and the table size (`gsz_congr`). The placement in `ctxOf` rests on both. -/
@@ -330,5 +334,116 @@ theorem bytes_gen (C : Ctx3) : ∀ (c : WCode) (pc : W), bytes C (gen C pc c) = 
       simp only [gen, gsz, bytes_append, bytes_gen C c₁, bytes_gen C c₂, bytes_cons, bytes_nil, AI.size]
   | .case o n₁ n₂ c₁ c₂, pc => by
       simp only [gen, gsz, bytes_append, bytes_gen C c₁, bytes_gen C c₂, bytes_cons, bytes_nil, AI.size]
+
+/-! ## Placement: every instruction of a piece is fetched at its address -/
+
+theorem ofNat_add64 (x y : Nat) : BitVec.ofNat 64 (x + y) = BitVec.ofNat 64 x + BitVec.ofNat 64 y := by
+  rw [BitVec.ofNat_add_ofNat]
+
+theorem asm_append (C : Ctx3) : ∀ (pc : W) (a b : List AI),
+    asm C pc (a ++ b) = asm C pc a ++ asm C (pc + BitVec.ofNat 64 (bytes C a)) b
+  | pc, [], b => by simp [asm, bytes_nil]
+  | pc, i :: a, b => by
+      simp only [List.cons_append, asm, bytes_cons, asm_append C _ a b, ofNat_add64, BitVec.add_assoc]
+
+theorem asm_length (C : Ctx3) : ∀ (pc : W) (l : List AI), (asm C pc l).length = l.length
+  | _, [] => rfl
+  | pc, _ :: l => by simp [asm, asm_length C _ l]
+
+/-- The address of instruction j of a list placed at `pc`. -/
+def addrAt (C : Ctx3) (pc : W) (l : List AI) (j : Nat) : W := pc + BitVec.ofNat 64 (bytes C (l.take j))
+
+theorem asm_getElem (C : Ctx3) : ∀ (pc : W) (l : List AI) (j : Nat) (h : j < l.length),
+    (asm C pc l)[j]'(by rw [asm_length]; exact h) = (addrAt C pc l j, l[j].toInstr C (addrAt C pc l j))
+  | pc, i :: l, 0, _ => by simp [asm, addrAt, bytes_nil]
+  | pc, i :: l, j + 1, h => by
+      simp only [asm, List.getElem_cons_succ]
+      rw [asm_getElem C _ l j (by simp at h; omega)]
+      simp only [addrAt, List.take_succ_cons, bytes_cons, ofNat_add64, BitVec.add_assoc]
+
+/-- Every instruction has size at least 1 under S3-E's premise on `ilen`. -/
+theorem size_pos {C : Ctx3} (hC : ∀ o, 1 ≤ C.ilen o) (i : AI) : 1 ≤ AI.size C i := by
+  cases i with
+  | op o => simp only [AI.size, blen]; exact Nat.le_max_left _ _
+  | _ => simp [AI.size]
+
+theorem bytes_take_lt {C : Ctx3} (hC : ∀ o, 1 ≤ C.ilen o) : ∀ (l : List AI) (j k : Nat), j < k → k ≤ l.length →
+    bytes C (l.take j) < bytes C (l.take k)
+  | [], _, _, h, hk => by simp at hk; omega
+  | i :: l, 0, k + 1, _, _ => by
+      simp only [List.take_zero, bytes_nil, List.take_succ_cons, bytes_cons]; have := size_pos hC i; omega
+  | i :: l, j + 1, k + 1, h, hk => by
+      simp only [List.take_succ_cons, bytes_cons]
+      have := bytes_take_lt hC l j k (by omega) (by simp at hk; omega); omega
+  | _ :: _, _, 0, h, _ => absurd h (Nat.not_lt_zero _)
+
+theorem bytes_take_le (C : Ctx3) : ∀ (l : List AI) (j : Nat), bytes C (l.take j) ≤ bytes C l
+  | [], _ => by simp
+  | i :: l, 0 => by simp [bytes_nil]
+  | i :: l, j + 1 => by simp only [List.take_succ_cons, bytes_cons]; have := bytes_take_le C l j; omega
+
+/-- Addresses within one placed list are distinct when its size fits the address space. -/
+theorem asm_nodup {C : Ctx3} (hC : ∀ o, 1 ≤ C.ilen o) (pc : W) (l : List AI) (hb : bytes C l < 2 ^ 64) :
+    ((asm C pc l).map Prod.fst).Nodup := by
+  rw [List.nodup_iff_getElem?_ne_getElem?]
+  intro j k hjk hk
+  simp only [List.length_map, asm_length] at hk
+  rw [List.getElem?_eq_getElem (by simp [asm_length]; omega), List.getElem?_eq_getElem (by simp [asm_length]; omega)]
+  simp only [List.getElem_map, ne_eq, Option.some.injEq]
+  rw [asm_getElem C pc l j (by omega), asm_getElem C pc l k hk]
+  simp only [addrAt]
+  intro he
+  have hlt := bytes_take_lt hC l j k hjk (by omega)
+  have hle := bytes_take_le C l k
+  have := congrArg BitVec.toNat he
+  simp only [BitVec.toNat_add, BitVec.toNat_ofNat] at this
+  have hp := pc.isLt
+  omega
+
+theorem at?_of_nodup {p : Program} {a : W} {i : Instr} (hn : (p.code.map Prod.fst).Nodup) (hm : (a, i) ∈ p.code) :
+    p.at? a = some i := by
+  obtain ⟨code⟩ := p
+  simp only [Program.at?]
+  induction code with
+  | nil => simp at hm
+  | cons q rest ih =>
+    simp only [List.map_cons, List.nodup_cons] at hn
+    simp only [List.find?_cons]
+    by_cases hq : q.1 = a
+    · simp only [hq, beq_self_eq_true, Option.map_some]
+      rcases List.mem_cons.mp hm with h | h
+      · rw [← h]
+      · exact absurd (hq ▸ List.mem_map_of_mem (f := Prod.fst) h) hn.1
+    · have : (q.1 == a) = false := by simp [hq]
+      rw [this]
+      rcases List.mem_cons.mp hm with h | h
+      · exact absurd (by rw [← h]) hq
+      · exact ih hn.2 h
+
+/-- **CodeAt**: every instruction of `l`, placed at `pc`, is what `p` fetches at its address. -/
+def CodeAt (C : Ctx3) (p : Program) (pc : W) (l : List AI) : Prop :=
+  ∀ j (h : j < l.length), p.at? (addrAt C pc l j) = some (l[j].toInstr C (addrAt C pc l j))
+
+theorem codeAt_asm {C : Ctx3} (hC : ∀ o, 1 ≤ C.ilen o) (pc : W) (l : List AI) (hb : bytes C l < 2 ^ 64) :
+    CodeAt C { code := asm C pc l } pc l := by
+  intro j h
+  apply at?_of_nodup (asm_nodup hC pc l hb)
+  rw [← asm_getElem C pc l j h]
+  exact List.getElem_mem _
+
+theorem codeAt_left {C : Ctx3} {p : Program} {pc : W} {a b : List AI} (h : CodeAt C p pc (a ++ b)) : CodeAt C p pc a := by
+  intro j hj
+  have := h j (by simp; omega)
+  simp only [addrAt, List.take_append_of_le_length (Nat.le_of_lt hj), List.getElem_append_left hj] at this
+  exact this
+
+theorem codeAt_right {C : Ctx3} {p : Program} {pc : W} {a b : List AI} (h : CodeAt C p pc (a ++ b)) :
+    CodeAt C p (pc + BitVec.ofNat 64 (bytes C a)) b := by
+  intro j hj
+  have := h (a.length + j) (by simp; omega)
+  simp only [addrAt, List.take_length_add_append, bytes_append, ofNat_add64, BitVec.add_assoc] at this
+  rw [List.getElem_append_right (by omega)] at this
+  simp only [Nat.add_sub_cancel_left] at this
+  simpa only [addrAt, BitVec.add_assoc] using this
 
 end S3
