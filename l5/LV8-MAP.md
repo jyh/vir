@@ -113,3 +113,19 @@ Safety.lean are not opened.
 - **What would show this wrong:** a Refine₅ case that needs a bound Inv does not give (DECODE's table bounds and SCOPY's output
   room are the likeliest to check first); a step whose store World and Sole do not determine; a terminal mode that is not a
   fixpoint of stepS. Any one of these sends the case back to Addendum 3's route for that mode only.
+
+## ADDENDUM 6 (the 74th head, after the outer argument and the lifted cases): a FINDING — Inv does not carry the table
+Built (addee84 and above): `safety₅_of : Refine₅ → SafetyStmt₅` and `correct₅_of : Refine₅ → CorrectStmt₅` (Outer5); the
+dispatch (Assembly5, Dispatch5); owed items (i) `sole_world_eq` and (ii) `stepS_sole` (SolePres5: DEFLATE's step only loads and
+stores, `opFree_stepT` by `decide`); and **Refine₅ on 21 lifted modes plus every terminal or absent mode** (`refine_lifted`).
+**The finding, which is the first item on this addendum's own "what would show it wrong" list:** Safety's `Inv` says only that
+each TABLE cell is 0 or 1 (`InvG.bits`). That cell 8v + i holds `bitAt v i` is `BitsUpTo f 2048`, which lives in Correct's `Rel`.
+Correct proves `Rel` along the spec program's simulation (`Sim`), not as a per-step invariant, and neither `StepSafe` nor
+`ModeSafe` exports which cells a step writes. So READ's and DECODE's Refine₅ (the bit from bitR is DEFLATE's table bit) has no
+premise to stand on. SCOPY, COPY, REP, FIXLENS and BUILD ZERO never read the table and are unaffected.
+- **Fork, posted with the recommendation, proceeding on (T):** (T) a table invariant `Tab f := f cMODE ≠ mTABLE → BitsUpTo f
+  2048`, shown preserved by every DEFLATE step (TABLE's own run establishes it, as `table_run` does; every other mode writes
+  only cells outside [20, 2068)), and added to Refine₅'s hypothesis and to the outer argument's run invariant. (A3) for READ and
+  DECODE only: re-prove their cases inside Correct's simulation. (K) keep READ and DECODE reading the table (no bitR in DEFLATE;
+  LV9's count for bitR moves to the router alone).
+- (T) is per-mode work on DEFLATE's own step lemmas, outside Correct and Safety. It does not change any statement.

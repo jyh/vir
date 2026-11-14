@@ -45,3 +45,6 @@ import VIRL5.DecodeRun5
 import VIRL5.Shift5
 import VIRL5.Assembly5
 import VIRL5.Outer5
+import VIRL5.Dispatch5
+import VIRL5.SolePres5
+import VIRL5.RefineLift5
