@@ -27,3 +27,14 @@ import S3
 #print axioms S3.frames_agree
 #print axioms S3.ovf_exit
 #print axioms S3.sim_ite
+#print axioms S3.envRoom_run
+#print axioms S3.prependBuf_ok
+#print axioms S3.prependBuf_res
+#print axioms S3.res_exit
+#print axioms S3.r3_of_prepend
+#print axioms S3.r3_of_prepend_mem
+#print axioms S3.case_arm
+#print axioms S3.sim_case
+#print axioms S3.fault_exit
+#print axioms S3.sim_load
+#print axioms S3.sim_store
