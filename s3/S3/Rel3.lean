@@ -81,10 +81,10 @@ theorem gen_letE (C : Ctx3) (pc : W) (c₁ c₂ : WCode) :
     overwritten). The bottom frame is the entry stub's: its return point, the entry `envLow`, and the driver's slot above it. -/
 def Frames (C : Ctx3) (p : Program) (L : Lay3) (m : Mem) : W → W → List (WCode × List W) → Prop
   | rsp, lo, [] => rd m rsp = L.stubRet ∧ CodeAt C p L.stubRet stubCont ∧ lo.toNat ≤ (rd m (rsp + 8)).toNat ∧
-      rsp + 16 = L.rsp0 ∧ rd m L.rsp0 = L.ret0
+      rsp.toNat + 16 = L.rsp0.toNat ∧ rd m L.rsp0 = L.ret0
   | rsp, lo, (c, ρ) :: k => ∃ q a, rd m rsp = q ∧ rd m (rsp + 8) = a ∧ CodeAt C p q (contCode C q c) ∧
       lo.toNat ≤ a.toNat ∧ a.toNat + 8 * ρ.length ≤ L.envTop.toNat ∧ WordsAt m a ρ ∧
-      Frames C p L m (rsp + 16) a k
+      rsp.toNat + 16 ≤ L.rsp0.toNat ∧ Frames C p L m (rsp + 16) a k
 
 /-- The control block (S3-M): `[cb+8]` the driver's `rsp`, `[cb+16]` ENV's low bound, `[cb+24]` STACK's. -/
 def CbOk (L : Lay3) (m : Mem) : Prop :=

@@ -1346,4 +1346,59 @@ theorem buf_cb_apart {L : Lay3} (hL : L.Ok) {i : Nat} (hi : i < L.bufN) {m : Nat
     VIRBridge.Apart (L.buf + slot i) (L.cb + BitVec.ofNat 64 (8 * m)) :=
   apart_of_disjoint hL.buf_cb (buf_word L hi) (cb_word L hm)
 
+/-! ## The stack frames survive any change confined to BUF -/
+
+/-- The frames from rsp end at the driver's slot: `rsp + 16·(|k|+1) = rsp0`, in Nat (no wrap). -/
+theorem frames_bound {C : Ctx3} {p : Program} {L : Lay3} {m : Mem} :
+    ∀ (k : List (WCode × List W)) (rsp lo : W), Frames C p L m rsp lo k → rsp.toNat + 16 * (k.length + 1) = L.rsp0.toNat
+  | [], rsp, lo, h => by simpa using h.2.2.2.1
+  | (c, ρ) :: k, rsp, lo, h => by
+    obtain ⟨q, a, _, _, _, _, _, _, hb, hf⟩ := h
+    have ih := frames_bound k (rsp + 16) a hf
+    have hR := L.rsp0.isLt
+    have : (rsp + 16).toNat = rsp.toNat + 16 := by simp only [BitVec.toNat_add]; simp; omega
+    simp only [List.length_cons]; omega
+
+theorem stk_word (L : Lay3) {x : W} (hlo : L.stkLo.toNat ≤ x.toNat) (hhi : x.toNat ≤ L.rsp0.toNat) (hL : L.Ok) :
+    ∀ k, k < 8 → inStk L (x + BitVec.ofNat 64 k) := by
+  intro k hk
+  have := hL.stk_nowrap
+  have e : (x + BitVec.ofNat 64 k).toNat = x.toNat + k := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+  simp only [inStk, e]; omega
+
+theorem buf_stk_apart {L : Lay3} (hL : L.Ok) {i : Nat} (hi : i < L.bufN) {x : W} (hlo : L.stkLo.toNat ≤ x.toNat)
+    (hhi : x.toNat ≤ L.rsp0.toNat) : VIRBridge.Apart (L.buf + slot i) x :=
+  apart_of_disjoint (fun a h1 h2 => hL.stk_buf a h2 h1) (buf_word L hi) (by
+    intro j hj; exact stk_word L hlo hhi hL j hj)
+
+/-- Two memories agreeing on every word apart from BUF. -/
+def AgreeBuf (L : Lay3) (m m' : Mem) : Prop :=
+  ∀ a, (∀ i, i < L.bufN → VIRBridge.Apart (L.buf + slot i) a) → rd m' a = rd m a
+
+theorem wordsAt_agree {L : Lay3} (hL : L.Ok) {m m' : Mem} (hag : AgreeBuf L m m') {e : W} {ρ : List W}
+    (hlo : L.envLo.toNat ≤ e.toNat) (hhi : e.toNat + 8 * ρ.length ≤ L.envTop.toNat) (hw : WordsAt m e ρ) : WordsAt m' e ρ := by
+  intro j hj
+  have := hag (e + slot j) (fun i hi => buf_env_apart hL hi hlo hhi hj)
+  simp only [rd, slot] at this; rw [this]; exact hw j hj
+
+theorem frames_agree {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {m m' : Mem} (hag : AgreeBuf L m m') :
+    ∀ (k : List (WCode × List W)) (rsp lo : W), L.envLo.toNat ≤ lo.toNat → L.stkLo.toNat ≤ rsp.toNat →
+      Frames C p L m rsp lo k → Frames C p L m' rsp lo k
+  | [], rsp, lo, hel, hsl, ⟨h1, h2, h3, h4, h5⟩ => by
+    have hR := L.rsp0.isLt
+    have hst := hL.stk_nowrap
+    have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
+    refine ⟨?_, h2, ?_, h4, ?_⟩
+    · rw [hag rsp (fun i hi => buf_stk_apart hL hi hsl (by omega))]; exact h1
+    · rw [hag (rsp + 8) (fun i hi => buf_stk_apart hL hi (by omega) (by omega))]; exact h3
+    · rw [hag L.rsp0 (fun i hi => buf_stk_apart hL hi (by omega) (le_refl _))]; exact h5
+  | (c, ρ) :: k, rsp, lo, hel, hsl, ⟨q, a, h1, h2, h3, h4, h5, h6, h7, h8⟩ => by
+    have hR := L.rsp0.isLt
+    have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
+    have e16 : (rsp + 16).toNat = rsp.toNat + 16 := by simp only [BitVec.toNat_add]; simp; omega
+    refine ⟨q, a, ?_, ?_, h3, h4, h5, wordsAt_agree hL hag (by omega) h5 h6, h7,
+      frames_agree hL hag k (rsp + 16) a (by omega) (by omega) h8⟩
+    · rw [hag rsp (fun i hi => buf_stk_apart hL hi hsl (by omega))]; exact h1
+    · rw [hag (rsp + 8) (fun i hi => buf_stk_apart hL hi (by omega) (by omega))]; exact h2
+
 end S3
