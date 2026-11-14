@@ -943,4 +943,362 @@ theorem wordsAt_slot {m : Mem} {B : W} {t : Nat} {ws : List W} :
   · intro h j hj; have := h j hj; rw [e] at this; exact this
   · intro h j hj; rw [e]; exact h j hj
 
+/-! ## evalTo against evalW -/
+
+/-- What operand evaluation at BUF slot t needs: ρ in ENV at r12, BUF non-wrapping over N slots, ENV words apart from slots t…N−1. -/
+def EvalPre (s : Cpu) (t N : Nat) (ρ : List W) : Prop :=
+  WordsAt s.mem (s.regs.get .r12) ρ ∧ (s.regs.get .r14).toNat + 8 * N < 2 ^ 64 ∧
+  ∀ i j, t ≤ i → i < N → j < ρ.length → VIRBridge.Apart (s.regs.get .r14 + slot i) (s.regs.get .r12 + slot j)
+
+/-- Words apart from BUF slots t…N−1 keep their value; registers other than rax, rcx, rdx keep theirs. -/
+def Frame (s u : Cpu) (t N : Nat) : Prop :=
+  (∀ a, (∀ i, t ≤ i → i < N → VIRBridge.Apart (s.regs.get .r14 + slot i) a) → rd u.mem a = rd s.mem a) ∧
+  ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r
+
+def EvalPost (C : Ctx3) (p : Program) (s : Cpu) (t : Nat) (o : WOpd) (ρ : List W) (N : Nat) : Prop :=
+  match evalW ρ o with
+  | .ok ws => ∃ n u, runP p n s = u ∧ u.stopped = false ∧ u.rip = s.rip + BitVec.ofNat 64 (bytes C (evalTo C t o)) ∧
+      WordsAt u.mem (s.regs.get .r14 + slot t) ws ∧ Frame s u t N
+  | .ovf => ∃ n u, runP p n s = u ∧ u.stopped = false ∧ u.rip = C.ovf ∧ Frame s u t N
+  | .bad => True
+
+theorem frame_trans {s u v : Cpu} {t t' N : Nat} (htt : t ≤ t') (h1 : Frame s u t N) (h2 : Frame u v t' N) : Frame s v t N := by
+  have hB : u.regs.get .r14 = s.regs.get .r14 := h1.2 .r14 (by decide) (by decide) (by decide)
+  refine ⟨fun a ha => ?_, fun r a b c => by rw [h2.2 r a b c, h1.2 r a b c]⟩
+  rw [h2.1 a (fun i hi hi' => by rw [hB]; exact ha i (by omega) hi'), h1.1 a ha]
+
+theorem pre_mono {s u : Cpu} {t t' N : Nat} {ρ : List W} (htt : t ≤ t') (hf : Frame s u t N) (hp : EvalPre s t N ρ) :
+    EvalPre u t' N ρ := by
+  obtain ⟨hw, hN, hap⟩ := hp
+  have hB : u.regs.get .r14 = s.regs.get .r14 := hf.2 .r14 (by decide) (by decide) (by decide)
+  have hE : u.regs.get .r12 = s.regs.get .r12 := hf.2 .r12 (by decide) (by decide) (by decide)
+  refine ⟨fun j hj => ?_, by rw [hB]; exact hN, fun i j hi hi' hj => by rw [hB, hE]; exact hap i j (by omega) hi' hj⟩
+  rw [hE]
+  have := hf.1 (s.regs.get .r12 + BitVec.ofNat 64 (8 * j)) (fun i hi hi' => hap i j hi hi' hj)
+  simp only [rd] at this; rw [this]; exact hw j hj
+
+theorem frame_refl (s : Cpu) (t N : Nat) : Frame s s t N := ⟨fun _ _ => rfl, fun _ _ _ _ => rfl⟩
+
+theorem frame_weaken {s u : Cpu} {t t' N : Nat} (htt : t ≤ t') (h : Frame s u t' N) : Frame s u t N :=
+  ⟨fun a ha => h.1 a (fun i hi hi' => ha i (by omega) hi'), h.2⟩
+
+/-- bnot's tail: from slot t holding x, `1 − x` at slot t in 4 steps; words apart from slot t kept; regs but rax, rcx kept. -/
+theorem bnot_tail_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x : W} {rest : List AI}
+    (hs : s.stopped = false)
+    (hc : CodeAt C p s.rip ([movi .rax 1, ld .rcx .r14 (slot t), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax] ++ rest))
+    (hx : rd s.mem (s.regs.get .r14 + slot t) = x) :
+    ∃ u, runP p 4 s = u ∧ u.stopped = false ∧
+      u.rip = s.rip + BitVec.ofNat 64 (bytes C [movi .rax 1, ld .rcx .r14 (slot t), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax]) ∧
+      rd u.mem (s.regs.get .r14 + slot t) = 1 - x ∧
+      (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+      ∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r := by
+  have c0 : CodeAt C p s.rip (movi .rax 1 :: ld .rcx .r14 (slot t) :: .op (.bin .sub .q (.reg .rax) (.reg .rcx)) ::
+      st .r14 (slot t) .rax :: rest) := by simpa using hc
+  have e1 := stepP_movi hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (ld .rcx .r14 (slot t) :: .op (.bin .sub .q (.reg .rax) (.reg .rcx)) :: st .r14 (slot t) .rax :: rest) := by
+    rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_ld h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (.op (.bin .sub .q (.reg .rax) (.reg .rcx)) :: st .r14 (slot t) .rax :: rest) := by
+    rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_sub_rr h2 c2
+  set s3 := stepP p s2
+  have h3 : s3.stopped = false := by rw [e3]; exact h2
+  have c3 : CodeAt C p s3.rip (st .r14 (slot t) .rax :: rest) := by rw [e3]; exact codeAt_tail c2
+  have e4 := stepP_st h3 c3
+  have mem3 : s3.mem = s.mem := by rw [e3, e2, e1]
+  have regs3 : ∀ r, r ≠ .rax → r ≠ .rcx → s3.regs.get r = s.regs.get r := by
+    intro r ha hc'; rw [e3, e2, e1]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc')]
+  have r14_3 : s3.regs.get .r14 = s.regs.get .r14 := regs3 .r14 (by decide) (by decide)
+  have rax3 : s3.regs.get .rax = 1 - x := by rw [e3, e2, e1]; simp [hx]
+  refine ⟨stepP p s3, rfl, by rw [e4]; exact h3, ?_, ?_, ?_, ?_⟩
+  · rw [e4, e3, e2, e1]
+    simp only [nxt, movi, ld, st, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [e4, r14_3, rax3, mem3]; exact rd_write_same _ _ _
+  · intro a ha; rw [e4, r14_3, mem3]; exact rd_write_apart _ _ _ _ ha
+  · intro r ha hc'; rw [e4]; exact regs3 r ha hc'
+
+/-- tag's head: tag word at slot t, then rax := 0, in 3 steps. -/
+theorem tag_head_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {tg : W} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip ([movi .rax tg, st .r14 (slot t) .rax, movi .rax 0] ++ rest)) :
+    ∃ u, runP p 3 s = u ∧ u.stopped = false ∧
+      u.rip = s.rip + BitVec.ofNat 64 (bytes C [movi .rax tg, st .r14 (slot t) .rax, movi .rax 0]) ∧
+      rd u.mem (s.regs.get .r14 + slot t) = tg ∧ u.regs.get .rax = 0 ∧
+      (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+      ∀ r, r ≠ .rax → u.regs.get r = s.regs.get r := by
+  have c0 : CodeAt C p s.rip (movi .rax tg :: st .r14 (slot t) .rax :: movi .rax 0 :: rest) := by simpa using hc
+  have e1 := stepP_movi hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (st .r14 (slot t) .rax :: movi .rax 0 :: rest) := by rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_st h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (movi .rax 0 :: rest) := by rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_movi h2 c2
+  have r14_1 : s1.regs.get .r14 = s.regs.get .r14 := by rw [e1]; simp
+  refine ⟨stepP p s2, rfl, by rw [e3]; exact h2, ?_, ?_, by rw [e3]; simp, ?_, ?_⟩
+  · rw [e3, e2, e1]
+    simp only [nxt, movi, st, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [e3, e2, r14_1]; simp only [e1, Regs.get_set_same]; exact rd_write_same _ _ _
+  · intro a ha; rw [e3, e2, r14_1]; simp only [e1]; exact rd_write_apart _ _ _ _ ha
+  · intro r hr; rw [e3, e2, e1]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm hr)]
+
+/-- **evalTo_run.** Operand evaluation simulates `evalW`: an `ok ws` leaves ws at BUF slots t…; an overflow reaches OVF; both
+    within the frame. -/
+theorem evalTo_run {C : Ctx3} {p : Program} (hcan : canonical C.ovf = true) :
+    ∀ (o : WOpd) (t : Nat) (s : Cpu) (rest : List AI) (ρ : List W) (N : Nat), s.stopped = false →
+    CodeAt C p s.rip (evalTo C t o ++ rest) → t + need o ≤ N → EvalPre s t N ρ → EvalPost C p s t o ρ N
+  | .slice off len, t, s, rest, ρ, N, hs, hc, htN, ⟨hw, hN, hap⟩ => by
+    simp only [EvalPost, evalW]
+    have htN' : t + len ≤ N := by simpa [need] using htN
+    by_cases hlen : off + len ≤ ρ.length
+    · simp only [hlen, if_true]
+      obtain ⟨u, h1, h2, h3, h4, _, h6, h7⟩ := evalTo_slice_run hs hc hw hlen hN htN'
+        (fun i j hi hj => hap (t + i) (off + j) (by omega) (by omega) (by omega))
+      exact ⟨2 * len, u, h1, h2, h3, h6, fun a ha => h7 a (fun j hj => ha (t + j) (by omega) (by omega)),
+        fun r a _ _ => h4 r a⟩
+    · simp only [hlen, if_false]
+  | .imm ws, t, s, rest, ρ, N, hs, hc, htN, ⟨hw, hN, hap⟩ => by
+    simp only [EvalPost, evalW]
+    rw [imm_eq_immL] at hc ⊢
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := imm_run (C := C) .r14 (by decide) _ _ ws.length s rest hs hc
+      (fun i j hi hj hij => slot_apart hN (by simp [need] at htN; omega) (by simp [need] at htN; omega) (by omega))
+    refine ⟨2 * ws.length, u, h1, h2, h3, wordsAt_slot.mpr (fun j hj => by rw [h5 j hj]; simp [List.getD, List.getElem?_eq_getElem hj]),
+      fun a ha => h6 a (fun j hj => ha (t + j) (by omega) (by simp [need] at htN; omega)), fun r a _ _ => h4 r a⟩
+  | .take n a, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have IH := evalTo_run hcan a t s rest ρ N hs (by simpa [evalTo] using hc) (by simpa [need] using htN) hpre
+    simp only [EvalPost, evalW] at IH ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf => simp only [ha, WRes.bind] at IH ⊢; exact IH
+    | ok xs =>
+      simp only [ha, WRes.bind] at IH ⊢
+      obtain ⟨k, u, h1, h2, h3, h4, h5⟩ := IH
+      refine ⟨k, u, h1, h2, by simpa [evalTo] using h3, fun j hj => ?_, h5⟩
+      simp only [List.length_take] at hj
+      rw [h4 j (by omega)]; simp [List.getElem_take]
+  | .arith op a b, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have hc' : CodeAt C p s.rip (evalTo C t a ++ (evalTo C (t + 1) b ++ (arithCode C t op ++ rest))) := by
+      simpa [evalTo, List.append_assoc] using hc
+    have hneed : t + need a ≤ N ∧ t + 1 + need b ≤ N ∧ t + 2 ≤ N := by simp [need] at htN; omega
+    have IHa := evalTo_run hcan a t s _ ρ N hs hc' hneed.1 hpre
+    simp only [EvalPost, evalW] at IHa ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf =>
+      simp only [ha, WRes.bind] at IHa ⊢; exact IHa
+    | ok xs =>
+      simp only [ha, WRes.bind] at IHa ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := IHa
+      have hc1 : CodeAt C p u1.rip (evalTo C (t + 1) b ++ (arithCode C t op ++ rest)) := by
+        rw [hrip1]; exact codeAt_right hc'
+      have IHb := evalTo_run hcan b (t + 1) u1 _ ρ N hs1 hc1 hneed.2.1 (pre_mono (by omega) hf1 hpre)
+      simp only [EvalPost] at IHb
+      cases hb : evalW ρ b with
+      | bad => simp [WRes.bind]
+      | ovf =>
+        simp only [hb, WRes.bind] at IHb ⊢
+        obtain ⟨n2, u2, hr2, hs2, hrip2, hf2⟩ := IHb
+        exact ⟨n1 + n2, u2, by rw [runP_add, hr1, hr2], hs2, hrip2, frame_trans (t' := t + 1) (by omega) hf1 hf2⟩
+      | ok ys =>
+        simp only [hb, WRes.bind] at IHb ⊢
+        obtain ⟨n2, u2, hr2, hs2, hrip2, hw2, hf2⟩ := IHb
+        have hB1 : u1.regs.get .r14 = s.regs.get .r14 := hf1.2 .r14 (by decide) (by decide) (by decide)
+        have hB2 : u2.regs.get .r14 = s.regs.get .r14 := by rw [hf2.2 .r14 (by decide) (by decide) (by decide), hB1]
+        have hN := hpre.2.1
+        match xs, ys, hw1, hw2 with
+        | [x], [y], hw1, hw2 =>
+          simp only
+          have hx : rd u2.mem (u2.regs.get .r14 + slot t) = x := by
+            rw [hB2, hf2.1 _ (fun i hi hi' => by rw [hB1]; exact slot_apart hN hi' (by omega) (by omega))]
+            have := (wordsAt_slot.mp hw1) 0 (by simp); simpa using this
+          have hy : rd u2.mem (u2.regs.get .r14 + slot (t + 1)) = y := by
+            rw [hB2, ← hB1]; have := (wordsAt_slot.mp hw2) 0 (by simp); simpa using this
+          have hc2 : CodeAt C p u2.rip (arithCode C t op ++ rest) := by rw [hrip2]; exact codeAt_right hc1
+          obtain ⟨hov, hok⟩ := arith_run op hs2 hc2 hcan hx hy
+          cases happ : op.apply x y with
+          | bad => trivial
+          | ovf =>
+            obtain ⟨n3, u3, hr3, hs3, hrip3, hm3, hreg3⟩ := hov happ
+            refine ⟨n1 + n2 + n3, u3, by rw [runP_add, runP_add, hr1, hr2, hr3], hs3, hrip3, ?_⟩
+            exact frame_trans (t' := t + 1) (by omega) hf1 (frame_trans (t' := t + 1) (le_refl _) hf2 ⟨fun a _ => by rw [hm3], hreg3⟩)
+          | ok zs =>
+            match zs, happ with
+            | [z], happ =>
+              obtain ⟨n3, u3, hr3, hs3, hrip3, hz3, hfr3, hreg3⟩ := hok z happ
+              refine ⟨n1 + n2 + n3, u3, by rw [runP_add, runP_add, hr1, hr2, hr3], hs3, ?_, ?_, ?_⟩
+              · rw [hrip3, hrip2, hrip1]
+                simp only [evalTo, bytes_append, ofNat_add64, BitVec.add_assoc]
+              · exact wordsAt_slot.mpr (fun j hj => by
+                  simp only [List.length_singleton] at hj
+                  have : j = 0 := by omega
+                  subst this; rw [← hB2]; simpa using hz3)
+              · refine frame_trans (t' := t) (le_refl _) hf1 (frame_trans (t' := t) (le_refl _) (frame_weaken (by omega) hf2) ⟨fun a ha => hfr3 a ?_, hreg3⟩)
+                exact ha t (by omega) (by omega)
+            | [], happ => cases op <;> simp [AOp.apply, chk] at happ <;> split at happ <;> cases happ
+            | _ :: _ :: _, happ => cases op <;> simp [AOp.apply, chk] at happ <;> split at happ <;> cases happ
+        | [], _, _, _ => simp
+        | _ :: _ :: _, _, _, _ => simp
+        | [_], [], _, _ => simp
+        | [_], _ :: _ :: _, _, _ => simp
+  | .bnot a, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have hc' : CodeAt C p s.rip (evalTo C t a ++ ([movi .rax 1, ld .rcx .r14 (slot t),
+        .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax] ++ rest)) := by
+      simpa [evalTo, List.append_assoc] using hc
+    have hneed : t + need a ≤ N ∧ t + 1 ≤ N := by simp [need] at htN; omega
+    have IH := evalTo_run hcan a t s _ ρ N hs hc' hneed.1 hpre
+    simp only [EvalPost, evalW] at IH ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf => simp only [ha, WRes.bind] at IH ⊢; exact IH
+    | ok xs =>
+      simp only [ha, WRes.bind] at IH ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := IH
+      match xs, hw1 with
+      | [x], hw1 =>
+        simp only
+        have hB1 : u1.regs.get .r14 = s.regs.get .r14 := hf1.2 .r14 (by decide) (by decide) (by decide)
+        have hx : rd u1.mem (u1.regs.get .r14 + slot t) = x := by
+          rw [hB1]; have := (wordsAt_slot.mp hw1) 0 (by simp); simpa using this
+        obtain ⟨u2, hr2, hs2, hrip2, hz2, hfr2, hreg2⟩ := bnot_tail_run hs1 (by rw [hrip1]; exact codeAt_right hc') hx
+        refine ⟨n1 + 4, u2, by rw [runP_add, hr1, hr2], hs2, ?_, ?_, ?_⟩
+        · rw [hrip2, hrip1]; simp only [evalTo, bytes_append, ofNat_add64, BitVec.add_assoc]
+        · exact wordsAt_slot.mpr (fun j hj => by
+            simp only [List.length_singleton] at hj
+            have : j = 0 := by omega
+            subst this; rw [← hB1]; simpa using hz2)
+        · refine frame_trans (t' := t) (le_refl _) hf1 ⟨fun a ha => hfr2 a (ha t (le_refl _) (by omega)), ?_⟩
+          intro r h1 h2 _; exact hreg2 r h1 h2
+      | [], _ => simp
+      | _ :: _ :: _, _ => simp
+  | .cat a b, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have hc' : CodeAt C p s.rip (evalTo C t a ++ (evalTo C (t + wid a) b ++ rest)) := by
+      simpa [evalTo, List.append_assoc] using hc
+    have hwa := wid_le_need a
+    have hneed : t + need a ≤ N ∧ t + wid a + need b ≤ N := by simp [need] at htN; omega
+    have IHa := evalTo_run hcan a t s _ ρ N hs hc' hneed.1 hpre
+    simp only [EvalPost, evalW] at IHa ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf => simp only [ha, WRes.bind] at IHa ⊢; exact IHa
+    | ok xs =>
+      simp only [ha, WRes.bind] at IHa ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := IHa
+      have hlen : xs.length = wid a := evalW_length a ρ xs ha
+      have hc1 : CodeAt C p u1.rip (evalTo C (t + wid a) b ++ rest) := by rw [hrip1]; exact codeAt_right hc'
+      have IHb := evalTo_run hcan b (t + wid a) u1 rest ρ N hs1 hc1 hneed.2 (pre_mono (by omega) hf1 hpre)
+      simp only [EvalPost] at IHb
+      have hB1 : u1.regs.get .r14 = s.regs.get .r14 := hf1.2 .r14 (by decide) (by decide) (by decide)
+      cases hb : evalW ρ b with
+      | bad => simp [WRes.bind]
+      | ovf =>
+        simp only [hb, WRes.bind] at IHb ⊢
+        obtain ⟨n2, u2, hr2, hs2, hrip2, hf2⟩ := IHb
+        exact ⟨n1 + n2, u2, by rw [runP_add, hr1, hr2], hs2, hrip2, frame_trans (t' := t + wid a) (by omega) hf1 hf2⟩
+      | ok ys =>
+        simp only [hb, WRes.bind] at IHb ⊢
+        obtain ⟨n2, u2, hr2, hs2, hrip2, hw2, hf2⟩ := IHb
+        have hN := hpre.2.1
+        refine ⟨n1 + n2, u2, by rw [runP_add, hr1, hr2], hs2, ?_, ?_, frame_trans (t' := t + wid a) (by omega) hf1 hf2⟩
+        · rw [hrip2, hrip1]; simp only [evalTo, bytes_append, ofNat_add64, BitVec.add_assoc]
+        · refine wordsAt_slot.mpr (fun j hj => ?_)
+          simp only [List.length_append] at hj
+          by_cases hjx : j < xs.length
+          · rw [List.getElem_append_left hjx]
+            rw [hf2.1 _ (fun i hi hi' => by rw [hB1]; exact slot_apart hN hi' (by omega) (by omega))]
+            exact (wordsAt_slot.mp hw1) j hjx
+          · rw [List.getElem_append_right (by omega)]
+            have := (wordsAt_slot.mp hw2) (j - xs.length) (by omega)
+            rw [hB1, show t + wid a + (j - xs.length) = t + j by omega] at this
+            exact this
+  | .drop n a, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have hc' : CodeAt C p s.rip (evalTo C t a ++ (moves (t + n) t (wid a - n) ++ rest)) := by
+      simpa [evalTo, List.append_assoc] using hc
+    have hwa := wid_le_need a
+    have hneed : t + need a ≤ N := by simpa [need] using htN
+    have IH := evalTo_run hcan a t s _ ρ N hs hc' hneed hpre
+    simp only [EvalPost, evalW] at IH ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf => simp only [ha, WRes.bind] at IH ⊢; exact IH
+    | ok xs =>
+      simp only [ha, WRes.bind] at IH ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := IH
+      have hlen : xs.length = wid a := evalW_length a ρ xs ha
+      have hB1 : u1.regs.get .r14 = s.regs.get .r14 := hf1.2 .r14 (by decide) (by decide) (by decide)
+      have hN : (u1.regs.get .r14).toNat + 8 * N < 2 ^ 64 := by rw [hB1]; exact hpre.2.1
+      have hc1 : CodeAt C p u1.rip (copyL .r14 .r14 (fun j => slot (t + n + j)) (fun j => slot (t + j)) (wid a - n) ++ rest) := by
+        rw [hrip1, ← moves_eq_copyL]; exact codeAt_right hc'
+      obtain ⟨u2, hr2, hs2, hrip2, hreg2, _, hcp2, hfr2⟩ := copy_run (C := C) .r14 .r14 (by decide) (by decide) _ _ (wid a - n)
+        u1 rest hs1 hc1 (fun i j hij hj => slot_apart hN (by omega) (by omega) (by omega))
+        (fun i j hi hj hij => slot_apart hN (by omega) (by omega) (by omega))
+      refine ⟨n1 + 2 * (wid a - n), u2, by rw [runP_add, hr1, hr2], hs2, ?_, ?_, ?_⟩
+      · rw [hrip2, hrip1, ← moves_eq_copyL]; simp only [evalTo, bytes_append, ofNat_add64, BitVec.add_assoc]
+      · refine wordsAt_slot.mpr (fun j hj => ?_)
+        simp only [List.length_drop] at hj
+        rw [← hB1, hcp2 j (by omega), List.getElem_drop]
+        have := (wordsAt_slot.mp hw1) (n + j) (by omega)
+        rw [← hB1, show t + (n + j) = t + n + j by omega] at this
+        exact this
+      · refine frame_trans (t' := t) (le_refl _) hf1 ⟨fun a ha => hfr2 a (fun j hj => ha (t + j) (by omega) (by omega)), ?_⟩
+        intro r h1 _ _; exact hreg2 r h1
+  | .tag tg pad a, t, s, rest, ρ, N, hs, hc, htN, hpre => by
+    have hc' : CodeAt C p s.rip (evalTo C (t + 1) a ++ ([movi .rax tg, st .r14 (slot t) .rax, movi .rax 0] ++
+        (stL .r14 (fun j => slot (t + 1 + wid a + j)) pad ++ rest))) := by
+      have := hc; simp only [evalTo, pad_eq_stL, List.append_assoc] at this; simpa [List.append_assoc] using this
+    have hwa := wid_le_need a
+    have hneed : t + 1 + need a ≤ N ∧ t + 1 + wid a + pad ≤ N := by simp [need] at htN; omega
+    have IH := evalTo_run hcan a (t + 1) s _ ρ N hs hc' hneed.1 (pre_mono (by omega) (frame_refl s t N) hpre)
+    simp only [EvalPost, evalW] at IH ⊢
+    cases ha : evalW ρ a with
+    | bad => simp [WRes.bind]
+    | ovf =>
+      simp only [ha, WRes.bind] at IH ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hf1⟩ := IH
+      exact ⟨n1, u1, hr1, hs1, hrip1, frame_weaken (by omega) hf1⟩
+    | ok xs =>
+      simp only [ha, WRes.bind] at IH ⊢
+      obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := IH
+      have hlen : xs.length = wid a := evalW_length a ρ xs ha
+      have hB1 : u1.regs.get .r14 = s.regs.get .r14 := hf1.2 .r14 (by decide) (by decide) (by decide)
+      have hN := hpre.2.1
+      have hc1 : CodeAt C p u1.rip ([movi .rax tg, st .r14 (slot t) .rax, movi .rax 0] ++
+          (stL .r14 (fun j => slot (t + 1 + wid a + j)) pad ++ rest)) := by rw [hrip1]; exact codeAt_right hc'
+      obtain ⟨u2, hr2, hs2, hrip2, htg2, hrax2, hfr2, hreg2⟩ := tag_head_run hs1 hc1
+      have hB2 : u2.regs.get .r14 = s.regs.get .r14 := by rw [hreg2 .r14 (by decide), hB1]
+      have hc2 : CodeAt C p u2.rip (stL .r14 (fun j => slot (t + 1 + wid a + j)) pad ++ rest) := by
+        rw [hrip2]; exact codeAt_right hc1
+      obtain ⟨u3, hr3, hs3, hrip3, hreg3, hst3, hfr3⟩ := st_run (C := C) .r14 _ pad u2 rest hs2 hc2
+        (fun i j hi hj hij => by rw [hB2]; exact slot_apart hN (by omega) (by omega) (by omega))
+      refine ⟨n1 + 3 + pad, u3, by rw [runP_add, runP_add, hr1, hr2, hr3], hs3, ?_, ?_, ?_⟩
+      · rw [hrip3, hrip2, hrip1]
+        simp only [evalTo, pad_eq_stL, bytes_append, ofNat_add64, BitVec.add_assoc]
+      · refine wordsAt_slot.mpr (fun j hj => ?_)
+        simp only [List.length_cons, List.length_append, List.length_replicate] at hj
+        have hpadfr : ∀ i, i ≠ t + 1 + wid a + 0 → True := fun _ _ => trivial
+        rcases j with _ | j
+        · simp only [List.getElem_cons_zero, Nat.add_zero]
+          rw [hfr3 _ (fun k hk => by rw [hB2]; exact slot_apart hN (by omega) (by omega) (by omega)), ← hB1]
+          exact htg2
+        · simp only [List.cons_append, List.getElem_cons_succ]
+          by_cases hjx : j < xs.length
+          · rw [List.getElem_append_left hjx]
+            rw [hfr3 _ (fun k hk => by rw [hB2]; exact slot_apart hN (by omega) (by omega) (by omega)),
+              hfr2 _ (by rw [hB1]; exact slot_apart hN (by omega) (by omega) (by omega))]
+            have := (wordsAt_slot.mp hw1) j hjx
+            rw [show t + 1 + j = t + (j + 1) by omega] at this
+            exact this
+          · rw [List.getElem_append_right (by omega), List.getElem_replicate]
+            have := hst3 (j - xs.length) (by omega)
+            rw [hB2, show t + 1 + wid a + (j - xs.length) = t + (j + 1) by omega, hrax2] at this
+            exact this
+      · refine frame_trans (t' := t) (le_refl _) (frame_weaken (by omega) hf1) ⟨fun a ha => ?_, ?_⟩
+        · rw [hfr3 a (fun k hk => by rw [hB2, ← hB1]; exact ha _ (by omega) (by omega)),
+            hfr2 a (ha t (le_refl _) (by omega))]
+        · intro r h1 _ _; rw [show u3.regs = u2.regs from hreg3]; exact hreg2 r h1
+
 end S3
