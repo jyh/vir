@@ -22,3 +22,8 @@ import S3
 #print axioms S3.binBlock_run
 #print axioms S3.arith_run
 #print axioms S3.evalTo_run
+#print axioms S3.r3_of_buf
+#print axioms S3.exit_run
+#print axioms S3.frames_agree
+#print axioms S3.ovf_exit
+#print axioms S3.sim_ite
