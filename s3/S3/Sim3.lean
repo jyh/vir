@@ -1947,4 +1947,54 @@ theorem res_exit {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c : WC
   refine ⟨v, hv, hret', hcom', ?_⟩
   simp only [EnvOver]; omega
 
+/-! ## One word step: `case` -/
+
+/-- **case_arm.** From a state reached from an R3 run state by a BUF-confined change, at a prepend of `ws'` (BUF slots 1… holding
+    it) followed by the arm's code: the run reaches the arm as an R3 state at `ws' ++ ρ`, or RES with `EnvOver` for those words. -/
+theorem case_arm {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c c' : WCode} {ρ ws' : List W}
+    {k : List (WCode × List W)} {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s)
+    (hus : u.stopped = false)
+    (hc : CodeAt C p u.rip (prependBuf C 1 ws'.length ++ gen C (u.rip + BitVec.ofNat 64 (bytes C (prependBuf C 1 ws'.length))) c'))
+    (hm : AgreeBuf L s.mem u.mem) (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r)
+    (hws : ∀ j (h : j < ws'.length), rd u.mem (L.buf + slot (1 + j)) = ws'[j]) (hbuf : 1 + ws'.length ≤ L.bufN) :
+    ∃ n, (R3 C p L (.run c' (ws' ++ ρ) k, wm) (runP p n u)) ∨
+      (ResExit L (runP p n u) ∧ Common L wm (runP p n u) ∧ EnvOver L ρ k ws'.length) := by
+  have hR0 := hR
+  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl, hle0, hocc⟩ := hR
+  have hL := E.ok
+  have uX : u.regs.get .rbx = L.cb := by rw [hreg .rbx (by decide) (by decide) (by decide), hX]
+  have uB : u.regs.get .r14 = L.buf := by rw [hreg .r14 (by decide) (by decide) (by decide), hB]
+  have u12 : u.regs.get .r12 = s.regs.get .r12 := hreg .r12 (by decide) (by decide) (by decide)
+  have hcb : rd u.mem (u.regs.get .rbx + 16) = L.envLo := by
+    rw [uX, hm (L.cb + 16) (fun i hi => buf_cb_apart hL hi (m := 2) (by decide))]; exact hc2
+  have hT := L.envTop.isLt
+  have hm8 : 8 * ws'.length < 2 ^ 64 := by have := hL.buf_nowrap; omega
+  by_cases hlt : (s.regs.get .r12).toNat - L.envLo.toNat < 8 * ws'.length
+  · obtain ⟨v, hv, hvs, hvrip, hvm, hvreg⟩ := prependBuf_res hus hc hcb (by rw [u12]; exact hlo) (by rw [u12]; exact hlt) hm8
+      (canon_of_codeAt E E.res)
+    obtain ⟨x, hx, hres, hcom, hover⟩ := res_exit E hR0 (fun a ha => by rw [hvm]; exact hm a ha)
+      (fun r h1 h2 h3 => by rw [hvreg r h1 h2]; exact hreg r h1 h2 h3) hvs hvrip hlt
+    exact ⟨5 + 4, Or.inr (by rw [runP_add, hv, hx]; exact ⟨hres, hcom, hover⟩)⟩
+  · have hroom : L.envLo.toNat + 8 * ws'.length ≤ (u.regs.get .r12).toNat := by rw [u12]; omega
+    have hE' : (u.regs.get .r12 - slot ws'.length).toNat = (u.regs.get .r12).toNat - 8 * ws'.length := by
+      simp only [slot, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+    have new_env : ∀ i, i < ws'.length → ∀ q, q < 8 → inEnv L (u.regs.get .r12 - slot ws'.length + slot i + BitVec.ofNat 64 q) := by
+      intro i hi q hq
+      have : (u.regs.get .r12 - slot ws'.length + slot i + BitVec.ofNat 64 q).toNat = (u.regs.get .r12).toNat - 8 * ws'.length + 8 * i + q := by
+        simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+      simp only [inEnv, this]; rw [u12] at this ⊢; omega
+    have hap : ∀ i j, i < ws'.length → j < ws'.length →
+        VIRBridge.Apart (u.regs.get .r12 - slot ws'.length + slot i) (u.regs.get .r14 + slot (1 + j)) := by
+      intro i j hi hj; rw [uB]
+      exact apart_of_disjoint hL.env_buf (new_env i hi) (buf_word L (by omega))
+    obtain ⟨v, hv, hvs, hvrip, hv12, hvcp, hvfr, hvreg⟩ := prependBuf_ok hus hc hcb hroom (canon_of_codeAt E E.res) hap
+    refine ⟨5 + 1 + 2 * ws'.length, Or.inl ?_⟩
+    rw [hv]
+    refine r3_of_prepend hL hR0 (by rw [← u12]; exact hroom) (by rw [hv12, u12]) ?_ ?_ ?_ hvs ?_
+    · intro j hj; rw [← u12, hvcp j hj, uB]; exact hws j hj
+    · intro a ha hb'
+      rw [hvfr a (fun j hj => by rw [u12]; exact hb' j hj)]; exact hm a ha
+    · intro r h1 h2 h3 h4; rw [hvreg r h1 h2 h4]; exact hreg r h1 h2 h3
+    · rw [hvrip]; exact codeAt_right hc
+
 end S3
