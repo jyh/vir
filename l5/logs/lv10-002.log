@@ -1,0 +1,17 @@
+saltqueue: ticket P1 seat=root pid=45500
+LV10	bitR	copyR	0	2431	536
+LV10	bitR	fillR	0	2431	444
+LV10	bitR	scanR	0	2431	434
+LV10	bitR	cmpR	0	2431	611
+LV10	bitR	copyWithinR	0	2431	530
+LV10	copyR	fillR	0	536	444
+LV10	copyR	scanR	0	536	434
+LV10	copyR	cmpR	0	536	611
+LV10	copyR	copyWithinR	0	536	530
+LV10	fillR	scanR	0	444	434
+LV10	fillR	cmpR	0	444	611
+LV10	fillR	copyWithinR	0	444	530
+LV10	scanR	cmpR	0	434	611
+LV10	scanR	copyWithinR	0	434	530
+LV10	cmpR	copyWithinR	0	611	530
+saltbuild EXIT=0

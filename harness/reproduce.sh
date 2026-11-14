@@ -107,6 +107,15 @@ else
   echo "  PINNED   l5/ (LV9) at its counts commit ${LV9SHA:0:12}"
   chk "$V/l5/out/counts-lv9.tsv" --arm lv9 "$M/lv9at/l5"
 fi
+# amend-24 LV10 (Addendum 10), the Lean arm, at the commit that wrote counts-lv10.tsv
+LV10SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-lv10.tsv)
+if [ -z "$LV10SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-lv10.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/lv10at" && git -C "$V" archive "$LV10SHA" l5/logs l5/out | tar -x -C "$M/lv10at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $LV10SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV10) at its counts commit ${LV10SHA:0:12}"
+  chk "$V/l5/out/counts-lv10.tsv" --arm lv10 "$M/lv10at/l5"
+fi
 # amend-24 LV2 + LV4 (STATUS-vir 316; Addendum 7), read from l5/ at the commit that wrote counts-l5.tsv (sources, logs and out/)
 L5SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-l5.tsv)
 if [ -z "$L5SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-l5.tsv (never committed)"; fail=1
