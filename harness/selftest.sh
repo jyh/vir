@@ -1290,6 +1290,40 @@ if cmp -s "$H/count.py" "$F/mutant58.py"; then say "ARM58 mutant NOT PLANTED"; f
 elif check58 "$F/mutant58.py"; then say "ARM58 mutant SURVIVED (comments counted as tokens)"; fail=1
 else say "ARM58 mutant KILLED"; fi
 
+# ARM59 (STATUS-vir LV9; l5/DECLARATIONS-LEAN Addendum 6): `--arm lv9` reads the NEWEST l5 logs/lv9-NNN.log, refuses one without
+# `saltbuild EXIT=0` or with an UNKNOWN routine, and computes removed = L2 - L5 itself, with its sign. Fixture: an OLDER green log
+# with different numbers (must not be read), the newest green log with a re-expressed mode, a lifted mode, the program totals; and a
+# second tree whose newest log is red (refused). Expectations are shell arithmetic over the fixture's own numbers.
+D59="$F/d59"; mkdir -p "$D59/logs" "$F/d59r/logs"
+A59=40; B59=25; C59=17; D59a=30; E59=12; T59=500; U59=470; R59=90
+lv9line() { printf 'LV9\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@"; }
+{ printf 'saltqueue: ticket P1\n'; for r in bitR copyR fillR scanR cmpR copyWithinR; do printf 'LV9FP\t%s\t1\t9\n' "$r"; done
+  lv9line DEFLATE READ mode 1 1 - -; printf 'saltbuild EXIT=0\n'; } > "$D59/logs/lv9-001.log"
+{ printf 'saltqueue: ticket P1\n'; for r in bitR copyR fillR scanR cmpR copyWithinR; do printf 'LV9FP\t%s\t1\t9\n' "$r"; done
+  lv9line DEFLATE READ mode $A59 $B59 bitR -
+  lv9line DEFLATE HDR mode $C59 $C59 - -
+  lv9line DEFLATE COPY mode $D59a $E59 copyWithinR -
+  lv9line DEFLATE TOTAL program $T59 $U59 bitR,copyWithinR -
+  lv9line ROUTER TOTAL program $R59 $R59 - -
+  printf 'saltbuild EXIT=0\n'; } > "$D59/logs/lv9-002.log"
+{ cat "$D59/logs/lv9-002.log" | sed 's/saltbuild EXIT=0/saltbuild EXIT=1/'; } > "$F/d59r/logs/lv9-003.log"
+check59() {
+  o=$(python3 "$1" --arm lv9 "$D59" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v LV9.log)" = 2 ] && [ "$(v LV9.DEFLATE.READ.removed)" = $((A59 - B59)) ] && [ "$(v LV9.DEFLATE.COPY.removed)" = $((D59a - E59)) ] \
+  && [ "$(v LV9.DEFLATE.HDR.removed)" = 0 ] && [ "$(v LV9.DEFLATE.removed)" = $((T59 - U59)) ] && [ "$(v LV9.DEFLATE.calls)" = 2 ] \
+  && [ "$(v LV9.DEFLATE.calls.bitR)" = 1 ] && [ "$(v LV9.DEFLATE.calls.copyWithinR)" = 1 ] && [ "$(v LV9.DEFLATE.liftNonzero)" = 0 ] \
+  && [ "$(v LV9.DEFLATE.direction)" = HOLDS ] && [ "$(v LV9.ROUTER.removed)" = 0 ] && [ "$(v LV9.ROUTER.calls)" = 0 ] \
+  && [ "$(v LV9.ROUTER.direction)" = FALSIFIED ] && [ "$(v LV9.fingerprints)" = 6 ] \
+  && python3 "$1" --arm lv9 "$F/d59r" 2>&1 | awk -F'\t' '$2=="LV9.log"' | grep -q REFUSED
+}
+if check59 "$H/count.py"; then say "ARM59 lv9 fixture OK (READ $((A59 - B59)), COPY $((D59a - E59)), DEFLATE $((T59 - U59)) HOLDS, ROUTER 0 FALSIFIED, red log refused)"
+else say "ARM59 lv9 fixture FAIL"; python3 "$H/count.py" --arm lv9 "$D59"; fail=1; fi
+sed 's/r_ = l2 - l5  # LV9-SIGN/r_ = l5 - l2/' "$H/count.py" > "$F/mutant59.py"  # the sign flipped
+if cmp -s "$H/count.py" "$F/mutant59.py"; then say "ARM59 mutant NOT PLANTED"; fail=1
+elif check59 "$F/mutant59.py"; then say "ARM59 mutant SURVIVED (removed = L5 - L2)"; fail=1
+else say "ARM59 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

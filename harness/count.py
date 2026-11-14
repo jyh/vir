@@ -2138,9 +2138,56 @@ def metaprll4(repo, base, ext):
     return rows
 
 
+# amend-24 LV9 (l5/DECLARATIONS-LEAN Addendum 6; selftest ARM59). DIR is the l5 project. The instrument is l5/Lv9.lean, run as
+# logs/lv9-NNN.log; the NEWEST such log is read, and refused unless it carries `saltbuild EXIT=0` and names no UNKNOWN routine.
+# Every difference is computed here from the two printed node counts (removed = L2 - L5, signed), never read from the log.
+LV9_LOG_RE = re.compile(r'^lv9-(\d+)\.log$')
+
+
+def lv9(d):
+    logs = os.path.join(os.path.abspath(d), 'logs')
+    got = sorted((int(m.group(1)), f) for f in (os.listdir(logs) if os.path.isdir(logs) else []) for m in [LV9_LOG_RE.match(f)] if m)
+    if not got:
+        return [('LV9.log', 0, 'EMPTY:no lv9 log in ' + logs)]
+    n, f = got[-1]
+    text = read(os.path.join(logs, f))
+    lines = text.splitlines()
+    if 'saltbuild EXIT=0' not in (l.strip() for l in lines):
+        return [('LV9.log', n, 'REFUSED:%s has no saltbuild EXIT=0' % f)]
+    if 'UNKNOWN' in text:
+        return [('LV9.log', n, 'REFUSED:%s names an UNKNOWN routine' % f)]
+    fps = [l.split('\t') for l in lines if l.startswith('LV9FP\t')]
+    recs = [l.split('\t') for l in lines if l.startswith('LV9\t')]
+    rows = [('LV9.log', n, 'MEASURED:' + f), ('LV9.fingerprints', len(set(x[1] for x in fps)), 'MEASURED:library routines named')]
+    calls = lambda c: [] if c == '-' else c.split(',')
+    progs = {}
+    for r in recs:
+        _, prog, mode, kind, l2, l5, c5 = r[:7]
+        l2, l5 = int(l2), int(l5)
+        r_ = l2 - l5  # LV9-SIGN
+        if kind == 'program':
+            progs[prog] = (r_, calls(c5), l2, l5)
+        else:
+            rows.append(('LV9.%s.%s.removed' % (prog, mode), r_, 'MEASURED:L2 %d - L5 %d; calls %s' % (l2, l5, c5)))
+            if not calls(c5) and r_ != 0:
+                progs.setdefault(prog + '#lift', []).append(mode)
+    for prog, v in progs.items():
+        if prog.endswith('#lift'):
+            continue
+        r_, cs, l2, l5 = v
+        lift = progs.get(prog + '#lift', [])
+        rows.append(('LV9.%s.removed' % prog, r_, 'MEASURED:L2 %d - L5 %d (signed)' % (l2, l5)))
+        rows.append(('LV9.%s.calls' % prog, len(cs), 'MEASURED'))
+        for name in sorted(set(cs)):
+            rows.append(('LV9.%s.calls.%s' % (prog, name), cs.count(name), 'MEASURED'))
+        rows.append(('LV9.%s.liftNonzero' % prog, len(lift), 'MEASURED:' + (','.join(lift) if lift else 'none')))
+        rows.append(('LV9.%s.direction' % prog, 'HOLDS' if cs and r_ > 0 else 'FALSIFIED', 'MEASURED:calls >= 1 and removed > 0'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2168,6 +2215,8 @@ def main():
         rows = leanl4(a.dir)
     elif a.arm == 'deflate':
         rows = deflate(a.dir)
+    elif a.arm == 'lv9':
+        rows = lv9(a.dir)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
     elif a.arm == 'metaprll2':
