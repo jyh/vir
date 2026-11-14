@@ -39,3 +39,6 @@ import VIRL5.Zero5
 import VIRL5.Fixlens5
 import VIRL5.FixlensEnd5
 import VIRL5.Read5
+import VIRL5.Decode5
+import VIRL5.ReadRun5
+import VIRL5.DecodeRun5

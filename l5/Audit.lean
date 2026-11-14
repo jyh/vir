@@ -87,3 +87,17 @@ open VIRL5
 #print axioms bitR_subst
 #print axioms read5_bit
 #print axioms read5_trunc
+#print axioms read5_bit_cost
+#print axioms read5_trunc_cost
+#print axioms read5_bit_run
+#print axioms read5_trunc_run
+#print axioms read5_bit_world
+#print axioms read5_trunc_world
+#print axioms decode5_bit
+#print axioms decode5_trunc
+#print axioms decode5_bit_cost
+#print axioms decode5_trunc_cost
+#print axioms decode5_bit_run
+#print axioms decode5_trunc_run
+#print axioms decode5_bit_world
+#print axioms decode5_trunc_world
