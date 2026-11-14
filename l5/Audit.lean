@@ -46,3 +46,9 @@ open VIRL5
 #print axioms RegionAt.world
 #print axioms World.regionAt
 #print axioms initStore_sole
+#print axioms iterF_add
+#print axioms ReachF.trans
+#print axioms chunk_run
+#print axioms extract_append_extract'
+#print axioms scopyAdv_zero
+#print axioms scopyAdv_add
