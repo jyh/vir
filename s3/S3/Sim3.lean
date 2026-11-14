@@ -1912,4 +1912,39 @@ theorem r3_of_prepend {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WC
   · rw [g12, hE', List.length_append]
     constructor <;> omega
 
+/-! ## The RES side -/
+
+/-- Addendum 6's condition: the word state with n more words outgrows ENV's declared size. -/
+def EnvOver (L : Lay3) (ρ : List W) (k : List (WCode × List W)) (n : Nat) : Prop :=
+  L.env0.toNat - L.envLo.toNat < 8 * (ρ.length + kSize k + n)
+
+/-- **prependBuf_res.** When `r12 − envLo < 8n` the prepend reaches RES in 5 steps with memory unchanged. -/
+theorem prependBuf_res {C : Ctx3} {p : Program} {s : Cpu} {sb n : Nat} {lo : W} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (prependBuf C sb n ++ rest)) (hcb : rd s.mem (s.regs.get .rbx + 16) = lo)
+    (hge : lo.toNat ≤ (s.regs.get .r12).toNat) (hlt : (s.regs.get .r12).toNat - lo.toNat < 8 * n) (h8n : 8 * n < 2 ^ 64)
+    (hcan : canonical C.res = true) :
+    ∃ u, runP p 5 s = u ∧ u.stopped = false ∧ u.rip = C.res ∧ u.mem = s.mem ∧
+      ∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r := by
+  have hc' : CodeAt C p s.rip (envRoom C n ++ ((.op (.lea .q .r12 { base := some .r12, disp := -(slot n) }) ::
+      (List.range n).flatMap fun j => [ld .rax .r14 (slot (sb + j)), st .r12 (slot j) .rax]) ++ rest)) := by
+    have := hc; simp only [prependBuf, List.append_assoc] at this; simpa using this
+  obtain ⟨u, hr, hus, hm, hreg, hrip⟩ := envRoom_run hs hc' hcb hge h8n hcan
+  rw [if_pos hlt] at hrip
+  exact ⟨u, hr, hus, hrip, hm, hreg⟩
+
+/-- **res_exit.** RES reached from a state related to an R3 run state by a BUF-confined change, with the ENV check failed for n
+    words, returns to the driver as `ResExit`, and the word state then satisfies `EnvOver` (Addendum 6). -/
+theorem res_exit {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c : WCode} {ρ : List W} {k : List (WCode × List W)}
+    {wm : WMem} {s u : Cpu} {n : Nat} (hR : R3 C p L (.run c ρ k, wm) s) (hm : AgreeBuf L s.mem u.mem)
+    (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) (hus : u.stopped = false) (hrip : u.rip = C.res)
+    (hlt : (s.regs.get .r12).toNat - L.envLo.toNat < 8 * n) :
+    ∃ v, runP p 4 u = v ∧ ResExit L v ∧ Common L wm v ∧ EnvOver L ρ k n := by
+  obtain ⟨_, _, hcom, hlo, _, _, hfr, hsl, hle0, hocc⟩ := hR
+  have hret : rd u.mem L.rsp0 = L.ret0 := by
+    rw [hm L.rsp0 (fun i hi => buf_stk_apart E.ok hi (E.ok.stk_lo_le) (le_refl _))]; exact frames_ret0 k _ _ hfr
+  obtain ⟨v, hv, hret', hcom'⟩ := exit_run (rest := []) E.ok hus (by rw [hrip]; simpa using E.res) (common_of_buf E.ok hcom hm hreg)
+    hret E.ret_canon
+  refine ⟨v, hv, hret', hcom', ?_⟩
+  simp only [EnvOver]; omega
+
 end S3
