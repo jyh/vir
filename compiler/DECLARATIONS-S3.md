@@ -181,3 +181,12 @@ Addendum 6 bound (`env0 − a ≤ 8·(|ρ₂| + Σ over k' of |ρᵢ|)`), RES is
 the word machine steps to outgrows ENV. A return to the entry stub (k = []) has no prepend and no RES. The proof is a new module
 `S3/SimRet.lean` beside Sim3 (Sim3 is not edited for it). It cites `r3_of_prepend` by stepping through a state whose `rip` is set to
 the continuation's code: every conjunct of R3 but the code one is about registers and memory, which that state shares.
+
+## ADDENDUM 10 (2026-11-14, the 78th head, before any letE proof): the STACK RES side, stated of the successor
+A `letE c₁ c₂` step goes from `run (letE c₁ c₂) ρ k` to `run c₁ ρ ((c₂, ρ) :: k)`. Its code runs STACK's room check (Addendum 5:
+`rsp − stkLo < 16` ⇒ RES) before the `push r12` and the `call`. R3's frames put `rsp` at `rsp0 − 16·(|k| + 1)` (`frames_bound`), so
+the check fails exactly when `rsp0 − stkLo < 16·(|k| + 2)`. That is Addendum 2's bound for the SUCCESSOR, whose continuation
+list k' = (c₂, ρ) :: k has |k'| = |k| + 1: `16·(|k'| + 1) + 8` exceeds STACK's size `rsp0 + 8 − stkLo`. `sim_letE` claims RES only
+under that condition (`StkOver L k'`), with memory unchanged up to the exit. On the other branch the push and the call write only
+the two STACK words below `rsp`. The frames lemma then needs agreement only at and above the current `rsp` (`frames_above`), because
+a frame chain reads no stack word below its own `rsp`. `sim_letE` lives in `S3/SimLet.lean`, which imports SimRet and edits neither.
