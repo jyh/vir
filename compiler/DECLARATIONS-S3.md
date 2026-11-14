@@ -172,3 +172,12 @@ shape no compiled typed program produces (Addendum 1), and the machine code for 
 `sim_store` takes, as part of the step it simulates, that the index's evaluation is not BAD. This narrows only the steps that exist
 because of a BAD shape. Steps from compiled typed programs are untouched, and the premise is discharged by S2's relation, under
 which no evaluation is BAD.
+
+## ADDENDUM 9 (2026-11-14, the 78th head, before any ret proof): the RES side of a return, and where its proof lives
+A `ret o` returning into a pending frame `(c₂, ρ₂) :: k'` runs Addendum 1's RUNTIME prepend: r13 holds |ws| = `wid o`, r12 has been
+restored to the frame's saved envLow `a`, and the loop's room check answers RES exactly when `a − envLo < 8·|ws|`. By the frame's
+Addendum 6 bound (`env0 − a ≤ 8·(|ρ₂| + Σ over k' of |ρᵢ|)`), RES is then claimed only when the SUCCESSOR word state
+`run c₂ (ws ++ ρ₂) k'` satisfies `env0 − envLo < 8·(|ws ++ ρ₂| + Σ over k' of |ρᵢ|)`, i.e. `EnvOver L (ws ++ ρ₂) k' 0`: the state
+the word machine steps to outgrows ENV. A return to the entry stub (k = []) has no prepend and no RES. The proof is a new module
+`S3/SimRet.lean` beside Sim3 (Sim3 is not edited for it). It cites `r3_of_prepend` by stepping through a state whose `rip` is set to
+the continuation's code: every conjunct of R3 but the code one is about registers and memory, which that state shares.
