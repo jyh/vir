@@ -174,3 +174,30 @@ control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not op
   LIMIT: the red is at the name level. It shows the proof cannot discharge Refine₅ without (T), not that READ's refinement is
   false without it.
 - Builds this head: l5-119 … l5-134 and the mutant; 16 numbered builds for 323 + FIXLENS + BUILD + the split.
+
+## ADDENDUM 9 (the 76th head, BEFORE any Router5 code): LV8 (b), the router, and a FINDING against this map's line 31
+- **The finding.** Line 31 says `cmpR` and `scanR` "are the router's". That was a planning line, and nobody checked it against the
+  term. The L3 router is `F` (l3/VIRL3/Router.lean at caf23c0, the term `router_refines` instantiates). F is STRAIGHT-LINE: one
+  load of the length cell, three `RD32`s (four loads each, at fixed offsets 3–14), two loads at computed indices (the ACL cell
+  `A + 4·sender + topic`, the bucket `K + sender`), two `ite`s, and the `EMIT`/`EXIT` stores. It has no `fix` or `lam`, and it walks
+  no region. **No routine replaces router code:**
+  - `cmpR` compares two lent regions, but the router holds one, and MAGIC is a constant.
+  - `scanR` searches for a value, but the router INDEXES.
+  - `fillR`, `copyR` and `copyWithinR` have nothing to write in bulk.
+  - `bitR`: the router reads whole cells.
+  The same holds for U and U_tx.
+- **LV9's router cell, read now and before any Router5 code: 0 calls and 0 nodes removed.** LV9 predicted "> 0 on each"
+  (PREDICTIONS-amend-24 l.46), so LV9 is **FALSIFIED for the router** on the Lean arm. The prediction is not re-read and the router is
+  not rewritten to make a call. A router that called `cmpR` or `scanR` would be a NEW program (it would need a second region, or a
+  search where F indexes), and not a re-expression. J3 (a)'s premise, "the routines the two programs already hand-code", holds for
+  DEFLATE and FAILS for the router. That is a finding about the object's J3, for FINDINGS.
+- **LV8 (b) still has a statement to carry.** DECLARATIONS-LEAN l.59–60 names "the router's L3 theorem for the re-expressed term".
+  That is R4, `VIRL3.R4` (OBJECT-L3 §3.3; R5_frame is one frame application of it). The re-expressed term is the embedding
+  `Router5.F₅ := ιE F`, because no part of F becomes a call. R4₅ is R4's statement over ⊢₅ for F₅: same precondition, same
+  `postF`, the result `ιA (cap p)`, and nothing handed back. It is proved by ONE generic lemma, `triple_ι`: every L2 `Triple`
+  carries to a `Triple₅` of its embedding. The lemma comes from CE (ce_fwd, ce_bwd), names no program, and goes in Embed5's
+  neighbourhood. LV8's count is then trivially 0 routine-body lemmas. The vacuity is stated beside the zero, never as a pass.
+- `router_refines` itself is a compiler theorem (S1∘S2 over Tm₂), and the compiler does not take Tm₅ until LV11 (after S3). Its
+  SOURCE statement is the ⟶₂ run of F, and F₅ = ιE F runs it step for step (CE). Nothing in it is carried by a routine.
+- **What would show this addendum wrong:** a loop over a region in F, U or U_tx (a `fix` in their terms), or a routine whose
+  triple matches a sub-term of F. Either would make the router cell non-vacuous, and it would be scored as LV9 reads.
