@@ -116,4 +116,47 @@ theorem copy_run {C : Ctx3} {p : Program} (sb db : GPR) (hsb : sb ≠ .rax) (hdb
       simp only [Regs.get_set_ne _ _ _ _ (Ne.symm hdb), Regs.get_set_same]
       rw [hdbu, rd_write_apart _ _ _ _ (ha n (by omega)), hufr a (fun j hj => ha j (by omega))]
 
+/-! ## BUF slots, and `evalTo`'s `slice` case -/
+
+/-- Distinct slots of a non-wrapping word region are apart. -/
+theorem slot_apart {b : W} {N : Nat} (hN : b.toNat + 8 * N < 2 ^ 64) {i j : Nat} (hi : i < N) (hj : j < N) (hij : i ≠ j) :
+    VIRBridge.Apart (b + slot i) (b + slot j) := by
+  intro x y hx hy e
+  have := congrArg BitVec.toNat e
+  simp only [slot, BitVec.toNat_add, BitVec.toNat_ofNat] at this
+  omega
+
+theorem slice_eq_copyL (off t len : Nat) :
+    ((List.range len).flatMap fun j => [ld .rax .r12 (slot (off + j)), st .r14 (slot (t + j)) .rax]) =
+      copyL .r12 .r14 (fun j => slot (off + j)) (fun j => slot (t + j)) len := by
+  induction len with
+  | zero => rfl
+  | succ n ih => rw [List.range_succ, List.flatMap_append, ih]; simp [copyL]
+
+/-- **evalTo, slice.** `slice off len` at BUF slot t copies ρ's words off … off+len−1 to slots t …, in 2·len steps, given each
+    destination slot apart from each source word and BUF non-wrapping. -/
+theorem evalTo_slice_run {C : Ctx3} {p : Program} {s : Cpu} {rest : List AI} {ρ : List W} {off t len N : Nat}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (evalTo C t (.slice off len) ++ rest))
+    (hρ : WordsAt s.mem (s.regs.get .r12) ρ) (hlen : off + len ≤ ρ.length)
+    (hN : (s.regs.get .r14).toNat + 8 * N < 2 ^ 64) (htN : t + len ≤ N)
+    (hap : ∀ i j, i < len → j < len → VIRBridge.Apart (s.regs.get .r14 + slot (t + i)) (s.regs.get .r12 + slot (off + j))) :
+    ∃ s', runP p (2 * len) s = s' ∧ s'.stopped = false ∧
+      s'.rip = s.rip + BitVec.ofNat 64 (bytes C (evalTo C t (.slice off len))) ∧
+      (∀ r, r ≠ .rax → s'.regs.get r = s.regs.get r) ∧ s'.flags = s.flags ∧
+      WordsAt s'.mem (s.regs.get .r14 + slot t) ((ρ.drop off).take len) ∧
+      (∀ a, (∀ j, j < len → VIRBridge.Apart (s.regs.get .r14 + slot (t + j)) a) → rd s'.mem a = rd s.mem a) := by
+  simp only [evalTo, slice_eq_copyL] at hc ⊢
+  obtain ⟨s', h1, h2, h3, h4, h5, h6, h7⟩ := copy_run (C := C) .r12 .r14 (by decide) (by decide) _ _ len s rest hs hc hap
+    (fun i j hi hj hij => slot_apart hN (by omega) (by omega) (by omega))
+  refine ⟨s', h1, h2, h3, h4, h5, ?_, h7⟩
+  intro j hj
+  simp only [List.length_take, List.length_drop] at hj
+  have := h6 j (by omega)
+  simp only [rd] at this
+  rw [show s.regs.get .r14 + slot t + BitVec.ofNat 64 (8 * j) = s.regs.get .r14 + slot (t + j) by
+    simp only [slot, BitVec.add_assoc, ← ofNat_add64]; congr 2; omega, this]
+  have hw := hρ (off + j) (by omega)
+  rw [show s.regs.get .r12 + slot (off + j) = s.regs.get .r12 + BitVec.ofNat 64 (8 * (off + j)) from rfl, hw]
+  simp [List.getElem_take, List.getElem_drop]
+
 end S3
