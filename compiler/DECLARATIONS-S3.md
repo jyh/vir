@@ -141,3 +141,10 @@ S3-L's arithmetic now loads BOTH operands (BUF slots t and t+1) into rax and rcx
 `rax, rcx`, `imul rax, rcx`; lt/le/eq set rdx (zeroed first, since rcx holds an operand); `bnot` loads x into rcx and computes
 `1 − x` as `sub rax, rcx`. x86lean states its equations for the reg-reg forms of sub, cmp, and and or, not for reg-mem. With these
 forms every arithmetic step is one of x86lean's lemmas, cited and not re-proved. No count or claim depended on the earlier forms.
+
+## ADDENDUM 5 (2026-11-14, the 77th head, before any proof about a room check): register forms in the room checks
+x86lean states SUB and CMP for reg,reg and reg,imm, not reg,mem (Addendum 4's reason). So the three room checks load their bound
+into a register first. ENV room: `ld rcx [rbx+16]; mov rax, r12; sub rax, rcx; cmp rax, 8n; jb RES`. STACK room: the same over
+`[rbx+24]`, rsp and 16. The runtime prepend after a `letE` loads ENV's bound into rdx, because rcx carries the count. `store` reloads
+base and len from ENV after its room check, which now clobbers rcx; r12 does not move before the `lea`. With these forms every
+check is one of x86lean's equations plus `cc_b_of_sub` (unsigned below), cited.
