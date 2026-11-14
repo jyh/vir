@@ -45,3 +45,8 @@ import S3
 #print axioms S3.loop_run
 #print axioms S3.sim_ret_cons
 #print axioms S3.sim_ret
+#print axioms S3.stepP_push
+#print axioms S3.stepP_callA
+#print axioms S3.stackRoom_run
+#print axioms S3.frames_above
+#print axioms S3.sim_letE
