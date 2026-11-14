@@ -52,3 +52,6 @@ import VIRL5.Reex5
 import VIRL5.RefineRep5
 import VIRL5.RefineCopy5
 import VIRL5.RefineScopy5
+import VIRL5.TabKeep5
+import VIRL5.RefineRead5
+import VIRL5.Outer5T

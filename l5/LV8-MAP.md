@@ -129,3 +129,28 @@ premise to stand on. SCOPY, COPY, REP, FIXLENS and BUILD ZERO never read the tab
   DECODE only: re-prove their cases inside Correct's simulation. (K) keep READ and DECODE reading the table (no bitR in DEFLATE;
   LV9's count for bitR moves to the router alone).
 - (T) is per-mode work on DEFLATE's own step lemmas, outside Correct and Safety. It does not change any statement.
+
+## ADDENDUM 7 (the 75th head, after (T) is built): the table invariant, and READ's and DECODE's Refine₅
+Fork (T) of Addendum 6 is taken and proved (l5-126 EXIT=0; audit-037: 214 theorems within the three axioms, 0 sorryAx; the
+control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not opened.
+- **The invariant.** `Tab f := BitsUpTo f (if MODE = TABLE then 8·TB + TI else 2048)` (TabKeep5). It holds at the initial
+  world (`tab_init`, MODE = TABLE, counter 0) and every DEFLATE step keeps it (`stepS_tab`, TabStep5), so it holds along the
+  iterate (`iterS_tab`). It is carried per DEFLATE step, so refine_lifted/rep/copy/scopy are unchanged.
+- **The frame, generic part.** `tkT` is a syntactic check that every store in a term has a literal index outside [20, 2068),
+  inside function bodies too. ⟶₂ keeps it, and on a Sole store such a run leaves the table cells as they were (`run₂_tk`).
+  The dispatch only loads, so `stepS_tkeep` covers a mode whose body passes tkT. Fourteen do, each by `decide` (HDR READ HDRB
+  HDRD SHDR DHDR SLEN SNLEN DSTD DSTX DH2 DH3 DH4 LREP). The control `tk_table_refused`: TABLE's body fails it.
+- **The frame, by mode.** The thirteen modes with a computed store index go through DEFLATE's own step lemma, with Safety's
+  premises read as Safety reads them: COPY, SCOPY and REP by the c = 1 iterate (TabChunk5); SYM LENX CLPUT SYMD LSYM DECODE
+  FIXLENS CLREAD LENS (TabDec5); BUILD's five phases (TabBuild5). Each store is an explicit insert chain, and every insert is a
+  control cell or ≥ 2080.
+- **Why not cheaper (recorded):** Correct's Rel cannot be rebuilt from Inv, because Inv does not make the output cells naturals,
+  and Safety's proofs do not export their frames.
+- **READ and DECODE** (RefineRead5): the bit bitR returns is `bitsF … 1 = bitAt (byte) bi` (`bitsF_one`). Under Tab, outside
+  TABLE, this is DEFLATE's table cell, so the stores agree and j = 1 (`refine_read`, `refine_decode`). The by ≥ n branch is
+  DEFLATE's own TRUNC.
+- **The outer argument under (T)** (Outer5T): `Refine₅T` is `Refine₅` with `Tab f` added to its hypotheses.
+  `safety₅_ofT : Refine₅T → SafetyStmt₅` and `correct₅_ofT : Refine₅T → CorrectStmt₅` hold, with Tab threaded by `iterS_tab`.
+  Outer5 is unchanged: it sits upstream of the dispatch the frame needs.
+- **Owed:** FIXLENS's and BUILD's Refine₅, then `Refine₅T` by the case split, and `safety₅`/`correct₅`.
+- Builds l5-119 … l5-126 (l5-119 … 125 EXIT=1, kept, home paths redacted). Price guess 15–30; spent 8.
