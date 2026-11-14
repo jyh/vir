@@ -9,3 +9,4 @@ import S3.Step3
 import S3.Top3
 import S3.Place3
 import S3.Need3
+import S3.Sem3
