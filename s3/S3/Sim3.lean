@@ -507,4 +507,42 @@ theorem cmp_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {c : Cc} {x y : W} 
   · intro a ha; rw [e6, r14_5, mem5]; exact rd_write_apart _ _ _ _ ha
   · intro r ha hc' hd; rw [e6]; exact regs5 r ha hc' hd
 
+/-! ## and, or, max -/
+
+/-- CMOVcc r, r' (SDM Vol. 2A CMOVcc) at quadword width. x86lean states no cmov equation, so this one is proved here from
+    `step` (a new instruction fact, not a C3 lemma; a candidate to move upstream). -/
+theorem step_cmov_rr (c : Cc) (r r' : GPR) {s : Cpu} {len : Nat} (h : Live s) :
+    step ⟨.cmov c .q r (.reg r'), len⟩ s =
+      { s with regs := s.regs.set r (if c.eval s.flags then s.regs.get r' else s.regs.get r), rip := s.rip + BitVec.ofNat 64 len } := by
+  by_cases he : c.eval s.flags <;>
+    simp [step, h, he, Cpu.stopped, Cpu.setReg, Cpu.setRip, Cpu.readOperand, Cpu.getReg, Value.writeView]
+
+theorem stepP_cmov {C : Ctx3} {p : Program} {s : Cpu} {c : Cc} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.cmov c .q r (.reg r')) :: l)) :
+    stepP p s = { s with regs := s.regs.set r (if c.eval s.flags then s.regs.get r' else s.regs.get r), rip := nxt C s.rip (.op (.cmov c .q r (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_cmov_rr c r r' (live_of hs)]
+  simp [nxt, AI.size]
+
+theorem stepP_and_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .and .q (.reg r) (.reg r')) :: l)) :
+    ∃ f o, stepP p s = { s with regs := s.regs.set r (s.regs.get r &&& s.regs.get r'), flags := f, oracle := o, rip := nxt C s.rip (.op (.bin .and .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_and_reg_reg .q r r' (live_of hs)]
+  refine ⟨Flags.logic .q (s.regs.get r &&& s.regs.get r') (s.oracle.bits s.oracle.cursor) s.flags,
+    { s.oracle with cursor := s.oracle.cursor + 1 }, ?_⟩
+  simp [Value.writeView, Cpu.getReg, nxt, AI.size]
+
+theorem stepP_or_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .or .q (.reg r) (.reg r')) :: l)) :
+    ∃ f o, stepP p s = { s with regs := s.regs.set r (s.regs.get r ||| s.regs.get r'), flags := f, oracle := o, rip := nxt C s.rip (.op (.bin .or .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_or_reg_reg .q r r' (live_of hs)]
+  refine ⟨Flags.logic .q (s.regs.get r ||| s.regs.get r') (s.oracle.bits s.oracle.cursor) s.flags,
+    { s.oracle with cursor := s.oracle.cursor + 1 }, ?_⟩
+  simp [Value.writeView, Cpu.getReg, nxt, AI.size]
+
 end S3
