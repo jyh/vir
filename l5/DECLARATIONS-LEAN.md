@@ -172,3 +172,11 @@ before any per-case figure was looked at:
   (app · appK), cut as in Addendum 7. LV5 HOLDS iff the total is ≥ 1 AND hits in those arms are ≥ half of the total. Hits per file
   are reported beside.
 - Same instrument: `count.py --arm l5`, rows `L5.LV5.*`, its selftest arm written red first.
+
+## ADDENDUM 9 (2026-11-14, the 76th head, BEFORE any harness read of LV7): LV7's content premise, read mechanically
+- **A routine's triple** is its `<name>R_spec` theorem in VIRL5 (bitR, copyR, fillR, scanR, cmpR, copyWithinR). LV7 names five
+  routines; copyWithinR is the sixth and is reported BESIDE the five.
+- **Its content variables** are the binders of the statement typed `Int → Int` (a region's contents).
+- **Its premises** are the arrow premises between the statement's last `∀ …,` and `Triple₅`. **A content premise** is a premise
+  that names a content variable as a whole word. The precondition's `RegionAt p n f` is the region itself, not a premise.
+- LV7 HOLDS iff the five read 0 content premises. Same instrument: `count.py --arm l5`, rows `L5.LV7.*`, selftest arm red first.
