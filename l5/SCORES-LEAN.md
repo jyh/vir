@@ -1,6 +1,7 @@
 # L5 — the Lean arm's scores so far (amend-24), each read by a harness arm against a reading DECLARED before its count
 
-The RESULTS file for L5 comes when both arms close. These are the Lean cells, and each one points at its record.
+**SUPERSEDED by RESULTS-13** (both arms, 2026-11-14), which also reads LV3 and LV10. This file is kept as the record of the
+Lean cells as they were first read, each pointing at its record.
 
 | prediction | Lean cell | how it is read | record |
 |---|---|---|---|
