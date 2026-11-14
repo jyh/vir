@@ -67,11 +67,12 @@ def copyL (sb db : GPR) (f g : Nat → W) : Nat → List AI
   | n + 1 => copyL sb db f g n ++ [ld .rax sb (f n), st db (g n) .rax]
 
 /-- **copy_run.** n copies run in 2n steps. Afterwards every destination word holds its source word as it was BEFORE the
-    copies, provided every destination span is apart from every source span and distinct destinations are apart. Words apart
+    copies, provided each destination span is apart from every LATER source span (so an overlapping move DOWN qualifies) and distinct
+    destinations are apart. Words apart
     from every destination keep their value. Only rax and rip change among the registers; the flags do not change. -/
 theorem copy_run {C : Ctx3} {p : Program} (sb db : GPR) (hsb : sb ≠ .rax) (hdb : db ≠ .rax) (f g : Nat → W) :
     ∀ (n : Nat) (s : Cpu) (rest : List AI), s.stopped = false → CodeAt C p s.rip (copyL sb db f g n ++ rest) →
-    (∀ i j, i < n → j < n → VIRBridge.Apart (s.regs.get db + g i) (s.regs.get sb + f j)) →
+    (∀ i j, i < j → j < n → VIRBridge.Apart (s.regs.get db + g i) (s.regs.get sb + f j)) →
     (∀ i j, i < n → j < n → i ≠ j → VIRBridge.Apart (s.regs.get db + g i) (s.regs.get db + g j)) →
     ∃ s', runP p (2 * n) s = s' ∧ s'.stopped = false ∧ s'.rip = s.rip + BitVec.ofNat 64 (bytes C (copyL sb db f g n)) ∧
       (∀ r, r ≠ .rax → s'.regs.get r = s.regs.get r) ∧ s'.flags = s.flags ∧
@@ -146,7 +147,7 @@ theorem evalTo_slice_run {C : Ctx3} {p : Program} {s : Cpu} {rest : List AI} {ρ
       WordsAt s'.mem (s.regs.get .r14 + slot t) ((ρ.drop off).take len) ∧
       (∀ a, (∀ j, j < len → VIRBridge.Apart (s.regs.get .r14 + slot (t + j)) a) → rd s'.mem a = rd s.mem a) := by
   simp only [evalTo, slice_eq_copyL] at hc ⊢
-  obtain ⟨s', h1, h2, h3, h4, h5, h6, h7⟩ := copy_run (C := C) .r12 .r14 (by decide) (by decide) _ _ len s rest hs hc hap
+  obtain ⟨s', h1, h2, h3, h4, h5, h6, h7⟩ := copy_run (C := C) .r12 .r14 (by decide) (by decide) _ _ len s rest hs hc (fun i j hij hj => hap i j (by omega) hj)
     (fun i j hi hj hij => slot_apart hN (by omega) (by omega) (by omega))
   refine ⟨s', h1, h2, h3, h4, h5, ?_, h7⟩
   intro j hj
@@ -824,5 +825,83 @@ theorem arith_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {rest :
     obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := binBlock_run (k := 1) hs (by simpa [arithCode, List.append_assoc] using hc) hx hy
       (mid_or C p x y)
     exact ⟨2 + 1 + 1, u, h1, h2, by rw [h3]; rfl, by rw [h4, h], h5, fun r a b _ => h6 r a b⟩
+
+/-! ## Immediates and padding -/
+
+/-- n immediate stores: word j := `v j` at `[db + g j]`, through rax. -/
+def immL (db : GPR) (v g : Nat → W) : Nat → List AI
+  | 0 => []
+  | n + 1 => immL db v g n ++ [movi .rax (v n), st db (g n) .rax]
+
+theorem imm_run {C : Ctx3} {p : Program} (db : GPR) (hdb : db ≠ .rax) (v g : Nat → W) :
+    ∀ (n : Nat) (s : Cpu) (rest : List AI), s.stopped = false → CodeAt C p s.rip (immL db v g n ++ rest) →
+    (∀ i j, i < n → j < n → i ≠ j → VIRBridge.Apart (s.regs.get db + g i) (s.regs.get db + g j)) →
+    ∃ s', runP p (2 * n) s = s' ∧ s'.stopped = false ∧ s'.rip = s.rip + BitVec.ofNat 64 (bytes C (immL db v g n)) ∧
+      (∀ r, r ≠ .rax → s'.regs.get r = s.regs.get r) ∧
+      (∀ j, j < n → rd s'.mem (s.regs.get db + g j) = v j) ∧
+      (∀ a, (∀ j, j < n → VIRBridge.Apart (s.regs.get db + g j) a) → rd s'.mem a = rd s.mem a)
+  | 0, s, _, hs, _, _ => ⟨s, rfl, hs, by simp [immL, bytes_nil], fun _ _ => rfl, fun _ h => absurd h (by omega), fun _ _ => rfl⟩
+  | n + 1, s, rest, hs, hc, hdd => by
+    obtain ⟨u, hu, hus, hur, hureg, hucp, hufr⟩ := imm_run db hdb v g n s ([movi .rax (v n), st db (g n) .rax] ++ rest) hs
+      (by simpa [immL, List.append_assoc] using hc) (fun i j hi hj hij => hdd i j (by omega) (by omega) hij)
+    have hcu : CodeAt C p u.rip (movi .rax (v n) :: st db (g n) .rax :: rest) := by
+      rw [hur]; have := codeAt_right (a := immL db v g n) (b := [movi .rax (v n), st db (g n) .rax] ++ rest)
+        (by simpa [immL, List.append_assoc] using hc)
+      simpa using this
+    have h1 := stepP_movi hus hcu
+    set u1 := stepP p u with hu1
+    have hu1s : u1.stopped = false := by rw [h1]; exact hus
+    have hcu1 : CodeAt C p u1.rip (st db (g n) .rax :: rest) := by rw [h1]; exact codeAt_tail hcu
+    have h2 := stepP_st hu1s hcu1
+    have hdbu : u.regs.get db = s.regs.get db := hureg db hdb
+    refine ⟨stepP p u1, ?_, by rw [h2]; exact hu1s, ?_, ?_, ?_, ?_⟩
+    · rw [show 2 * (n + 1) = 2 * n + 2 by omega, runP_add, hu]
+      simp [runP, hu1]
+    · rw [h2, h1]
+      simp only [hur, nxt, immL, bytes_append, bytes_cons, bytes_nil, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+    · intro r hr; rw [h2, h1]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm hr), hureg r hr]
+    · intro j hj
+      rw [h2, h1]
+      simp only [Regs.get_set_ne _ _ _ _ (Ne.symm hdb), Regs.get_set_same]
+      rw [hdbu]
+      rcases Nat.lt_succ_iff_lt_or_eq.mp hj with hj | hj
+      · rw [rd_write_apart _ _ _ _ (hdd n j (by omega) (by omega) (by omega)), hucp j hj]
+      · subst hj; exact rd_write_same _ _ _
+    · intro a ha
+      rw [h2, h1]
+      simp only [Regs.get_set_ne _ _ _ _ (Ne.symm hdb), Regs.get_set_same]
+      rw [hdbu, rd_write_apart _ _ _ _ (ha n (by omega)), hufr a (fun j hj => ha j (by omega))]
+
+/-- n stores of rax: word j := rax at `[db + g j]` (tag's padding, rax = 0). -/
+def stL (db : GPR) (g : Nat → W) : Nat → List AI
+  | 0 => []
+  | n + 1 => stL db g n ++ [st db (g n) .rax]
+
+theorem st_run {C : Ctx3} {p : Program} (db : GPR) (g : Nat → W) :
+    ∀ (n : Nat) (s : Cpu) (rest : List AI), s.stopped = false → CodeAt C p s.rip (stL db g n ++ rest) →
+    (∀ i j, i < n → j < n → i ≠ j → VIRBridge.Apart (s.regs.get db + g i) (s.regs.get db + g j)) →
+    ∃ s', runP p n s = s' ∧ s'.stopped = false ∧ s'.rip = s.rip + BitVec.ofNat 64 (bytes C (stL db g n)) ∧
+      s'.regs = s.regs ∧
+      (∀ j, j < n → rd s'.mem (s.regs.get db + g j) = s.regs.get .rax) ∧
+      (∀ a, (∀ j, j < n → VIRBridge.Apart (s.regs.get db + g j) a) → rd s'.mem a = rd s.mem a)
+  | 0, s, _, hs, _, _ => ⟨s, rfl, hs, by simp [stL, bytes_nil], rfl, fun _ h => absurd h (by omega), fun _ _ => rfl⟩
+  | n + 1, s, rest, hs, hc, hdd => by
+    obtain ⟨u, hu, hus, hur, hureg, hucp, hufr⟩ := st_run db g n s ([st db (g n) .rax] ++ rest) hs
+      (by simpa [stL, List.append_assoc] using hc) (fun i j hi hj hij => hdd i j (by omega) (by omega) hij)
+    have hcu : CodeAt C p u.rip (st db (g n) .rax :: rest) := by
+      rw [hur]; have := codeAt_right (a := stL db g n) (b := [st db (g n) .rax] ++ rest)
+        (by simpa [stL, List.append_assoc] using hc)
+      simpa using this
+    have h1 := stepP_st hus hcu
+    refine ⟨stepP p u, ?_, by rw [h1]; exact hus, ?_, by rw [h1]; exact hureg, ?_, ?_⟩
+    · rw [show n + 1 = n + 1 from rfl, runP_add, hu]; rfl
+    · rw [h1]; simp only [hur, nxt, stL, bytes_append, bytes_cons, bytes_nil, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+    · intro j hj
+      rw [h1, hureg]
+      rcases Nat.lt_succ_iff_lt_or_eq.mp hj with hj | hj
+      · rw [rd_write_apart _ _ _ _ (hdd n j (by omega) (by omega) (by omega)), hucp j hj]
+      · subst hj; exact rd_write_same _ _ _
+    · intro a ha
+      rw [h1, hureg, rd_write_apart _ _ _ _ (ha n (by omega)), hufr a (fun j hj => ha j (by omega))]
 
 end S3
