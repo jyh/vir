@@ -1,0 +1,4 @@
+saltqueue: ticket P1 seat=root pid=52244
+AuditControl.lean:2:8: warning: declaration uses `sorry`
+'control_sorry' depends on axioms: [sorryAx]
+saltbuild EXIT=0
