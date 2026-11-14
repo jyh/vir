@@ -224,3 +224,13 @@ final context's (S3-E: a size depends on `ilen`, the fix flags and the table len
 proved by ERASURE: `AI.er` maps every jump target to 0, erasure keeps sizes, and two contexts that agree on `fix` and `tblLen`
 generate the same erased code (`gen_er`). The canonical-address and layout facts of StepEnv (`ok`, `canon`, `ret_canon`) stay
 premises of the driver's layout. They are facts about where the driver puts the code and data, not about the code.
+
+## ADDENDUM 14 (2026-11-14, the 78th head, before Need3.lean): StepOk splits into a static half and S2's half
+- **Static (S3's own; this file).** `needW c` is the largest BUF demand any step of c makes (ret o ↦ need o; app f x ↦ need x +
+  need f; store ↦ max(need idx, 1 + need v); and so on through the sub-codes). `Fragment3`'s BUF clause is `needW main ≤ |BUF|`
+  and `needW b ≤ |BUF|` for every table body b. `NeedOk` (the current code and every pending continuation's code within |BUF|) is
+  preserved by every word step (`needOk_step`), because a successor's codes are sub-codes, pending codes, or table bodies. So it
+  holds at every reached state, and it gives StepOk's `need` conjuncts.
+- **S2's half (next).** CapLive and the not-BAD operands come from S2's `SRel` at the same reached state. Take `L.live := Live σ lay`
+  (S2's store keeps σ's regions, `layout_store`). `cap_lookup` gives the capability words at the offsets `lower2T` emits, and
+  `WOut` gives "OVF or ok" for every typed operand. `StepSem` names that half, and `stepOk_of` composes the two.
