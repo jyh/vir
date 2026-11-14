@@ -67,3 +67,6 @@ open VIRL5
 #print axioms scopy5_chunk_world
 #print axioms copy5_chunk
 #print axioms copy5_end
+#print axioms copy5_chunk_cost
+#print axioms copy5_chunk_run
+#print axioms copy5_chunk_world
