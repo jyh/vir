@@ -82,4 +82,21 @@ theorem scopyAdv_add (b : Array Nat) (st : St) (c d : Nat) :
   have e : (st.pos + 8 * c) / 8 = st.pos / 8 + c := by omega
   rw [e, Array.append_assoc, extract_append_extract', show st.pos + 8 * c + 8 * d = st.pos + 8 * (c + d) by ring]
 
+/-- COPY's run is additive: S7's `copyBack` of a + b bytes is b bytes after a. -/
+theorem copyBack_add (d : Nat) : ∀ (a b : Nat) (o : Array Nat), copyBack d (a + b) o = copyBack d b (copyBack d a o)
+  | 0, b, o => by simp [copyBack]
+  | a + 1, b, o => by
+    rw [show a + 1 + b = (a + b) + 1 by omega]
+    simp only [copyBack]
+    exact copyBack_add d a b _
+
+/-- COPY's state advance: c bytes copied back from distance d; the bit position does not move. -/
+def copyAdv (d : Nat) (st : St) (c : Nat) : St := ⟨st.pos, copyBack d c st.out⟩
+
+theorem copyAdv_zero (d : Nat) (st : St) : copyAdv d st 0 = st := by
+  cases st; simp [copyAdv, copyBack]
+
+theorem copyAdv_add (d : Nat) (st : St) (c e : Nat) : copyAdv d (copyAdv d st c) e = copyAdv d st (c + e) := by
+  simp only [copyAdv, copyBack_add]
+
 end VIRL5

@@ -52,3 +52,6 @@ open VIRL5
 #print axioms extract_append_extract'
 #print axioms scopyAdv_zero
 #print axioms scopyAdv_add
+#print axioms copyBack_add
+#print axioms copyAdv_zero
+#print axioms copyAdv_add
