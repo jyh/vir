@@ -165,3 +165,10 @@ regions (`layout_store`: σ'.R = σ.R). So `L.live` is instantiated as bridge's 
 `sim_store` take **CapLive**: for 0 ≤ i < len, `L.live (cellAddr base i)`. It is discharged where `s3_refines` composes with S2's
 `SRel`, and it is not a premise of the final theorem. That theorem's premises stay the ones S3's main text lists, so this is not a
 premise on stored values.
+
+## ADDENDUM 8 (2026-11-14, the 77th head, before any store proof): a BAD sub-evaluation is not simulated
+S2's `store` step answers OVF when the value overflows, even if the index evaluated to BAD (its pattern `_, _, _, .ovf`). BAD is a
+shape no compiled typed program produces (Addendum 1), and the machine code for a BAD operand has no claimed behaviour. So
+`sim_store` takes, as part of the step it simulates, that the index's evaluation is not BAD. This narrows only the steps that exist
+because of a BAD shape. Steps from compiled typed programs are untouched, and the premise is discharged by S2's relation, under
+which no evaluation is BAD.
