@@ -141,4 +141,52 @@ theorem place_bodies {C C1 : Ctx3} {p : Program} (hsz : ∀ c a, bytes C1 (gen C
         simpa [addrs] using this) hc' j (by simp at h; omega)
       rw [show k + (j + 1) = k + 1 + j by omega]; simpa using this
 
+/-- **lower3_placed.** In `lower3`, with every instruction at least one byte and the whole code under 2⁶⁴ bytes: the entry stub
+    is at `base`, FAULT/OVF/RES at `C.fault`/`C.ovf`/`C.res`, main at `mainAddr C`, and table body i at `C.body i` with
+    `C.fix i` its flag (TblOk's body clause). -/
+theorem lower3_placed {ilen : Op → Nat} {tbl : Table} {main : WCode} {base : W} {C : Ctx3} {p : Program}
+    (hCdef : C = ctxOf ilen tbl main base) (hp : p = lower3 ilen tbl main base) (hC : ∀ o, 1 ≤ ilen o)
+    (hb : bytes C (allCode C tbl main) < 2 ^ 64) :
+    CodeAt C p base (entryStub (mainAddr C)) ∧ CodeAt C p C.fault (exitCode stFault) ∧ CodeAt C p C.ovf (exitCode stOvf) ∧
+      CodeAt C p C.res (exitCode stRes) ∧ CodeAt C p (mainAddr C) (gen C (mainAddr C) main) ∧
+      (∀ i fx b, tbl[i]? = some (fx, b) → C.fix i = fx ∧ CodeAt C p (C.body i) (gen C (C.body i) b)) := by
+  subst hp
+  have hall : CodeAt C (lower3 ilen tbl main base) base (allCode C tbl main) := by
+    subst hCdef; exact codeAt_asm (C := ctxOf ilen tbl main base) hC base _ hb
+  have h1 : CodeAt C (lower3 ilen tbl main base) base (entryStub (mainAddr C) ++ (exitCode stFault ++ (exitCode stOvf ++
+      (exitCode stRes ++ (gen C (mainAddr C) main ++ tbl.zipIdx.flatMap fun q => gen C (C.body q.2) q.1.2))))) := by
+    simpa only [allCode, List.append_assoc] using hall
+  have eF : base + BitVec.ofNat 64 (bytes C (entryStub (mainAddr C))) = C.fault := by
+    subst hCdef; simp [ctxOf, entryStub, bytes_cons, bytes_nil, AI.size, st, movi]
+  have eO : C.fault + BitVec.ofNat 64 (bytes C (exitCode stFault)) = C.ovf := by
+    subst hCdef; simp [ctxOf, exitCode, bytes_cons, bytes_nil, AI.size, st, ld, movi]
+  have eR : C.ovf + BitVec.ofNat 64 (bytes C (exitCode stOvf)) = C.res := by
+    subst hCdef; simp [ctxOf, exitCode, bytes_cons, bytes_nil, AI.size, st, ld, movi]
+  have c1 := codeAt_right h1; rw [eF] at c1
+  have c2 := codeAt_right c1; rw [eO] at c2
+  have c3 := codeAt_right c2; rw [eR] at c3
+  have c4 := codeAt_right c3
+  rw [show C.res + BitVec.ofNat 64 (bytes C (exitCode stRes)) = mainAddr C from rfl] at c4
+  have c5 := codeAt_right c4
+  refine ⟨codeAt_left h1, codeAt_left c1, codeAt_left c2, codeAt_left c3, codeAt_left c4, ?_⟩
+  -- the table: ctxOf's first-pass context C1 measures what C generates
+  obtain ⟨C1, pB, hbody, hi1, hf1, ht1, hpB⟩ : ∃ C1 pB, (∀ i, C.body i = (bodyAddrs C1 tbl pB).getD i 0) ∧ C1.ilen = C.ilen ∧
+      C1.fix = C.fix ∧ C1.tblLen = C.tblLen ∧ pB = mainAddr C + BitVec.ofNat 64 (bytes C (gen C (mainAddr C) main)) := by
+    subst hCdef
+    refine ⟨_, _, fun i => rfl, rfl, rfl, rfl, ?_⟩
+    rw [bytes_gen, bytes_gen]
+    congr 2
+    apply gsz_congr <;> rfl
+  have hsz : ∀ c a, bytes C1 (gen C1 a c) = bytes C (gen C a c) := fun c a => by
+    rw [bytes_gen, bytes_gen]; exact gsz_congr hi1 hf1 ht1 c
+  rw [← hpB] at c5
+  intro i fx b hib
+  have hlt : i < tbl.length := (List.getElem?_eq_some_iff.mp hib).1
+  have hget : tbl[i] = (fx, b) := (List.getElem?_eq_some_iff.mp hib).2
+  have hpl := place_bodies (p := lower3 ilen tbl main base) hsz tbl 0 pB
+    (fun j _ => by rw [Nat.zero_add, hbody, bodyAddrs_eq]) c5 i hlt
+  rw [Nat.zero_add, hget] at hpl
+  refine ⟨?_, hpl⟩
+  subst hCdef; simp [ctxOf, hib]
+
 end S3

@@ -60,3 +60,7 @@ import S3
 #print axioms S3.s3_run
 #print axioms S3.entry_r3
 #print axioms S3.s3_refines
+#print axioms S3.gen_er
+#print axioms S3.gsz_congr
+#print axioms S3.place_bodies
+#print axioms S3.lower3_placed
