@@ -1,0 +1,140 @@
+saltqueue: ticket P2 seat=root pid=304
+saltqueue: QUEUED behind 6 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     3064s      math         93720
+  P2     2956s      verso        40338
+  P2     2144s      math         58794
+  P2     1572s      h2c          2816
+  P2     1030s      math         48982
+  P2     319s       root         93665
+  P2     303s       root         304
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     2447s      math         58794
+  P2     1875s      h2c          2816
+  P2     1333s      math         48982
+  P2     622s       root         93665
+  P2     606s       root         304
+  P2     76s        math         8019
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     2751s      math         58794
+  P2     2179s      h2c          2816
+  P2     1638s      math         48982
+  P2     926s       root         93665
+  P2     911s       root         304
+  P2     380s       math         8019
+  P2     276s       verso        40338
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     2481s      h2c          2816
+  P2     1940s      math         48982
+  P2     1228s      root         93665
+  P2     1213s      root         304
+  P2     682s       math         8019
+  P2     579s       verso        40338
+saltqueue: still queued (1500s) —
+  CLASS  AGE        SEAT         PID
+  P2     2243s      math         48982
+  P2     1531s      root         93665
+  P2     1516s      root         304
+  P2     985s       math         8019
+  P2     882s       verso        40338
+  P2     67s        h2c          38159
+saltqueue: still queued (1800s) —
+  CLASS  AGE        SEAT         PID
+  P2     2546s      math         48982
+  P2     1834s      root         93665
+  P2     1818s      root         304
+  P2     1288s      math         8019
+  P2     1184s      verso        40338
+  P2     370s       h2c          38159
+saltqueue: still queued (2100s) —
+  CLASS  AGE        SEAT         PID
+  P2     2849s      math         48982
+  P2     2138s      root         93665
+  P2     2122s      root         304
+  P2     1591s      math         8019
+  P2     1488s      verso        40338
+  P2     673s       h2c          38159
+saltqueue: still queued (2400s) —
+  CLASS  AGE        SEAT         PID
+  P2     3152s      math         48982
+  P2     2441s      root         93665
+  P2     2425s      root         304
+  P2     1894s      math         8019
+  P2     1791s      verso        40338
+  P2     976s       h2c          38159
+saltqueue: still queued (2700s) —
+  CLASS  AGE        SEAT         PID
+  P2     3455s      math         48982
+  P2     2744s      root         93665
+  P2     2728s      root         304
+  P2     2197s      math         8019
+  P2     2094s      verso        40338
+  P2     1279s      h2c          38159
+saltqueue: HEAD OF QUEUE after 2835s — attempting acquisition
+'VIRL5.ιE_subst' depends on axioms: [propext]
+'VIRL5.type_ι' depends on axioms: [propext]
+'VIRL5.ce_fwd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.ce_bwd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.ce_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.RT₅.substV' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.RT₅.substC' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.RT₅.substCaps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.pres₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.progress₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.rt_triple₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.y5_closed₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.frame₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.letK_rule₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.letOp_rule₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.fillR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cmpR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.scanR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyWithinR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.fillR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cmpR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.scanR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyWithinR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.embed_rule₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.appFix_rule₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.bitR_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.bitR_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.stepFn₅_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.stepFn₅_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.step₅_det' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.run₅_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cost_letE₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cost_letK₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cost_letOp₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.fillR_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyWithinR_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cost_embed₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.bitR_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.stepFn₅_ι' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.run₅_ι' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.run₅_ιE' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.RegionAt.world' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.World.regionAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.initStore_sole' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.iterF_add' depends on axioms: [propext, Quot.sound]
+'VIRL5.ReachF.trans' depends on axioms: [propext, Quot.sound]
+'VIRL5.chunk_run' depends on axioms: [propext, Quot.sound]
+'VIRL5.extract_append_extract'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.scopyAdv_zero' depends on axioms: [propext, Quot.sound]
+'VIRL5.scopyAdv_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.copyBack_add' depends on axioms: [propext, Quot.sound]
+'VIRL5.copyAdv_zero' depends on axioms: [propext]
+'VIRL5.copyAdv_add' depends on axioms: [propext, Quot.sound]
+'VIRL5.copyWithinR_subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.scopy5_chunk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.cwF_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.scopy5_end' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VIRL5.union_empty'' depends on axioms: [propext, Quot.sound]
+'VIRL5.disj_empty_right' depends on axioms: [propext, Quot.sound]
+'VIRL5.run_of_triple₅' depends on axioms: [propext, Classical.choice, Quot.sound]
+saltbuild EXIT=0
