@@ -72,3 +72,66 @@ and call lemmas) · `S3/S3.lean` (`s3_refines`).
 - a C3 lemma re-proved inside s3/ instead of cited;
 - an instruction used that is not on x86lean's validated list;
 - the stack region's disjointness assumed per call rather than discharged once from the layout.
+
+## ADDENDUM 1 (2026-11-14, the 76th head, after Frame.lean's `wid` and BEFORE Fragment3.lean): HEAD-RELATIVE ρ, which REVISES S3-F
+**A first form of this addendum, never built on, is withdrawn.** It closed ρ's length with ONE parameter and result width per
+table, and it claimed "the router's and DEFLATE's tables pass it". Checked the same hour: the router has no `app`, and DEFLATE's
+table has three functions (pow2, strip, bit) with parameter widths 2, 4 and 3 (a fix receives its own label). So it would have
+REJECTED DEFLATE. The check pointed at a simpler design:
+- **ρ grows at the FRONT** (`ws ++ ρ'`, `m(…) :: ρ`, `base :: len :: ρ`), and a `slice off len` counts from the NEWEST word. So
+  ρ is laid out with its newest word at the LOWEST address, and a register `envLow` points at it. `ρ[off]` is `[envLow + 8·off]`.
+  A prepend of n words is `envLow −= 8n` plus the stores. **No slot address depends on ρ's length**, so S3-F's static length, its
+  frame bound and a width discipline are all unnecessary. S3-F (a) is REVISED to this: the frame is the downward-growing env
+  region, addressed off `envLow`.
+- **`letE`** saves `envLow` (it is the continuation's ρ) and calls c₁. **`ret o`** writes its `wid o` words to the result area
+  and the count to a register, and returns. The continuation restores `envLow` from the saved slot and prepends that many words.
+  The count is a RUNTIME value, so a callee's result width is never needed statically.
+- **`app f x`**: x's words go to the result area, `envLow` is reset to the current ACTIVATION BASE (the `envLow` the innermost
+  pending `letE` saved, or the entry value), and the words are prepended, plus the label for a fix. A tail call therefore reuses its
+  activation's space. A loop of tail calls runs in constant stack.
+- **S3-S's RES clause, restated on the word state:** RES is reached only when the word state's size exceeds the declared stack
+  region. The size is `|ρ| + Σ over k of (|ρᵢ| + c)`, with c the constant per continuation (the saved `envLow` and the return
+  address). This is a measure of the state, not a premise on the run.
+- **`Fragment3.ok`** checks only encodings: offsets fit the displacement form, and the table size fits the dispatch chain. It
+  checks no widths. A BAD shape (S2's `none`, which no compiled typed program produces) has no x86 counterpart claimed: S3
+  simulates the word steps that exist.
+
+## ADDENDUM 2 (2026-11-14, the 77th head, BEFORE S3/Lower3.lean): the machine convention, written out
+Addendum 1 left three things unstated. Each is fixed here before any code that depends on it. Each has a recommendation, and the seat
+proceeds on it.
+- **S3-E, instruction lengths.** x86lean's `Instr` carries its encoded length, and there is no encoder (decode is trusted to XED).
+  (a) **The length is a PARAMETER** `ilen : Op → Nat`, with 1 ≤ `ilen` ≤ 15 as the only premise. Every branch uses its fixed-length
+  rel32 form: `jcc` 6 bytes, `jmp`/`call` 5, `ret` 1. So no length depends on a displacement, and a sub-term's code size does not
+  depend on its address. The theorem quantifies over `ilen`. (b) Model an encoder. **Rec (a)**: an encoder is not S3's subject.
+  A later encoder discharges (a) by exhibiting its `ilen`.
+- **S3-M, regions (REVISES Addendum 1's single stack region into TWO, plus a buffer and a control block):**
+  ENV (ρ's words, growing down, `envLow` in **r12**), the x86 STACK (`rsp`: per pending `letE`, the saved `envLow` and the return
+  address, 16 bytes), BUF (the operand buffer and result area of S3-R in one region; base in **r14**), and CB (a control block; base in
+  **rbx**: `[rbx]` STATUS, `[rbx+8]` the saved driver `rsp`, `[rbx+16]` ENV's low bound, `[rbx+24]` STACK's low bound). The result
+  COUNT travels in **r13**. Temporaries are rax, rcx and rdx. All four regions are pairwise Apart, Apart from every live L2 region, and
+  do not wrap.
+- **S3-L, the code shape.** Code for a sub-term is generated at a known address with every sub-term's code placed CONTIGUOUSLY (an
+  out-of-line `letE` body sits after its continuation's code, which never falls through). Operands are evaluated into BUF at a static
+  slot: `slice` copies from `[r12 + 8(off+j)]`; `arith` evaluates `a` at slot t and `b` at t+1, then add/sub/imul + `jo OVF`, or
+  `cmp` + `setcc` into a zeroed rcx (lt/le/eq), or `cmp` + `cmovle` (max), or and/or; `bnot` is `1 − x` by `sub`; `cat` places `b` at
+  t + `wid a`; `drop` moves words down; `tag` writes the tag at t and the padding after `a`. BUF's static need is `need o`, a function
+  of the operand, which `Fragment3.ok` bounds.
+  `letE c₁ c₂`: a STACK check, `push r12`, `call c₁`, `pop r12`, then a LOOP prepends r13 words from BUF to ENV (the only loop in a
+  step: the count is a runtime value by Addendum 1). `ret o`: o into BUF, `r13 := wid o`, `ret`. `app f x`: f into BUF and then rdx,
+  x into BUF, `r12 := [rsp + 8]` (the activation base), then a dispatch chain whose entry i prepends x's `wid x` words (plus the
+  label for a fix: it is ρ's LAST word) and jumps to body i. The top level enters through a stub that saves `rsp` to `[rbx+8]`,
+  pushes r12 and calls the body, so `[rsp + 8]` always exists. FAULT, OVF and RES write STATUS, reload `rsp` from `[rbx+8]` and `ret`
+  to the driver. DONE is the stub's `ret` after STATUS := DONE.
+- **S3-S restated (REVISES Addendum 1's measure into an UPPER BOUND over two regions).** ρ and the continuation environments SHARE
+  ENV words (`letE` gives c₁ the same ρ), so ENV's occupancy depends on the run's history, not only on the word state. What is
+  claimed: RES is reached only when `8·(|ρ| + Σ over k of |ρᵢ| + n)` exceeds ENV's size for the n words being prepended, or
+  `16·(|k| + 1) + 8` exceeds STACK's. Sharing only lowers occupancy, so this is the true bound's contrapositive and is still a
+  measure of the state.
+
+## ADDENDUM 3 (2026-11-14, the 77th head, after Lower3's first green and BEFORE any Rel3 code): two small facts of the code shape
+- **S3-E, clamped.** An instruction's length is `max 1 (…)`, the rel32 branch lengths or `ilen`. Positivity is then a fact, and no
+  proof splits over x86lean's `Op` (a `split` over that match hit Lean's recursion limit in s3-005). Under Addendum 2's premise
+  1 ≤ `ilen` the clamp changes nothing.
+- **The program is ONE contiguous placement** (`allCode`, `lower3 = asm base allCode`): entry stub, FAULT, OVF, RES, main, then the
+  table's bodies in order. Instruction fetch is proved once, by `CodeAt` over that list, given that its total size is below 2⁶⁴
+  (`asm_nodup`, `at?_of_nodup`). It is then split per piece by `codeAt_left`/`codeAt_right`.
