@@ -38,3 +38,10 @@ import S3
 #print axioms S3.fault_exit
 #print axioms S3.sim_load
 #print axioms S3.sim_store
+#print axioms S3.stepP_pop
+#print axioms S3.stepP_jmpA
+#print axioms S3.sim_ret_nil
+#print axioms S3.plPre_run
+#print axioms S3.loop_run
+#print axioms S3.sim_ret_cons
+#print axioms S3.sim_ret
