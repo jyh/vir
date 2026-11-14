@@ -627,4 +627,47 @@ theorem mid_max (C : Ctx3) (p : Program) (x y : W) :
     by_cases h : x.toInt ≤ y.toInt <;> simp [h]
   · intro r ha _; rw [e2]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), show u1.regs = u.regs by rw [e1]]
 
+/-! ## The checked multiply: x86lean's imulPair/imulOverflow at quadword width are `x * y` and `smulOverflow` -/
+
+theorem sval_q (v : W) : Value.sval .q v = v.toInt := by
+  rw [BitVec.toInt_eq_msb_cond]
+  simp only [Value.sval, Value.uval, Value.trunc_q, msb_q, Size.bits]
+
+theorem imulPair_q (x y : W) : (Value.imulPair .q x y).1 = x * y := by
+  have hA : (Value.imulPair .q x y).1 = BitVec.ofInt 64 (x.toInt * y.toInt) := by
+    apply BitVec.eq_of_toNat_eq
+    simp only [Value.imulPair, sval_q, Size.bits, BitVec.toNat_ofNat, BitVec.toNat_ofInt]
+    generalize x.toInt * y.toInt = q
+    have h1 : 0 ≤ q % (2 : Int) ^ (2 * 64) := Int.emod_nonneg _ (by decide)
+    have h2 : 0 ≤ q % ((2 ^ 64 : Nat) : Int) := Int.emod_nonneg _ (by decide)
+    have e1 : (((q % (2 : Int) ^ (2 * 64)).toNat : Nat) : Int) = q % (2 : Int) ^ (2 * 64) := Int.toNat_of_nonneg h1
+    have e2 : (((q % ((2 ^ 64 : Nat) : Int)).toNat : Nat) : Int) = q % ((2 ^ 64 : Nat) : Int) := Int.toNat_of_nonneg h2
+    omega
+  rw [hA, BitVec.ofInt_mul, BitVec.ofInt_toInt, BitVec.ofInt_toInt]
+
+theorem imulOverflow_q (x y : W) : Value.imulOverflow .q x y = BitVec.smulOverflow x y := by
+  simp only [Value.imulOverflow, imulPair_q, sval_q, BitVec.toInt_mul, BitVec.smulOverflow]
+  generalize x.toInt * y.toInt = q
+  rw [Bool.eq_iff_iff]
+  simp only [bne_iff_ne, ne_eq, Bool.or_eq_true, decide_eq_true_eq, Int.bmod_def]
+  split <;> omega
+
+theorem chk_mul (x y : W) : chk (x.toInt * y.toInt) = if BitVec.smulOverflow x y then .ovf else .ok [x * y] := by
+  unfold chk
+  have hr : inRange (x.toInt * y.toInt) = !BitVec.smulOverflow x y := by rw [inRange_iff]; rfl
+  rw [hr]
+  cases h : BitVec.smulOverflow x y
+  · simp only [Bool.not_false, if_true]
+    rw [← BitVec.toInt_mul_of_not_smulOverflow (by simp [h]), BitVec.ofInt_toInt]
+    simp
+  · rfl
+
+theorem stepP_imul {C : Ctx3} {p : Program} {s : Cpu} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.imulr .q .rax (.reg .rcx) none) :: l)) :
+    stepP p s = { s with regs := s.regs.set .rax (s.regs.get .rax * s.regs.get .rcx), flags := Flags.mulFlags (BitVec.smulOverflow (s.regs.get .rax) (s.regs.get .rcx)) (s.oracle.bits s.oracle.cursor) (s.oracle.bits (s.oracle.cursor + 1)) (s.oracle.bits (s.oracle.cursor + 2)) (s.oracle.bits (s.oracle.cursor + 3)) s.flags, oracle := { s.oracle with cursor := s.oracle.cursor + 4 }, rip := nxt C s.rip (.op (.imulr .q .rax (.reg .rcx) none)) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_imulr .q .rax (.reg .rcx) none (live_of hs) rfl rfl]
+  simp [Value.writeView, Cpu.getReg, Cpu.readOperand, imulPair_q, imulOverflow_q, nxt, AI.size]
+
 end S3
