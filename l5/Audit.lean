@@ -84,3 +84,6 @@ open VIRL5
 #print axioms chain5_rule
 #print axioms fixlens5_chunk
 #print axioms fixlens5_end
+#print axioms bitR_subst
+#print axioms read5_bit
+#print axioms read5_trunc

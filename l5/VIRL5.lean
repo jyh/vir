@@ -38,3 +38,4 @@ import VIRL5.Rep5
 import VIRL5.Zero5
 import VIRL5.Fixlens5
 import VIRL5.FixlensEnd5
+import VIRL5.Read5
