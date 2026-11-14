@@ -101,3 +101,16 @@ open VIRL5
 #print axioms decode5_trunc_run
 #print axioms decode5_bit_world
 #print axioms decode5_trunc_world
+#print axioms Atom₅.subst_shift
+#print axioms Tm₅.subst_shift
+#print axioms Atom₅.subst_shift_const
+#print axioms Tm₅.subst_shift_const
+#print axioms shift_branch₅
+#print axioms sole_world_eq
+#print axioms branch_shift₅
+#print axioms defl_rest
+#print axioms defl_rest_succ
+#print axioms iter_reach₅
+#print axioms safety₅_of
+#print axioms l5_reach
+#print axioms correct₅_of

@@ -42,3 +42,6 @@ import VIRL5.Read5
 import VIRL5.Decode5
 import VIRL5.ReadRun5
 import VIRL5.DecodeRun5
+import VIRL5.Shift5
+import VIRL5.Assembly5
+import VIRL5.Outer5
