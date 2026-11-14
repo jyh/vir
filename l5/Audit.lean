@@ -214,3 +214,14 @@ open VIRL5
 #print axioms bitsF_one
 #print axioms refine_read
 #print axioms refine_decode
+#print axioms fixLenI_eq_V
+#print axioms chain5_cost
+#print axioms fixlens5_chunk_cost
+#print axioms fixlens5_end_cost
+#print axioms fixlens5_chunk_run
+#print axioms fixlens5_end_run
+#print axioms fixlens5_chunk_world
+#print axioms fixlens5_end_world
+#print axioms fixLenV_run
+#print axioms fixlens_iter
+#print axioms refine_fixlens

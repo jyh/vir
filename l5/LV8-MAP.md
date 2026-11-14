@@ -154,3 +154,7 @@ control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not op
   Outer5 is unchanged: it sits upstream of the dispatch the frame needs.
 - **Owed:** FIXLENS's and BUILD's Refine₅, then `Refine₅T` by the case split, and `safety₅`/`correct₅`.
 - Builds l5-119 … l5-126 (l5-119 … 125 EXIT=1, kept, home paths redacted). Price guess 15–30; spent 8.
+- **Addendum 7, later the same head: FIXLENS's Refine₅ is proved** (`refine_fixlens`, RefineFixlens5; l5-131 EXIT=0; audit-038
+  225 within the three, 0 sorryAx). The chunk costs 3·c + 20 (≤ 116) and the end 18 (FixlensRun5). Within a run, DEFLATE's
+  fixLenI is the chunk's one length fixLenV i (`fixLenI_eq_V`, `fixLenV_run`), so c DEFLATE steps reach the fillR chunk
+  (`fixlens_iter`). Still owed: BUILD, then the case split.
