@@ -734,4 +734,95 @@ theorem arith_mul_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {re
     · intro a ha; rw [e5, r14_4, show s4.mem = s.mem by rw [e4]; exact mem3]; exact rd_write_apart _ _ _ _ ha
     · intro r ha hc'; rw [e5]; rw [e4]; exact regs3 r ha hc'
 
+/-! ## Every operator: `AOp.apply` against its block -/
+
+/-- **arith_run.** With slots t, t+1 holding x, y: if `op.apply x y` overflows, the block reaches OVF with memory unchanged; if it
+    yields `[z]`, the block ends at its last byte with z at slot t and every word apart from slot t unchanged. Registers other than
+    rax, rcx, rdx are unchanged in both cases. -/
+theorem arith_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {rest : List AI} (op : AOp)
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (arithCode C t op ++ rest)) (hcan : canonical C.ovf = true)
+    (hx : rd s.mem (s.regs.get .r14 + slot t) = x) (hy : rd s.mem (s.regs.get .r14 + slot (t + 1)) = y) :
+    (op.apply x y = .ovf → ∃ n u, runP p n s = u ∧ u.stopped = false ∧ u.rip = C.ovf ∧ u.mem = s.mem ∧
+        ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) ∧
+    (∀ z, op.apply x y = .ok [z] → ∃ n u, runP p n s = u ∧ u.stopped = false ∧
+        u.rip = s.rip + BitVec.ofNat 64 (bytes C (arithCode C t op)) ∧ rd u.mem (s.regs.get .r14 + slot t) = z ∧
+        (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+        ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) := by
+  cases op with
+  | add =>
+    obtain ⟨hov, hok⟩ := arith_add_run hs hc hcan hx hy
+    simp only [AOp.apply, chk_add]
+    refine ⟨fun h => ?_, fun z h => ?_⟩
+    · split at h
+      · obtain ⟨u, h1, h2, h3, h4, h5⟩ := hov (by assumption)
+        exact ⟨4, u, h1, h2, h3, h4, fun r a b _ => h5 r a b⟩
+      · cases h
+    · split at h
+      · cases h
+      · cases h
+        obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := hok (Bool.eq_false_iff.mpr (by assumption))
+        exact ⟨5, u, h1, h2, h3, h4, h5, fun r a b _ => h6 r a b⟩
+  | sub =>
+    obtain ⟨hov, hok⟩ := arith_sub_run hs hc hcan hx hy
+    simp only [AOp.apply, chk_sub]
+    refine ⟨fun h => ?_, fun z h => ?_⟩
+    · split at h
+      · obtain ⟨u, h1, h2, h3, h4, h5⟩ := hov (by assumption)
+        exact ⟨4, u, h1, h2, h3, h4, fun r a b _ => h5 r a b⟩
+      · cases h
+    · split at h
+      · cases h
+      · cases h
+        obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := hok (Bool.eq_false_iff.mpr (by assumption))
+        exact ⟨5, u, h1, h2, h3, h4, h5, fun r a b _ => h6 r a b⟩
+  | mul =>
+    obtain ⟨hov, hok⟩ := arith_mul_run hs hc hcan hx hy
+    simp only [AOp.apply, chk_mul]
+    refine ⟨fun h => ?_, fun z h => ?_⟩
+    · split at h
+      · obtain ⟨u, h1, h2, h3, h4, h5⟩ := hov (by assumption)
+        exact ⟨4, u, h1, h2, h3, h4, fun r a b _ => h5 r a b⟩
+      · cases h
+    · split at h
+      · cases h
+      · cases h
+        obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := hok (Bool.eq_false_iff.mpr (by assumption))
+        exact ⟨5, u, h1, h2, h3, h4, h5, fun r a b _ => h6 r a b⟩
+  | lt =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := cmp_run (b := decide (x.toInt < y.toInt)) hs (by simpa [arithCode_lt] using hc) hx hy
+      (fun f => cc_l_sub x y f)
+    exact ⟨6, u, h1, h2, by rw [h3, arithCode_lt], by rw [h4, h], h5, h6⟩
+  | le =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := cmp_run (b := decide (x.toInt ≤ y.toInt)) hs (by simpa [arithCode_le] using hc) hx hy
+      (fun f => cc_le_sub x y f)
+    exact ⟨6, u, h1, h2, by rw [h3, arithCode_le], by rw [h4, h], h5, h6⟩
+  | eq =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := cmp_run (b := decide (x = y)) hs (by simpa [arithCode_eq] using hc) hx hy
+      (fun f => cc_e_sub x y f)
+    exact ⟨6, u, h1, h2, by rw [h3, arithCode_eq], by rw [h4, h], h5, h6⟩
+  | max =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := binBlock_run (k := 2) hs (by simpa [arithCode, List.append_assoc] using hc) hx hy
+      (mid_max C p x y)
+    exact ⟨2 + 2 + 1, u, h1, h2, by rw [h3]; rfl, by rw [h4, h], h5, fun r a b _ => h6 r a b⟩
+  | band =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := binBlock_run (k := 1) hs (by simpa [arithCode, List.append_assoc] using hc) hx hy
+      (mid_and C p x y)
+    exact ⟨2 + 1 + 1, u, h1, h2, by rw [h3]; rfl, by rw [h4, h], h5, fun r a b _ => h6 r a b⟩
+  | bor =>
+    refine ⟨fun h => by simp [AOp.apply] at h, fun z h => ?_⟩
+    simp only [AOp.apply, WRes.ok.injEq, List.cons.injEq, and_true] at h
+    obtain ⟨u, h1, h2, h3, h4, h5, h6⟩ := binBlock_run (k := 1) hs (by simpa [arithCode, List.append_assoc] using hc) hx hy
+      (mid_or C p x y)
+    exact ⟨2 + 1 + 1, u, h1, h2, by rw [h3]; rfl, by rw [h4, h], h5, fun r a b _ => h6 r a b⟩
+
 end S3
