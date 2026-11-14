@@ -1406,6 +1406,86 @@ if cmp -s "$H/count.py" "$F/mutant62.py"; then say "ARM62 mutant NOT PLANTED"; f
 elif check62 "$F/mutant62.py"; then say "ARM62 mutant SURVIVED (content variables not recognised)"; fail=1
 else say "ARM62 mutant KILLED"; fi
 
+# ARM63 (STATUS-vir LV10; l5/DECLARATIONS-LEAN Addendum 10): `--arm lv10` reads the newest green logs/lv10-NNN.log; pairs among the
+# five LV7 names with equal shapes count, copyWithinR's pairs are BESIDE. Fixture: one equal pair among the five, one equal pair with
+# copyWithinR (beside), an older green log with different verdicts (not read), and a red newest log in a second tree (refused).
+D63="$F/d63"; mkdir -p "$D63/logs" "$F/d63r/logs"
+p10() { printf 'LV10\t%s\t%s\t%s\t10\t10\n' "$@"; }
+{ p10 bitR copyR 1; printf 'saltbuild EXIT=0\n'; } > "$D63/logs/lv10-001.log"
+{ p10 bitR copyR 0; p10 copyR cmpR 1; p10 fillR scanR 0; p10 fillR copyWithinR 1; printf 'saltbuild EXIT=0\n'; } > "$D63/logs/lv10-002.log"
+sed 's/saltbuild EXIT=0/saltbuild EXIT=1/' "$D63/logs/lv10-002.log" > "$F/d63r/logs/lv10-003.log"
+check63() {
+  o=$(python3 "$1" --arm lv10 "$D63" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v LV10.log)" = 2 ] && [ "$(v LV10.pairs)" = 3 ] && [ "$(v LV10.duplicates)" = 1 ] && [ "$(v LV10.besideDuplicates)" = 1 ] \
+  && [ "$(v LV10.direction)" = FALSIFIED ] && python3 "$1" --arm lv10 "$F/d63r" 2>&1 | awk -F'\t' '$2=="LV10.log"' | grep -q REFUSED
+}
+if check63 "$H/count.py"; then say "ARM63 lv10 fixture OK (3 pairs among the five, 1 duplicate, 1 beside, FALSIFIED; red log refused)"
+else say "ARM63 lv10 fixture FAIL"; python3 "$H/count.py" --arm lv10 "$D63"; fail=1; fi
+sed "s/LV10_BESIDE = ('copyWithinR',)  # LV10-BESIDE/LV10_BESIDE = ()/" "$H/count.py" > "$F/mutant63.py"  # copyWithinR counted among the five
+if cmp -s "$H/count.py" "$F/mutant63.py"; then say "ARM63 mutant NOT PLANTED"; fail=1
+elif check63 "$F/mutant63.py"; then say "ARM63 mutant SURVIVED (copyWithinR's pair counted in the verdict)"; fail=1
+else say "ARM63 mutant KILLED"; fi
+
+# ARM64 (STATUS-vir 334; l5/SCORING-METAPRL-L5.md): `--arm metaprll5 --base B --ext X CLONE`. Fixture: a git repo whose base has an L4
+# and an L2 module, and whose ext adds the L5 modules and one framework file. Every expected figure follows from the construction:
+# LV1 0 files; LV2 0 prims (one prim in a comment) and 1 framework file; LV6 4/2 against 6/6 (held); LV7 one content premise (scan),
+# FALSIFIED; LV10 fill = scan up to helper names, literals and bound names (1 duplicate), copy_self beside and distinct; LV4/LV8 0 files.
+R64="$F/r64"; mkdir -p "$R64/theories/vir" "$R64/theories/itt"
+git -C "$R64" init -q; git -C "$R64" config user.email t@t; git -C "$R64" config user.name t
+printf 'interactive keep : sequent { <H> >- x }\n' > "$R64/theories/vir/virl4_x.ml"
+{ for r in triple_let triple_frame triple_load triple_store triple_free triple_alloc; do printf 'interactive %s :\n   [wf] sequent { <H> >- a } -->\n   sequent { <H> >- b }\n\n' "$r"; done; } > "$R64/theories/vir/virl2_logic.ml"
+printf 'let x = 1\n' > "$R64/theories/itt/core.ml"
+git -C "$R64" add -A; git -C "$R64" commit -q -m base; B64=$(git -C "$R64" rev-parse HEAD)
+printf 'let x = 2\n' > "$R64/theories/itt/core.ml"
+printf '(* prim hidden : never counted *)\ninteractive r1 :\n   [wf] sequent { <H> >- a } -->\n   [wf] sequent { <H> >- b } -->\n   [wf] sequent { <H> >- c } -->\n   sequent { <H> >- d }\n\ninteractive r2 :\n   [wf] sequent { <H> >- a } -->\n   sequent { <H> >- d }\n\ninteractive_rw rw1 : a <--> b\n' > "$R64/theories/vir/virl5_rules.ml"
+cat > "$R64/theories/vir/virl5_lib.ml" <<'EOF64'
+define unfold_l5_fill_loop : l5_fill_loop{'i; 'n} <-->
+   e_fix1{ty_int; ty_unit; g, t, d. e_if{a_prim2{lt_op; 't; 'n}; e_call1{ty_unit; 'g; a_prim2{add_op; 't; lit1}; 'd; x, d1. e_retl{'x; args_nil}}; e_retl{lit0; args_nil}}}
+
+define unfold_l5_fill : l5_fill <-->
+   a_lam{ty_int; i. e_ret{a_lam{ty_int; n. e_ret{l5_fill_loop{'i; 'n}}}}}
+
+define unfold_l5_scan_loop : l5_scan_loop{'a; 'm} <-->
+   e_fix1{ty_int; ty_unit; h, s, c. e_if{a_prim2{lt_op; 's; 'm}; e_call1{ty_unit; 'h; a_prim2{add_op; 's; lit2}; 'c; y, c1. e_retl{'y; args_nil}}; e_retl{lit7; args_nil}}}
+
+define unfold_l5_scan : l5_scan <-->
+   a_lam{ty_int; a. e_ret{a_lam{ty_int; m. e_ret{l5_scan_loop{'a; 'm}}}}}
+
+define unfold_l5_copy_self : l5_copy_self <-->
+   a_lam{ty_int; i. e_ret{e_retl{'i; args_nil}}}
+EOF64
+cat > "$R64/theories/vir/virl5_triple.ml" <<'EOF64'
+interactive l5_fill_triple :
+   [wf] sequent { <H> >- 'n in int } -->
+   [wf] sequent { <H> >- 'f in int -> int } -->
+   sequent { <H> >- 0 <= 'n } -->
+   sequent { <H> >- triple5{regionv{'p; 'R; 'f}; e; lambda{rv. regionv{'p; 'R; 'f}}} }
+
+interactive l5_scan_triple :
+   [wf] sequent { <H> >- 'n in int } -->
+   [wf] sequent { <H> >- 'f in int -> int } -->
+   sequent { <H> >- 'f 0 = 1 in int } -->
+   sequent { <H> >- 0 <= 'n } -->
+   sequent { <H> >- triple5{regionv{'p; 'R; 'f}; e; lambda{rv. regionv{'p; 'R; 'f}}} }
+EOF64
+git -C "$R64" add -A; git -C "$R64" commit -q -m ext; X64=$(git -C "$R64" rev-parse HEAD)
+check64() {
+  o=$(python3 "$1" --arm metaprll5 --base "$B64" --ext "$X64" "$R64" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v L5M.LV1.files)" = 0 ] && [ "$(v L5M.LV2.prims)" = 0 ] && [ "$(v L5M.LV2.frameworkFiles)" = 1 ] \
+  && [ "$(v L5M.LV6.l5Wf)" = 4 ] && [ "$(v L5M.LV6.l5Rules)" = 2 ] && [ "$(v L5M.LV6.l2Wf)" = 6 ] && [ "$(v L5M.LV6.l2Rules)" = 6 ] \
+  && [ "$(v L5M.LV6.held)" = 1 ] && [ "$(v L5M.LV7.triples)" = 2 ] && [ "$(v L5M.LV7.contentPremises)" = 1 ] \
+  && [ "$(v L5M.LV7.direction)" = FALSIFIED ] && [ "$(v L5M.LV10.duplicates)" = 1 ] && [ "$(v L5M.LV10.besideDuplicates)" = 0 ] \
+  && [ "$(v L5M.LV10.direction)" = FALSIFIED ] && [ "$(v L5M.LV4.semFiles)" = 0 ] && [ "$(v L5M.LV8.routerFiles)" = 0 ]
+}
+if check64 "$H/count.py"; then say "ARM64 metaprll5 fixture OK (LV1 0, LV2 0 + 1 framework, LV6 4/2 vs 6/6 held, LV7 1 content FALSIFIED, LV10 1 duplicate)"
+else say "ARM64 metaprll5 fixture FAIL"; python3 "$H/count.py" --arm metaprll5 --base "$B64" --ext "$X64" "$R64"; fail=1; fi
+sed 's/            body = re.sub(r"(?<!\\w)(" + "|".join(vs) + r")(?!\\w)", ren, body)  # LV10M-ALPHA/            pass/' "$H/count.py" > "$F/mutant64.py"  # no alpha-renaming
+if cmp -s "$H/count.py" "$F/mutant64.py"; then say "ARM64 mutant NOT PLANTED"; fail=1
+elif check64 "$F/mutant64.py"; then say "ARM64 mutant SURVIVED (shapes compared without renaming bound variables)"; fail=1
+else say "ARM64 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

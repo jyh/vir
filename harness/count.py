@@ -2348,9 +2348,162 @@ def leanl5(d):
     return rows
 
 
+# amend-24 LV10 (l5/DECLARATIONS-LEAN Addendum 10; selftest ARM63): the newest green logs/lv10-NNN.log of the l5 project; a pair
+# of routines with EQUAL shapes (int constants erased) counts when both are among LV7's five; copyWithinR's pairs are BESIDE.
+LV10_LOG_RE = re.compile(r'^lv10-(\d+)\.log$')
+LV10_BESIDE = ('copyWithinR',)  # LV10-BESIDE
+
+
+def lv10(d):
+    logs = os.path.join(os.path.abspath(d), 'logs')
+    got = sorted((int(m.group(1)), f) for f in (os.listdir(logs) if os.path.isdir(logs) else []) for m in [LV10_LOG_RE.match(f)] if m)
+    if not got:
+        return [('LV10.log', 0, 'EMPTY:no lv10 log')]
+    n, f = got[-1]
+    lines = read(os.path.join(logs, f)).splitlines()
+    if 'saltbuild EXIT=0' not in (l.strip() for l in lines):
+        return [('LV10.log', n, 'REFUSED:%s has no saltbuild EXIT=0' % f)]
+    recs = [l.split('\t') for l in lines if l.startswith('LV10\t')]
+    main = [r for r in recs if r[1] not in LV10_BESIDE and r[2] not in LV10_BESIDE]
+    side = [r for r in recs if r not in main]
+    dup = [r for r in main if r[3] == '1']
+    sdup = [r for r in side if r[3] == '1']
+    return [('LV10.log', n, 'MEASURED:' + f), ('LV10.pairs', len(main), 'MEASURED:unordered pairs among the five'),
+            ('LV10.duplicates', len(dup), 'MEASURED:' + (','.join(r[1] + '=' + r[2] for r in dup) or 'none')),
+            ('LV10.besideDuplicates', len(sdup), 'BESIDE:' + (','.join(r[1] + '=' + r[2] for r in sdup) or 'none')),
+            ('LV10.direction', 'HOLDS' if main and not dup else 'FALSIFIED', 'MEASURED:0 equal shapes among the five')]
+
+
+# amend-24 on the MetaPRL arm (l5/SCORING-METAPRL-L5.md, committed before any figure; selftest ARM64). REPO is a clone of the arm's
+# tree; --base its L4-closed sha, --ext the sha scored. LV3's names come from VIR_L5M_CE, LV6's population from VIR_L5M_LV6 (the
+# arm's naming; default: every interactive/prim rule statement of virl5_rules, virl5_frame, virl5_ret).
+L5M_DEFAULT_LV6 = ('virl5_rules', 'virl5_frame', 'virl5_ret')
+L5M_FIVE = ('l5_copy', 'l5_fill', 'l5_compare', 'l5_scan', 'l5_bits')
+L5M_SIXTH = 'l5_copy_self'
+
+
+def metaprll5(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True)
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0 or g('cat-file', '-e', base + '^{commit}').returncode != 0:
+        return [('L5M.src', 0, 'EMPTY')]
+    le = g('ls-tree', '-r', '--name-only', ext, 'theories/vir/').stdout.split()
+    bn = os.path.basename
+    show = lambda p: strip_ml_comments(g('show', ext + ':' + p).stdout)
+    l5 = sorted(p for p in le if bn(p).startswith('virl5_') and p.endswith('.ml'))
+    txt = {bn(p)[:-3]: show(p) for p in l5}
+    diff = g('diff', '--name-only', base, ext).stdout.split()
+    rows = [('L5M.files', len(l5), 'MEASURED:virl5_*.ml at ext')]
+    l14 = [f for f in diff if re.match(r'theories/vir/virl[1-4]', f)]
+    rows.append(('L5M.LV1.files', len(l14), 'MEASURED:virl1-4 files changed base..ext:' + (','.join(l14) or '-')))
+    rows.append(('L5M.LV1.direction', 'HOLDS' if not l14 else 'FALSIFIED', 'MEASURED'))
+    v4 = [m for m, t in txt.items() if re.search(r'Virl4|virl4_', t)]
+    rows.append(('L5M.LV1.namesL4', len(v4), 'BESIDE:virl5 modules naming an L4 module:' + (','.join(v4) or '-')))
+    prims = sum(len(re.findall(r'^\s*prim\s', t, re.M)) for t in txt.values())
+    fw = sorted(f for f in diff if not f.startswith('theories/vir/'))
+    rows += [('L5M.LV2.prims', prims, 'MEASURED:prim rules in virl5_*, comments stripped'),
+             ('L5M.LV2.frameworkFiles', len(fw), 'BESIDE:' + (','.join(fw) or '-')),
+             ('L5M.LV2.direction', 'HOLDS' if prims == 0 else 'FALSIFIED', 'MEASURED')]
+    items = {m: [b for b in MPL_ITEM_RE.split(t) if b.strip()] for m, t in txt.items()}
+
+    def stmt(name):
+        for m, bl in items.items():
+            for b in bl:
+                mm = re.match(r'(interactive|prim)\s+([A-Za-z_][A-Za-z0-9_\']*)\s*:', b)
+                if mm and mm.group(2) == name:
+                    return m, b
+        return None, None
+    ce = [n.strip() for n in os.environ.get('VIR_L5M_CE', '').split(',') if n.strip()]
+    if ce:
+        found = [n for n in ce if stmt(n)[1]]
+        rows.append(('L5M.LV3.statements', len(found), ('MEASURED' if len(found) == len(ce) else 'RED') + ':named %s; found %s; "no premise beyond ⊢₂" is an author read (Q)' % (','.join(ce), ','.join('%s.%s' % (stmt(n)[0], n) for n in found) or '-')))
+    else:
+        rows.append(('L5M.LV3.statements', 0, 'Q:no CE names given'))
+    sem = [m for m in txt if m.startswith('virl5_sem')]
+    rt = [m for m in txt if m.startswith('virl5_router')]
+    rows += [('L5M.LV4.semFiles', len(sem), 'MEASURED:UNREACHED by the arm\'s G7 while 0'),
+             ('L5M.LV8.routerFiles', len(rt), 'MEASURED:LV8/LV9 UNREACHED by the arm\'s G6 while 0')]
+
+    def wfrules(pred):
+        w = n = 0
+        for m, bl in items.items():
+            for b in bl:
+                mm = re.match(r'(interactive_rw|prim_rw|interactive|prim)\s+([A-Za-z_][A-Za-z0-9_\']*)', b)
+                if mm and mm.group(1) in L4M_RULE_KINDS and pred(m, mm.group(2)):
+                    n += 1; w += len(L4M_WF_RE.findall(b))
+        return w, n
+    names6 = [n.strip() for n in os.environ.get('VIR_L5M_LV6', '').split(',') if n.strip()]
+    if names6:
+        w5, n5 = wfrules(lambda m, r: r in names6)
+        src6 = 'the arm\'s named population:' + ','.join(names6)
+    else:
+        w5, n5 = wfrules(lambda m, r: m in L5M_DEFAULT_LV6)
+        src6 = 'DEFAULT: every rule statement of ' + ','.join(L5M_DEFAULT_LV6)
+    l2 = sorted(p for p in le if bn(p).startswith('virl2_') and p.endswith('.ml'))
+    w2 = n2 = 0
+    for p in l2:
+        for b in MPL_ITEM_RE.split(show(p)):
+            mm = re.match(r'(interactive_rw|prim_rw|interactive|prim)\s+([A-Za-z_][A-Za-z0-9_\']*)', b)
+            if mm and mm.group(1) in L4M_RULE_KINDS and mm.group(2) in L4M_Q5_L2:
+                n2 += 1; w2 += len(L4M_WF_RE.findall(b))
+    aw, an = wfrules(lambda m, r: True)
+    rows += [('L5M.LV6.l5Wf', w5, 'MEASURED:' + src6), ('L5M.LV6.l5Rules', n5, 'MEASURED:statements found'),
+             ('L5M.LV6.l2Wf', w2, 'MEASURED:Q5\'s L2 six at ext'), ('L5M.LV6.l2Rules', n2, 'MEASURED'),
+             ('L5M.LV6.held', 1 if n5 and n2 and w5 * n2 >= w2 * n5 else 0, 'MEASURED:1 iff rate5 >= rate2 (%d/%d vs %d/%d)' % (w5, n5, w2, n2)),
+             ('L5M.LV6.allL5', '%d/%d' % (aw, an), 'BESIDE:every rule statement of virl5_*')]
+    tr = [(mm.group(1), b) for b in items.get('virl5_triple', []) for mm in [re.match(r'interactive\s+(l5_[A-Za-z0-9_]+?)_(?:triple|cap)\s*:', b)] if mm]
+    cp = 0; per = {}
+    for r, b in tr:
+        prem = re.findall(r'(\[wf\]\s*)?sequent\s*\{(.*?)\}\s*-->', b, re.S)
+        cvars = [m.group(1) for w_, body in prem if w_ for m in [re.search(r">-\s*'([A-Za-z_][A-Za-z0-9_]*)\s+in\s+int\s*->\s*int\s*$", body.strip())] if m]
+        c = sum(1 for w_, body in prem if not w_ and any(re.search(r"'" + v + r'(?![A-Za-z0-9_])', body) for v in cvars))
+        per[r] = per.get(r, 0) + c
+        if r in L5M_FIVE:
+            cp += c
+    rows += [('L5M.LV7.triples', len(tr), 'MEASURED:*_triple and *_cap in virl5_triple'),
+             ('L5M.LV7.contentPremises', cp, 'MEASURED:over the five'),
+             ('L5M.LV7.direction', 'HOLDS' if tr and cp == 0 else 'FALSIFIED', 'MEASURED')] + \
+            [('L5M.LV7.%s' % r, c, 'MEASURED' if r in L5M_FIVE else 'BESIDE') for r, c in sorted(per.items())]
+    defs = {}
+    for b in items.get('virl5_lib', []):
+        mm = re.match(r'define\s+unfold_([A-Za-z0-9_]+)\s*:\s*\S+(?:\{[^}]*\})?\s*<-->\s*(.*)', b, re.S)
+        if mm:
+            defs[mm.group(1)] = mm.group(2)
+
+    def shape(r):
+        seen, todo, parts = set(), [r], []
+        while todo:
+            x = todo.pop(0)
+            if x in seen or x not in defs:
+                continue
+            seen.add(x); parts.append(defs[x])
+            todo += [y for y in re.findall(r'\b(l5_[A-Za-z0-9_]+)', defs[x]) if y in defs and y not in seen]
+        body = ' '.join(' '.join(parts).split())
+        body = re.sub(r'\b' + re.escape(r) + r'(?=_|\b)', 'R', body)
+        body = re.sub(r'venc\{[^}]*\}', 'venc{_}', body)
+        body = re.sub(r'\blit[A-Za-z0-9_]*', '_', body)
+        body = re.sub(r'\b\d+\b', '_', body)
+        bnd = [n for grp in re.findall(r'[;{]\s*((?:[A-Za-z_][A-Za-z0-9_]*\s*,\s*)*[A-Za-z_][A-Za-z0-9_]*)\s*\.', body) for n in re.split(r'\s*,\s*', grp)]
+        vs = sorted(set(re.findall(r"'([A-Za-z_][A-Za-z0-9_]*)", body)) | set(bnd))
+        if vs:
+            order = {v: 'v%d' % (i + 1) for i, v in enumerate(sorted(vs, key=lambda v: re.search(r'(?<!\w)' + re.escape(v) + r'(?!\w)', body).start()))}
+            ren = lambda m: order[m.group(1)]
+            body = re.sub(r"(?<!\w)(" + "|".join(vs) + r")(?!\w)", ren, body)  # LV10M-ALPHA
+        return body
+    have = [r for r in L5M_FIVE + (L5M_SIXTH,) if r in defs]
+    sh = {r: shape(r) for r in have}
+    pairs = [(a, b) for i, a in enumerate(have) for b in have[i + 1:]]
+    dup = [(a, b) for a, b in pairs if sh[a] == sh[b] and L5M_SIXTH not in (a, b)]
+    sdup = [(a, b) for a, b in pairs if sh[a] == sh[b] and L5M_SIXTH in (a, b)]
+    rows += [('L5M.LV10.routines', len(have), 'MEASURED:' + ','.join(have)),
+             ('L5M.LV10.duplicates', len(dup), 'MEASURED:' + (','.join(a + '=' + b for a, b in dup) or 'none')),
+             ('L5M.LV10.besideDuplicates', len(sdup), 'BESIDE:' + (','.join(a + '=' + b for a, b in sdup) or 'none')),
+             ('L5M.LV10.direction', 'HOLDS' if have and not dup else 'FALSIFIED', 'MEASURED')]
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2382,6 +2535,10 @@ def main():
         rows = lv9(a.dir)
     elif a.arm == 'l5':
         rows = leanl5(a.dir)
+    elif a.arm == 'lv10':
+        rows = lv10(a.dir)
+    elif a.arm == 'metaprll5':
+        rows = metaprll5(a.dir, a.base, a.ext)
     elif a.arm == 'ind':
         rows = leanind(a.dir)
     elif a.arm == 'metaprll2':
