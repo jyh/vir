@@ -70,3 +70,9 @@ open VIRL5
 #print axioms copy5_chunk_cost
 #print axioms copy5_chunk_run
 #print axioms copy5_chunk_world
+#print axioms fillR_subst
+#print axioms rep5_chunk
+#print axioms rep5_end
+#print axioms rep5_chunk_cost
+#print axioms rep5_chunk_run
+#print axioms rep5_chunk_world
