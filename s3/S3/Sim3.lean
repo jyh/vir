@@ -545,4 +545,86 @@ theorem stepP_or_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI
     { s.oracle with cursor := s.oracle.cursor + 1 }, ?_⟩
   simp [Value.writeView, Cpu.getReg, nxt, AI.size]
 
+/-! ## A generic block: load slots t, t+1 into rax, rcx; a middle segment leaves z in rax; store rax to slot t -/
+
+/-- What a middle segment of `k` steps must do: from any state holding x, y in rax, rcx, reach the segment's end with z in rax,
+    memory unchanged, and registers other than rax, rcx unchanged. -/
+def MidOK (C : Ctx3) (p : Program) (mid : List AI) (k : Nat) (x y z : W) : Prop :=
+  ∀ (u : Cpu) (rest : List AI), u.stopped = false → CodeAt C p u.rip (mid ++ rest) →
+    u.regs.get .rax = x → u.regs.get .rcx = y →
+    ∃ v, runP p k u = v ∧ v.stopped = false ∧ v.rip = u.rip + BitVec.ofNat 64 (bytes C mid) ∧ v.mem = u.mem ∧
+      v.regs.get .rax = z ∧ ∀ r, r ≠ .rax → r ≠ .rcx → v.regs.get r = u.regs.get r
+
+theorem binBlock_run {C : Ctx3} {p : Program} {s : Cpu} {t k : Nat} {mid : List AI} {x y z : W} {rest : List AI}
+    (hs : s.stopped = false)
+    (hc : CodeAt C p s.rip ([ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1))] ++ mid ++ [st .r14 (slot t) .rax] ++ rest))
+    (hx : rd s.mem (s.regs.get .r14 + slot t) = x) (hy : rd s.mem (s.regs.get .r14 + slot (t + 1)) = y)
+    (hm : MidOK C p mid k x y z) :
+    ∃ u, runP p (2 + k + 1) s = u ∧ u.stopped = false ∧
+      u.rip = s.rip + BitVec.ofNat 64 (bytes C ([ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1))] ++ mid ++
+        [st .r14 (slot t) .rax])) ∧
+      rd u.mem (s.regs.get .r14 + slot t) = z ∧
+      (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+      ∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r := by
+  have c0 : CodeAt C p s.rip (ld .rax .r14 (slot t) :: ld .rcx .r14 (slot (t + 1)) :: (mid ++ st .r14 (slot t) .rax :: rest)) := by
+    simpa [List.append_assoc] using hc
+  have e1 := stepP_ld hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (ld .rcx .r14 (slot (t + 1)) :: (mid ++ st .r14 (slot t) .rax :: rest)) := by
+    rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_ld h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (mid ++ st .r14 (slot t) .rax :: rest) := by rw [e2]; exact codeAt_tail c1
+  have r14_1 : s1.regs.get .r14 = s.regs.get .r14 := by rw [e1]; simp
+  have rax2 : s2.regs.get .rax = x := by rw [e2, e1]; simp [hx]
+  have rcx2 : s2.regs.get .rcx = y := by rw [e2]; simp [r14_1, e1, hy]
+  obtain ⟨v, hv, hvs, hvr, hvm, hvax, hvreg⟩ := hm s2 (st .r14 (slot t) .rax :: rest) h2 c2 rax2 rcx2
+  have cv : CodeAt C p v.rip (st .r14 (slot t) .rax :: rest) := by
+    rw [hvr]; exact codeAt_right c2
+  have e3 := stepP_st hvs cv
+  have regs2 : ∀ r, r ≠ .rax → r ≠ .rcx → s2.regs.get r = s.regs.get r := by
+    intro r ha hc'; rw [e2, e1]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc')]
+  have mem2 : s2.mem = s.mem := by rw [e2, e1]
+  have r14v : v.regs.get .r14 = s.regs.get .r14 := by rw [hvreg .r14 (by decide) (by decide)]; exact regs2 .r14 (by decide) (by decide)
+  refine ⟨stepP p v, ?_, by rw [e3]; exact hvs, ?_, ?_, ?_, ?_⟩
+  · rw [runP_add, runP_add, show runP p 2 s = s2 from rfl, hv]; rfl
+  · rw [e3, hvr, e2, e1]
+    simp only [nxt, ld, st, bytes_append, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [e3, r14v, hvax, hvm, mem2]; exact rd_write_same _ _ _
+  · intro a ha; rw [e3, r14v, hvm, mem2]; exact rd_write_apart _ _ _ _ ha
+  · intro r ha hc'; rw [e3]; rw [hvreg r ha hc']; exact regs2 r ha hc'
+
+theorem mid_and (C : Ctx3) (p : Program) (x y : W) : MidOK C p [.op (.bin .and .q (.reg .rax) (.reg .rcx))] 1 x y (x &&& y) := by
+  intro u rest hu hc hx hy
+  obtain ⟨f, o, e⟩ := stepP_and_rr hu (by simpa using hc)
+  refine ⟨stepP p u, rfl, by rw [e]; exact hu, by rw [e]; simp [nxt, bytes_cons, bytes_nil], by rw [e], by rw [e]; simp [hx, hy], ?_⟩
+  intro r ha _; rw [e]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha)]
+
+theorem mid_or (C : Ctx3) (p : Program) (x y : W) : MidOK C p [.op (.bin .or .q (.reg .rax) (.reg .rcx))] 1 x y (x ||| y) := by
+  intro u rest hu hc hx hy
+  obtain ⟨f, o, e⟩ := stepP_or_rr hu (by simpa using hc)
+  refine ⟨stepP p u, rfl, by rw [e]; exact hu, by rw [e]; simp [nxt, bytes_cons, bytes_nil], by rw [e], by rw [e]; simp [hx, hy], ?_⟩
+  intro r ha _; rw [e]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha)]
+
+theorem mid_max (C : Ctx3) (p : Program) (x y : W) :
+    MidOK C p [.op (.bin .cmp .q (.reg .rax) (.reg .rcx)), .op (.cmov .le .q .rax (.reg .rcx))] 2 x y
+      (if x.toInt ≤ y.toInt then y else x) := by
+  intro u rest hu hc hx hy
+  have c0 : CodeAt C p u.rip (.op (.bin .cmp .q (.reg .rax) (.reg .rcx)) :: .op (.cmov .le .q .rax (.reg .rcx)) :: rest) := by
+    simpa using hc
+  have e1 := stepP_cmp_rr hu c0
+  set u1 := stepP p u
+  have h1 : u1.stopped = false := by rw [e1]; exact hu
+  have c1 : CodeAt C p u1.rip (.op (.cmov .le .q .rax (.reg .rcx)) :: rest) := by rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_cmov h1 c1
+  refine ⟨stepP p u1, rfl, by rw [e2]; exact h1, ?_, by rw [e2, e1], ?_, ?_⟩
+  · rw [e2, e1]; simp only [nxt, bytes_cons, bytes_nil, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [e2]; simp only [Regs.get_set_same]
+    rw [show u1.flags = Flags.sub .q (u.regs.get .rax) (u.regs.get .rcx) u.flags by rw [e1], hx, hy, cc_le_sub,
+      show u1.regs = u.regs by rw [e1], hx, hy]
+    by_cases h : x.toInt ≤ y.toInt <;> simp [h]
+  · intro r ha _; rw [e2]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), show u1.regs = u.regs by rw [e1]]
+
 end S3
