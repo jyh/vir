@@ -238,3 +238,8 @@ open VIRL5
 #print axioms refine₅T
 #print axioms safety₅
 #print axioms correct₅
+#print axioms faults₅_ι
+#print axioms triple_ι
+#print axioms F₅_closeAt
+#print axioms R4₅
+#print axioms R5_frame₅

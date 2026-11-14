@@ -201,3 +201,23 @@ control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not op
   SOURCE statement is the ⟶₂ run of F, and F₅ = ιE F runs it step for step (CE). Nothing in it is carried by a routine.
 - **What would show this addendum wrong:** a loop over a region in F, U or U_tx (a `fix` in their terms), or a routine whose
   triple matches a sub-term of F. Either would make the router cell non-vacuous, and it would be scored as LV9 reads.
+
+## ADDENDUM 10 (the 76th head): LV8 (b) PROVED, by embedding, as Addendum 9 declared
+- `EmbedTriple5.lean`:
+  - `faults₅_ι`: an embedded configuration that faults under ⟶₅ faults under ⟶₂.
+  - `triple_ι`: every L2 `Triple P e Q` gives `Triple₅ P (ιE e) (∃ w, v = ιA w ∧ qs = [] ∧ Q w)`.
+  Both are generic: neither names a program or a routine.
+- `Router5.lean`:
+  - `F₅ := ιE F`.
+  - `F₅_closeAt` (closing commutes with ιE).
+  - **`R4₅`**: R4's precondition and `postF`, the result `cap p`, nothing handed back.
+  - `R5_frame₅`: one `frame₅`.
+  R4₅ cites `VIRL3.R4` and `triple_ι` and nothing else. **LV8's count for the router is 0 routine-body lemmas and 0 routine
+  triples cited. The zero is VACUOUS** (V-F8: no routine fits F), and it is reported as vacuous, never as the library abstracting.
+- l5-135 `saltbuild EXIT=0` (first attempt). audit-040: 243 theorems within the three axioms, 0 sorryAx. triple_ι, R4₅ and
+  R5_frame₅ read [propext, Classical.choice, Quot.sound], and F₅_closeAt reads [propext]. The control audit-040c reads sorryAx.
+- **Red backwards.** `mutants/Router5-noPost.lean` claims the world is UNCHANGED (`f` for `postF f p`). Built in place of Router5,
+  `l5-mutant-noPost` gives `saltbuild EXIT=1` at R4₅ (its line 29, the conseq onto `triple_ι (R4 …)`) and at R5_frame₅ (line 36),
+  and nowhere else. Router5 was restored byte for byte (sha256/16 045bf3d20d5d7487 before and after).
+- **LIMIT:** R4₅ inherits R4's reach, which is a triple at the world p of size 87 under R4's index premises. The mutant shows that
+  the post is carried. It does not show that any routine was exercised: none was.
