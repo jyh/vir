@@ -37,7 +37,7 @@ def copyPost (p : Int) (g : Int → Int) (pd n m ds : Int) : Int → Int :=
   `copyPost`. The premises are the counters' values and the bounds that keep both ends of the copy inside the region. -/
 theorem copy5_chunk (p : Int) (L : Nat) (g : Int → Int) (pd n m ds : Int)
     (hpd : g (p + cPEND) = pd) (hpd0 : 0 < pd) (hn : g (p + cN) = n) (hm : g (p + cM) = m) (hds : g (p + cDIST) = ds)
-    (hn0 : 0 ≤ n) (hds1 : 1 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L) :
+    (hn0 : 0 ≤ n) (hds1 : 0 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L) :
     Triple₅ (RegionAt p L g) (copyT₅.subst 0 (.const (.cap p)))
       (fun r qs σ => r = .const (.cap p) ∧ qs = [] ∧ RegionAt p L (copyPost p g pd n m ds) σ) := by
   have hIN : (IN : Int) = 2080 := rfl
