@@ -1,0 +1,2236 @@
+saltqueue: ticket P1 seat=root pid=24576
+⚠ [5/245] Replayed VIRL1.Semantics
+warning: VIRL1/Semantics.lean:61:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [622/782] Replayed VIRL1.L1
+warning: VIRL1/L1.lean:71:83: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [626/782] Replayed VIRL2.Sig2
+warning: VIRL2/Sig2.lean:94:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [730/782] Replayed VIRL2.Step2
+warning: VIRL2/Step2.lean:30:10: Variable name `τ` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [733/782] Replayed VIRL2.Axioms
+warning: VIRL2/Axioms.lean:78:76: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [736/782] Replayed VIRL2.Denot2
+warning: VIRL2/Denot2.lean:43:58: This simp argument is unused:
+  hvs
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵v̵s̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Denot2.lean:45:65: This simp argument is unused:
+  hop
+
+Hint: Omit it from the simp argument list.
+  simp only ̵[̵h̵o̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [738/782] Replayed VIRL2.Triples
+warning: VIRL2/Triples.lean:26:23: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:93:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Triples.lean:96:33: This simp argument is unused:
+  Atom.subst
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst,̵ ̵A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [740/782] Replayed VIRL2.Adequacy2
+warning: VIRL2/Adequacy2.lean:62:10: 'simp [head] at hh' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Adequacy2.lean:62:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [741/782] Replayed VIRL2.Conservative
+warning: VIRL2/Conservative.lean:114:19: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Conservative.lean:383:63: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [743/782] Replayed VIRL2.SemBase
+warning: VIRL2/SemBase.lean:37:53: '(rename_i h; simp at h)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/SemBase.lean:37:53: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+⚠ [744/782] Replayed VIRL2.MaskLemmas
+warning: VIRL2/MaskLemmas.lean:18:63: This simp argument is unused:
+  show Δ₁.length + 1 + m - 1 - Δ₁.length = m by omega
+
+Hint: Omit it from the simp argument list.
+  simp [show Δ₁.length + 1 + m - Δ₁.length = m + 1 by omega,̵ ̵s̵h̵o̵w̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵+̵ ̵1̵ ̵+̵ ̵m̵ ̵-̵ ̵1̵ ̵-̵ ̵Δ̵₁̵.̵l̵e̵n̵g̵t̵h̵ ̵=̵ ̵m̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/MaskLemmas.lean:25:60: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/MaskLemmas.lean:25:60: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/MaskLemmas.lean:94:95: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/MaskLemmas.lean:107:97: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [745/782] Replayed VIRL2.Subst2
+warning: VIRL2/Subst2.lean:14:63: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: VIRL2/Subst2.lean:14:63: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: VIRL2/Subst2.lean:29:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: VIRL2/Subst2.lean:100:66: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/Subst2.lean:110:68: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [748/782] Replayed VIRL2.RTSubst
+warning: VIRL2/RTSubst.lean:44:69: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:56:71: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:181:73: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VIRL2/RTSubst.lean:202:75: This simp argument is unused:
+  List.length_set
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵s̵e̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [760/782] Replayed X86.Value
+warning: X86/Value.lean:266:10: This simp argument is unused:
+  writeView_getLsbD_b
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵b̵,̵ ̵w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵[̲w̲r̲i̲t̲e̲V̲i̲e̲w̲_̲g̲e̲t̲L̲s̲b̲D̲_̲w̲,̲ writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:31: This simp argument is unused:
+  writeView_getLsbD_w
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵g̵e̵t̵L̵s̵b̵D̵_̵w̵,̵ ̵writeView_q, hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Value.lean:266:52: This simp argument is unused:
+  writeView_q
+
+Hint: Omit it from the simp argument list.
+  simp [writeView_getLsbD_b, writeView_getLsbD_w, w̵r̵i̵t̵e̵V̵i̵e̵w̵_̵q̵,̵ ̵hi, hj, hk, writeView, Nat.not_lt.mpr]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [765/782] Replayed X86.Syntax
+warning: X86/Syntax.lean:1408:12: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1409:13: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1410:15: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1411:16: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1521:12: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1521:28: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1521:46: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1521:65: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1929:10: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:1930:11: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:3014:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3018:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3022:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3026:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3030:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3034:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3038:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3042:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3046:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3050:43: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3054:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3058:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3063:42: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp_all [Operand.locked,̵ ̵o̵p̵O̵p̵e̵r̵a̵n̵d̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Syntax.lean:3073:10: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Syntax.lean:3073:24: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+⚠ [768/782] Replayed X86.Semantics
+warning: X86/Semantics.lean:403:15: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1338:12: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1339:13: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1340:15: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1342:16: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1415:10: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+warning: X86/Semantics.lean:1416:11: Local variable 'w' resembles constructor 'X86.VAbsW.w' - write '.w' (with a dot) or 'X86.VAbsW.w' to use the constructor.
+
+Note: This linter can be disabled with `set_option linter.constructorNameAsVariable false`
+⚠ [769/782] Replayed X86.Theorems
+warning: X86/Theorems.lean:630:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:630:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:673:12: This simp argument is unused:
+  Cpu.halt
+
+Hint: Omit it from the simp argument list.
+  simp [hc, C̵p̵u̵.̵h̵a̵l̵t̵,̵ ̵h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:673:22: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hc, Cpu.halt,̵ ̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1036:75: This simp argument is unused:
+  Cpu.getReg
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, hlk, Cpu.setReg, Cpu.setRip, Cpu.readOperand, C̵p̵u̵.̵g̵e̵t̵R̵e̵g̵,̵
+  ̵ ̵ ̵ ̵ ̵Operand.locked]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1160:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1165:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1170:63: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1183:20: This simp argument is unused:
+  Cpu.setRip
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵C̵p̵u̵.̵s̵e̵t̵R̵i̵p̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1216:5: Variable name `h'` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1218:17: This simp argument is unused:
+  h'
+
+Hint: Omit it from the simp argument list.
+  simp [step, h, h̵'̵,̵ ̵Cpu.setFlags, Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1250:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1316:42: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h̵,̵ ̵Cpu.setRip]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1371:18: This simp argument is unused:
+  Flags.bitScan
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵F̵l̵a̵g̵s̵.̵b̵i̵t̵S̵c̵a̵n̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1381:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1381:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1382:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1382:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1382:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1382:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1382:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1383:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1383:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1383:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1385:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1392:48: This simp argument is unused:
+  Op.eas
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, O̵p̵.̵e̵a̵s̵,̵ ̵opOperands, Op.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1392:56: This simp argument is unused:
+  opOperands
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, o̵p̵Ope̵r̵a̵n̵d̵s̵,̵ ̵O̵p̵.lockable,
+  ̵  ̵ ̵ ̵List.filterMap_cons,
+  ̲  ̲ ̲ ̲List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+  ̵  ̵ ̵ ̵Bool.or_false, Bool.false_and,
+  ̲  ̲ ̲ ̲Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h, Option.isSome_none,
+  ̲  ̲ ̲ ̲Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1393:4: This simp argument is unused:
+  List.filterMap_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵c̵o̵n̵s̵,̵ ̵List.filterMap_nil,
+  ̲  ̲ ̲ ̲List.any_nil, List.any_cons, List.append_nil, Bool.or_false, Bool.false_and, Bool.and_false,
+  ̲  ̲ ̲ ̲Bool.not_false, Bool.false_eq_true, if_false, h, Option.isSome_none, Bool.false_eq_true,
+  ̲  ̲ ̲ ̲if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1393:25: This simp argument is unused:
+  List.filterMap_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, L̵i̵s̵t̵.̵f̵i̵l̵t̵e̵r̵M̵a̵p̵_̵n̵i̵l̵,̵ ̵List.any_nil, List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1393:45: This simp argument is unused:
+  List.any_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵n̵i̵l̵,̵ ̵List.any_cons, List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1393:59: This simp argument is unused:
+  List.any_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, L̵i̵s̵t̵.̵a̵n̵y̵_̵c̵o̵n̵s̵,̵ ̵List.append_nil, Bool.or_false,
+  ̲  ̲ ̲ ̲Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1393:74: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵Bool.or_false,
+      Bool.false_and, Bool.and_false, Bool.not_false, Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he, Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1394:4: This simp argument is unused:
+  Bool.or_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.o̵r̵_̵false,̵ ̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1394:19: This simp argument is unused:
+  Bool.false_and
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.f̵al̵s̵e̵_̵a̵nd,̵ ̵B̵o̵o̵l̵.̵a̵n̵d̵_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1394:35: This simp argument is unused:
+  Bool.and_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.a̵nd̵_̵f̵a̵l̵s̵e̵,̵ ̵B̵oo̵l̵.̵n̵o̵t_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false, bitScanStep_zf]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1396:29: This simp argument is unused:
+  bitScanStep_zf
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, Op.lockIllegal, Op.eas, opOperands, Op.lockable,
+      List.filterMap_cons, List.filterMap_nil, List.any_nil, List.any_cons, List.append_nil,
+      Bool.or_false, Bool.false_and, Bool.and_false, Bool.not_false,
+  ̵  ̵ ̵ ̵Bool.false_eq_true, if_false, h,
+  ̲  ̲ ̲ ̲Option.isSome_none, Bool.false_eq_true, if_false, he,
+  ̵  ̵ ̵ ̵Bool.not_true, if_false,̵ ̵b̵i̵t̵S̵c̵a̵n̵S̵t̵e̵p̵_̵z̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1408:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1408:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1416:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1416:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1423:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1423:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.bitCount]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1433:32: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1433:35: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.blsi]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1444:64: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h,̵ ̵h̵e, Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1444:67: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  simp_all [step, h, h̵e̵,̵ ̵Flags.popcnt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1634:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1634:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1648:40: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, i̵f̵_̵f̵a̵l̵s̵e̵,̵ ̵Bool.not_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1648:50: This simp argument is unused:
+  Bool.not_true
+
+Hint: Omit it from the simp argument list.
+  simp only [step, Cpu.stopped, h, hlk, if_false,̵ ̵B̵o̵o̵l̵.̵n̵o̵t̵_̵t̵r̵u̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: X86/Theorems.lean:1751:54: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: X86/Theorems.lean:1759:41: Variable name `hne` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [770/782] Replayed X86.Program
+warning: X86/Program.lean:971:10: This simp argument is unused:
+  BitVec.toNat_sub
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵B̵i̵t̵V̵e̵c̵.̵t̵o̵N̵a̵t̵_̵s̵u̵b̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [771/782] Replayed S3.Lower3
+warning: S3/Lower3.lean:372:29: Variable name `hC` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: S3/Lower3.lean:451:77: This simp argument is unused:
+  BitVec.add_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [addrAt, List.take_length_add_append, bytes_append, ofNat_add64,̵ ̵B̵i̵t̵V̵e̵c̵.̵a̵d̵d̵_̵a̵s̵s̵o̵c̵] at this
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [780/782] Building S3.Sim3 (25s)
+trace: .> LEAN_PATH=~/fleet/vir/s3/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/s3/.lake/packages/x86lean/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/build/lib/lean:~/fleet/vir/s3/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/s3/S3/Sim3.lean -o ~/fleet/vir/s3/.lake/build/lib/lean/S3/Sim3.olean -i ~/fleet/vir/s3/.lake/build/lib/lean/S3/Sim3.ilean -c ~/fleet/vir/s3/.lake/build/ir/S3/Sim3.c --setup ~/fleet/vir/s3/.lake/build/ir/S3/Sim3.setup.json --json
+warning: S3/Sim3.lean:182:9: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: S3/Sim3.lean:185:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: S3/Sim3.lean:187:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: S3/Sim3.lean:496:56: This simp argument is unused:
+  r14_2
+
+Hint: Omit it from the simp argument list.
+  simp [r̵1̵4̵_̵2̵,̵ ̵e2, e1, hy]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:583:56: This simp argument is unused:
+  r14_1
+
+Hint: Omit it from the simp argument list.
+  simp [r̵1̵4̵_̵1̵,̵ ̵e1, hy]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1102:21: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵W̵R̵e̵s̵.̵b̵i̵n̵d̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1104:23: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [hb,̵ ̵W̵R̵e̵s̵.̵b̵i̵n̵d̵] at IHb ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1108:23: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [hb,̵ ̵W̵R̵e̵s̵.̵b̵i̵n̵d̵] at IHb ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1197:21: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵W̵R̵e̵s̵.̵b̵i̵n̵d̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1199:23: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [hb,̵ ̵W̵R̵e̵s̵.̵b̵i̵n̵d̵] at IHb ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1203:23: This simp argument is unused:
+  WRes.bind
+
+Hint: Omit it from the simp argument list.
+  simp only [hb,̵ ̵W̵R̵e̵s̵.̵b̵i̵n̵d̵] at IHb ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1284:21: This simp argument is unused:
+  List.getElem_cons_zero
+
+Hint: Omit it from the simp argument list.
+  simp only [L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵_̵c̵o̵n̵s̵_̵z̵e̵r̵o̵,̵ ̵Nat.add_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1582:110: This simp argument is unused:
+  List.singleton_append
+
+Hint: Omit it from the simp argument list.
+  simp only [bytes_cons, bytes_nil, AI.size, Nat.add_zero, BitVec.add_assoc, ← ofNat_add64,
+  ̲  ̲ ̲ ̲ ̲ ̲L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵e̵q̵,̵ ̵L̵i̵s̵t̵.̵s̵i̵n̵g̵l̵e̵t̵o̵n̵_̵a̵p̵p̵e̵n̵d̵]̵L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲e̲q̲]̲ at this
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:1713:66: This simp argument is unused:
+  Regs.get_set_ne _ _ _ _ (show GPR.rcx ≠ GPR.rbx by decide)
+
+Hint: Omit it from the simp argument list.
+  simp only [Regs.get_set_same,
+  ̲  ̲ ̲ ̲ ̲ ̲Regs.get_set_ne _ _ _ _ (show GPR.rax ≠ GPR.rcx by decide),
+        Regs.get_set_ne _ _ _ _ (show GPR.rcx ≠ GPR.r12 by d̵e̵c̵i̵d̵e̵)̵,̵ ̵R̵e̵g̵s̵.̵g̵e̵t̵_̵s̵e̵t̵_̵n̵e̵ ̵_̵ ̵_̵ ̵_̵ ̵_̵ ̵(̵s̵h̵o̵w̵ ̵G̵P̵R̵.̵r̵c̵x̵ ̵≠̵ ̵G̵P̵R̵.̵r̵b̵x̵ ̵b̵y̵ ̵decide)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:2111:110: This simp argument is unused:
+  List.singleton_append
+
+Hint: Omit it from the simp argument list.
+  simp only [bytes_cons, bytes_nil, AI.size, Nat.add_zero, BitVec.add_assoc, ← ofNat_add64,
+  ̲  ̲ ̲ ̲ ̲ ̲L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵e̵q̵,̵ ̵L̵i̵s̵t̵.̵s̵i̵n̵g̵l̵e̵t̵o̵n̵_̵a̵p̵p̵e̵n̵d̵]̵L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲e̲q̲]̲ at this
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: S3/Sim3.lean:2496:16: 'all_goals rfl' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: S3/Sim3.lean:2496:26: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+error: S3/Sim3.lean:2783:26: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  x4.regs.get GPR.r12
+in the target expression
+  {
+        regs :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.regs,
+        rip :=
+          nxt C
+            { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.rip
+            (st GPR.r12 (slot 1) GPR.rdx),
+        flags :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.flags,
+        mem :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                  mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                  gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle,
+                  ms := x3.ms }.mem.writeSize
+            Size.q
+            ({ regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                      mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx),
+                      fsBase := x3.fsBase, gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle,
+                      ms := x3.ms }.regs.get
+                GPR.r12 +
+              slot 1)
+            ({ regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                    mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                    gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.regs.get
+              GPR.rdx),
+        fsBase :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.fsBase,
+        gsBase :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.gsBase,
+        xmm :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.xmm,
+        mxcsr :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.mxcsr,
+        oracle :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.oracle,
+        ms :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.ms }.mem =
+    (w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len
+
+C : Ctx3
+p : Program
+L : Lay3
+E : StepEnv C p L
+tbl : Table
+off : ℕ
+idx v : WOpd
+c : WCode
+ρ : List W
+k : List (WCode × List W)
+wm : WMem
+s : Cpu
+hneed : need idx ≤ L.bufN
+hneedv : 1 + need v ≤ L.bufN
+hcap : CapLive L ρ off
+hnb : evalW ρ idx ≠ WRes.bad
+hR0 : R3 C p L (WSt.run (WCode.store off idx v c) ρ k, wm) s
+hs : s.stopped = false
+hcode : CodeAt C p s.rip (gen C s.rip (WCode.store off idx v c))
+hcom : Common L wm s
+hlo : BitVec.toNat L.envLo ≤ (s.regs.get GPR.r12).toNat
+hhi : (s.regs.get GPR.r12).toNat + 8 * ρ.length ≤ BitVec.toNat L.envTop
+hw : WordsAt s.mem (s.regs.get GPR.r12) ρ
+hfr : Frames C p L s.mem (s.regs.get GPR.rsp) (s.regs.get GPR.r12) k
+hsl : BitVec.toNat L.stkLo ≤ (s.regs.get GPR.rsp).toNat
+hocc :
+  (s.regs.get GPR.r12).toNat ≤ BitVec.toNat L.env0 ∧
+    BitVec.toNat L.env0 - (s.regs.get GPR.r12).toNat ≤ 8 * (ρ.length + kSize k)
+hB : s.regs.get GPR.r14 = L.buf
+hX : s.regs.get GPR.rbx = L.cb
+hL : L.Ok
+chk : List AI :=
+  [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+    AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+    AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+    ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+hchk :
+  chk =
+    [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+      ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+tl : List AI :=
+  [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+    st GPR.r12 (slot 1) GPR.rdx]
+htl :
+  tl =
+    [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+      st GPR.r12 (slot 1) GPR.rdx]
+pre : List AI := evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+hpre_def : pre = evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+G : List AI := gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hG : G = gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hc : CodeAt C p s.rip (evalTo C 0 idx ++ (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G)))))
+hpre : EvalPre s 0 L.bufN ρ
+hcf : canonical C.fault = true
+is : List W
+n1 : ℕ
+u1 : Cpu
+hr1 : runP p n1 s = u1
+hs1 : u1.stopped = false
+hrip1 : u1.rip = s.rip + BitVec.ofNat 64 (bytes C (evalTo C 0 idx))
+hw1✝ : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) is
+hf1 : Frame s u1 0 L.bufN
+hcv : CodeAt C p u1.rip (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G))))
+ag1 : AgreeBuf L s.mem u1.mem
+xs : List W
+n2 : ℕ
+u2 : Cpu
+hr2 : runP p n2 u1 = u2
+hs2 : u2.stopped = false
+hrip2 : u2.rip = u1.rip + BitVec.ofNat 64 (bytes C (evalTo C 1 v))
+hw2✝ : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) xs
+hf2 : Frame u1 u2 1 L.bufN
+base : W
+hb : ρ[off]? = some base
+len : W
+hl : ρ[off + 1]? = some len
+i x : W
+hw1 : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) [i]
+hw2 : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) [x]
+hi : evalW ρ idx = WRes.ok [i]
+hv : evalW ρ v = WRes.ok [x]
+hf12 : Frame s u2 0 L.bufN
+ag2 : AgreeBuf L s.mem u2.mem
+hB1 : u1.regs.get GPR.r14 = L.buf
+hB2 : u2.regs.get GPR.r14 = L.buf
+hE2 : u2.regs.get GPR.r12 = s.regs.get GPR.r12
+hoff : off < ρ.length
+hoff1 : off + 1 < ρ.length
+hN : BitVec.toNat L.buf + 8 * L.bufN < 2 ^ 64
+hiv : rd u2.mem (u2.regs.get GPR.r14 + slot 0) = i
+hxv : rd u2.mem (u2.regs.get GPR.r14 + slot 1) = x
+envw : ∀ (j : ℕ) (hj : j < ρ.length), rd u2.mem (u2.regs.get GPR.r12 + slot j) = ρ[j]
+hbase : rd u2.mem (u2.regs.get GPR.r12 + slot off) = base
+hlen : rd u2.mem (u2.regs.get GPR.r12 + slot (off + 1)) = len
+c2 :
+  CodeAt C p u2.rip
+    (ld GPR.rax GPR.r14 (slot 0) ::
+      ld GPR.rcx GPR.r12 (slot off) ::
+        ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+          AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+            AI.jccA Cc.s C.fault ::
+              AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+                AI.jccA Cc.ge C.fault ::
+                  AI.op
+                      (Op.lea Size.q GPR.rax
+                        { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                    ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u3 : Cpu := stepP p u2
+e3 :
+  u3 =
+    { regs := u2.regs.set GPR.rax (rd u2.mem (u2.regs.get GPR.r14 + slot 0)),
+      rip := nxt C u2.rip (ld GPR.rax GPR.r14 (slot 0)), flags := u2.flags, mem := u2.mem, fsBase := u2.fsBase,
+      gsBase := u2.gsBase, xmm := u2.xmm, mxcsr := u2.mxcsr, oracle := u2.oracle, ms := u2.ms }
+hu3 : u3 = stepP p u2
+h3 : u3.stopped = false
+c3 :
+  CodeAt C p u3.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+          AI.jccA Cc.s C.fault ::
+            AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+              AI.jccA Cc.ge C.fault ::
+                AI.op
+                    (Op.lea Size.q GPR.rax
+                      { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                  ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u4 : Cpu := stepP p u3
+e4 :
+  u4 =
+    { regs := u3.regs.set GPR.rcx (rd u3.mem (u3.regs.get GPR.r12 + slot off)),
+      rip := nxt C u3.rip (ld GPR.rcx GPR.r12 (slot off)), flags := u3.flags, mem := u3.mem, fsBase := u3.fsBase,
+      gsBase := u3.gsBase, xmm := u3.xmm, mxcsr := u3.mxcsr, oracle := u3.oracle, ms := u3.ms }
+hu4 : u4 = stepP p u3
+h4 : u4.stopped = false
+c4 :
+  CodeAt C p u4.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+        AI.jccA Cc.s C.fault ::
+          AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+            AI.jccA Cc.ge C.fault ::
+              AI.op
+                  (Op.lea Size.q GPR.rax
+                    { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u5 : Cpu := stepP p u4
+e5 :
+  u5 =
+    { regs := u4.regs.set GPR.rdx (rd u4.mem (u4.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C u4.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := u4.flags, mem := u4.mem, fsBase := u4.fsBase,
+      gsBase := u4.gsBase, xmm := u4.xmm, mxcsr := u4.mxcsr, oracle := u4.oracle, ms := u4.ms }
+hu5 : u5 = stepP p u4
+h5 : u5.stopped = false
+c5 :
+  CodeAt C p u5.rip
+    (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+      AI.jccA Cc.s C.fault ::
+        AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+          AI.jccA Cc.ge C.fault ::
+            AI.op
+                (Op.lea Size.q GPR.rax
+                  { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+              ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+rax5 : u5.regs.get GPR.rax = i
+rcx5 : u5.regs.get GPR.rcx = base
+rdx5 : u5.regs.get GPR.rdx = len
+mem5 : u5.mem = u2.mem
+u6 : Cpu := stepP p u5
+e6 :
+  u6 =
+    { regs := u5.regs,
+      rip := nxt C u5.rip (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax))),
+      flags :=
+        Flags.logic Size.q (u5.regs.get GPR.rax &&& u5.regs.get GPR.rax) (u5.oracle.bits u5.oracle.cursor) u5.flags,
+      mem := u5.mem, fsBase := u5.fsBase, gsBase := u5.gsBase, xmm := u5.xmm, mxcsr := u5.mxcsr,
+      oracle :=
+        have __src := u5.oracle;
+        { bits := __src.bits, cursor := u5.oracle.cursor + 1 },
+      ms := u5.ms }
+hu6 : u6 = stepP p u5
+h6 : u6.stopped = false
+c6 :
+  CodeAt C p u6.rip
+    (AI.jccA Cc.s C.fault ::
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+        AI.jccA Cc.ge C.fault ::
+          AI.op
+              (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+            ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl6 : Cc.s.eval u6.flags = decide (BitVec.toInt i < 0)
+u7 : Cpu := stepP p u6
+e7 :
+  u7 =
+    { regs := u6.regs, rip := if Cc.s.eval u6.flags = true then C.fault else u6.rip + 6, flags := u6.flags,
+      mem := u6.mem, fsBase := u6.fsBase, gsBase := u6.gsBase, xmm := u6.xmm, mxcsr := u6.mxcsr, oracle := u6.oracle,
+      ms := u6.ms }
+hu7 : u7 = stepP p u6
+h7 : u7.stopped = false
+reg7 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u7.regs.get r = s.regs.get r
+mem7 : u7.mem = u2.mem
+hneg : ¬BitVec.toInt i < 0
+c7 :
+  CodeAt C p u7.rip
+    (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+      AI.jccA Cc.ge C.fault ::
+        AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+          ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u8 : Cpu := stepP p u7
+e8 :
+  u8 =
+    { regs := u7.regs,
+      rip := nxt C u7.rip (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx))),
+      flags := Flags.sub Size.q (u7.regs.get GPR.rax) (u7.regs.get GPR.rdx) u7.flags, mem := u7.mem,
+      fsBase := u7.fsBase, gsBase := u7.gsBase, xmm := u7.xmm, mxcsr := u7.mxcsr, oracle := u7.oracle, ms := u7.ms }
+hu8 : u8 = stepP p u7
+h8 : u8.stopped = false
+c8 :
+  CodeAt C p u8.rip
+    (AI.jccA Cc.ge C.fault ::
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+        ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl8 : Cc.ge.eval u8.flags = !decide (BitVec.toInt i < BitVec.toInt len)
+u9 : Cpu := stepP p u8
+e9 :
+  u9 =
+    { regs := u8.regs, rip := if Cc.ge.eval u8.flags = true then C.fault else u8.rip + 6, flags := u8.flags,
+      mem := u8.mem, fsBase := u8.fsBase, gsBase := u8.gsBase, xmm := u8.xmm, mxcsr := u8.mxcsr, oracle := u8.oracle,
+      ms := u8.ms }
+hu9 : u9 = stepP p u8
+h9 : u9.stopped = false
+mem9 : u9.mem = u2.mem
+reg9 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u9.regs.get r = s.regs.get r
+hhi' : BitVec.toInt i < BitVec.toInt len
+hstep✝ :
+  (match some base, some len, WRes.ok is, WRes.ok xs with
+    | some base, some len, WRes.ok [i], WRes.ok [x] =>
+      if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+        some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+      else some (WSt.fault, wm)
+    | x, x_1, WRes.ovf, x_2 => some (WSt.ovf, wm)
+    | x, x_1, x_2, WRes.ovf => some (WSt.ovf, wm)
+    | x, x_1, x_2, x_3 => none) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hstep :
+  (if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+      some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+    else some (WSt.fault, wm)) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hlive : L.live (cellAddr base i)
+c9 :
+  CodeAt C p u9.rip
+    (AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+      ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u10 : Cpu := stepP p u9
+e10 :
+  u10 =
+    { regs := u9.regs.set GPR.rax (u9.regs.get GPR.rcx + u9.regs.get GPR.rax * 8),
+      rip :=
+        nxt C u9.rip
+          (AI.op
+            (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ })),
+      flags := u9.flags, mem := u9.mem, fsBase := u9.fsBase, gsBase := u9.gsBase, xmm := u9.xmm, mxcsr := u9.mxcsr,
+      oracle := u9.oracle, ms := u9.ms }
+hu10 : u10 = stepP p u9
+h10 : u10.stopped = false
+c10 : CodeAt C p u10.rip (ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u11 : Cpu := stepP p u10
+e11 :
+  u11 =
+    { regs := u10.regs.set GPR.rdx (rd u10.mem (u10.regs.get GPR.r14 + slot 1)),
+      rip := nxt C u10.rip (ld GPR.rdx GPR.r14 (slot 1)), flags := u10.flags, mem := u10.mem, fsBase := u10.fsBase,
+      gsBase := u10.gsBase, xmm := u10.xmm, mxcsr := u10.mxcsr, oracle := u10.oracle, ms := u10.ms }
+hu11 : u11 = stepP p u10
+h11 : u11.stopped = false
+c11 : CodeAt C p u11.rip (st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u12 : Cpu := stepP p u11
+e12 :
+  u12 =
+    { regs := u11.regs, rip := nxt C u11.rip (st GPR.rax 0 GPR.rdx), flags := u11.flags,
+      mem := u11.mem.writeSize Size.q (u11.regs.get GPR.rax + 0) (u11.regs.get GPR.rdx), fsBase := u11.fsBase,
+      gsBase := u11.gsBase, xmm := u11.xmm, mxcsr := u11.mxcsr, oracle := u11.oracle, ms := u11.ms }
+hu12 : u12 = stepP p u11
+h12 : u12.stopped = false
+c12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+regs9eq : u9.regs = u5.regs
+rax10 : u10.regs.get GPR.rax = cellAddr base i
+r14_10 : u10.regs.get GPR.r14 = L.buf
+rdx11 : u11.regs.get GPR.rdx = x
+mem12 : u12.mem = u2.mem.writeSize Size.q (cellAddr base i) x
+reg12 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u12.regs.get r = s.regs.get r
+cellApart : ∀ (a : W), (∀ q < 8, ¬inLive L (a + BitVec.ofNat 64 q)) → VIRBridge.Apart (cellAddr base i) a
+hRep2 : VIRBridge.Rep wm u2.mem L.live
+hRep12 : VIRBridge.Rep (Function.update wm (cellAddr base i) x) u12.mem L.live
+ag12 :
+  ∀ (a : BitVec 64),
+    (∀ i' < L.bufN, VIRBridge.Apart (L.buf + slot i') a) →
+      VIRBridge.Apart (cellAddr base i) a → rd u12.mem a = rd s.mem a
+cb_ok : ∀ m < 4, VIRBridge.Apart (cellAddr base i) (L.cb + BitVec.ofNat 64 (8 * m))
+hcb12 : rd u12.mem (u12.regs.get GPR.rbx + 16) = L.envLo
+e12r : u12.regs.get GPR.r12 = s.regs.get GPR.r12
+hc12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+w1 : Cpu
+hw1r : runP p 5 u12 = w1
+hw1s : w1.stopped = false
+hw1m : w1.mem = u12.mem
+hw1reg : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → w1.regs.get r = u12.regs.get r
+hw1rip : w1.rip = u12.rip + BitVec.ofNat 64 (bytes C (envRoom C 2))
+stk_ok :
+  ∀ (y : BitVec 64),
+    BitVec.toNat L.stkLo ≤ y.toNat → y.toNat ≤ BitVec.toNat L.rsp0 → VIRBridge.Apart (cellAddr base i) y
+hres : ¬(s.regs.get GPR.r12).toNat - BitVec.toNat L.envLo < 8 * 2
+cw :
+  CodeAt C p w1.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+          st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x1 : Cpu := stepP p w1
+e13 :
+  x1 =
+    { regs := w1.regs.set GPR.rcx (rd w1.mem (w1.regs.get GPR.r12 + slot off)),
+      rip := nxt C w1.rip (ld GPR.rcx GPR.r12 (slot off)), flags := w1.flags, mem := w1.mem, fsBase := w1.fsBase,
+      gsBase := w1.gsBase, xmm := w1.xmm, mxcsr := w1.mxcsr, oracle := w1.oracle, ms := w1.ms }
+hx1 : x1 = stepP p w1
+hx1s : x1.stopped = false
+cx1 :
+  CodeAt C p x1.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+        st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x2 : Cpu := stepP p x1
+e14 :
+  x2 =
+    { regs := x1.regs.set GPR.rdx (rd x1.mem (x1.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C x1.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := x1.flags, mem := x1.mem, fsBase := x1.fsBase,
+      gsBase := x1.gsBase, xmm := x1.xmm, mxcsr := x1.mxcsr, oracle := x1.oracle, ms := x1.ms }
+hx2 : x2 = stepP p x1
+hx2s : x2.stopped = false
+cx2 :
+  CodeAt C p x2.rip
+    (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+      st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x3 : Cpu := stepP p x2
+e15 :
+  x3 =
+    { regs := x2.regs.set GPR.r12 (x2.regs.get GPR.r12 - slot 2),
+      rip := nxt C x2.rip (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ })),
+      flags := x2.flags, mem := x2.mem, fsBase := x2.fsBase, gsBase := x2.gsBase, xmm := x2.xmm, mxcsr := x2.mxcsr,
+      oracle := x2.oracle, ms := x2.ms }
+hx3 : x3 = stepP p x2
+hx3s : x3.stopped = false
+cx3 : CodeAt C p x3.rip (st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x4 : Cpu := stepP p x3
+e16 :
+  x4 =
+    { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+      mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+      gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }
+hx4 : x4 = stepP p x3
+hx4s : x4.stopped = false
+cx4 : CodeAt C p x4.rip (st GPR.r12 (slot 1) GPR.rdx :: G)
+x5 : Cpu := stepP p x4
+e17 :
+  x5 =
+    { regs := x4.regs, rip := nxt C x4.rip (st GPR.r12 (slot 1) GPR.rdx), flags := x4.flags,
+      mem := x4.mem.writeSize Size.q (x4.regs.get GPR.r12 + slot 1) (x4.regs.get GPR.rdx), fsBase := x4.fsBase,
+      gsBase := x4.gsBase, xmm := x4.xmm, mxcsr := x4.mxcsr, oracle := x4.oracle, ms := x4.ms }
+hx5 : x5 = stepP p x4
+hx5s : x5.stopped = false
+cx5 : CodeAt C p x5.rip G
+w12 : w1.regs.get GPR.r12 = s.regs.get GPR.r12
+envCell : ∀ j < ρ.length, VIRBridge.Apart (cellAddr base i) (s.regs.get GPR.r12 + slot j)
+envS : ∀ (j : ℕ) (hj : j < ρ.length), rd w1.mem (s.regs.get GPR.r12 + slot j) = ρ[j]
+rcx1 : x1.regs.get GPR.rcx = base
+rdx2 : x2.regs.get GPR.rdx = len
+rcx3 : x3.regs.get GPR.rcx = base
+rdx3 : x3.regs.get GPR.rdx = len
+b : BitVec 64 := s.regs.get GPR.r12 - slot 2
+r12_3 : x3.regs.get GPR.r12 = b
+hbdef : b = s.regs.get GPR.r12 - slot 2
+hR12 : (s.regs.get GPR.r12).toNat < 2 ^ 64
+hbN : b.toNat + 8 * 2 < 2 ^ 64
+a01 : VIRBridge.Apart (b + slot 0) (b + slot 1)
+⊢ {
+        regs :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.regs,
+        rip :=
+          nxt C
+            { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.rip
+            (st GPR.r12 (slot 1) GPR.rdx),
+        flags :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.flags,
+        mem :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                  mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                  gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle,
+                  ms := x3.ms }.mem.writeSize
+            Size.q
+            ({ regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                      mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx),
+                      fsBase := x3.fsBase, gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle,
+                      ms := x3.ms }.regs.get
+                GPR.r12 +
+              slot 1)
+            ({ regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+                    mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+                    gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.regs.get
+              GPR.rdx),
+        fsBase :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.fsBase,
+        gsBase :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.gsBase,
+        xmm :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.xmm,
+        mxcsr :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.mxcsr,
+        oracle :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.oracle,
+        ms :=
+          { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+              mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+              gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }.ms }.mem =
+    (w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len
+error: S3/Sim3.lean:2798:22: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  rd (Mem.writeSize ?m.4191 Size.q a ?m.4194) (b + slot 1)
+in the target expression
+  ((w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len).readN a 8 =
+    Function.update wm (cellAddr base i) x a
+
+case neg.refine_1
+C : Ctx3
+p : Program
+L : Lay3
+E : StepEnv C p L
+tbl : Table
+off : ℕ
+idx v : WOpd
+c : WCode
+ρ : List W
+k : List (WCode × List W)
+wm : WMem
+s : Cpu
+hneed : need idx ≤ L.bufN
+hneedv : 1 + need v ≤ L.bufN
+hcap : CapLive L ρ off
+hnb : evalW ρ idx ≠ WRes.bad
+hR0 : R3 C p L (WSt.run (WCode.store off idx v c) ρ k, wm) s
+hs : s.stopped = false
+hcode : CodeAt C p s.rip (gen C s.rip (WCode.store off idx v c))
+hcom : Common L wm s
+hlo : BitVec.toNat L.envLo ≤ (s.regs.get GPR.r12).toNat
+hhi : (s.regs.get GPR.r12).toNat + 8 * ρ.length ≤ BitVec.toNat L.envTop
+hw : WordsAt s.mem (s.regs.get GPR.r12) ρ
+hfr : Frames C p L s.mem (s.regs.get GPR.rsp) (s.regs.get GPR.r12) k
+hsl : BitVec.toNat L.stkLo ≤ (s.regs.get GPR.rsp).toNat
+hocc :
+  (s.regs.get GPR.r12).toNat ≤ BitVec.toNat L.env0 ∧
+    BitVec.toNat L.env0 - (s.regs.get GPR.r12).toNat ≤ 8 * (ρ.length + kSize k)
+hB : s.regs.get GPR.r14 = L.buf
+hX : s.regs.get GPR.rbx = L.cb
+hL : L.Ok
+chk : List AI :=
+  [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+    AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+    AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+    ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+hchk :
+  chk =
+    [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+      ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+tl : List AI :=
+  [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+    st GPR.r12 (slot 1) GPR.rdx]
+htl :
+  tl =
+    [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+      st GPR.r12 (slot 1) GPR.rdx]
+pre : List AI := evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+hpre_def : pre = evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+G : List AI := gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hG : G = gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hc : CodeAt C p s.rip (evalTo C 0 idx ++ (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G)))))
+hpre : EvalPre s 0 L.bufN ρ
+hcf : canonical C.fault = true
+is : List W
+n1 : ℕ
+u1 : Cpu
+hr1 : runP p n1 s = u1
+hs1 : u1.stopped = false
+hrip1 : u1.rip = s.rip + BitVec.ofNat 64 (bytes C (evalTo C 0 idx))
+hw1✝ : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) is
+hf1 : Frame s u1 0 L.bufN
+hcv : CodeAt C p u1.rip (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G))))
+ag1 : AgreeBuf L s.mem u1.mem
+xs : List W
+n2 : ℕ
+u2 : Cpu
+hr2 : runP p n2 u1 = u2
+hs2 : u2.stopped = false
+hrip2 : u2.rip = u1.rip + BitVec.ofNat 64 (bytes C (evalTo C 1 v))
+hw2✝ : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) xs
+hf2 : Frame u1 u2 1 L.bufN
+base : W
+hb : ρ[off]? = some base
+len : W
+hl : ρ[off + 1]? = some len
+i x : W
+hw1 : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) [i]
+hw2 : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) [x]
+hi : evalW ρ idx = WRes.ok [i]
+hv : evalW ρ v = WRes.ok [x]
+hf12 : Frame s u2 0 L.bufN
+ag2 : AgreeBuf L s.mem u2.mem
+hB1 : u1.regs.get GPR.r14 = L.buf
+hB2 : u2.regs.get GPR.r14 = L.buf
+hE2 : u2.regs.get GPR.r12 = s.regs.get GPR.r12
+hoff : off < ρ.length
+hoff1 : off + 1 < ρ.length
+hN : BitVec.toNat L.buf + 8 * L.bufN < 2 ^ 64
+hiv : rd u2.mem (u2.regs.get GPR.r14 + slot 0) = i
+hxv : rd u2.mem (u2.regs.get GPR.r14 + slot 1) = x
+envw : ∀ (j : ℕ) (hj : j < ρ.length), rd u2.mem (u2.regs.get GPR.r12 + slot j) = ρ[j]
+hbase : rd u2.mem (u2.regs.get GPR.r12 + slot off) = base
+hlen : rd u2.mem (u2.regs.get GPR.r12 + slot (off + 1)) = len
+c2 :
+  CodeAt C p u2.rip
+    (ld GPR.rax GPR.r14 (slot 0) ::
+      ld GPR.rcx GPR.r12 (slot off) ::
+        ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+          AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+            AI.jccA Cc.s C.fault ::
+              AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+                AI.jccA Cc.ge C.fault ::
+                  AI.op
+                      (Op.lea Size.q GPR.rax
+                        { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                    ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u3 : Cpu := stepP p u2
+e3 :
+  u3 =
+    { regs := u2.regs.set GPR.rax (rd u2.mem (u2.regs.get GPR.r14 + slot 0)),
+      rip := nxt C u2.rip (ld GPR.rax GPR.r14 (slot 0)), flags := u2.flags, mem := u2.mem, fsBase := u2.fsBase,
+      gsBase := u2.gsBase, xmm := u2.xmm, mxcsr := u2.mxcsr, oracle := u2.oracle, ms := u2.ms }
+hu3 : u3 = stepP p u2
+h3 : u3.stopped = false
+c3 :
+  CodeAt C p u3.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+          AI.jccA Cc.s C.fault ::
+            AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+              AI.jccA Cc.ge C.fault ::
+                AI.op
+                    (Op.lea Size.q GPR.rax
+                      { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                  ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u4 : Cpu := stepP p u3
+e4 :
+  u4 =
+    { regs := u3.regs.set GPR.rcx (rd u3.mem (u3.regs.get GPR.r12 + slot off)),
+      rip := nxt C u3.rip (ld GPR.rcx GPR.r12 (slot off)), flags := u3.flags, mem := u3.mem, fsBase := u3.fsBase,
+      gsBase := u3.gsBase, xmm := u3.xmm, mxcsr := u3.mxcsr, oracle := u3.oracle, ms := u3.ms }
+hu4 : u4 = stepP p u3
+h4 : u4.stopped = false
+c4 :
+  CodeAt C p u4.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+        AI.jccA Cc.s C.fault ::
+          AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+            AI.jccA Cc.ge C.fault ::
+              AI.op
+                  (Op.lea Size.q GPR.rax
+                    { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u5 : Cpu := stepP p u4
+e5 :
+  u5 =
+    { regs := u4.regs.set GPR.rdx (rd u4.mem (u4.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C u4.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := u4.flags, mem := u4.mem, fsBase := u4.fsBase,
+      gsBase := u4.gsBase, xmm := u4.xmm, mxcsr := u4.mxcsr, oracle := u4.oracle, ms := u4.ms }
+hu5 : u5 = stepP p u4
+h5 : u5.stopped = false
+c5 :
+  CodeAt C p u5.rip
+    (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+      AI.jccA Cc.s C.fault ::
+        AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+          AI.jccA Cc.ge C.fault ::
+            AI.op
+                (Op.lea Size.q GPR.rax
+                  { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+              ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+rax5 : u5.regs.get GPR.rax = i
+rcx5 : u5.regs.get GPR.rcx = base
+rdx5 : u5.regs.get GPR.rdx = len
+mem5✝ : u5.mem = u2.mem
+u6 : Cpu := stepP p u5
+e6 :
+  u6 =
+    { regs := u5.regs,
+      rip := nxt C u5.rip (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax))),
+      flags :=
+        Flags.logic Size.q (u5.regs.get GPR.rax &&& u5.regs.get GPR.rax) (u5.oracle.bits u5.oracle.cursor) u5.flags,
+      mem := u5.mem, fsBase := u5.fsBase, gsBase := u5.gsBase, xmm := u5.xmm, mxcsr := u5.mxcsr,
+      oracle :=
+        have __src := u5.oracle;
+        { bits := __src.bits, cursor := u5.oracle.cursor + 1 },
+      ms := u5.ms }
+hu6 : u6 = stepP p u5
+h6 : u6.stopped = false
+c6 :
+  CodeAt C p u6.rip
+    (AI.jccA Cc.s C.fault ::
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+        AI.jccA Cc.ge C.fault ::
+          AI.op
+              (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+            ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl6 : Cc.s.eval u6.flags = decide (BitVec.toInt i < 0)
+u7 : Cpu := stepP p u6
+e7 :
+  u7 =
+    { regs := u6.regs, rip := if Cc.s.eval u6.flags = true then C.fault else u6.rip + 6, flags := u6.flags,
+      mem := u6.mem, fsBase := u6.fsBase, gsBase := u6.gsBase, xmm := u6.xmm, mxcsr := u6.mxcsr, oracle := u6.oracle,
+      ms := u6.ms }
+hu7 : u7 = stepP p u6
+h7 : u7.stopped = false
+reg7 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u7.regs.get r = s.regs.get r
+mem7 : u7.mem = u2.mem
+hneg : ¬BitVec.toInt i < 0
+c7 :
+  CodeAt C p u7.rip
+    (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+      AI.jccA Cc.ge C.fault ::
+        AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+          ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u8 : Cpu := stepP p u7
+e8 :
+  u8 =
+    { regs := u7.regs,
+      rip := nxt C u7.rip (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx))),
+      flags := Flags.sub Size.q (u7.regs.get GPR.rax) (u7.regs.get GPR.rdx) u7.flags, mem := u7.mem,
+      fsBase := u7.fsBase, gsBase := u7.gsBase, xmm := u7.xmm, mxcsr := u7.mxcsr, oracle := u7.oracle, ms := u7.ms }
+hu8 : u8 = stepP p u7
+h8 : u8.stopped = false
+c8 :
+  CodeAt C p u8.rip
+    (AI.jccA Cc.ge C.fault ::
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+        ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl8 : Cc.ge.eval u8.flags = !decide (BitVec.toInt i < BitVec.toInt len)
+u9 : Cpu := stepP p u8
+e9 :
+  u9 =
+    { regs := u8.regs, rip := if Cc.ge.eval u8.flags = true then C.fault else u8.rip + 6, flags := u8.flags,
+      mem := u8.mem, fsBase := u8.fsBase, gsBase := u8.gsBase, xmm := u8.xmm, mxcsr := u8.mxcsr, oracle := u8.oracle,
+      ms := u8.ms }
+hu9 : u9 = stepP p u8
+h9 : u9.stopped = false
+mem9 : u9.mem = u2.mem
+reg9 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u9.regs.get r = s.regs.get r
+hhi' : BitVec.toInt i < BitVec.toInt len
+hstep✝ :
+  (match some base, some len, WRes.ok is, WRes.ok xs with
+    | some base, some len, WRes.ok [i], WRes.ok [x] =>
+      if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+        some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+      else some (WSt.fault, wm)
+    | x, x_1, WRes.ovf, x_2 => some (WSt.ovf, wm)
+    | x, x_1, x_2, WRes.ovf => some (WSt.ovf, wm)
+    | x, x_1, x_2, x_3 => none) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hstep :
+  (if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+      some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+    else some (WSt.fault, wm)) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hlive : L.live (cellAddr base i)
+c9 :
+  CodeAt C p u9.rip
+    (AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+      ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u10 : Cpu := stepP p u9
+e10 :
+  u10 =
+    { regs := u9.regs.set GPR.rax (u9.regs.get GPR.rcx + u9.regs.get GPR.rax * 8),
+      rip :=
+        nxt C u9.rip
+          (AI.op
+            (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ })),
+      flags := u9.flags, mem := u9.mem, fsBase := u9.fsBase, gsBase := u9.gsBase, xmm := u9.xmm, mxcsr := u9.mxcsr,
+      oracle := u9.oracle, ms := u9.ms }
+hu10 : u10 = stepP p u9
+h10 : u10.stopped = false
+c10 : CodeAt C p u10.rip (ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u11 : Cpu := stepP p u10
+e11 :
+  u11 =
+    { regs := u10.regs.set GPR.rdx (rd u10.mem (u10.regs.get GPR.r14 + slot 1)),
+      rip := nxt C u10.rip (ld GPR.rdx GPR.r14 (slot 1)), flags := u10.flags, mem := u10.mem, fsBase := u10.fsBase,
+      gsBase := u10.gsBase, xmm := u10.xmm, mxcsr := u10.mxcsr, oracle := u10.oracle, ms := u10.ms }
+hu11 : u11 = stepP p u10
+h11 : u11.stopped = false
+c11 : CodeAt C p u11.rip (st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u12 : Cpu := stepP p u11
+e12 :
+  u12 =
+    { regs := u11.regs, rip := nxt C u11.rip (st GPR.rax 0 GPR.rdx), flags := u11.flags,
+      mem := u11.mem.writeSize Size.q (u11.regs.get GPR.rax + 0) (u11.regs.get GPR.rdx), fsBase := u11.fsBase,
+      gsBase := u11.gsBase, xmm := u11.xmm, mxcsr := u11.mxcsr, oracle := u11.oracle, ms := u11.ms }
+hu12 : u12 = stepP p u11
+h12 : u12.stopped = false
+c12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+regs9eq : u9.regs = u5.regs
+rax10 : u10.regs.get GPR.rax = cellAddr base i
+r14_10 : u10.regs.get GPR.r14 = L.buf
+rdx11 : u11.regs.get GPR.rdx = x
+mem12 : u12.mem = u2.mem.writeSize Size.q (cellAddr base i) x
+reg12 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u12.regs.get r = s.regs.get r
+cellApart : ∀ (a : W), (∀ q < 8, ¬inLive L (a + BitVec.ofNat 64 q)) → VIRBridge.Apart (cellAddr base i) a
+hRep2 : VIRBridge.Rep wm u2.mem L.live
+hRep12 : VIRBridge.Rep (Function.update wm (cellAddr base i) x) u12.mem L.live
+ag12 :
+  ∀ (a : BitVec 64),
+    (∀ i' < L.bufN, VIRBridge.Apart (L.buf + slot i') a) →
+      VIRBridge.Apart (cellAddr base i) a → rd u12.mem a = rd s.mem a
+cb_ok : ∀ m < 4, VIRBridge.Apart (cellAddr base i) (L.cb + BitVec.ofNat 64 (8 * m))
+hcb12 : rd u12.mem (u12.regs.get GPR.rbx + 16) = L.envLo
+e12r : u12.regs.get GPR.r12 = s.regs.get GPR.r12
+hc12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+w1 : Cpu
+hw1r : runP p 5 u12 = w1
+hw1s : w1.stopped = false
+hw1m : w1.mem = u12.mem
+hw1reg : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → w1.regs.get r = u12.regs.get r
+hw1rip : w1.rip = u12.rip + BitVec.ofNat 64 (bytes C (envRoom C 2))
+stk_ok :
+  ∀ (y : BitVec 64),
+    BitVec.toNat L.stkLo ≤ y.toNat → y.toNat ≤ BitVec.toNat L.rsp0 → VIRBridge.Apart (cellAddr base i) y
+hres : ¬(s.regs.get GPR.r12).toNat - BitVec.toNat L.envLo < 8 * 2
+cw :
+  CodeAt C p w1.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+          st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x1 : Cpu := stepP p w1
+e13 :
+  x1 =
+    { regs := w1.regs.set GPR.rcx (rd w1.mem (w1.regs.get GPR.r12 + slot off)),
+      rip := nxt C w1.rip (ld GPR.rcx GPR.r12 (slot off)), flags := w1.flags, mem := w1.mem, fsBase := w1.fsBase,
+      gsBase := w1.gsBase, xmm := w1.xmm, mxcsr := w1.mxcsr, oracle := w1.oracle, ms := w1.ms }
+hx1 : x1 = stepP p w1
+hx1s : x1.stopped = false
+cx1 :
+  CodeAt C p x1.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+        st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x2 : Cpu := stepP p x1
+e14 :
+  x2 =
+    { regs := x1.regs.set GPR.rdx (rd x1.mem (x1.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C x1.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := x1.flags, mem := x1.mem, fsBase := x1.fsBase,
+      gsBase := x1.gsBase, xmm := x1.xmm, mxcsr := x1.mxcsr, oracle := x1.oracle, ms := x1.ms }
+hx2 : x2 = stepP p x1
+hx2s : x2.stopped = false
+cx2 :
+  CodeAt C p x2.rip
+    (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+      st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x3 : Cpu := stepP p x2
+e15 :
+  x3 =
+    { regs := x2.regs.set GPR.r12 (x2.regs.get GPR.r12 - slot 2),
+      rip := nxt C x2.rip (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ })),
+      flags := x2.flags, mem := x2.mem, fsBase := x2.fsBase, gsBase := x2.gsBase, xmm := x2.xmm, mxcsr := x2.mxcsr,
+      oracle := x2.oracle, ms := x2.ms }
+hx3 : x3 = stepP p x2
+hx3s : x3.stopped = false
+cx3 : CodeAt C p x3.rip (st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x4 : Cpu := stepP p x3
+e16 :
+  x4 =
+    { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+      mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+      gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }
+hx4 : x4 = stepP p x3
+hx4s : x4.stopped = false
+cx4 : CodeAt C p x4.rip (st GPR.r12 (slot 1) GPR.rdx :: G)
+x5 : Cpu := stepP p x4
+e17 :
+  x5 =
+    { regs := x4.regs, rip := nxt C x4.rip (st GPR.r12 (slot 1) GPR.rdx), flags := x4.flags,
+      mem := x4.mem.writeSize Size.q (x4.regs.get GPR.r12 + slot 1) (x4.regs.get GPR.rdx), fsBase := x4.fsBase,
+      gsBase := x4.gsBase, xmm := x4.xmm, mxcsr := x4.mxcsr, oracle := x4.oracle, ms := x4.ms }
+hx5 : x5 = stepP p x4
+hx5s : x5.stopped = false
+cx5 : CodeAt C p x5.rip G
+w12 : w1.regs.get GPR.r12 = s.regs.get GPR.r12
+envCell : ∀ j < ρ.length, VIRBridge.Apart (cellAddr base i) (s.regs.get GPR.r12 + slot j)
+envS : ∀ (j : ℕ) (hj : j < ρ.length), rd w1.mem (s.regs.get GPR.r12 + slot j) = ρ[j]
+rcx1 : x1.regs.get GPR.rcx = base
+rdx2 : x2.regs.get GPR.rdx = len
+rcx3 : x3.regs.get GPR.rcx = base
+rdx3 : x3.regs.get GPR.rdx = len
+b : BitVec 64 := s.regs.get GPR.r12 - slot 2
+r12_3 : x3.regs.get GPR.r12 = b
+hbdef : b = s.regs.get GPR.r12 - slot 2
+hR12 : (s.regs.get GPR.r12).toNat < 2 ^ 64
+hbN : b.toNat + 8 * 2 < 2 ^ 64
+a01 : VIRBridge.Apart (b + slot 0) (b + slot 1)
+mem5 : x5.mem = (w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len
+newEnv : ∀ j < 2, ∀ q < 8, inEnv L (b + slot j + BitVec.ofNat 64 q)
+newLive : ∀ j < 2, ∀ (c' : W), L.live c' → VIRBridge.Apart (b + slot j) c'
+a : W
+ha : L.live a
+⊢ ((w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len).readN a 8 =
+    Function.update wm (cellAddr base i) x a
+error: S3/Sim3.lean:2805:18: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  rd (Mem.writeSize ?m.4249 Size.q (b + slot 1) ?m.4252) (b + slot 0)
+in the target expression
+  rd ((w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len)
+      (s.regs.get GPR.r12 - slot [base, len].length + slot 0) =
+    [base, len][0]
+
+case neg.refine_2.inl
+C : Ctx3
+p : Program
+L : Lay3
+E : StepEnv C p L
+tbl : Table
+off : ℕ
+idx v : WOpd
+c : WCode
+ρ : List W
+k : List (WCode × List W)
+wm : WMem
+s : Cpu
+hneed : need idx ≤ L.bufN
+hneedv : 1 + need v ≤ L.bufN
+hcap : CapLive L ρ off
+hnb : evalW ρ idx ≠ WRes.bad
+hR0 : R3 C p L (WSt.run (WCode.store off idx v c) ρ k, wm) s
+hs : s.stopped = false
+hcode : CodeAt C p s.rip (gen C s.rip (WCode.store off idx v c))
+hcom : Common L wm s
+hlo : BitVec.toNat L.envLo ≤ (s.regs.get GPR.r12).toNat
+hhi : (s.regs.get GPR.r12).toNat + 8 * ρ.length ≤ BitVec.toNat L.envTop
+hw : WordsAt s.mem (s.regs.get GPR.r12) ρ
+hfr : Frames C p L s.mem (s.regs.get GPR.rsp) (s.regs.get GPR.r12) k
+hsl : BitVec.toNat L.stkLo ≤ (s.regs.get GPR.rsp).toNat
+hocc :
+  (s.regs.get GPR.r12).toNat ≤ BitVec.toNat L.env0 ∧
+    BitVec.toNat L.env0 - (s.regs.get GPR.r12).toNat ≤ 8 * (ρ.length + kSize k)
+hB : s.regs.get GPR.r14 = L.buf
+hX : s.regs.get GPR.rbx = L.cb
+hL : L.Ok
+chk : List AI :=
+  [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+    AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+    AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+    ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+hchk :
+  chk =
+    [ld GPR.rax GPR.r14 (slot 0), ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)), AI.jccA Cc.s C.fault,
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)), AI.jccA Cc.ge C.fault,
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }),
+      ld GPR.rdx GPR.r14 (slot 1), st GPR.rax 0 GPR.rdx]
+tl : List AI :=
+  [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+    AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+    st GPR.r12 (slot 1) GPR.rdx]
+htl :
+  tl =
+    [ld GPR.rcx GPR.r12 (slot off), ld GPR.rdx GPR.r12 (slot (off + 1)),
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }), st GPR.r12 0 GPR.rcx,
+      st GPR.r12 (slot 1) GPR.rdx]
+pre : List AI := evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+hpre_def : pre = evalTo C 0 idx ++ evalTo C 1 v ++ chk ++ envRoom C 2 ++ tl
+G : List AI := gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hG : G = gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c
+hc : CodeAt C p s.rip (evalTo C 0 idx ++ (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G)))))
+hpre : EvalPre s 0 L.bufN ρ
+hcf : canonical C.fault = true
+is : List W
+n1 : ℕ
+u1 : Cpu
+hr1 : runP p n1 s = u1
+hs1 : u1.stopped = false
+hrip1 : u1.rip = s.rip + BitVec.ofNat 64 (bytes C (evalTo C 0 idx))
+hw1✝ : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) is
+hf1 : Frame s u1 0 L.bufN
+hcv : CodeAt C p u1.rip (evalTo C 1 v ++ (chk ++ (envRoom C 2 ++ (tl ++ G))))
+ag1 : AgreeBuf L s.mem u1.mem
+xs : List W
+n2 : ℕ
+u2 : Cpu
+hr2 : runP p n2 u1 = u2
+hs2 : u2.stopped = false
+hrip2 : u2.rip = u1.rip + BitVec.ofNat 64 (bytes C (evalTo C 1 v))
+hw2✝ : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) xs
+hf2 : Frame u1 u2 1 L.bufN
+base : W
+hb : ρ[off]? = some base
+len : W
+hl : ρ[off + 1]? = some len
+i x : W
+hw1 : WordsAt u1.mem (s.regs.get GPR.r14 + slot 0) [i]
+hw2 : WordsAt u2.mem (u1.regs.get GPR.r14 + slot 1) [x]
+hi : evalW ρ idx = WRes.ok [i]
+hv : evalW ρ v = WRes.ok [x]
+hf12 : Frame s u2 0 L.bufN
+ag2 : AgreeBuf L s.mem u2.mem
+hB1 : u1.regs.get GPR.r14 = L.buf
+hB2 : u2.regs.get GPR.r14 = L.buf
+hE2 : u2.regs.get GPR.r12 = s.regs.get GPR.r12
+hoff : off < ρ.length
+hoff1 : off + 1 < ρ.length
+hN : BitVec.toNat L.buf + 8 * L.bufN < 2 ^ 64
+hiv : rd u2.mem (u2.regs.get GPR.r14 + slot 0) = i
+hxv : rd u2.mem (u2.regs.get GPR.r14 + slot 1) = x
+envw : ∀ (j : ℕ) (hj : j < ρ.length), rd u2.mem (u2.regs.get GPR.r12 + slot j) = ρ[j]
+hbase : rd u2.mem (u2.regs.get GPR.r12 + slot off) = base
+hlen : rd u2.mem (u2.regs.get GPR.r12 + slot (off + 1)) = len
+c2 :
+  CodeAt C p u2.rip
+    (ld GPR.rax GPR.r14 (slot 0) ::
+      ld GPR.rcx GPR.r12 (slot off) ::
+        ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+          AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+            AI.jccA Cc.s C.fault ::
+              AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+                AI.jccA Cc.ge C.fault ::
+                  AI.op
+                      (Op.lea Size.q GPR.rax
+                        { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                    ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u3 : Cpu := stepP p u2
+e3 :
+  u3 =
+    { regs := u2.regs.set GPR.rax (rd u2.mem (u2.regs.get GPR.r14 + slot 0)),
+      rip := nxt C u2.rip (ld GPR.rax GPR.r14 (slot 0)), flags := u2.flags, mem := u2.mem, fsBase := u2.fsBase,
+      gsBase := u2.gsBase, xmm := u2.xmm, mxcsr := u2.mxcsr, oracle := u2.oracle, ms := u2.ms }
+hu3 : u3 = stepP p u2
+h3 : u3.stopped = false
+c3 :
+  CodeAt C p u3.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+          AI.jccA Cc.s C.fault ::
+            AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+              AI.jccA Cc.ge C.fault ::
+                AI.op
+                    (Op.lea Size.q GPR.rax
+                      { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                  ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u4 : Cpu := stepP p u3
+e4 :
+  u4 =
+    { regs := u3.regs.set GPR.rcx (rd u3.mem (u3.regs.get GPR.r12 + slot off)),
+      rip := nxt C u3.rip (ld GPR.rcx GPR.r12 (slot off)), flags := u3.flags, mem := u3.mem, fsBase := u3.fsBase,
+      gsBase := u3.gsBase, xmm := u3.xmm, mxcsr := u3.mxcsr, oracle := u3.oracle, ms := u3.ms }
+hu4 : u4 = stepP p u3
+h4 : u4.stopped = false
+c4 :
+  CodeAt C p u4.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+        AI.jccA Cc.s C.fault ::
+          AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+            AI.jccA Cc.ge C.fault ::
+              AI.op
+                  (Op.lea Size.q GPR.rax
+                    { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+                ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u5 : Cpu := stepP p u4
+e5 :
+  u5 =
+    { regs := u4.regs.set GPR.rdx (rd u4.mem (u4.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C u4.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := u4.flags, mem := u4.mem, fsBase := u4.fsBase,
+      gsBase := u4.gsBase, xmm := u4.xmm, mxcsr := u4.mxcsr, oracle := u4.oracle, ms := u4.ms }
+hu5 : u5 = stepP p u4
+h5 : u5.stopped = false
+c5 :
+  CodeAt C p u5.rip
+    (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax)) ::
+      AI.jccA Cc.s C.fault ::
+        AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+          AI.jccA Cc.ge C.fault ::
+            AI.op
+                (Op.lea Size.q GPR.rax
+                  { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+              ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+rax5 : u5.regs.get GPR.rax = i
+rcx5 : u5.regs.get GPR.rcx = base
+rdx5 : u5.regs.get GPR.rdx = len
+mem5✝ : u5.mem = u2.mem
+u6 : Cpu := stepP p u5
+e6 :
+  u6 =
+    { regs := u5.regs,
+      rip := nxt C u5.rip (AI.op (Op.bin BinKind.test Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rax))),
+      flags :=
+        Flags.logic Size.q (u5.regs.get GPR.rax &&& u5.regs.get GPR.rax) (u5.oracle.bits u5.oracle.cursor) u5.flags,
+      mem := u5.mem, fsBase := u5.fsBase, gsBase := u5.gsBase, xmm := u5.xmm, mxcsr := u5.mxcsr,
+      oracle :=
+        have __src := u5.oracle;
+        { bits := __src.bits, cursor := u5.oracle.cursor + 1 },
+      ms := u5.ms }
+hu6 : u6 = stepP p u5
+h6 : u6.stopped = false
+c6 :
+  CodeAt C p u6.rip
+    (AI.jccA Cc.s C.fault ::
+      AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+        AI.jccA Cc.ge C.fault ::
+          AI.op
+              (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+            ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl6 : Cc.s.eval u6.flags = decide (BitVec.toInt i < 0)
+u7 : Cpu := stepP p u6
+e7 :
+  u7 =
+    { regs := u6.regs, rip := if Cc.s.eval u6.flags = true then C.fault else u6.rip + 6, flags := u6.flags,
+      mem := u6.mem, fsBase := u6.fsBase, gsBase := u6.gsBase, xmm := u6.xmm, mxcsr := u6.mxcsr, oracle := u6.oracle,
+      ms := u6.ms }
+hu7 : u7 = stepP p u6
+h7 : u7.stopped = false
+reg7 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u7.regs.get r = s.regs.get r
+mem7 : u7.mem = u2.mem
+hneg : ¬BitVec.toInt i < 0
+c7 :
+  CodeAt C p u7.rip
+    (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx)) ::
+      AI.jccA Cc.ge C.fault ::
+        AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+          ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u8 : Cpu := stepP p u7
+e8 :
+  u8 =
+    { regs := u7.regs,
+      rip := nxt C u7.rip (AI.op (Op.bin BinKind.cmp Size.q (Operand.reg GPR.rax) (Operand.reg GPR.rdx))),
+      flags := Flags.sub Size.q (u7.regs.get GPR.rax) (u7.regs.get GPR.rdx) u7.flags, mem := u7.mem,
+      fsBase := u7.fsBase, gsBase := u7.gsBase, xmm := u7.xmm, mxcsr := u7.mxcsr, oracle := u7.oracle, ms := u7.ms }
+hu8 : u8 = stepP p u7
+h8 : u8.stopped = false
+c8 :
+  CodeAt C p u8.rip
+    (AI.jccA Cc.ge C.fault ::
+      AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+        ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+fl8 : Cc.ge.eval u8.flags = !decide (BitVec.toInt i < BitVec.toInt len)
+u9 : Cpu := stepP p u8
+e9 :
+  u9 =
+    { regs := u8.regs, rip := if Cc.ge.eval u8.flags = true then C.fault else u8.rip + 6, flags := u8.flags,
+      mem := u8.mem, fsBase := u8.fsBase, gsBase := u8.gsBase, xmm := u8.xmm, mxcsr := u8.mxcsr, oracle := u8.oracle,
+      ms := u8.ms }
+hu9 : u9 = stepP p u8
+h9 : u9.stopped = false
+mem9 : u9.mem = u2.mem
+reg9 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u9.regs.get r = s.regs.get r
+hhi' : BitVec.toInt i < BitVec.toInt len
+hstep✝ :
+  (match some base, some len, WRes.ok is, WRes.ok xs with
+    | some base, some len, WRes.ok [i], WRes.ok [x] =>
+      if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+        some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+      else some (WSt.fault, wm)
+    | x, x_1, WRes.ovf, x_2 => some (WSt.ovf, wm)
+    | x, x_1, x_2, WRes.ovf => some (WSt.ovf, wm)
+    | x, x_1, x_2, x_3 => none) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hstep :
+  (if 0 ≤ BitVec.toInt i ∧ BitVec.toInt i < BitVec.toInt len then
+      some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+    else some (WSt.fault, wm)) =
+    some (WSt.run c (base :: len :: ρ) k, Function.update wm (cellAddr base i) x)
+hlive : L.live (cellAddr base i)
+c9 :
+  CodeAt C p u9.rip
+    (AI.op (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ }) ::
+      ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u10 : Cpu := stepP p u9
+e10 :
+  u10 =
+    { regs := u9.regs.set GPR.rax (u9.regs.get GPR.rcx + u9.regs.get GPR.rax * 8),
+      rip :=
+        nxt C u9.rip
+          (AI.op
+            (Op.lea Size.q GPR.rax { base := some GPR.rcx, index := some GPR.rax, scale := Scale.s8, ripWf := ⋯ })),
+      flags := u9.flags, mem := u9.mem, fsBase := u9.fsBase, gsBase := u9.gsBase, xmm := u9.xmm, mxcsr := u9.mxcsr,
+      oracle := u9.oracle, ms := u9.ms }
+hu10 : u10 = stepP p u9
+h10 : u10.stopped = false
+c10 : CodeAt C p u10.rip (ld GPR.rdx GPR.r14 (slot 1) :: st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u11 : Cpu := stepP p u10
+e11 :
+  u11 =
+    { regs := u10.regs.set GPR.rdx (rd u10.mem (u10.regs.get GPR.r14 + slot 1)),
+      rip := nxt C u10.rip (ld GPR.rdx GPR.r14 (slot 1)), flags := u10.flags, mem := u10.mem, fsBase := u10.fsBase,
+      gsBase := u10.gsBase, xmm := u10.xmm, mxcsr := u10.mxcsr, oracle := u10.oracle, ms := u10.ms }
+hu11 : u11 = stepP p u10
+h11 : u11.stopped = false
+c11 : CodeAt C p u11.rip (st GPR.rax 0 GPR.rdx :: (envRoom C 2 ++ (tl ++ G)))
+u12 : Cpu := stepP p u11
+e12 :
+  u12 =
+    { regs := u11.regs, rip := nxt C u11.rip (st GPR.rax 0 GPR.rdx), flags := u11.flags,
+      mem := u11.mem.writeSize Size.q (u11.regs.get GPR.rax + 0) (u11.regs.get GPR.rdx), fsBase := u11.fsBase,
+      gsBase := u11.gsBase, xmm := u11.xmm, mxcsr := u11.mxcsr, oracle := u11.oracle, ms := u11.ms }
+hu12 : u12 = stepP p u11
+h12 : u12.stopped = false
+c12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+regs9eq : u9.regs = u5.regs
+rax10 : u10.regs.get GPR.rax = cellAddr base i
+r14_10 : u10.regs.get GPR.r14 = L.buf
+rdx11 : u11.regs.get GPR.rdx = x
+mem12 : u12.mem = u2.mem.writeSize Size.q (cellAddr base i) x
+reg12 : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → r ≠ GPR.rdx → u12.regs.get r = s.regs.get r
+cellApart : ∀ (a : W), (∀ q < 8, ¬inLive L (a + BitVec.ofNat 64 q)) → VIRBridge.Apart (cellAddr base i) a
+hRep2 : VIRBridge.Rep wm u2.mem L.live
+hRep12 : VIRBridge.Rep (Function.update wm (cellAddr base i) x) u12.mem L.live
+ag12 :
+  ∀ (a : BitVec 64),
+    (∀ i' < L.bufN, VIRBridge.Apart (L.buf + slot i') a) →
+      VIRBridge.Apart (cellAddr base i) a → rd u12.mem a = rd s.mem a
+cb_ok : ∀ m < 4, VIRBridge.Apart (cellAddr base i) (L.cb + BitVec.ofNat 64 (8 * m))
+hcb12 : rd u12.mem (u12.regs.get GPR.rbx + 16) = L.envLo
+e12r : u12.regs.get GPR.r12 = s.regs.get GPR.r12
+hc12 : CodeAt C p u12.rip (envRoom C 2 ++ (tl ++ G))
+w1 : Cpu
+hw1r : runP p 5 u12 = w1
+hw1s : w1.stopped = false
+hw1m : w1.mem = u12.mem
+hw1reg : ∀ (r : GPR), r ≠ GPR.rax → r ≠ GPR.rcx → w1.regs.get r = u12.regs.get r
+hw1rip : w1.rip = u12.rip + BitVec.ofNat 64 (bytes C (envRoom C 2))
+stk_ok :
+  ∀ (y : BitVec 64),
+    BitVec.toNat L.stkLo ≤ y.toNat → y.toNat ≤ BitVec.toNat L.rsp0 → VIRBridge.Apart (cellAddr base i) y
+hres : ¬(s.regs.get GPR.r12).toNat - BitVec.toNat L.envLo < 8 * 2
+cw :
+  CodeAt C p w1.rip
+    (ld GPR.rcx GPR.r12 (slot off) ::
+      ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+        AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+          st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x1 : Cpu := stepP p w1
+e13 :
+  x1 =
+    { regs := w1.regs.set GPR.rcx (rd w1.mem (w1.regs.get GPR.r12 + slot off)),
+      rip := nxt C w1.rip (ld GPR.rcx GPR.r12 (slot off)), flags := w1.flags, mem := w1.mem, fsBase := w1.fsBase,
+      gsBase := w1.gsBase, xmm := w1.xmm, mxcsr := w1.mxcsr, oracle := w1.oracle, ms := w1.ms }
+hx1 : x1 = stepP p w1
+hx1s : x1.stopped = false
+cx1 :
+  CodeAt C p x1.rip
+    (ld GPR.rdx GPR.r12 (slot (off + 1)) ::
+      AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+        st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x2 : Cpu := stepP p x1
+e14 :
+  x2 =
+    { regs := x1.regs.set GPR.rdx (rd x1.mem (x1.regs.get GPR.r12 + slot (off + 1))),
+      rip := nxt C x1.rip (ld GPR.rdx GPR.r12 (slot (off + 1))), flags := x1.flags, mem := x1.mem, fsBase := x1.fsBase,
+      gsBase := x1.gsBase, xmm := x1.xmm, mxcsr := x1.mxcsr, oracle := x1.oracle, ms := x1.ms }
+hx2 : x2 = stepP p x1
+hx2s : x2.stopped = false
+cx2 :
+  CodeAt C p x2.rip
+    (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ }) ::
+      st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x3 : Cpu := stepP p x2
+e15 :
+  x3 =
+    { regs := x2.regs.set GPR.r12 (x2.regs.get GPR.r12 - slot 2),
+      rip := nxt C x2.rip (AI.op (Op.lea Size.q GPR.r12 { base := some GPR.r12, disp := -slot 2, ripWf := ⋯ })),
+      flags := x2.flags, mem := x2.mem, fsBase := x2.fsBase, gsBase := x2.gsBase, xmm := x2.xmm, mxcsr := x2.mxcsr,
+      oracle := x2.oracle, ms := x2.ms }
+hx3 : x3 = stepP p x2
+hx3s : x3.stopped = false
+cx3 : CodeAt C p x3.rip (st GPR.r12 0 GPR.rcx :: st GPR.r12 (slot 1) GPR.rdx :: G)
+x4 : Cpu := stepP p x3
+e16 :
+  x4 =
+    { regs := x3.regs, rip := nxt C x3.rip (st GPR.r12 0 GPR.rcx), flags := x3.flags,
+      mem := x3.mem.writeSize Size.q (x3.regs.get GPR.r12 + 0) (x3.regs.get GPR.rcx), fsBase := x3.fsBase,
+      gsBase := x3.gsBase, xmm := x3.xmm, mxcsr := x3.mxcsr, oracle := x3.oracle, ms := x3.ms }
+hx4 : x4 = stepP p x3
+hx4s : x4.stopped = false
+cx4 : CodeAt C p x4.rip (st GPR.r12 (slot 1) GPR.rdx :: G)
+x5 : Cpu := stepP p x4
+e17 :
+  x5 =
+    { regs := x4.regs, rip := nxt C x4.rip (st GPR.r12 (slot 1) GPR.rdx), flags := x4.flags,
+      mem := x4.mem.writeSize Size.q (x4.regs.get GPR.r12 + slot 1) (x4.regs.get GPR.rdx), fsBase := x4.fsBase,
+      gsBase := x4.gsBase, xmm := x4.xmm, mxcsr := x4.mxcsr, oracle := x4.oracle, ms := x4.ms }
+hx5 : x5 = stepP p x4
+hx5s : x5.stopped = false
+cx5 : CodeAt C p x5.rip G
+w12 : w1.regs.get GPR.r12 = s.regs.get GPR.r12
+envCell : ∀ j < ρ.length, VIRBridge.Apart (cellAddr base i) (s.regs.get GPR.r12 + slot j)
+envS : ∀ (j : ℕ) (hj : j < ρ.length), rd w1.mem (s.regs.get GPR.r12 + slot j) = ρ[j]
+rcx1 : x1.regs.get GPR.rcx = base
+rdx2 : x2.regs.get GPR.rdx = len
+rcx3 : x3.regs.get GPR.rcx = base
+rdx3 : x3.regs.get GPR.rdx = len
+b : BitVec 64 := s.regs.get GPR.r12 - slot 2
+r12_3 : x3.regs.get GPR.r12 = b
+hbdef : b = s.regs.get GPR.r12 - slot 2
+hR12 : (s.regs.get GPR.r12).toNat < 2 ^ 64
+hbN : b.toNat + 8 * 2 < 2 ^ 64
+a01 : VIRBridge.Apart (b + slot 0) (b + slot 1)
+mem5 : x5.mem = (w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len
+newEnv : ∀ j < 2, ∀ q < 8, inEnv L (b + slot j + BitVec.ofNat 64 q)
+newLive : ∀ j < 2, ∀ (c' : W), L.live c' → VIRBridge.Apart (b + slot j) c'
+hj : 0 < 0 + 1 + 1
+⊢ rd ((w1.mem.writeSize Size.q (b + slot 0) base).writeSize Size.q (b + slot 1) len)
+      (s.regs.get GPR.r12 - slot [base, len].length + slot 0) =
+    [base, len][0]
+error: Lean exited with code 1
+Some required targets logged failures:
+- S3.Sim3
+error: build failed
+saltbuild EXIT=1

@@ -165,3 +165,41 @@ regions (`layout_store`: σ'.R = σ.R). So `L.live` is instantiated as bridge's 
 `sim_store` take **CapLive**: for 0 ≤ i < len, `L.live (cellAddr base i)`. It is discharged where `s3_refines` composes with S2's
 `SRel`, and it is not a premise of the final theorem. That theorem's premises stay the ones S3's main text lists, so this is not a
 premise on stored values.
+
+## ADDENDUM 8 (2026-11-14, the 77th head, before any store proof): a BAD sub-evaluation is not simulated
+S2's `store` step answers OVF when the value overflows, even if the index evaluated to BAD (its pattern `_, _, _, .ovf`). BAD is a
+shape no compiled typed program produces (Addendum 1), and the machine code for a BAD operand has no claimed behaviour. So
+`sim_store` takes, as part of the step it simulates, that the index's evaluation is not BAD. This narrows only the steps that exist
+because of a BAD shape. Steps from compiled typed programs are untouched, and the premise is discharged by S2's relation, under
+which no evaluation is BAD.
+
+## ADDENDUM 9 (2026-11-14, the 78th head, before any ret proof): the RES side of a return, and where its proof lives
+A `ret o` returning into a pending frame `(c₂, ρ₂) :: k'` runs Addendum 1's RUNTIME prepend: r13 holds |ws| = `wid o`, r12 has been
+restored to the frame's saved envLow `a`, and the loop's room check answers RES exactly when `a − envLo < 8·|ws|`. By the frame's
+Addendum 6 bound (`env0 − a ≤ 8·(|ρ₂| + Σ over k' of |ρᵢ|)`), RES is then claimed only when the SUCCESSOR word state
+`run c₂ (ws ++ ρ₂) k'` satisfies `env0 − envLo < 8·(|ws ++ ρ₂| + Σ over k' of |ρᵢ|)`, i.e. `EnvOver L (ws ++ ρ₂) k' 0`: the state
+the word machine steps to outgrows ENV. A return to the entry stub (k = []) has no prepend and no RES. The proof is a new module
+`S3/SimRet.lean` beside Sim3 (Sim3 is not edited for it). It cites `r3_of_prepend` by stepping through a state whose `rip` is set to
+the continuation's code: every conjunct of R3 but the code one is about registers and memory, which that state shares.
+
+## ADDENDUM 10 (2026-11-14, the 78th head, before any letE proof): the STACK RES side, stated of the successor
+A `letE c₁ c₂` step goes from `run (letE c₁ c₂) ρ k` to `run c₁ ρ ((c₂, ρ) :: k)`. Its code runs STACK's room check (Addendum 5:
+`rsp − stkLo < 16` ⇒ RES) before the `push r12` and the `call`. R3's frames put `rsp` at `rsp0 − 16·(|k| + 1)` (`frames_bound`), so
+the check fails exactly when `rsp0 − stkLo < 16·(|k| + 2)`. That is Addendum 2's bound for the SUCCESSOR, whose continuation
+list k' = (c₂, ρ) :: k has |k'| = |k| + 1: `16·(|k'| + 1) + 8` exceeds STACK's size `rsp0 + 8 − stkLo`. `sim_letE` claims RES only
+under that condition (`StkOver L k'`), with memory unchanged up to the exit. On the other branch the push and the call write only
+the two STACK words below `rsp`. The frames lemma then needs agreement only at and above the current `rsp` (`frames_above`), because
+a frame chain reads no stack word below its own `rsp`. `sim_letE` lives in `S3/SimLet.lean`, which imports SimRet and edits neither.
+
+## ADDENDUM 11 (2026-11-14, the 78th head, before any app proof): ERRATUM — `app` loaded its label into a register x's code clobbers
+**Finding.** The main text (S3-L, `app f x`: "f into BUF and then rdx, x into BUF") and Lower3's `gen` at 75c3237 put f's label in
+rdx and THEN ran x's operand code. Addendum 4's comparison code (`lt`, `le`, `eq`) writes rdx (`movi rdx 0; …; setcc rdx`), and
+`evalTo_run`'s frame preserves every register except rax, rcx and rdx. So for any `app f x` whose x contains a comparison, the
+dispatch read 0 or 1 in place of f's label and jumped to the wrong body: a miscompilation. Found when stating `sim_app`, before any
+proof of it; no claim made so far covers `app`, so nothing proved is withdrawn.
+**Correction.** f is evaluated FIRST (S2's order is kept) into BUF at slot `need x`, above every slot x's code writes. x is then
+evaluated into BUF slots 0…, and rdx is loaded from slot `need x` after both: `evalTo (need x) f ++ evalTo 0 x ++ [ld rdx
+[r14 + 8·need x], ld r12 [rsp + 8]]`, then the dispatch chain, which does not write rdx before its last use. The step needs
+`need x + need f ≤ |BUF|`. As in Addendum 8, `sim_app` takes that f's evaluation is not BAD: S2 answers OVF for (BAD, OVF), and the
+machine code of a BAD operand has no claimed behaviour. Lower3's `gen` and `gsz` change in their `app` case only, and every
+`app`-free proof is unaffected. This file's main text is not edited; this addendum is its erratum.
