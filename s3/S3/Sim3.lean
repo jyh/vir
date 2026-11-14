@@ -1912,6 +1912,89 @@ theorem r3_of_prepend {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WC
   · rw [g12, hE', List.length_append]
     constructor <;> omega
 
+/-- **r3_of_prepend_mem.** As `r3_of_prepend`, when word memory also changed at live cells `X` (a store), with the new word
+    memory `wm'` represented by the caller. -/
+theorem r3_of_prepend_mem {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WCode} {ρ ws : List W}
+    {k : List (WCode × List W)} {wm wm' : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s)
+    (X : W → Prop) (hXl : ∀ c, X c → L.live c) (hRep' : VIRBridge.Rep wm' u.mem L.live)
+    (hroom : L.envLo.toNat + 8 * ws.length ≤ (s.regs.get .r12).toNat)
+    (hr12 : u.regs.get .r12 = s.regs.get .r12 - slot ws.length)
+    (hnew : ∀ j (h : j < ws.length), rd u.mem (s.regs.get .r12 - slot ws.length + slot j) = ws[j])
+    (hm : ∀ a, (∀ i, i < L.bufN → VIRBridge.Apart (L.buf + slot i) a) →
+      (∀ j, j < ws.length → VIRBridge.Apart (s.regs.get .r12 - slot ws.length + slot j) a) →
+      (∀ c, X c → VIRBridge.Apart c a) → rd u.mem a = rd s.mem a)
+    (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → r ≠ .r12 → u.regs.get r = s.regs.get r) (hus : u.stopped = false)
+    (hcu : CodeAt C p u.rip (gen C u.rip c')) : R3 C p L (.run c' (ws ++ ρ) k, wm') u := by
+  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl, hle0, hocc⟩ := hR
+  set e := s.regs.get .r12 with he_def
+  set n := ws.length with hn_def
+  have hT := L.envTop.isLt
+  have hE' : (e - slot n).toNat = e.toNat - 8 * n := by simp only [slot, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+  have hEj : ∀ j, j < n → (e - slot n + slot j).toNat = e.toNat - 8 * n + 8 * j := by
+    intro j hj; simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+  -- a word that lies in ENV at or above e is apart from the new words
+  have new_apart_hi : ∀ x, e.toNat ≤ x.toNat → x.toNat + 8 ≤ L.envTop.toNat → ∀ j, j < n →
+      VIRBridge.Apart (e - slot n + slot j) x := fun x h1 h2 j hj => order_apart (by rw [hEj j hj]; omega) (by omega)
+  -- the new words lie in ENV
+  have new_env : ∀ j, j < n → ∀ q, q < 8 → inEnv L (e - slot n + slot j + BitVec.ofNat 64 q) := by
+    intro j hj q hq
+    have : (e - slot n + slot j + BitVec.ofNat 64 q).toNat = e.toNat - 8 * n + 8 * j + q := by
+      simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+    simp only [inEnv, this]; omega
+  have g12 : u.regs.get .r12 = e - slot n := hr12
+  have gsp := hreg .rsp (by decide) (by decide) (by decide) (by decide)
+  have cb_new : ∀ m, m < 4 → ∀ j, j < n → VIRBridge.Apart (e - slot n + slot j) (L.cb + BitVec.ofNat 64 (8 * m)) :=
+    fun m hm j hj => apart_of_disjoint hL.env_cb (new_env j hj) (cb_word L hm)
+  have xEnv : ∀ c, X c → ∀ x, (∀ q, q < 8 → inEnv L (x + BitVec.ofNat 64 q)) → VIRBridge.Apart c x :=
+    fun c hc x hx => apart_of_disjoint (fun a h1 h2 => hL.env_live a h2 h1) (live_word L (hXl c hc)) hx
+  have agOn : AgreeOn L e s.mem u.mem := by
+    refine ⟨fun x h1 h2 => hm x (fun i hi => buf_stk_apart hL hi h1 h2) (fun j hj =>
+      apart_of_disjoint hL.env_stk (new_env j hj) (stk_word L h1 h2 hL))
+      (fun c hc => apart_of_disjoint (fun a h3 h4 => hL.stk_live a h4 h3) (live_word L (hXl c hc)) (stk_word L h1 h2 hL)),
+      fun x h1 h2 => hm x ?_ (fun j hj => new_apart_hi x h1 h2 j hj) (fun c hc => xEnv c hc x (by
+        intro q hq
+        have : (x + BitVec.ofNat 64 q).toNat = x.toNat + q := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+        simp only [inEnv, this]; omega))⟩
+    intro i hi
+    refine apart_of_disjoint (fun a h3 h4 => hL.env_buf a h4 h3) (buf_word L hi) ?_
+    intro q hq
+    have : (x + BitVec.ofNat 64 q).toNat = x.toNat + q := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+    simp only [inEnv, this]; omega
+  refine ⟨hus, hcu, ⟨by rw [hreg .r14 (by decide) (by decide) (by decide) (by decide), hB],
+    by rw [hreg .rbx (by decide) (by decide) (by decide) (by decide), hX], ⟨?_, ?_, ?_⟩, ?_⟩, ?_, ?_, ?_, ?_, by rw [gsp]; exact hsl, ?_⟩
+  · rw [hm (L.cb + 8) (fun i hi => buf_cb_apart hL hi (m := 1) (by decide)) (fun j hj => cb_new 1 (by decide) j hj)
+      (fun c hc => apart_of_disjoint (fun a h3 h4 => hL.cb_live a h4 h3) (live_word L (hXl c hc)) (cb_word L (m := 1) (by decide)))]; exact hc1
+  · rw [hm (L.cb + 16) (fun i hi => buf_cb_apart hL hi (m := 2) (by decide)) (fun j hj => cb_new 2 (by decide) j hj)
+      (fun c hc => apart_of_disjoint (fun a h3 h4 => hL.cb_live a h4 h3) (live_word L (hXl c hc)) (cb_word L (m := 2) (by decide)))]; exact hc2
+  · rw [hm (L.cb + 24) (fun i hi => buf_cb_apart hL hi (m := 3) (by decide)) (fun j hj => cb_new 3 (by decide) j hj)
+      (fun c hc => apart_of_disjoint (fun a h3 h4 => hL.cb_live a h4 h3) (live_word L (hXl c hc)) (cb_word L (m := 3) (by decide)))]; exact hc3
+  · exact hRep'
+  · rw [g12, hE']; omega
+  · rw [g12, hE', List.length_append]; omega
+  · rw [g12]
+    intro j hj
+    rw [show e - slot n + BitVec.ofNat 64 (8 * j) = e - slot n + slot j from rfl]
+    by_cases hjn : j < n
+    · rw [List.getElem_append_left hjn]; exact hnew j hjn
+    · rw [List.getElem_append_right (by omega)]
+      simp only [List.length_append] at hj
+      have hx : e - slot n + slot j = e + slot (j - n) := by
+        apply BitVec.eq_of_toNat_eq
+        simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+      rw [hx]
+      have hxe : (e + slot (j - n)).toNat = e.toNat + 8 * (j - n) := by
+        simp only [slot, BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+      have hjr : j - n < ρ.length := by omega
+      have hb1 : e.toNat ≤ (e + slot (j - n)).toNat := by rw [hxe]; omega
+      have hb2 : (e + slot (j - n)).toNat + 8 ≤ L.envTop.toNat := by rw [hxe]; omega
+      have := agOn.2 (e + slot (j - n)) hb1 hb2
+      simp only [rd] at this; rw [this]
+      exact hw (j - n) hjr
+  · rw [g12, gsp]
+    exact frames_lo_mono k _ e _ (by rw [hE']; omega) (frames_on hL agOn k _ e (le_refl _) hsl hfr)
+  · rw [g12, hE', List.length_append]
+    constructor <;> omega
+
 /-! ## The RES side -/
 
 /-- Addendum 6's condition: the word state with n more words outgrows ENV's declared size. -/
