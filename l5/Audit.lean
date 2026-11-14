@@ -76,3 +76,8 @@ open VIRL5
 #print axioms rep5_chunk_cost
 #print axioms rep5_chunk_run
 #print axioms rep5_chunk_world
+#print axioms zero5_chunk
+#print axioms zero5_end
+#print axioms zero5_chunk_cost
+#print axioms zero5_chunk_run
+#print axioms zero5_chunk_world
