@@ -71,3 +71,20 @@ the mode's own lemmas.
   from ABOVE, so a run that takes fewer steps (≤ 32 bytes per SCOPY/COPY step) satisfies the same N. Correct.lean consumes SCOPY and
   COPY only through `scopy_run` (l.980) and `copy_run` (l.1717), and their callers (l.1094, l.1945) use only the end state.
   Bridge (ii) is therefore those two inductions plus one chunk-step lemma each, as Addendum 2 priced it.
+
+## ADDENDUM 4 (the 73rd head): four modes done in DEFLATE's terms, and what remains
+Each of these has its chunked ⟶₅ term, both branch triples over RegionAt (no content premise, LV7), a Cost₅ within the dispatch's
+share, the run at every fuel above that cost (`run_of_triple₅`), and the World form on a Sole store (bridge (i)):
+
+| mode | file | routine | chunk | cost (⟶₅ steps) |
+|---|---|---|---|---|
+| SCOPY | Scopy5, ScopyCost5, ScopyRun5, ScopyWorld5 | copyWithinR | min(PEND, 32) | 4·c + 13 ≤ 141 |
+| COPY | Copy5, CopyRun5 | copyWithinR (overlap allowed: cwF is the forward copy) | min(PEND, 32) | 4·c + 12 ≤ 140 |
+| REP | Rep5 | fillR | min(PEND, 32) | 3·c + 13 ≤ 109 |
+| BUILD ZERO | Zero5 | fillR | all 16 − j remaining, INDEX := 16 | 3·(16 − j) + 8 ≤ 56 |
+
+ZERO keeps BUILD's step structure: the next step meets DEFLATE's own end branch (PHASE := 1, INDEX := 0) unchanged, so Correct's
+BUILD cases move only by the count of ZERO steps. BUILD's phases 1–4 stay lifted.
+Remaining for LV8: FIXLENS (fillR, the chunk must stop at each of the run boundaries 144/256/280/288/318); READ and DECODE (bitR,
+C_bit = 1); then the assembly: the dispatch over Tm₅ with the lifted modes by `run₅_ι`, `stepS₅`, and Correct's SCOPY/COPY/REP/
+ZERO cases re-proved over `chunk_run` (Addendum 3) with each mode's World lemma, plus the Sole preservation every lifted mode owes.

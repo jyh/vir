@@ -34,3 +34,7 @@ import VIRL5.ScopyRun5
 import VIRL5.ScopyWorld5
 import VIRL5.Copy5
 import VIRL5.CopyRun5
+import VIRL5.Rep5
+import VIRL5.Zero5
+import VIRL5.Fixlens5
+import VIRL5.FixlensEnd5
