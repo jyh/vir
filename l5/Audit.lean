@@ -81,3 +81,6 @@ open VIRL5
 #print axioms zero5_chunk_cost
 #print axioms zero5_chunk_run
 #print axioms zero5_chunk_world
+#print axioms chain5_rule
+#print axioms fixlens5_chunk
+#print axioms fixlens5_end
