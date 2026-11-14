@@ -64,3 +64,4 @@ import S3
 #print axioms S3.gsz_congr
 #print axioms S3.place_bodies
 #print axioms S3.lower3_placed
+#print axioms S3.s3_refines_lower3

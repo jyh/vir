@@ -189,4 +189,40 @@ theorem lower3_placed {ilen : Op → Nat} {tbl : Table} {main : WCode} {base : W
   refine ⟨?_, hpl⟩
   subst hCdef; simp [ctxOf, hib]
 
+/-- What the driver establishes at its call into the code base (S3-M), apart from where the code is. -/
+structure DriverCall (L : Lay3) (ρ₀ : List W) (wm : WMem) (s : Cpu) : Prop where
+  stopped : s.stopped = false
+  r14 : s.regs.get .r14 = L.buf
+  rbx : s.regs.get .rbx = L.cb
+  r12 : s.regs.get .r12 = L.env0
+  rsp : s.regs.get .rsp = L.rsp0
+  ret : rd s.mem L.rsp0 = L.ret0
+  cb16 : rd s.mem (L.cb + 16) = L.envLo
+  cb24 : rd s.mem (L.cb + 24) = L.stkLo
+  rep : VIRBridge.Rep wm s.mem L.live
+  words : WordsAt s.mem L.env0 ρ₀
+  hi : L.env0.toNat + 8 * ρ₀.length ≤ L.envTop.toNat
+  stk : L.stkLo.toNat + 16 ≤ L.rsp0.toNat
+
+/-- **s3_refines_lower3.** `s3_refines` for the program `lower3` builds: the code facts come from `lower3_placed`; what remains
+    is the driver's layout (`L.Ok`, canonical code addresses and return address, the stub's return point), its call
+    (`DriverCall`), and `StepOk` along the word run. -/
+theorem s3_refines_lower3 {ilen : Op → Nat} {tbl : Table} {main : WCode} {base : W} {C : Ctx3} {p : Program} {L : Lay3}
+    (hCdef : C = ctxOf ilen tbl main base) (hp : p = lower3 ilen tbl main base) (hC : ∀ o, 1 ≤ ilen o)
+    (hb : bytes C (allCode C tbl main) < 2 ^ 64) (hT64 : tbl.length < 2 ^ 64)
+    (hL : L.Ok) (hcanon : ∀ a i, p.at? a = some i → canonical a = true) (hretc : canonical L.ret0 = true)
+    (hstub : L.stubRet = base + BitVec.ofNat 64 (bytes C (stubHead C)))
+    {ρ₀ : List W} {wm : WMem} {s : Cpu} (hD : DriverCall L ρ₀ wm s) (hrip : s.rip = base)
+    {n : Nat} {Wf : WSt × WMem} (hrun : WN tbl n (.run main ρ₀ [], wm) Wf)
+    (hok : ∀ k W₁, WN tbl k (.run main ρ₀ [], wm) W₁ → StepOk L W₁.1) :
+    ∃ m, (n + 3 ≤ m ∧ R3 C p L Wf (runP p m s)) ∨
+      (∃ Wr Wr' k, WN tbl k (.run main ρ₀ [], wm) Wr ∧ stepW tbl Wr = some Wr' ∧ ResWhy L Wr.1 ∧ ResExit L (runP p m s) ∧
+        Common L Wr'.2 (runP p m s)) := by
+  obtain ⟨hst, hF, hO, hR, hM, hTb⟩ := lower3_placed hCdef hp hC hb
+  have E : StepEnv C p L := ⟨hL, hcanon, hretc, hF, hO, hR⟩
+  have hT : TblOk C p tbl := ⟨by subst hCdef; rfl, by subst hCdef; exact hT64, hTb⟩
+  have hE : Entry C p L main ρ₀ wm s := ⟨hD.stopped, by rw [hrip]; exact hst, by rw [hrip]; exact hstub, hM, hD.r14, hD.rbx,
+    hD.r12, hD.rsp, hD.ret, hD.cb16, hD.cb24, hD.rep, hD.words, hD.hi, hD.stk⟩
+  exact s3_refines E hT hE hrun hok
+
 end S3
