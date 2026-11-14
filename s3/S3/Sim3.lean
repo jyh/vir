@@ -904,4 +904,43 @@ theorem st_run {C : Ctx3} {p : Program} (db : GPR) (g : Nat → W) :
     · intro a ha
       rw [h1, hureg, rd_write_apart _ _ _ _ (ha n (by omega)), hufr a (fun j hj => ha j (by omega))]
 
+/-! ## evalTo's pieces as the generic run lists -/
+
+theorem wid_le_need : ∀ o : WOpd, wid o ≤ need o
+  | .slice _ _ => le_refl _
+  | .imm _ => le_refl _
+  | .arith _ _ _ => by simp [wid, need]
+  | .bnot a => by simp [wid, need]
+  | .cat a b => by have := wid_le_need b; simp [wid, need]; omega
+  | .take n a => by have := wid_le_need a; simp [wid, need]; omega
+  | .drop n a => by have := wid_le_need a; simp [wid, need]; omega
+  | .tag _ pad a => by simp [wid, need]
+
+theorem moves_eq_copyL (s d : Nat) : ∀ n, moves s d n = copyL .r14 .r14 (fun j => slot (s + j)) (fun j => slot (d + j)) n
+  | 0 => rfl
+  | n + 1 => by simp only [moves, copyL, moves_eq_copyL s d n]
+
+theorem imm_eq_immL (t : Nat) (ws : List W) :
+    evalTo C t (.imm ws) = immL .r14 (fun j => ws.getD j 0) (fun j => slot (t + j)) ws.length := by
+  simp only [evalTo]
+  generalize ws.length = n
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [List.range_succ, List.flatMap_append, ih]; simp [immL]
+
+theorem pad_eq_stL (k pad : Nat) :
+    ((List.range pad).flatMap fun j => [st .r14 (slot (k + j)) .rax]) = stL .r14 (fun j => slot (k + j)) pad := by
+  induction pad with
+  | zero => rfl
+  | succ n ih => rw [List.range_succ, List.flatMap_append, ih]; simp [stL]
+
+/-- A word list at BUF slot t, read slot by slot. -/
+theorem wordsAt_slot {m : Mem} {B : W} {t : Nat} {ws : List W} :
+    WordsAt m (B + slot t) ws ↔ ∀ j (h : j < ws.length), rd m (B + slot (t + j)) = ws[j] := by
+  have e : ∀ j, B + slot t + BitVec.ofNat 64 (8 * j) = B + slot (t + j) := by
+    intro j; simp only [slot, BitVec.add_assoc, ← ofNat_add64]; congr 2; omega
+  constructor
+  · intro h j hj; have := h j hj; rw [e] at this; exact this
+  · intro h j hj; rw [e]; exact h j hj
+
 end S3

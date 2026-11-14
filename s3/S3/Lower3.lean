@@ -104,7 +104,7 @@ def moves (s d : Nat) : Nat → List AI
 /-- **evalTo t o**: code leaving `o`'s `wid o` words at BUF slots t, t+1, … (S3-L). Scratch above them is unconstrained. -/
 def evalTo (C : Ctx3) : Nat → WOpd → List AI
   | t, .slice off len => (List.range len).flatMap fun j => [ld .rax .r12 (slot (off + j)), st .r14 (slot (t + j)) .rax]
-  | t, .imm ws => ws.zipIdx.flatMap fun p => [movi .rax p.1, st .r14 (slot (t + p.2)) .rax]
+  | t, .imm ws => (List.range ws.length).flatMap fun j => [movi .rax (ws.getD j 0), st .r14 (slot (t + j)) .rax]
   | t, .arith op a b => evalTo C t a ++ evalTo C (t + 1) b ++ arithCode C t op
   | t, .bnot a => evalTo C t a ++
       [movi .rax 1, ld .rcx .r14 (slot t), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax]
