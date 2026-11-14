@@ -1,0 +1,29 @@
+metaprll5	L5M.files	15	MEASURED:virl5_*.ml at ext
+metaprll5	L5M.LV1.files	0	MEASURED:virl1-4 files changed base..ext:-
+metaprll5	L5M.LV1.direction	HOLDS	MEASURED
+metaprll5	L5M.LV1.namesL4	0	BESIDE:virl5 modules naming an L4 module:-
+metaprll5	L5M.LV2.prims	0	MEASURED:prim rules in virl5_*, comments stripped
+metaprll5	L5M.LV2.frameworkFiles	0	BESIDE:-
+metaprll5	L5M.LV2.direction	HOLDS	MEASURED
+metaprll5	L5M.LV3.statements	3	MEASURED:named ce_tc,ce_typing,ce5_step; found virl5_ceq.ce_tc,virl5_ceq.ce_typing,virl5_ces.ce5_step; "no premise beyond ⊢₂" is an author read (Q)
+metaprll5	L5M.LV4.semFiles	0	MEASURED:UNREACHED by the arm's G7 while 0
+metaprll5	L5M.LV8.routerFiles	0	MEASURED:LV8/LV9 UNREACHED by the arm's G6 while 0
+metaprll5	L5M.LV6.l5Wf	32	MEASURED:the arm's named population:triple5_call1,triple5_call2,rtriple5_ret,rtriple5_tail,rtriple5_let,rtriple5_call1
+metaprll5	L5M.LV6.l5Rules	6	MEASURED:statements found
+metaprll5	L5M.LV6.l2Wf	42	MEASURED:Q5's L2 six at ext
+metaprll5	L5M.LV6.l2Rules	6	MEASURED
+metaprll5	L5M.LV6.held	0	MEASURED:1 iff rate5 >= rate2 (32/6 vs 42/6)
+metaprll5	L5M.LV6.allL5	2516/676	BESIDE:every rule statement of virl5_*
+metaprll5	L5M.LV7.triples	14	MEASURED:*_triple and *_cap in virl5_triple
+metaprll5	L5M.LV7.contentPremises	0	MEASURED:over the five
+metaprll5	L5M.LV7.direction	HOLDS	MEASURED
+metaprll5	L5M.LV7.l5_bits	0	MEASURED
+metaprll5	L5M.LV7.l5_compare	0	MEASURED
+metaprll5	L5M.LV7.l5_copy	0	MEASURED
+metaprll5	L5M.LV7.l5_copy_self	0	BESIDE
+metaprll5	L5M.LV7.l5_fill	0	MEASURED
+metaprll5	L5M.LV7.l5_scan	0	MEASURED
+metaprll5	L5M.LV10.routines	6	MEASURED:l5_copy,l5_fill,l5_compare,l5_scan,l5_bits,l5_copy_self
+metaprll5	L5M.LV10.duplicates	0	MEASURED:none
+metaprll5	L5M.LV10.besideDuplicates	0	BESIDE:none
+metaprll5	L5M.LV10.direction	HOLDS	MEASURED

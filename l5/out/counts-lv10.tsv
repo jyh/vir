@@ -1,0 +1,5 @@
+lv10	LV10.log	2	MEASURED:lv10-002.log
+lv10	LV10.pairs	10	MEASURED:unordered pairs among the five
+lv10	LV10.duplicates	0	MEASURED:none
+lv10	LV10.besideDuplicates	0	BESIDE:none
+lv10	LV10.direction	HOLDS	MEASURED:0 equal shapes among the five

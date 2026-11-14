@@ -121,3 +121,74 @@ For bitR the per-bit constant includes DEFLATE's `BITc` run, counted through the
 (not re-derived). Composition rules (`letE`, `letK`, `letOp`, `ite`, the calls) add the counts, plus one step per head; they live
 in `Cost5.lean` with the run lemmas they need. The triples are NOT changed: the cost is a second lemma per routine, so nothing
 already scored at 5e2782a…b0c363b is re-proved.
+
+## ADDENDUM 6 (2026-11-14, the 76th head, AFTER LV8's assembly and Router5 and BEFORE any LV9 count is taken): LV9's reading
+amend-24 LV9 asks for "the AST nodes removed … COUNTED (per program, per routine)", but it does not define a node. This addendum
+defines it, before the first count:
+- **A node** is one constructor of `Tm₅` or `Atom₅`. Types (`Ty₅`), ops, constants' payloads and list cells are not nodes; they
+  ride inside the node that carries them.
+- **A routine atom** is a `.fix τ₁ k τ₂ e` with k ≥ 1. Embedded L2 code has k = 0 everywhere, because ιA writes 0. A routine
+  atom counts as ONE node, and its body is the library's, not the program's. It is NAMED by a FINGERPRINT (τ₁, k, τ₂, nodes of
+  e), which the instrument computes from the six library definitions themselves (bitR, copyR, fillR, scanR, cmpR, copyWithinR)
+  and checks pairwise distinct. A signature alone is NOT distinct: τfill and τcopy are both int × (int × int), so fillR and
+  copyWithinR share (int×int×int, 1, unit). This was found while writing the instrument, before any count. A routine atom whose
+  fingerprint matches none of the six is printed UNKNOWN, and the harness refuses the log.
+- **A call** is one occurrence of a routine atom.
+- **Per mode (DEFLATE):** L2 = nodes(`lift₅ m`) for DEFLATE's own mode term m (ιE maps constructor to constructor, so this is
+  m's node count). L5 = nodes of that mode's `modes₅` entry. **Removed = L2 − L5**, computed by the harness from the two
+  printed numbers and reported WITH ITS SIGN. The modes are the seven entries of `modes₅` that are not `lift₅`: READ, FIXLENS,
+  SCOPY, BUILD, DECODE, COPY, REP. Every other mode is `lift₅` of its own term and reads 0 by construction. The harness checks
+  that, and does not assume it.
+- **Per program:** DEFLATE's total is nodes(ιE `stepT`) − nodes(`stepT₅`). The ROUTER's is nodes(ιE F) − nodes(F₅), with F₅'s
+  calls; LV8-MAP Addendum 9 already reads it as 0 and 0 (V-F8).
+- **Direction (LV9, per program):** HOLDS iff calls ≥ 1 AND removed > 0. Otherwise FALSIFIED.
+- **Instrument:** `l5/Lv9.lean` (`#eval` over the defined terms, one tab-separated `LV9` line per row), run through
+  logged-build.sh as `lv9-NNN`. `count.py --arm lv9` reads the newest lv9 log, refuses one without `saltbuild EXIT=0`, and
+  recomputes every difference. Its selftest arm is written red first.
+
+## ADDENDUM 7 (2026-11-14, the 76th head, BEFORE any LV4 count is taken): LV4's case cut
+Line 40 above reads LV4 on "the per-constructor cases of preservation and progress, C5 per case". This fixes the cut, written
+before any per-case figure was looked at:
+- **The cases** are the top-level arms of `pres₅` (Preservation5.lean, one arm per `Step₅` constructor, written `  | name …`) and
+  of `progress₅` (Progress5.lean, one arm per `RT₅` constructor, written `  | _, …, .name …`). An arm's text runs from its `|` line
+  to the line before the next top-level arm, or to the end of the theorem. Nested `|` lines belong to the arm that contains them.
+- **C5 per case** is whitespace tokens after comments are stripped, the same strip C5 uses everywhere (`l4_strip`). Lines are
+  reported beside.
+- **The fix case** is the Step₅ arms that unroll a `fix`: `appFix` (k = 0) and `appKFix` (k ≥ 1, the body checked with its
+  annotated Δ). PRIMARY: the LARGER of the two ALONE. LV4 HOLDS iff it is strictly larger than every non-fix arm of both
+  theorems. The ratio to the next-largest arm is reported. BESIDE: the two arms summed, which is not the verdict, because summing
+  two arms against single arms would favour the prediction. Progress has no fix arm: its fix branch sits inside the `app`/`appK`
+  arms, which count as application cases.
+- **Instrument:** `count.py --arm l5`, rows `L5.LV4.*`, selftest arm written red first. The same arm reads LV2 from the newest
+  `l5/logs/audit-NNN.log` (EXIT=0, each `#print axioms` line within the three, a `sorryAx` count of 0), and refuses a control log.
+
+## ADDENDUM 8 (2026-11-14, the 76th head, BEFORE any LV5 count is taken): LV5's population and its "application or fix case"
+- **The L1′ files** are the eight language files planned above (Syntax · Typing5 · Step5 · CE · Runtime5 · Preservation5 ·
+  Progress5 · Y5L5) plus the five language helpers the plan did not name, declared here before they are scored: Shift5 · Subst5 ·
+  Weak5 · RTSubst5 · SemBase5. The routines, DEFLATE's and the router's files, the logic (Logic5, Ops5) and the cost files are not
+  L1′ files.
+- **A hit** is one match of CAST_RE (count.py, the L3 Z2 extractor, ≍ included) after comments are stripped.
+- **The application or fix case** is the application arms of `pres₅` (appLam · appFix · appKLam · appKFix) and of `progress₅`
+  (app · appK), cut as in Addendum 7. LV5 HOLDS iff the total is ≥ 1 AND hits in those arms are ≥ half of the total. Hits per file
+  are reported beside.
+- Same instrument: `count.py --arm l5`, rows `L5.LV5.*`, its selftest arm written red first.
+
+## ADDENDUM 9 (2026-11-14, the 76th head, BEFORE any harness read of LV7): LV7's content premise, read mechanically
+- **A routine's triple** is its `<name>R_spec` theorem in VIRL5 (bitR, copyR, fillR, scanR, cmpR, copyWithinR). LV7 names five
+  routines; copyWithinR is the sixth and is reported BESIDE the five.
+- **Its content variables** are the binders of the statement typed `Int → Int` (a region's contents).
+- **Its premises** are the arrow premises between the statement's last `∀ …,` and `Triple₅`. **A content premise** is a premise
+  that names a content variable as a whole word. The precondition's `RegionAt p n f` is the region itself, not a premise.
+- LV7 HOLDS iff the five read 0 content premises. Same instrument: `count.py --arm l5`, rows `L5.LV7.*`, selftest arm red first.
+
+## ADDENDUM 10 (2026-11-14, the 76th head, BEFORE any LV10 count is taken): LV10's duplication, read by shape
+- **A routine's shape** is its whole atom (`.fix τ₁ k τ₂ body`) printed with EVERY integer constant replaced by `_`. Types,
+  operators, primitives, de Bruijn indices, capability counts and the other constants are kept. An element's int encoding can only
+  show up as integer constants (widths, bases, masks), so two routines that "differ ONLY in an int encoding of their element"
+  have EQUAL shapes. Equal shapes are a necessary condition, and the reading is generous to duplication, which makes it the strict
+  test of a prediction of 0.
+- **LV10's count** is the number of unordered pairs among the five LV7 names with equal shapes. copyWithinR's pairs are reported
+  BESIDE. LV10 HOLDS iff the count is 0. A pair that reads equal is the measured trigger OBJECT-L5 names for polymorphism: a fork
+  for a sitting, not a change made here.
+- **Instrument:** `l5/Lv10.lean` (`#eval`, one `LV10` line per pair), run as `lv10-NNN`. `count.py --arm lv10` reads the newest
+  green log. Its selftest arm is written red first.

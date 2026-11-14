@@ -97,6 +97,42 @@ chk2 "$V/l3/out/counts-z1.tsv" "python3 '$C' --arm w8 --base dc95b53 --ext 037dd
 # the Lean L4 column (STATUS 168), at the sealed Lean tip's files; W8 from L3-closed to L4-closed on each lower layer
 chk "$V/l4/out/counts-l4.tsv" --arm l4 "$V/l4"
 chk2 "$V/l4/out/counts-q1.tsv" "for p in l1:VIRL1 l2:VIRL2 l3:VIRL3; do d=\${p%%:*}; python3 '$C' --arm w8 --base 7f82f94 --ext 4017931 --prefix \$d/\${p##*:} '$V' | sed \"s/\tW8\./\tQ1.\$d.W8./\"; done"
+# amend-24 LV9 (STATUS-vir 333; l5/DECLARATIONS-LEAN Addendum 6): the Lean arm's LV9 rows, read from l5/ AT THEIR COUNTS COMMIT
+# (a later lv9 log must not move them; the sha is DERIVED from git, as L1-L3).
+LV9SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-lv9.tsv)
+if [ -z "$LV9SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-lv9.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/lv9at" && git -C "$V" archive "$LV9SHA" l5/logs l5/out | tar -x -C "$M/lv9at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $LV9SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV9) at its counts commit ${LV9SHA:0:12}"
+  chk "$V/l5/out/counts-lv9.tsv" --arm lv9 "$M/lv9at/l5"
+fi
+# amend-24 LV10 (Addendum 10), the Lean arm, at the commit that wrote counts-lv10.tsv
+LV10SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-lv10.tsv)
+if [ -z "$LV10SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-lv10.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/lv10at" && git -C "$V" archive "$LV10SHA" l5/logs l5/out | tar -x -C "$M/lv10at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $LV10SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV10) at its counts commit ${LV10SHA:0:12}"
+  chk "$V/l5/out/counts-lv10.tsv" --arm lv10 "$M/lv10at/l5"
+fi
+# amend-24 LV2 + LV4 (STATUS-vir 316; Addendum 7), read from l5/ at the commit that wrote counts-l5.tsv (sources, logs and out/)
+L5SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-l5.tsv)
+if [ -z "$L5SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-l5.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/l5at" && git -C "$V" archive "$L5SHA" l5/VIRL5 l5/logs l5/out | tar -x -C "$M/l5at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $L5SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV2, LV4) at its counts commit ${L5SHA:0:12}"
+  chk "$V/l5/out/counts-l5.tsv" --arm l5 "$M/l5at/l5"
+fi
+# amend-24 on the MetaPRL arm (STATUS-vir 334; l5/SCORING-METAPRL-L5.md): mojave/vir-l5 at its census sha (row 589), read from a clone
+# at the pin, never in place (V-F2); the arm's names for LV3/LV6 (bus 11-14 09:15) passed as the arm gave them.
+L5M_SHA=2d9a6c7f0b1fff64b88f3f8f9c7ac111ba824ebb
+L5M_BASE=d257d2f29e9c4fa50c7588dab9961c4198267ebc
+if git clone -q --no-checkout "$M0/vir-metaprl" "$M/l5m" 2>/dev/null && git -C "$M/l5m" checkout -q "$L5M_SHA" 2>/dev/null; then
+  echo "  PINNED   mojave/vir-l5 at ${L5M_SHA:0:12}"
+  chk2 "$V/l5/out/metaprl-counts-l5.tsv" "VIR_L5M_CE='ce_tc,ce_typing,ce5_step' VIR_L5M_LV6='triple5_call1,triple5_call2,rtriple5_ret,rtriple5_tail,rtriple5_let,rtriple5_call1' python3 '$C' --arm metaprll5 --base $L5M_BASE --ext $L5M_SHA '$M/l5m'"
+else echo "REPRODUCE MISSING-INPUT mojave/vir-l5 at $L5M_SHA"; exit 2; fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here

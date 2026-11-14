@@ -221,3 +221,32 @@ control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not op
   and nowhere else. Router5 was restored byte for byte (sha256/16 045bf3d20d5d7487 before and after).
 - **LIMIT:** R4₅ inherits R4's reach, which is a triple at the world p of size 87 under R4's index premises. The mutant shows that
   the post is carried. It does not show that any routine was exercised: none was.
+
+## ADDENDUM 11 (the 76th head): LV9 READ on the Lean arm, under DECLARATIONS-LEAN Addendum 6 (declared before the count)
+`lv9-002` (l5/Lv9.lean, saltbuild EXIT=0, after l5-136 EXIT=0) and `count.py --arm lv9 l5` (selftest ARM59, red first; its mutant
+flips the sign and is KILLED):
+
+| mode | L2 nodes | L5 nodes | removed (L2 − L5) | calls |
+|---|---|---|---|---|
+| READ | 110 | 95 | **+15** | bitR |
+| FIXLENS | 132 | 177 | −45 | fillR |
+| SCOPY | 68 | 79 | −11 | copyWithinR |
+| BUILD | 608 | 613 | −5 | fillR |
+| DECODE | 209 | 226 | −17 | bitR |
+| COPY | 53 | 64 | −11 | copyWithinR |
+| REP | 49 | 63 | −14 | fillR |
+| **DEFLATE (stepT)** | 2778 | 2866 | **−88** | 7 (bitR 2 · fillR 3 · copyWithinR 2) |
+| **ROUTER (F)** | 144 | 144 | **0** | 0 |
+
+- The 21 lifted modes read 0 each (`liftNonzero` 0), so they are not assumed. Second method, on a different axis: each total equals
+  the 28 modes + 4 dispatch nodes per mode + 2 + 3, on both sides (2661 + 117 = 2778; 2749 + 117 = 2866), so the counter agrees
+  with the dispatch's own structure.
+- **LV9 is FALSIFIED on the Lean arm for BOTH programs.** The router has no call to make (V-F8). DEFLATE makes 7 calls but GROWS
+  by 88 nodes. One item per step became a chunk per call: each re-expressed mode computes min(pending, C), packs the argument, and
+  moves its cursor by the count, and that costs more nodes than the one-item body it replaced. Only READ shrinks, because its
+  table walk went away. The prediction is not re-read.
+- BESIDE (no verdict moves): this map's first table said TABLE would be DROPPED and its nodes counted as removed. Addendum 2 KEPT
+  it, lifted and unread, and the count is of the program as built. TABLE's lifted term is 166 nodes. A DEFLATE without it would read
+  +78, but it is not the program that carries `safety₅` and `correct₅`.
+- What LV9 measures is AST size, not proof effort and not readability. The routines' bodies (bitR 184 · copyR 40 · fillR 33 ·
+  scanR 36 · cmpR 47 · copyWithinR 38 nodes, fingerprinted from their definitions) are not counted against either program.

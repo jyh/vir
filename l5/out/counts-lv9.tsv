@@ -1,0 +1,41 @@
+lv9	LV9.log	2	MEASURED:lv9-002.log
+lv9	LV9.fingerprints	6	MEASURED:library routines named
+lv9	LV9.DEFLATE.TABLE.removed	0	MEASURED:L2 166 - L5 166; calls -
+lv9	LV9.DEFLATE.HDR.removed	0	MEASURED:L2 22 - L5 22; calls -
+lv9	LV9.DEFLATE.READ.removed	15	MEASURED:L2 110 - L5 95; calls bitR
+lv9	LV9.DEFLATE.HDRB.removed	0	MEASURED:L2 29 - L5 29; calls -
+lv9	LV9.DEFLATE.HDRD.removed	0	MEASURED:L2 47 - L5 47; calls -
+lv9	LV9.DEFLATE.SHDR.removed	0	MEASURED:L2 47 - L5 47; calls -
+lv9	LV9.DEFLATE.FIXLENS.removed	-45	MEASURED:L2 132 - L5 177; calls fillR
+lv9	LV9.DEFLATE.DHDR.removed	0	MEASURED:L2 22 - L5 22; calls -
+lv9	LV9.DEFLATE.SLEN.removed	0	MEASURED:L2 29 - L5 29; calls -
+lv9	LV9.DEFLATE.SNLEN.removed	0	MEASURED:L2 72 - L5 72; calls -
+lv9	LV9.DEFLATE.SCOPY.removed	-11	MEASURED:L2 68 - L5 79; calls copyWithinR
+lv9	LV9.DEFLATE.BUILD.removed	-5	MEASURED:L2 608 - L5 613; calls fillR
+lv9	LV9.DEFLATE.LENS.removed	0	MEASURED:L2 127 - L5 127; calls -
+lv9	LV9.DEFLATE.SYM.removed	0	MEASURED:L2 31 - L5 31; calls -
+lv9	LV9.DEFLATE.DECODE.removed	-17	MEASURED:L2 209 - L5 226; calls bitR
+lv9	LV9.DEFLATE.SYMD.removed	0	MEASURED:L2 150 - L5 150; calls -
+lv9	LV9.DEFLATE.LENX.removed	0	MEASURED:L2 43 - L5 43; calls -
+lv9	LV9.DEFLATE.DSTD.removed	0	MEASURED:L2 76 - L5 76; calls -
+lv9	LV9.DEFLATE.DSTX.removed	0	MEASURED:L2 59 - L5 59; calls -
+lv9	LV9.DEFLATE.COPY.removed	-11	MEASURED:L2 53 - L5 64; calls copyWithinR
+lv9	LV9.DEFLATE.DH2.removed	0	MEASURED:L2 31 - L5 31; calls -
+lv9	LV9.DEFLATE.DH3.removed	0	MEASURED:L2 31 - L5 31; calls -
+lv9	LV9.DEFLATE.DH4.removed	0	MEASURED:L2 61 - L5 61; calls -
+lv9	LV9.DEFLATE.CLREAD.removed	0	MEASURED:L2 130 - L5 130; calls -
+lv9	LV9.DEFLATE.CLPUT.removed	0	MEASURED:L2 46 - L5 46; calls -
+lv9	LV9.DEFLATE.LSYM.removed	0	MEASURED:L2 166 - L5 166; calls -
+lv9	LV9.DEFLATE.LREP.removed	0	MEASURED:L2 47 - L5 47; calls -
+lv9	LV9.DEFLATE.REP.removed	-14	MEASURED:L2 49 - L5 63; calls fillR
+lv9	LV9.DEFLATE.removed	-88	MEASURED:L2 2778 - L5 2866 (signed)
+lv9	LV9.DEFLATE.calls	7	MEASURED
+lv9	LV9.DEFLATE.calls.bitR	2	MEASURED
+lv9	LV9.DEFLATE.calls.copyWithinR	2	MEASURED
+lv9	LV9.DEFLATE.calls.fillR	3	MEASURED
+lv9	LV9.DEFLATE.liftNonzero	0	MEASURED:none
+lv9	LV9.DEFLATE.direction	FALSIFIED	MEASURED:calls >= 1 and removed > 0
+lv9	LV9.ROUTER.removed	0	MEASURED:L2 144 - L5 144 (signed)
+lv9	LV9.ROUTER.calls	0	MEASURED
+lv9	LV9.ROUTER.liftNonzero	0	MEASURED:none
+lv9	LV9.ROUTER.direction	FALSIFIED	MEASURED:calls >= 1 and removed > 0
