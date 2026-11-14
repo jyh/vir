@@ -322,4 +322,71 @@ theorem arith_add_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {re
     · intro a ha; rw [e5, r14_4, show s4.mem = s.mem by rw [e4]; exact mem3]; exact rd_write_apart _ _ _ _ ha
     · intro r ha hc'; rw [e5]; rw [e4]; exact regs3 r ha hc'
 
+/-! ## The checked sub block (the add block's proof, with sub's lemmas) -/
+
+theorem eval_o_sub (x y : W) (f : Flags) : Cc.eval .o (Flags.sub .q x y f) = BitVec.ssubOverflow x y := by
+  simp [Cc.eval, Flags.sub, Flags.subResult, subOF_q]
+
+/-- **arith_sub_run.** With BUF slots t and t+1 holding x and y: on signed overflow the block reaches OVF in 4 steps with memory
+    untouched; otherwise in 5 steps slot t holds `x - y`, and every word apart from slot t keeps its value. Among the registers
+    only rax and rcx change. -/
+theorem arith_sub_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (arithCode C t .sub ++ rest)) (hcan : canonical C.ovf = true)
+    (hx : rd s.mem (s.regs.get .r14 + slot t) = x) (hy : rd s.mem (s.regs.get .r14 + slot (t + 1)) = y) :
+    (BitVec.ssubOverflow x y = true → ∃ u, runP p 4 s = u ∧ u.stopped = false ∧ u.rip = C.ovf ∧ u.mem = s.mem ∧
+        ∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r) ∧
+    (BitVec.ssubOverflow x y = false → ∃ u, runP p 5 s = u ∧ u.stopped = false ∧
+        u.rip = s.rip + BitVec.ofNat 64 (bytes C (arithCode C t .sub)) ∧
+        rd u.mem (s.regs.get .r14 + slot t) = x - y ∧
+        (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+        ∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r) := by
+  have c0 : CodeAt C p s.rip (ld .rax .r14 (slot t) :: ld .rcx .r14 (slot (t + 1)) ::
+      .op (.bin .sub .q (.reg .rax) (.reg .rcx)) :: .jccA .o C.ovf :: st .r14 (slot t) .rax :: rest) := by
+    simpa [arithCode] using hc
+  have e1 := stepP_ld hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (ld .rcx .r14 (slot (t + 1)) ::
+      .op (.bin .sub .q (.reg .rax) (.reg .rcx)) :: .jccA .o C.ovf :: st .r14 (slot t) .rax :: rest) := by
+    rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_ld h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (.op (.bin .sub .q (.reg .rax) (.reg .rcx)) :: .jccA .o C.ovf :: st .r14 (slot t) .rax :: rest) := by
+    rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_sub_rr h2 c2
+  set s3 := stepP p s2
+  have h3 : s3.stopped = false := by rw [e3]; exact h2
+  have c3 : CodeAt C p s3.rip (.jccA .o C.ovf :: st .r14 (slot t) .rax :: rest) := by
+    rw [e3]; exact codeAt_tail c2
+  have e4 := stepP_jccA h3 c3 hcan
+  set s4 := stepP p s3
+  have r14_2 : s2.regs.get .r14 = s.regs.get .r14 := by rw [e2, e1]; simp
+  have rax2 : s2.regs.get .rax = x := by rw [e2, e1]; simp [hx]
+  have rcx2 : s2.regs.get .rcx = y := by rw [e2]; simp [e1, hy]
+  have hfl : Cc.eval .o s3.flags = BitVec.ssubOverflow x y := by rw [e3]; simp only [rax2, rcx2, eval_o_sub]
+  have run4 : runP p 4 s = s4 := rfl
+  have mem3 : s3.mem = s.mem := by rw [e3, e2, e1]
+  have regs3 : ∀ r, r ≠ .rax → r ≠ .rcx → s3.regs.get r = s.regs.get r := by
+    intro r ha hc'; rw [e3, e2, e1]; simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc')]
+  constructor
+  · intro hov
+    refine ⟨s4, run4, by rw [e4]; exact h3, by rw [e4]; simp [hfl, hov], by rw [e4]; exact mem3, ?_⟩
+    intro r ha hc'; rw [e4]; exact regs3 r ha hc'
+  · intro hov
+    have h4 : s4.stopped = false := by rw [e4]; exact h3
+    have rip4 : s4.rip = s3.rip + 6 := by rw [e4]; simp [hfl, hov]
+    have c4 : CodeAt C p s4.rip (st .r14 (slot t) .rax :: rest) := by
+      rw [rip4]; have := codeAt_tail c3; simpa [AI.size] using this
+    have e5 := stepP_st h4 c4
+    have r14_4 : s4.regs.get .r14 = s.regs.get .r14 := by rw [e4]; exact regs3 .r14 (by decide) (by decide)
+    have rax4 : s4.regs.get .rax = x - y := by rw [e4, e3]; simp [rax2, rcx2]
+    refine ⟨stepP p s4, rfl, by rw [e5]; exact h4, ?_, ?_, ?_, ?_⟩
+    · rw [e5, rip4, e3, e2, e1]
+      simp only [nxt, arithCode, ld, st, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+      all_goals bv_omega
+    · rw [e5, r14_4, rax4]; simp only [show s4.mem = s.mem by rw [e4]; exact mem3]; exact rd_write_same _ _ _
+    · intro a ha; rw [e5, r14_4, show s4.mem = s.mem by rw [e4]; exact mem3]; exact rd_write_apart _ _ _ _ ha
+    · intro r ha hc'; rw [e5]; rw [e4]; exact regs3 r ha hc'
+
 end S3
