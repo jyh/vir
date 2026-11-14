@@ -72,3 +72,26 @@ and call lemmas) · `S3/S3.lean` (`s3_refines`).
 - a C3 lemma re-proved inside s3/ instead of cited;
 - an instruction used that is not on x86lean's validated list;
 - the stack region's disjointness assumed per call rather than discharged once from the layout.
+
+## ADDENDUM 1 (2026-11-14, the 76th head, after Frame.lean's `wid` and BEFORE Fragment3.lean): HEAD-RELATIVE ρ, which REVISES S3-F
+**A first form of this addendum, never built on, is withdrawn.** It closed ρ's length with ONE parameter and result width per
+table, and it claimed "the router's and DEFLATE's tables pass it". Checked the same hour: the router has no `app`, and DEFLATE's
+table has three functions (pow2, strip, bit) with parameter widths 2, 4 and 3 (a fix receives its own label). So it would have
+REJECTED DEFLATE. The check pointed at a simpler design:
+- **ρ grows at the FRONT** (`ws ++ ρ'`, `m(…) :: ρ`, `base :: len :: ρ`), and a `slice off len` counts from the NEWEST word. So
+  ρ is laid out with its newest word at the LOWEST address, and a register `envLow` points at it. `ρ[off]` is `[envLow + 8·off]`.
+  A prepend of n words is `envLow −= 8n` plus the stores. **No slot address depends on ρ's length**, so S3-F's static length, its
+  frame bound and a width discipline are all unnecessary. S3-F (a) is REVISED to this: the frame is the downward-growing env
+  region, addressed off `envLow`.
+- **`letE`** saves `envLow` (it is the continuation's ρ) and calls c₁. **`ret o`** writes its `wid o` words to the result area
+  and the count to a register, and returns. The continuation restores `envLow` from the saved slot and prepends that many words.
+  The count is a RUNTIME value, so a callee's result width is never needed statically.
+- **`app f x`**: x's words go to the result area, `envLow` is reset to the current ACTIVATION BASE (the `envLow` the innermost
+  pending `letE` saved, or the entry value), and the words are prepended, plus the label for a fix. A tail call therefore reuses its
+  activation's space. A loop of tail calls runs in constant stack.
+- **S3-S's RES clause, restated on the word state:** RES is reached only when the word state's size exceeds the declared stack
+  region. The size is `|ρ| + Σ over k of (|ρᵢ| + c)`, with c the constant per continuation (the saved `envLow` and the return
+  address). This is a measure of the state, not a premise on the run.
+- **`Fragment3.ok`** checks only encodings: offsets fit the displacement form, and the table size fits the dispatch chain. It
+  checks no widths. A BAD shape (S2's `none`, which no compiled typed program produces) has no x86 counterpart claimed: S3
+  simulates the word steps that exist.
