@@ -148,3 +148,11 @@ into a register first. ENV room: `ld rcx [rbx+16]; mov rax, r12; sub rax, rcx; c
 `[rbx+24]`, rsp and 16. The runtime prepend after a `letE` loads ENV's bound into rdx, because rcx carries the count. `store` reloads
 base and len from ENV after its room check, which now clobbers rcx; r12 does not move before the `lea`. With these forms every
 check is one of x86lean's equations plus `cc_b_of_sub` (unsigned below), cited.
+
+## ADDENDUM 6 (2026-11-14, the 77th head, before any RES proof): ENV occupancy, measured from the entry envLow
+Addendum 2's S3-S claims RES only when the word state outgrows ENV. Claiming that needs R3 to BOUND ENV's occupancy by the abstract
+sizes. The bound is measured from **env0**, the envLow the driver passes at entry. env0 is a layout field, envLo ≤ env0 ≤ envTop,
+and ENV's declared size is env0 − envLo. R3 gains `env0 − envLow ≤ 8·(|ρ| + Σ over k of |ρᵢ|)`. Each pending frame carries the same
+bound at its saved envLow, over its own ρ and the frames outside it. The bottom frame's saved envLow is env0 exactly. So an ENV RES
+before a prepend of n words is claimed only when `env0 − envLo < 8·(|ρ| + Σ|ρᵢ| + n)`. Sharing (a `letE`'s c₁ runs on the caller's ρ)
+only lowers the true occupancy, so this is still Addendum 2's upper bound, now with its reference point named.
