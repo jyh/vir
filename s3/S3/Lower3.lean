@@ -74,21 +74,27 @@ def movi (r : GPR) (v : W) : AI := .op (.mov .q (.reg r) (.imm v))
 /-- The byte offset of word slot `t`. -/
 def slot (t : Nat) : W := BitVec.ofNat 64 (8 * t)
 
-/-- One arithmetic operator, its operands at BUF slots t and t+1, its result at t (S3-I). -/
+/-- One arithmetic operator, its operands at BUF slots t and t+1 (loaded into rax and rcx), its result at t (S3-I). Register
+    forms only: x86lean states the reg-reg equations for add, sub, cmp, and, or (and imul with any source). -/
 def arithCode (C : Ctx3) (t : Nat) : AOp → List AI
-  | .add => [ld .rax .r14 (slot t), .op (.bin .add .q (.reg .rax) (memAt .r14 (slot (t + 1)))), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .sub => [ld .rax .r14 (slot t), .op (.bin .sub .q (.reg .rax) (memAt .r14 (slot (t + 1)))), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .mul => [ld .rax .r14 (slot t), .op (.imulr .q .rax (memAt .r14 (slot (t + 1))) none), .jccA .o C.ovf, st .r14 (slot t) .rax]
-  | .lt => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .l (.reg .rcx)), st .r14 (slot t) .rcx]
-  | .le => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .le (.reg .rcx)), st .r14 (slot t) .rcx]
-  | .eq => [movi .rcx 0, ld .rax .r14 (slot t), .op (.bin .cmp .q (.reg .rax) (memAt .r14 (slot (t + 1)))),
-      .op (.setcc .e (.reg .rcx)), st .r14 (slot t) .rcx]
+  | .add => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .add .q (.reg .rax) (.reg .rcx)), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .sub => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .mul => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.imulr .q .rax (.reg .rcx) none), .jccA .o C.ovf,
+      st .r14 (slot t) .rax]
+  | .lt => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .l (.reg .rdx)), st .r14 (slot t) .rdx]
+  | .le => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .le (.reg .rdx)), st .r14 (slot t) .rdx]
+  | .eq => [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+      .op (.setcc .e (.reg .rdx)), st .r14 (slot t) .rdx]
   | .max => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
       .op (.cmov .le .q .rax (.reg .rcx)), st .r14 (slot t) .rax]
-  | .band => [ld .rax .r14 (slot t), .op (.bin .and .q (.reg .rax) (memAt .r14 (slot (t + 1)))), st .r14 (slot t) .rax]
-  | .bor => [ld .rax .r14 (slot t), .op (.bin .or .q (.reg .rax) (memAt .r14 (slot (t + 1)))), st .r14 (slot t) .rax]
+  | .band => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .and .q (.reg .rax) (.reg .rcx)),
+      st .r14 (slot t) .rax]
+  | .bor => [ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .or .q (.reg .rax) (.reg .rcx)),
+      st .r14 (slot t) .rax]
 
 /-- Copy BUF slots `s..s+n` to `d..d+n`, ascending (safe for a move DOWN, `d ≤ s`). -/
 def moves (s d : Nat) : Nat → List AI
@@ -98,9 +104,10 @@ def moves (s d : Nat) : Nat → List AI
 /-- **evalTo t o**: code leaving `o`'s `wid o` words at BUF slots t, t+1, … (S3-L). Scratch above them is unconstrained. -/
 def evalTo (C : Ctx3) : Nat → WOpd → List AI
   | t, .slice off len => (List.range len).flatMap fun j => [ld .rax .r12 (slot (off + j)), st .r14 (slot (t + j)) .rax]
-  | t, .imm ws => ws.zipIdx.flatMap fun p => [movi .rax p.1, st .r14 (slot (t + p.2)) .rax]
+  | t, .imm ws => (List.range ws.length).flatMap fun j => [movi .rax (ws.getD j 0), st .r14 (slot (t + j)) .rax]
   | t, .arith op a b => evalTo C t a ++ evalTo C (t + 1) b ++ arithCode C t op
-  | t, .bnot a => evalTo C t a ++ [movi .rax 1, .op (.bin .sub .q (.reg .rax) (memAt .r14 (slot t))), st .r14 (slot t) .rax]
+  | t, .bnot a => evalTo C t a ++
+      [movi .rax 1, ld .rcx .r14 (slot t), .op (.bin .sub .q (.reg .rax) (.reg .rcx)), st .r14 (slot t) .rax]
   | t, .cat a b => evalTo C t a ++ evalTo C (t + wid a) b
   | t, .take _ a => evalTo C t a
   | t, .drop n a => evalTo C t a ++ moves (t + n) t (wid a - n)
@@ -122,7 +129,7 @@ def need : WOpd → Nat
 
 /-- ENV room check for `n` words (S3-S): RES unless `r12 − envLo ≥ 8n`. Clobbers rax. -/
 def envRoom (C : Ctx3) (n : Nat) : List AI :=
-  [.op (.mov .q (.reg .rax) (.reg .r12)), .op (.bin .sub .q (.reg .rax) (memAt .rbx 16)),
+  [ld .rcx .rbx 16, .op (.mov .q (.reg .rax) (.reg .r12)), .op (.bin .sub .q (.reg .rax) (.reg .rcx)),
    .op (.bin .cmp .q (.reg .rax) (.imm (slot n))), .jccA .b C.res]
 
 /-- Prepend BUF slots s..s+n to ρ (a static count): room check, `r12 −= 8n`, then the copies. -/
@@ -132,13 +139,13 @@ def prependBuf (C : Ctx3) (s n : Nat) : List AI :=
 
 /-- STACK room for one pending `letE` (16 bytes: the saved envLow and the return address). -/
 def stackRoom (C : Ctx3) : List AI :=
-  [.op (.mov .q (.reg .rax) (.reg .rsp)), .op (.bin .sub .q (.reg .rax) (memAt .rbx 24)),
+  [ld .rcx .rbx 24, .op (.mov .q (.reg .rax) (.reg .rsp)), .op (.bin .sub .q (.reg .rax) (.reg .rcx)),
    .op (.bin .cmp .q (.reg .rax) (.imm 16)), .jccA .b C.res]
 
 /-- The RUNTIME prepend after a `letE` returns (Addendum 1): r13 words from BUF, by a loop. Placed at `pc`. -/
 def prependLoop (C : Ctx3) (pc : W) : List AI :=
   let pre : List AI :=
-    [.op (.mov .q (.reg .rax) (.reg .r12)), .op (.bin .sub .q (.reg .rax) (memAt .rbx 16)),
+    [ld .rdx .rbx 16, .op (.mov .q (.reg .rax) (.reg .r12)), .op (.bin .sub .q (.reg .rax) (.reg .rdx)),
      .op (.lea .q .rcx { index := some .r13, scale := .s8 }), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)), .jccA .b C.res,
      .op (.bin .sub .q (.reg .r12) (.reg .rcx)), movi .rcx 0]
   let head := pc + BitVec.ofNat 64 (bytes C pre)
@@ -191,9 +198,9 @@ def gen (C : Ctx3) : W → WCode → List AI
       [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
        .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
        .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx,
-       ld .rdx .r12 (slot (off + 1))] ++
-      envRoom C 2 ++ [.op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]
+       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx] ++
+      envRoom C 2 ++ [ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]
     pre ++ gen C (pc + BitVec.ofNat 64 (bytes C pre)) k
   | pc, .app f x =>
     let pre := evalTo C 0 f ++ [ld .rdx .r14 (slot 0)] ++ evalTo C 0 x ++ [ld .r12 .rsp 8]
@@ -310,9 +317,9 @@ def gsz (C : Ctx3) : WCode → Nat
       [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
        .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
        .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx,
-       ld .rdx .r12 (slot (off + 1))] ++
-      envRoom C 2 ++ [.op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]) +
+       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx] ++
+      envRoom C 2 ++ [ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]) +
       gsz C k
   | .app f x => bytes C (evalTo C 0 f ++ [ld .rdx .r14 (slot 0)] ++ evalTo C 0 x ++ [ld .r12 .rsp 8]) +
       dsz C (wid x) C.tblLen 0

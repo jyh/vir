@@ -53,3 +53,11 @@ mutant, and every mutant is KILLED.
   not a mechanical one.
 - LV4, LV6, LV8 and LV9 each have an UNREACHED or no-analogue side. No comparison is drawn across a missing cell.
 - C5 for LV3 is file-level tokens, BESIDE. No direction was predicted.
+
+## Addendum 1 (2026-11-14): the pace of the MetaPRL arm, ruled
+His word at the 2026-11-14 council (ruling 2, "yes, as the rec") ratifies what the default had already let proceed:
+- **L1′ semantic typing (item 1b) is PRICED OUT.** It is scored declared-unreached-at-the-pin. Its cause: it rests on the half of L2's
+  Y5 that was never reached (RESULTS-7: Y5 stopped at D10). The cost was about 4–6 seat-days.
+- **LV4 is read on the Lean arm alone.** The MetaPRL cell above stays UNREACHED by declaration G7, with this cause beside it.
+- **Item 1b reopens with the SLang restatement.** Items 1a, 2 and 3 continue.
+Nothing in the table above changes. This addendum records a scope ruling, not a new figure.

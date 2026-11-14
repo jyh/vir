@@ -135,3 +135,33 @@ proceeds on it.
 - **The program is ONE contiguous placement** (`allCode`, `lower3 = asm base allCode`): entry stub, FAULT, OVF, RES, main, then the
   table's bodies in order. Instruction fetch is proved once, by `CodeAt` over that list, given that its total size is below 2⁶⁴
   (`asm_nodup`, `at?_of_nodup`). It is then split per piece by `codeAt_left`/`codeAt_right`.
+
+## ADDENDUM 4 (2026-11-14, the 77th head, before any proof about arithCode): register operand forms
+S3-L's arithmetic now loads BOTH operands (BUF slots t and t+1) into rax and rcx and uses register forms: add/sub/cmp/and/or
+`rax, rcx`, `imul rax, rcx`; lt/le/eq set rdx (zeroed first, since rcx holds an operand); `bnot` loads x into rcx and computes
+`1 − x` as `sub rax, rcx`. x86lean states its equations for the reg-reg forms of sub, cmp, and and or, not for reg-mem. With these
+forms every arithmetic step is one of x86lean's lemmas, cited and not re-proved. No count or claim depended on the earlier forms.
+
+## ADDENDUM 5 (2026-11-14, the 77th head, before any proof about a room check): register forms in the room checks
+x86lean states SUB and CMP for reg,reg and reg,imm, not reg,mem (Addendum 4's reason). So the three room checks load their bound
+into a register first. ENV room: `ld rcx [rbx+16]; mov rax, r12; sub rax, rcx; cmp rax, 8n; jb RES`. STACK room: the same over
+`[rbx+24]`, rsp and 16. The runtime prepend after a `letE` loads ENV's bound into rdx, because rcx carries the count. `store` reloads
+base and len from ENV after its room check, which now clobbers rcx; r12 does not move before the `lea`. With these forms every
+check is one of x86lean's equations plus `cc_b_of_sub` (unsigned below), cited.
+
+## ADDENDUM 6 (2026-11-14, the 77th head, before any RES proof): ENV occupancy, measured from the entry envLow
+Addendum 2's S3-S claims RES only when the word state outgrows ENV. Claiming that needs R3 to BOUND ENV's occupancy by the abstract
+sizes. The bound is measured from **env0**, the envLow the driver passes at entry. env0 is a layout field, envLo ≤ env0 ≤ envTop,
+and ENV's declared size is env0 − envLo. R3 gains `env0 − envLow ≤ 8·(|ρ| + Σ over k of |ρᵢ|)`. Each pending frame carries the same
+bound at its saved envLow, over its own ρ and the frames outside it. The bottom frame's saved envLow is env0 exactly. So an ENV RES
+before a prepend of n words is claimed only when `env0 − envLo < 8·(|ρ| + Σ|ρᵢ| + n)`. Sharing (a `letE`'s c₁ runs on the caller's ρ)
+only lowers the true occupancy, so this is still Addendum 2's upper bound, now with its reference point named.
+
+## ADDENDUM 7 (2026-11-14, the 77th head, before any load or store proof): where a capability's cells come from
+A `load` or `store` reads or writes the cell `cellAddr base i` of the capability at ρ[capOff], ρ[capOff+1]. S3 relates word memory to
+bytes only on the live cells (`Rep … L.live`). So the step needs that cell to be live. That is S2's invariant, not S3's: under S2's
+`SRel` (its `EnvRel` and `Layout`), a capability in ρ is `(lay p, n)` for a region p of length n in σ, and S2's `store` keeps the
+regions (`layout_store`: σ'.R = σ.R). So `L.live` is instantiated as bridge's `Live σ lay`, fixed for the run. `sim_load` and
+`sim_store` take **CapLive**: for 0 ≤ i < len, `L.live (cellAddr base i)`. It is discharged where `s3_refines` composes with S2's
+`SRel`, and it is not a premise of the final theorem. That theorem's premises stay the ones S3's main text lists, so this is not a
+premise on stored values.
