@@ -190,3 +190,16 @@ list k' = (c₂, ρ) :: k has |k'| = |k| + 1: `16·(|k'| + 1) + 8` exceeds STACK
 under that condition (`StkOver L k'`), with memory unchanged up to the exit. On the other branch the push and the call write only
 the two STACK words below `rsp`. The frames lemma then needs agreement only at and above the current `rsp` (`frames_above`), because
 a frame chain reads no stack word below its own `rsp`. `sim_letE` lives in `S3/SimLet.lean`, which imports SimRet and edits neither.
+
+## ADDENDUM 11 (2026-11-14, the 78th head, before any app proof): ERRATUM — `app` loaded its label into a register x's code clobbers
+**Finding.** The main text (S3-L, `app f x`: "f into BUF and then rdx, x into BUF") and Lower3's `gen` at 75c3237 put f's label in
+rdx and THEN ran x's operand code. Addendum 4's comparison code (`lt`, `le`, `eq`) writes rdx (`movi rdx 0; …; setcc rdx`), and
+`evalTo_run`'s frame preserves every register except rax, rcx and rdx. So for any `app f x` whose x contains a comparison, the
+dispatch read 0 or 1 in place of f's label and jumped to the wrong body: a miscompilation. Found when stating `sim_app`, before any
+proof of it; no claim made so far covers `app`, so nothing proved is withdrawn.
+**Correction.** f is evaluated FIRST (S2's order is kept) into BUF at slot `need x`, above every slot x's code writes. x is then
+evaluated into BUF slots 0…, and rdx is loaded from slot `need x` after both: `evalTo (need x) f ++ evalTo 0 x ++ [ld rdx
+[r14 + 8·need x], ld r12 [rsp + 8]]`, then the dispatch chain, which does not write rdx before its last use. The step needs
+`need x + need f ≤ |BUF|`. As in Addendum 8, `sim_app` takes that f's evaluation is not BAD: S2 answers OVF for (BAD, OVF), and the
+machine code of a BAD operand has no claimed behaviour. Lower3's `gen` and `gsz` change in their `app` case only, and every
+`app`-free proof is unaffected. This file's main text is not edited; this addendum is its erratum.
