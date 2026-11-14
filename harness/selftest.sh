@@ -1462,6 +1462,10 @@ interactive l5_fill_triple :
    sequent { <H> >- 0 <= 'n } -->
    sequent { <H> >- triple5{regionv{'p; 'R; 'f}; e; lambda{rv. regionv{'p; 'R; 'f}}} }
 
+interactive l5_fill_cap1 :
+   [wf] sequent { <H> >- 'f in int -> int } -->
+   sequent { <H> >- triple5{regionv{'p; 'R; 'f}; e; lambda{rv. regionv{'p; 'R; 'f}}} }
+
 interactive l5_scan_triple :
    [wf] sequent { <H> >- 'n in int } -->
    [wf] sequent { <H> >- 'f in int -> int } -->
@@ -1475,7 +1479,7 @@ check64() {
   v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
   [ "$(v L5M.LV1.files)" = 0 ] && [ "$(v L5M.LV2.prims)" = 0 ] && [ "$(v L5M.LV2.frameworkFiles)" = 1 ] \
   && [ "$(v L5M.LV6.l5Wf)" = 4 ] && [ "$(v L5M.LV6.l5Rules)" = 2 ] && [ "$(v L5M.LV6.l2Wf)" = 6 ] && [ "$(v L5M.LV6.l2Rules)" = 6 ] \
-  && [ "$(v L5M.LV6.held)" = 1 ] && [ "$(v L5M.LV7.triples)" = 2 ] && [ "$(v L5M.LV7.contentPremises)" = 1 ] \
+  && [ "$(v L5M.LV6.held)" = 1 ] && [ "$(v L5M.LV7.triples)" = 3 ] && [ "$(v L5M.LV7.contentPremises)" = 1 ] \
   && [ "$(v L5M.LV7.direction)" = FALSIFIED ] && [ "$(v L5M.LV10.duplicates)" = 1 ] && [ "$(v L5M.LV10.besideDuplicates)" = 0 ] \
   && [ "$(v L5M.LV10.direction)" = FALSIFIED ] && [ "$(v L5M.LV4.semFiles)" = 0 ] && [ "$(v L5M.LV8.routerFiles)" = 0 ]
 }

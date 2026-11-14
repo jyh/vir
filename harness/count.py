@@ -2450,7 +2450,7 @@ def metaprll5(repo, base, ext):
              ('L5M.LV6.l2Wf', w2, 'MEASURED:Q5\'s L2 six at ext'), ('L5M.LV6.l2Rules', n2, 'MEASURED'),
              ('L5M.LV6.held', 1 if n5 and n2 and w5 * n2 >= w2 * n5 else 0, 'MEASURED:1 iff rate5 >= rate2 (%d/%d vs %d/%d)' % (w5, n5, w2, n2)),
              ('L5M.LV6.allL5', '%d/%d' % (aw, an), 'BESIDE:every rule statement of virl5_*')]
-    tr = [(mm.group(1), b) for b in items.get('virl5_triple', []) for mm in [re.match(r'interactive\s+(l5_[A-Za-z0-9_]+?)_(?:triple|cap)\s*:', b)] if mm]
+    tr = [(mm.group(1), b) for b in items.get('virl5_triple', []) for mm in [re.match(r'interactive\s+(l5_[A-Za-z0-9_]+?)_(?:triple|cap\d*)\s*:', b)] if mm]
     cp = 0; per = {}
     for r, b in tr:
         prem = re.findall(r'(\[wf\]\s*)?sequent\s*\{(.*?)\}\s*-->', b, re.S)
