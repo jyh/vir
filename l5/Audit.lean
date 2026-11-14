@@ -62,3 +62,4 @@ open VIRL5
 #print axioms union_empty'
 #print axioms disj_empty_right
 #print axioms run_of_triple₅
+#print axioms scopy5_chunk_cost
