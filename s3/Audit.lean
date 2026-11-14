@@ -72,3 +72,6 @@ import S3
 #print axioms S3.srel_reach
 #print axioms S3.capLive_of
 #print axioms S3.stepSem_of_srel
+#print axioms S3.stepIR_R
+#print axioms S3.srel_reach_R
+#print axioms S3.s3_refines_from_s2
