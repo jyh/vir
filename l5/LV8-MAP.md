@@ -158,3 +158,19 @@ control audit-037c reads sorryAx). Correct.lean and Safety.lean are still not op
   225 within the three, 0 sorryAx). The chunk costs 3·c + 20 (≤ 116) and the end 18 (FixlensRun5). Within a run, DEFLATE's
   fixLenI is the chunk's one length fixLenV i (`fixLenI_eq_V`, `fixLenV_run`), so c DEFLATE steps reach the fillR chunk
   (`fixlens_iter`). Still owed: BUILD, then the case split.
+
+## ADDENDUM 8 (the 75th head): LV8's assembly is PROVED, `safety₅` and `correct₅`
+- **BUILD** (RefineBuild5). `buildT₅` differs from DEFLATE's `buildN` only in the phase-0 branch.
+  - Two ⟶₅ steps (`build5_two`) and two DEFLATE steps (`build_two`) bring a phase other than 0 to the same rest.
+  - `body_run`: a DEFLATE step is its body's run at every fuel ≥ 483. With it, `stepS₅_build` holds (j = 1).
+  - At phase 0 the ⟶₅ step enters zeroT₅ (`zero_entry`). The chunk is 16 − INDEX DEFLATE build_zero_cell steps (`zero_iter`).
+  - ZERO's end has cost 4, with its run and World form (`zero5_end_cost`, `zero5_end_world`); there j = 1. That is `refine_build`.
+- **The case split** (Final5). `refine₅T : Refine₅T`: `refine_lifted` off the seven, and the seven cases. From it,
+  `safety₅ : SafetyStmt₅` (`safety₅_ofT`) and `correct₅ : CorrectStmt₅` (`correct₅_ofT`). DEFLATE's Safety and Correct are
+  used as they stand. l5-134 EXIT=0; audit-039: 238 theorems within the three axioms, 0 sorryAx. refine₅T, safety₅ and
+  correct₅ each read [propext, Classical.choice, Quot.sound]. The control audit-039c reads sorryAx.
+- **Red backwards.** `mutants/Final5-noTab.lean` proves the Tab-free `Refine₅` instead. Built in place of Final5, it gives
+  `l5-mutant-noTab` `saltbuild EXIT=1`, exactly at the READ and DECODE cases (`hT` unknown). Final5 was restored byte for byte.
+  LIMIT: the red is at the name level. It shows the proof cannot discharge Refine₅ without (T), not that READ's refinement is
+  false without it.
+- Builds this head: l5-119 … l5-134 and the mutant; 16 numbered builds for 323 + FIXLENS + BUILD + the split.

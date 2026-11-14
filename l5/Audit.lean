@@ -225,3 +225,16 @@ open VIRL5
 #print axioms fixLenV_run
 #print axioms fixlens_iter
 #print axioms refine_fixlens
+#print axioms body_run
+#print axioms run₅_load_phase
+#print axioms build5_two
+#print axioms build_two
+#print axioms stepS₅_build
+#print axioms zero_entry
+#print axioms zero5_end_cost
+#print axioms zero5_end_world
+#print axioms zero_iter
+#print axioms refine_build
+#print axioms refine₅T
+#print axioms safety₅
+#print axioms correct₅
