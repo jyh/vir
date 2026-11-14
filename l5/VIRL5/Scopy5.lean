@@ -149,4 +149,53 @@ theorem scopy5_chunk (p : Int) (L : Nat) (g : Int → Int) (k bx n m : Int)
     (ret_rule₅ (Q := fun r qs σ => r = .const (.cap p) ∧ qs = [] ∧ RegionAt p L (scopyPost p g k bx n m) σ)
       (by simp [Atom₅.eval]))
 
+/-- **SCOPY, the block's end (k = 0).** BFINAL = 1 → DONE, else HDR, written to MODE; nothing else changes. -/
+theorem scopy5_end (p : Int) (L : Nat) (g : Int → Int) (bf : Int)
+    (hk : g (p + cPEND) = 0) (hbf : g (p + cBF) = bf) (hL : 6 ≤ L) :
+    Triple₅ (RegionAt p L g) (scopyT₅.subst 0 (.const (.cap p)))
+      (fun r qs σ => r = .const (.cap p) ∧ qs = [] ∧
+        RegionAt p L (Function.update g (p + cMODE) (if bf = 1 then mDONE else mHDR)) σ) := by
+  simp [scopyT₅, Tm₅.subst, Atom₅.subst, Atom₅.substL]
+  refine letOp_rule₅ (cs := [.cap p, .int cPEND]) (by simp [Atom₅.evalL, Atom₅.eval])
+    (load_at p L g cPEND ⟨by unfold cPEND; omega, by unfold cPEND; omega⟩) (fun w => ?_)
+  show Triple₅ (fun σ => w = .const (.int (g (p + cPEND))) ∧ RegionAt p L g σ) _ _
+  refine pre_pure₅ (fun hw => ?_)
+  subst hw
+  rw [hk]
+  simp [ιA, Tm₅.subst, Atom₅.subst, Atom₅.substL]
+  refine ite_rule₅ (b := true) ?_ ?_
+  · simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1]
+  simp only [if_true]
+  refine letOp_rule₅ (cs := [.cap p, .int cBF]) (by simp [Atom₅.evalL, Atom₅.eval])
+    (load_at p L g cBF ⟨by unfold cBF; omega, by unfold cBF; omega⟩) (fun w => ?_)
+  show Triple₅ (fun σ => w = .const (.int (g (p + cBF))) ∧ RegionAt p L g σ) _ _
+  refine pre_pure₅ (fun hw => ?_)
+  subst hw
+  rw [hbf]
+  simp [ιA, Tm₅.subst, Atom₅.subst, Atom₅.substL]
+  by_cases h1 : bf = 1
+  · subst h1
+    refine ite_rule₅ (b := true) ?_ ?_
+    · simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1]
+    simp only [if_true]
+    refine letOp_rule₅ (cs := [.cap p, .int cMODE, .int mDONE]) (by simp [Atom₅.evalL, Atom₅.eval])
+      (store_at p L g cMODE mDONE ⟨by unfold cMODE; omega, by unfold cMODE; omega⟩) (fun w => ?_)
+    refine pre_pure₅ (fun hw => ?_)
+    subst hw
+    simp [ιA, Tm₅.subst, Atom₅.subst, Atom₅.substL]
+    exact conseq₅ (fun σ h => ⟨rfl, rfl, by simpa using h⟩) (fun r qs σ h => h)
+      (ret_rule₅ (v := .const (.cap p)) (Q := fun r qs σ => r = .const (.cap p) ∧ qs = [] ∧
+        RegionAt p L (Function.update g (p + cMODE) (if (1 : Int) = 1 then mDONE else mHDR)) σ) (by simp [Atom₅.eval]))
+  · refine ite_rule₅ (b := false) ?_ ?_
+    · simp [Atom₅.eval, Atom₅.evalL, constsOf₅, pInterp, Const.toL1, L1.Prim.interp, Const.ofL1, h1]
+    simp only [Bool.false_eq_true, if_false]
+    refine letOp_rule₅ (cs := [.cap p, .int cMODE, .int mHDR]) (by simp [Atom₅.evalL, Atom₅.eval])
+      (store_at p L g cMODE mHDR ⟨by unfold cMODE; omega, by unfold cMODE; omega⟩) (fun w => ?_)
+    refine pre_pure₅ (fun hw => ?_)
+    subst hw
+    simp [ιA, Tm₅.subst, Atom₅.subst, Atom₅.substL]
+    exact conseq₅ (fun σ h => ⟨rfl, rfl, by simpa [h1] using h⟩) (fun r qs σ h => h)
+      (ret_rule₅ (v := .const (.cap p)) (Q := fun r qs σ => r = .const (.cap p) ∧ qs = [] ∧
+        RegionAt p L (Function.update g (p + cMODE) (if bf = 1 then mDONE else mHDR)) σ) (by simp [Atom₅.eval]))
+
 end VIRL5

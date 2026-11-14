@@ -58,3 +58,4 @@ open VIRL5
 #print axioms copyWithinR_subst
 #print axioms scopy5_chunk
 #print axioms cwF_disjoint
+#print axioms scopy5_end
