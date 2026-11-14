@@ -142,3 +142,11 @@ open VIRL5
 #print axioms rep_iter
 #print axioms sole_world_eq'
 #print axioms refine_rep
+#print axioms cwF_rel
+#print axioms cwR_update
+#print axioms copy5_end_cost
+#print axioms copy5_end_world
+#print axioms copy_iter
+#print axioms refine_copy
+#print axioms copy5_chunk
+#print axioms copy5_chunk_world
