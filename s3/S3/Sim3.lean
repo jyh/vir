@@ -2191,4 +2191,234 @@ theorem fault_exit {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c : 
     hret E.ret_canon
   exact ⟨v, hv, hret', hcom'⟩
 
+/-! ## One word step: `load` -/
+
+theorem codeAt_next {C : Ctx3} {p : Program} {s s' : Cpu} {i : AI} {l : List AI} (hrip : s'.rip = nxt C s.rip i)
+    (hc : CodeAt C p s.rip (i :: l)) : CodeAt C p s'.rip l := by rw [hrip]; exact codeAt_tail hc
+
+/-- CapLive (Addendum 7): the capability at ρ[off], ρ[off+1] has live cells below its length. -/
+def CapLive (L : Lay3) (ρ : List W) (off : Nat) : Prop :=
+  ∀ base len i, ρ[off]? = some base → ρ[off + 1]? = some len → 0 ≤ i.toInt → i.toInt < len.toInt → L.live (cellAddr base i)
+
+/-- **sim_load.** A word step of `load off idx c` is simulated: the loaded word prepended and c reached as an R3 run state; an
+    out-of-bounds index returns as R3 `fault`; an overflow as R3 `ovf`; RES only with `EnvOver` for one word. -/
+theorem sim_load {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : Table} {off : Nat} {idx : WOpd} {c : WCode}
+    {ρ : List W} {k : List (WCode × List W)} {wm : WMem} {s : Cpu} (hR : R3 C p L (.run (.load off idx c) ρ k, wm) s)
+    (hneed : need idx ≤ L.bufN) (hcap : CapLive L ρ off) {W' : WSt × WMem}
+    (hstep : stepW tbl (.run (.load off idx c) ρ k, wm) = some W') :
+    ∃ n, 0 < n ∧ (R3 C p L W' (runP p n s) ∨ (ResExit L (runP p n s) ∧ Common L wm (runP p n s) ∧ EnvOver L ρ k 1)) := by
+  have hR0 := hR
+  obtain ⟨hs, hcode, hcom, hlo, hhi, hw, hfr, hsl, hocc⟩ := hR
+  have hB : s.regs.get .r14 = L.buf := hcom.1
+  have hX : s.regs.get .rbx = L.cb := hcom.2.1
+  have hL := E.ok
+  set chk : List AI := [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+    .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault, .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
+    .op (.lea .q .rcx { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .rcx 0] with hchk
+  set tl : List AI := [.op (.lea .q .r12 { base := some .r12, disp := -(slot 1) }), st .r12 0 .rdx] with htl
+  set pre : List AI := evalTo C 0 idx ++ chk ++ envRoom C 1 ++ tl with hpre_def
+  have hc0 : CodeAt C p s.rip (pre ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c) := by
+    have h0 := hcode; simp only [gen] at h0; exact h0
+  have hc : CodeAt C p s.rip (evalTo C 0 idx ++ (chk ++ (envRoom C 1 ++ (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c)))) := by
+    have := hc0
+    rw [show pre ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c =
+      evalTo C 0 idx ++ (chk ++ (envRoom C 1 ++ (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c))) by
+        simp only [hpre_def, List.append_assoc]] at this
+    exact this
+  have hpre : EvalPre s 0 L.bufN ρ := ⟨hw, by rw [hB]; exact hL.buf_nowrap,
+    fun i j _ hi hj => by rw [hB]; exact buf_env_apart hL hi hlo hhi hj⟩
+  have hpost := evalTo_run (C := C) (p := p) (canon_of_codeAt E E.ovf) idx 0 s _ ρ L.bufN hs hc (by omega) hpre
+  simp only [EvalPost] at hpost
+  simp only [stepW] at hstep
+  have hcf := canon_of_codeAt E E.fault
+  cases hi : evalW ρ idx with
+  | bad =>
+    rw [hi] at hstep
+    rcases h1 : ρ[off]? with _ | b <;> rcases h2 : ρ[off + 1]? with _ | l <;> simp [h1, h2] at hstep
+  | ovf =>
+    rw [hi] at hpost
+    have : W' = (.ovf, wm) := by rw [hi] at hstep; split at hstep <;> simp_all
+    subst this
+    obtain ⟨n1, u1, hr1, hs1, hrip1, hf1⟩ := hpost
+    obtain ⟨v, hv, hRv⟩ := ovf_exit E hR0 (agree_of_frame hB hf1) hf1.2 hs1 hrip1
+    exact ⟨n1 + 4, by omega, Or.inl (by rw [runP_add, hr1, hv]; exact hRv)⟩
+  | ok is =>
+    rw [hi] at hpost
+    obtain ⟨n1, u1, hr1, hs1, hrip1, hw1, hf1⟩ := hpost
+    -- the S2 step forces the shapes
+    rw [hi] at hstep
+    rcases hb : ρ[off]? with _ | base
+    · rw [hb] at hstep; simp at hstep
+    rcases hl : ρ[off + 1]? with _ | len
+    · rw [hb, hl] at hstep; simp at hstep
+    rw [hb, hl] at hstep
+    match is, hstep, hw1 with
+    | [i], hstep, hw1 =>
+      simp only at hstep
+      have ag1 : AgreeBuf L s.mem u1.mem := agree_of_frame hB hf1
+      have hB1 : u1.regs.get .r14 = L.buf := by rw [hf1.2 .r14 (by decide) (by decide) (by decide), hB]
+      have hE1 : u1.regs.get .r12 = s.regs.get .r12 := hf1.2 .r12 (by decide) (by decide) (by decide)
+      have hoff : off < ρ.length := by have := List.getElem?_eq_some_iff.mp hb; exact this.1
+      have hoff1 : off + 1 < ρ.length := by have := List.getElem?_eq_some_iff.mp hl; exact this.1
+      have hbase : rd u1.mem (u1.regs.get .r12 + slot off) = base := by
+        rw [hE1, ag1 _ (fun i' hi' => buf_env_apart hL hi' hlo hhi hoff)]
+        have := hw off hoff; simp only [rd, slot] at this ⊢; rw [this]; exact (List.getElem?_eq_some_iff.mp hb).2
+      have hlen : rd u1.mem (u1.regs.get .r12 + slot (off + 1)) = len := by
+        rw [hE1, ag1 _ (fun i' hi' => buf_env_apart hL hi' hlo hhi hoff1)]
+        have := hw (off + 1) hoff1; simp only [rd, slot] at this ⊢; rw [this]; exact (List.getElem?_eq_some_iff.mp hl).2
+      have hiv : rd u1.mem (u1.regs.get .r14 + slot 0) = i := by
+        rw [hB1, ← hB]; have := (wordsAt_slot.mp hw1) 0 (by simp); simpa using this
+      have c1 : CodeAt C p u1.rip (chk ++ (envRoom C 1 ++ (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c))) := by
+        rw [hrip1]; exact codeAt_right hc
+      rw [hchk] at c1; simp only [List.cons_append, List.nil_append] at c1
+      have e2 := stepP_ld hs1 c1
+      have h2 : (stepP p u1).stopped = false := by rw [e2]; exact hs1
+      have c2 := codeAt_next (s' := stepP p u1) (by rw [e2]) c1
+      have e3 := stepP_ld h2 c2
+      have h3 : (stepP p (stepP p u1)).stopped = false := by rw [e3]; exact h2
+      have c3 := codeAt_next (s' := stepP p (stepP p u1)) (by rw [e3]) c2
+      set u3 := stepP p (stepP p u1) with hu3
+      have e4 := stepP_ld h3 c3
+      set u4 := stepP p u3 with hu4
+      have h4 : u4.stopped = false := by rw [e4]; exact h3
+      have c4 := codeAt_next (s' := u4) (by rw [e4]) c3
+      have rax4 : u4.regs.get .rax = i := by rw [e4, e3, e2]; simpa using hiv
+      have rcx4 : u4.regs.get .rcx = base := by rw [e4, e3]; simp [e2, hbase]
+      have rdx4 : u4.regs.get .rdx = len := by rw [e4]; simp [e3, e2, hlen]
+      have mem4 : u4.mem = u1.mem := by rw [e4, e3, e2]
+      have e5 := stepP_test_rr h4 c4
+      set u5 := stepP p u4 with hu5
+      have h5 : u5.stopped = false := by rw [e5]; exact h4
+      have c5 := codeAt_next (s' := u5) (by rw [e5]) c4
+      have fl5 : Cc.eval .s u5.flags = decide (i.toInt < 0) := by rw [e5, rax4]; exact cc_s_logic i _ _
+      have e6 := stepP_jccA h5 c5 hcf
+      set u6 := stepP p u5 with hu6
+      have h6 : u6.stopped = false := by rw [e6]; exact h5
+      have reg6 : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u6.regs.get r = s.regs.get r := by
+        intro r ha hc' hd; rw [e6, e5, e4, e3, e2]
+        simp only [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc'), Regs.get_set_ne _ _ _ _ (Ne.symm hd)]
+        exact hf1.2 r ha hc' hd
+      have mem6 : u6.mem = u1.mem := by rw [e6, e5, mem4]
+      by_cases hneg : i.toInt < 0
+      · -- negative index: FAULT
+        have hW : W' = (.fault, wm) := by
+          rw [if_neg (by omega), Option.some.injEq] at hstep; exact hstep.symm
+        subst hW
+        have rip6 : u6.rip = C.fault := by rw [e6, fl5]; simp [hneg]
+        obtain ⟨v, hv, hRv⟩ := fault_exit E hR0 (by rw [mem6]; exact ag1) reg6 h6 rip6
+        exact ⟨n1 + 5 + 4, by omega, Or.inl (by rw [runP_add, runP_add, hr1, show runP p 5 u1 = u6 from rfl, hv]; exact hRv)⟩
+      · have c6 := codeAt_next (s' := u6) (i := .jccA .s C.fault) (by rw [e6, fl5]; simp [hneg, nxt, AI.size]) c5
+        have e7 := stepP_cmp_rr h6 c6
+        set u7 := stepP p u6 with hu7
+        have h7 : u7.stopped = false := by rw [e7]; exact h6
+        have c7 := codeAt_next (s' := u7) (by rw [e7]) c6
+        have rax6 : u6.regs.get .rax = i := by rw [e6, e5]; exact rax4
+        have rdx6 : u6.regs.get .rdx = len := by rw [e6, e5]; exact rdx4
+        have fl7 : Cc.eval .ge u7.flags = !decide (i.toInt < len.toInt) := by rw [e7, rax6, rdx6]; exact cc_ge_sub i len _
+        have e8 := stepP_jccA h7 c7 hcf
+        set u8 := stepP p u7 with hu8
+        have h8 : u8.stopped = false := by rw [e8]; exact h7
+        have mem8 : u8.mem = u1.mem := by rw [e8, e7, mem6]
+        have reg8 : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u8.regs.get r = s.regs.get r := by
+          intro r ha hc' hd; rw [e8, e7]; exact reg6 r ha hc' hd
+        by_cases hhi' : i.toInt < len.toInt
+        · have hW : W' = (.run c (wm (cellAddr base i) :: ρ) k, wm) := by
+            rw [if_pos ⟨by omega, hhi'⟩, Option.some.injEq] at hstep; exact hstep.symm
+          subst hW
+          have c8 := codeAt_next (s' := u8) (i := .jccA .ge C.fault) (by rw [e8, fl7]; simp [hhi', nxt, AI.size]) c7
+          have e9 := stepP_lea_idx h8 c8
+          set u9 := stepP p u8 with hu9
+          have h9 : u9.stopped = false := by rw [e9]; exact h8
+          have c9 := codeAt_next (s' := u9) (by rw [e9]) c8
+          have e10 := stepP_ld h9 c9
+          set u10 := stepP p u9 with hu10
+          have h10 : u10.stopped = false := by rw [e10]; exact h9
+          have c10 := codeAt_next (s' := u10) (by rw [e10]) c9
+          have hlive : L.live (cellAddr base i) := hcap base len i hb hl (by omega) hhi'
+          have rcx9 : u9.regs.get .rcx = cellAddr base i := by
+            rw [e9]; simp only [Regs.get_set_same]
+            rw [show u8.regs = u7.regs by rw [e8], show u7.regs = u6.regs by rw [e7], show u6.regs = u5.regs by rw [e6],
+              show u5.regs = u4.regs by rw [e5], rcx4, rax4]
+            simp only [cellAddr]; rw [BitVec.mul_comm]
+          have rdx10 : u10.regs.get .rdx = wm (cellAddr base i) := by
+            rw [e10]; simp only [Regs.get_set_same]
+            rw [rcx9, show u9.mem = u1.mem by rw [e9, mem8], show ∀ x : W, x + 0 = x from fun x => by simp]
+            have := ag1 (cellAddr base i) (fun i' hi' => buf_live_apart hL hi' hlive)
+            simp only [rd] at this ⊢; rw [this]; exact hcom.2.2.2 _ hlive
+          have reg10 : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u10.regs.get r = s.regs.get r := by
+            intro r ha hc' hd; rw [e10, e9]
+            simp only [Regs.get_set_ne _ _ _ _ (Ne.symm hc'), Regs.get_set_ne _ _ _ _ (Ne.symm hd)]; exact reg8 r ha hc' hd
+          have mem10 : u10.mem = u1.mem := by rw [e10, e9, mem8]
+          have ag10 : AgreeBuf L s.mem u10.mem := by rw [mem10]; exact ag1
+          have hcb10 : rd u10.mem (u10.regs.get .rbx + 16) = L.envLo := by
+            rw [reg10 .rbx (by decide) (by decide) (by decide), hX, ag10 (L.cb + 16) (fun i' hi' => buf_cb_apart hL hi' (m := 2) (by decide))]
+            exact hcom.2.2.1.2.1
+          have h12 : u10.regs.get .r12 = s.regs.get .r12 := reg10 .r12 (by decide) (by decide) (by decide)
+          by_cases hres : (s.regs.get .r12).toNat - L.envLo.toNat < 8 * 1
+          · have hc10 : CodeAt C p u10.rip (envRoom C 1 ++ (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c)) := c10
+            obtain ⟨v, hv, hvs, hvm, hvreg, hvrip⟩ := envRoom_run h10 hc10 hcb10 (by rw [h12]; exact hlo) (by decide)
+              (canon_of_codeAt E E.res)
+            rw [h12, if_pos hres] at hvrip
+            obtain ⟨x, hx, hRx, hcx, hov⟩ := res_exit E hR0 (fun a ha => by rw [hvm]; exact ag10 a ha)
+              (fun r h1 h2 h3 => by rw [hvreg r h1 h2]; exact reg10 r h1 h2 h3) hvs hvrip hres
+            refine ⟨n1 + 9 + 5 + 4, by omega, Or.inr ?_⟩
+            rw [runP_add, runP_add, runP_add, hr1, show runP p 9 u1 = u10 from rfl, hv, hx]; exact ⟨hRx, hcx, hov⟩
+          · have hc10 : CodeAt C p u10.rip (envRoom C 1 ++ (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c)) := c10
+            obtain ⟨v, hv, hvs, hvm, hvreg, hvrip⟩ := envRoom_run h10 hc10 hcb10 (by rw [h12]; exact hlo) (by decide)
+              (canon_of_codeAt E E.res)
+            rw [h12, if_neg hres] at hvrip
+            have cv : CodeAt C p v.rip (tl ++ gen C (s.rip + BitVec.ofNat 64 (bytes C pre)) c) := by rw [hvrip]; exact codeAt_right hc10
+            rw [htl] at cv; simp only [List.cons_append, List.nil_append] at cv
+            have e11 := stepP_lea_dec hvs cv
+            set v1 := stepP p v with hv1
+            have hv1s : v1.stopped = false := by rw [e11]; exact hvs
+            have cv1 := codeAt_next (s' := v1) (by rw [e11]) cv
+            have e12 := stepP_st hv1s cv1
+            set v2 := stepP p v1 with hv2
+            have hv2s : v2.stopped = false := by rw [e12]; exact hv1s
+            have cv2 := codeAt_next (s' := v2) (by rw [e12]) cv1
+            have v12 : v.regs.get .r12 = s.regs.get .r12 := by rw [hvreg .r12 (by decide) (by decide), h12]
+            have v1_12 : v1.regs.get .r12 = s.regs.get .r12 - slot 1 := by rw [e11]; simp [v12]
+            have v1rdx : v1.regs.get .rdx = wm (cellAddr base i) := by
+              rw [e11]; simp only [Regs.get_set_ne _ _ _ _ (show GPR.r12 ≠ GPR.rdx by decide)]
+              rw [hvreg .rdx (by decide) (by decide), rdx10]
+            refine ⟨n1 + 9 + 5 + 2, by omega, Or.inl ?_⟩
+            rw [runP_add, runP_add, runP_add, hr1, show runP p 9 u1 = u10 from rfl, hv, show runP p 2 v = v2 from rfl]
+            refine r3_of_prepend (ws := [wm (cellAddr base i)]) hL hR0 (by simp; omega) (by rw [e12]; simpa using v1_12) ?_ ?_ ?_ hv2s ?_
+            · intro j hj; simp only [List.length_singleton] at hj
+              have : j = 0 := by omega
+              subst this
+              rw [e12]; simp only [List.length_singleton, List.getElem_cons_zero]
+              rw [← v1_12, show slot 0 = (0 : W) from rfl]
+              rw [v1rdx]; exact rd_write_same _ _ _
+            · intro a ha hb'
+              simp only [List.length_singleton] at hb'
+              have hap0 : VIRBridge.Apart (s.regs.get .r12 - slot 1) a := by
+                have := hb' 0 (by omega); simpa [slot] using this
+              rw [e12, show v1.mem = v.mem by rw [e11], v1_12, show ∀ x : W, x + 0 = x from fun x => by simp,
+                rd_write_apart _ _ _ _ hap0, hvm]
+              exact ag10 a ha
+            · intro r h1 h2 h3 h4
+              rw [e12, e11]; simp only [Regs.get_set_ne _ _ _ _ (Ne.symm h4)]
+              rw [hvreg r h1 h2]; exact reg10 r h1 h2 h3
+            · have rip10 : u10.rip = u1.rip + BitVec.ofNat 64 (bytes C chk) := by
+                rw [e10, e9, e8]; simp only [fl7, hhi', decide_true, Bool.not_true, Bool.false_eq_true, if_false]
+                rw [e7, e6]; simp only [fl5, hneg, decide_false, Bool.false_eq_true, if_false]
+                rw [e5, e4, e3, e2, hchk]
+                simp only [nxt, ld, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+                all_goals rfl
+              have hq : v2.rip = s.rip + BitVec.ofNat 64 (bytes C pre) := by
+                rw [e12, e11, hvrip, rip10, hrip1, hpre_def, htl]
+                simp only [nxt, st, bytes_append, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+                all_goals rfl
+              have cv2' := cv2; rw [hq] at cv2'; rw [hq]; exact cv2'
+        · have hW : W' = (.fault, wm) := by
+            rw [if_neg (by omega), Option.some.injEq] at hstep; exact hstep.symm
+          subst hW
+          have rip8 : u8.rip = C.fault := by rw [e8, fl7]; simp [hhi']
+          obtain ⟨v, hv, hRv⟩ := fault_exit E hR0 (by rw [mem8]; exact ag1) reg8 h8 rip8
+          exact ⟨n1 + 7 + 4, by omega, Or.inl (by rw [runP_add, runP_add, hr1, show runP p 7 u1 = u8 from rfl, hv]; exact hRv)⟩
+    | [], hstep, _ => simp at hstep
+    | _ :: _ :: _, hstep, _ => simp at hstep
+
 end S3
