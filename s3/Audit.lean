@@ -50,3 +50,7 @@ import S3
 #print axioms S3.stackRoom_run
 #print axioms S3.frames_above
 #print axioms S3.sim_letE
+#print axioms S3.dispatch_run
+#print axioms S3.entry_run
+#print axioms S3.frames_base
+#print axioms S3.sim_app
