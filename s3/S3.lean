@@ -7,3 +7,4 @@ import S3.SimLet
 import S3.SimApp
 import S3.Step3
 import S3.Top3
+import S3.Place3
