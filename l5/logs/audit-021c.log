@@ -1,0 +1,37 @@
+saltqueue: ticket P2 seat=root pid=99946
+saltqueue: QUEUED behind 4 ticket(s) — waiting (no timeout, by ruling)
+saltqueue: still queued (300s) —
+  CLASS  AGE        SEAT         PID
+  P2     1730s      h2c          38159
+  P2     316s       root         99107
+  P2     302s       root         99946
+  P2     225s       math         18156
+  P2     149s       verso        40338
+saltqueue: still queued (600s) —
+  CLASS  AGE        SEAT         PID
+  P2     2033s      h2c          38159
+  P2     619s       root         99107
+  P2     605s       root         99946
+  P2     528s       math         18156
+  P2     453s       verso        40338
+  P2     172s       math         90284
+saltqueue: still queued (900s) —
+  CLASS  AGE        SEAT         PID
+  P2     2336s      h2c          38159
+  P2     922s       root         99107
+  P2     909s       root         99946
+  P2     832s       math         18156
+  P2     756s       verso        40338
+  P2     476s       math         90284
+saltqueue: still queued (1200s) —
+  CLASS  AGE        SEAT         PID
+  P2     2639s      h2c          38159
+  P2     1225s      root         99107
+  P2     1212s      root         99946
+  P2     1135s      math         18156
+  P2     1059s      verso        40338
+  P2     779s       math         90284
+saltqueue: HEAD OF QUEUE after 1335s — attempting acquisition
+AuditControl.lean:2:8: warning: declaration uses `sorry`
+'control_sorry' depends on axioms: [sorryAx]
+saltbuild EXIT=0

@@ -59,3 +59,6 @@ open VIRL5
 #print axioms scopy5_chunk
 #print axioms cwF_disjoint
 #print axioms scopy5_end
+#print axioms union_empty'
+#print axioms disj_empty_right
+#print axioms run_of_triple₅
