@@ -11,7 +11,7 @@ open VIRL1 VIRL2 VIRDeflate.Step
 
 theorem copy5_chunk_cost (p : Int) (L : Nat) (g : Int → Int) (pd n m ds : Int)
     (hpd : g (p + cPEND) = pd) (hpd0 : 0 < pd) (hn : g (p + cN) = n) (hm : g (p + cM) = m) (hds : g (p + cDIST) = ds)
-    (hn0 : 0 ≤ n) (hds1 : 1 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L) :
+    (hn0 : 0 ≤ n) (hds1 : 0 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L) :
     Cost₅ (RegionAt p L g) (copyT₅.subst 0 (.const (.cap p))) (4 * (min pd CS).toNat + 12) := by
   have hIN : (IN : Int) = 2080 := rfl
   have hc0 : 0 < min pd CS := by unfold CS; omega
@@ -121,7 +121,7 @@ theorem copy5_chunk_cost (p : Int) (L : Nat) (g : Int → Int) (pd n m ds : Int)
 
 theorem copy5_chunk_run (p : Int) (L : Nat) (g : Int → Int) (pd n m ds : Int)
     (hpd : g (p + cPEND) = pd) (hpd0 : 0 < pd) (hn : g (p + cN) = n) (hm : g (p + cM) = m) (hds : g (p + cDIST) = ds)
-    (hn0 : 0 ≤ n) (hds1 : 1 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L)
+    (hn0 : 0 ≤ n) (hds1 : 0 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L)
     {σ : Store} (hR : RegionAt p L g σ) (hwf : Store.WF σ) {F : Nat} (hF : 4 * (min pd CS).toNat + 12 ≤ F) :
     ∃ a, ((run₅ F (copyT₅.subst 0 (.const (.cap p)), σ)).1 = .ret a ∨
           (run₅ F (copyT₅.subst 0 (.const (.cap p)), σ)).1 = .retK a []) ∧
@@ -145,7 +145,7 @@ def copyPostRel (p : Int) (f : Int → Int) (pd n m ds : Int) : Int → Int :=
 
 theorem copy5_chunk_world (p : Int) (L : Nat) (f : Int → Int) (pd n m ds : Int)
     (hpd : f cPEND = pd) (hpd0 : 0 < pd) (hn : f cN = n) (hm : f cM = m) (hds : f cDIST = ds)
-    (hn0 : 0 ≤ n) (hds1 : 1 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L)
+    (hn0 : 0 ≤ n) (hds1 : 0 ≤ ds) (hdsm : ds ≤ m) (hL : IN + n + m + min pd CS ≤ L)
     {σ : Store} (hw : World σ p L f) (hs : Sole σ p L) (hwf : Store.WF σ) {F : Nat} (hF : 4 * (min pd CS).toNat + 12 ≤ F) :
     ∃ a, ((run₅ F (copyT₅.subst 0 (.const (.cap p)), σ)).1 = .ret a ∨
           (run₅ F (copyT₅.subst 0 (.const (.cap p)), σ)).1 = .retK a []) ∧

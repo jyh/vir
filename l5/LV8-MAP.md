@@ -88,3 +88,44 @@ BUILD cases move only by the count of ZERO steps. BUILD's phases 1–4 stay lift
 Remaining for LV8: FIXLENS (fillR, the chunk must stop at each of the run boundaries 144/256/280/288/318); READ and DECODE (bitR,
 C_bit = 1); then the assembly: the dispatch over Tm₅ with the lifted modes by `run₅_ι`, `stepS₅`, and Correct's SCOPY/COPY/REP/
 ZERO cases re-proved over `chunk_run` (Addendum 3) with each mode's World lemma, plus the Sole preservation every lifted mode owes.
+
+## ADDENDUM 5 (the 74th head, after READ and DECODE and BEFORE any assembly code): the assembly by REFINEMENT
+READ and DECODE are done (Decode5, ReadRun5, DecodeRun5 at 6d4e8a4): both triples, Cost₅ (READ 276 / 6, DECODE 280 / 8 ⟶₅
+steps, each ≤ KSTEP − 29 = 483), the run at fuel, and the World form. **All of LV8's re-expressed modes are now proved in
+DEFLATE's terms.** For the assembly, this addendum REPLACES Addendum 3's plan of re-proving Correct's chunked cases over
+`chunk_run`. DEFLATE's two proved statements are used as they stand, through `stepSafe`, `safety` and `correct`. Correct.lean and
+Safety.lean are not opened.
+- **The step.** `stepT₅` loads MODE and dispatches over the 28 modes, as `dispN modes` does. SCOPY, COPY, REP, FIXLENS, READ and
+  DECODE use their Tm₅ terms, and BUILD's phase dispatch uses zeroT₅ at phase 0. Every other mode is DEFLATE's own NT, lifted by ι.
+  `stepS₅` and `iterS₅` are `stepS` and `iterS` with run₅ in place of run₂, at the same KSTEP and the same world capability.
+- **The one per-mode obligation, `Refine₅`.** On a store with `World σ p L0 f`, `Sole σ p L0` and `Inv b om lit f`, for every
+  non-terminal mode: `∃ j ≥ 1, ∃ σ', stepS₅ p σ = some σ' ∧ iterS p j σ = some σ'`. The count j is 1 for a lifted mode (`run₅_ι`)
+  and for READ and DECODE (the bit bitR returns is the table's bit, from Inv). It is c = min(PEND, 32) for SCOPY, COPY and REP,
+  the cells up to the run boundary for FIXLENS, and 16 − INDEX for ZERO. Each case is the mode's World lemma, set against DEFLATE's
+  own per-step lemma iterated j times, which is `chunk_run`'s shape on the DEFLATE side.
+- **Owed beside it.** (i) A store is determined by World and Sole: two Sole stores with the same contents are equal. (ii) Every
+  DEFLATE step preserves Sole (Addendum 3's "Sole preservation", now owed once, on the DEFLATE side, for the whole step).
+- **SafetyStmt₅** follows from `stepSafe` + Refine₅. A DEFLATE run keeps World ∧ Inv (StepSafe) and Sole (ii), and each L5 step
+  takes ≥ 1 DEFLATE step, so the L5 run reaches DONE or REJECT within the same N.
+- **CorrectStmt₅** follows from `correct` + `safety` + determinism. DONE and REJECT are fixpoints of stepS (`dispN` returns the
+  world unchanged on an unmatched mode). The L5 run visits a subsequence of DEFLATE's run, so both reach the same first terminal
+  store, with the same mode and output.
+- **What would show this wrong:** a Refine₅ case that needs a bound Inv does not give (DECODE's table bounds and SCOPY's output
+  room are the likeliest to check first); a step whose store World and Sole do not determine; a terminal mode that is not a
+  fixpoint of stepS. Any one of these sends the case back to Addendum 3's route for that mode only.
+
+## ADDENDUM 6 (the 74th head, after the outer argument and the lifted cases): a FINDING — Inv does not carry the table
+Built (addee84 and above): `safety₅_of : Refine₅ → SafetyStmt₅` and `correct₅_of : Refine₅ → CorrectStmt₅` (Outer5); the
+dispatch (Assembly5, Dispatch5); owed items (i) `sole_world_eq` and (ii) `stepS_sole` (SolePres5: DEFLATE's step only loads and
+stores, `opFree_stepT` by `decide`); and **Refine₅ on 21 lifted modes plus every terminal or absent mode** (`refine_lifted`).
+**The finding, which is the first item on this addendum's own "what would show it wrong" list:** Safety's `Inv` says only that
+each TABLE cell is 0 or 1 (`InvG.bits`). That cell 8v + i holds `bitAt v i` is `BitsUpTo f 2048`, which lives in Correct's `Rel`.
+Correct proves `Rel` along the spec program's simulation (`Sim`), not as a per-step invariant, and neither `StepSafe` nor
+`ModeSafe` exports which cells a step writes. So READ's and DECODE's Refine₅ (the bit from bitR is DEFLATE's table bit) has no
+premise to stand on. SCOPY, COPY, REP, FIXLENS and BUILD ZERO never read the table and are unaffected.
+- **Fork, posted with the recommendation, proceeding on (T):** (T) a table invariant `Tab f := f cMODE ≠ mTABLE → BitsUpTo f
+  2048`, shown preserved by every DEFLATE step (TABLE's own run establishes it, as `table_run` does; every other mode writes
+  only cells outside [20, 2068)), and added to Refine₅'s hypothesis and to the outer argument's run invariant. (A3) for READ and
+  DECODE only: re-prove their cases inside Correct's simulation. (K) keep READ and DECODE reading the table (no bitR in DEFLATE;
+  LV9's count for bitR moves to the router alone).
+- (T) is per-mode work on DEFLATE's own step lemmas, outside Correct and Safety. It does not change any statement.
