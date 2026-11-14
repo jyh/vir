@@ -180,3 +180,15 @@ before any per-case figure was looked at:
 - **Its premises** are the arrow premises between the statement's last `∀ …,` and `Triple₅`. **A content premise** is a premise
   that names a content variable as a whole word. The precondition's `RegionAt p n f` is the region itself, not a premise.
 - LV7 HOLDS iff the five read 0 content premises. Same instrument: `count.py --arm l5`, rows `L5.LV7.*`, selftest arm red first.
+
+## ADDENDUM 10 (2026-11-14, the 76th head, BEFORE any LV10 count is taken): LV10's duplication, read by shape
+- **A routine's shape** is its whole atom (`.fix τ₁ k τ₂ body`) printed with EVERY integer constant replaced by `_`. Types,
+  operators, primitives, de Bruijn indices, capability counts and the other constants are kept. An element's int encoding can only
+  show up as integer constants (widths, bases, masks), so two routines that "differ ONLY in an int encoding of their element"
+  have EQUAL shapes. Equal shapes are a necessary condition, and the reading is generous to duplication, which makes it the strict
+  test of a prediction of 0.
+- **LV10's count** is the number of unordered pairs among the five LV7 names with equal shapes. copyWithinR's pairs are reported
+  BESIDE. LV10 HOLDS iff the count is 0. A pair that reads equal is the measured trigger OBJECT-L5 names for polymorphism: a fork
+  for a sitting, not a change made here.
+- **Instrument:** `l5/Lv10.lean` (`#eval`, one `LV10` line per pair), run as `lv10-NNN`. `count.py --arm lv10` reads the newest
+  green log. Its selftest arm is written red first.
