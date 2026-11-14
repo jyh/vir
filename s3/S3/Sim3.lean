@@ -1793,4 +1793,123 @@ theorem prependBuf_ok {C : Ctx3} {p : Program} {s : Cpu} {sb n : Nat} {lo : W} {
   · intro r ha hc' h12
     rw [hreg3 r ha, e2]; simp only [Regs.get_set_ne _ _ _ _ (Ne.symm h12)]; exact hreg1 r ha hc'
 
+/-! ## R3 after a prepend: memory changed in BUF and in the n new ENV words below the old r12 -/
+
+/-- Two 8-byte words in order, the first ending at or before the second starts, are apart. -/
+theorem order_apart {x y : W} (hxy : x.toNat + 8 ≤ y.toNat) (hy : y.toNat + 8 ≤ 2 ^ 64) : VIRBridge.Apart x y := by
+  intro i j hi hj e
+  have := congrArg BitVec.toNat e
+  simp only [BitVec.toNat_add, BitVec.toNat_ofNat] at this
+  omega
+
+/-- Memory agreement on the words a frame chain reads: stack words, and ENV words at or above `lo`. -/
+def AgreeOn (L : Lay3) (lo : W) (m m' : Mem) : Prop :=
+  (∀ x, L.stkLo.toNat ≤ x.toNat → x.toNat ≤ L.rsp0.toNat → rd m' x = rd m x) ∧
+  (∀ x, lo.toNat ≤ x.toNat → x.toNat + 8 ≤ L.envTop.toNat → rd m' x = rd m x)
+
+theorem wordsAt_on {L : Lay3} {lo : W} {m m' : Mem} (hag : AgreeOn L lo m m') {e : W} {ρ : List W}
+    (hlo : lo.toNat ≤ e.toNat) (hhi : e.toNat + 8 * ρ.length ≤ L.envTop.toNat) (hw : WordsAt m e ρ) : WordsAt m' e ρ := by
+  intro j hj
+  have hT := L.envTop.isLt
+  have he : (e + BitVec.ofNat 64 (8 * j)).toNat = e.toNat + 8 * j := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+  have := hag.2 (e + BitVec.ofNat 64 (8 * j)) (by omega) (by omega)
+  simp only [rd] at this; rw [this]; exact hw j hj
+
+theorem frames_lo_mono {C : Ctx3} {p : Program} {L : Lay3} {m : Mem} :
+    ∀ (k : List (WCode × List W)) (rsp lo lo' : W), lo'.toNat ≤ lo.toNat → Frames C p L m rsp lo k → Frames C p L m rsp lo' k
+  | [], _, _, _, hle, ⟨h1, h2, h3, h4, h5, h6⟩ => ⟨h1, h2, h3, h4, h5, by omega⟩
+  | (_, _) :: _, _, _, _, hle, ⟨q, a, h1, h2, h3, h4, h5, h6, h7, h9, h8⟩ => ⟨q, a, h1, h2, h3, by omega, h5, h6, h7, h9, h8⟩
+
+theorem frames_on {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {lo0 : W} {m m' : Mem} (hag : AgreeOn L lo0 m m') :
+    ∀ (k : List (WCode × List W)) (rsp lo : W), lo0.toNat ≤ lo.toNat → L.stkLo.toNat ≤ rsp.toNat →
+      Frames C p L m rsp lo k → Frames C p L m' rsp lo k
+  | [], rsp, lo, hel, hsl, ⟨h1, h2, h3, h4, h5, h6⟩ => by
+    have hR := L.rsp0.isLt
+    have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
+    refine ⟨?_, h2, ?_, h4, ?_, h6⟩
+    · rw [hag.1 rsp hsl (by omega)]; exact h1
+    · rw [hag.1 (rsp + 8) (by omega) (by omega)]; exact h3
+    · rw [hag.1 L.rsp0 hL.stk_lo_le (le_refl _)]; exact h5
+  | (c, ρ) :: k, rsp, lo, hel, hsl, ⟨q, a, h1, h2, h3, h4, h5, h6, h7, h9, h8⟩ => by
+    have hR := L.rsp0.isLt
+    have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
+    have e16 : (rsp + 16).toNat = rsp.toNat + 16 := by simp only [BitVec.toNat_add]; simp; omega
+    refine ⟨q, a, ?_, ?_, h3, h4, h5, wordsAt_on hag (by omega) h5 h6, h7, h9,
+      frames_on hL hag k (rsp + 16) a (by omega) (by omega) h8⟩
+    · rw [hag.1 rsp hsl (by omega)]; exact h1
+    · rw [hag.1 (rsp + 8) (by omega) (by omega)]; exact h2
+
+/-- **r3_of_prepend.** After a prepend of the n words `ws` (r12 lowered by 8n, the new ENV words holding ws, every other word apart
+    from BUF and from those n words unchanged, registers but rax, rcx, rdx, r12 unchanged), R3 holds at `ws ++ ρ`. -/
+theorem r3_of_prepend {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WCode} {ρ ws : List W}
+    {k : List (WCode × List W)} {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s)
+    (hroom : L.envLo.toNat + 8 * ws.length ≤ (s.regs.get .r12).toNat)
+    (hr12 : u.regs.get .r12 = s.regs.get .r12 - slot ws.length)
+    (hnew : ∀ j (h : j < ws.length), rd u.mem (s.regs.get .r12 - slot ws.length + slot j) = ws[j])
+    (hm : ∀ a, (∀ i, i < L.bufN → VIRBridge.Apart (L.buf + slot i) a) →
+      (∀ j, j < ws.length → VIRBridge.Apart (s.regs.get .r12 - slot ws.length + slot j) a) → rd u.mem a = rd s.mem a)
+    (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → r ≠ .r12 → u.regs.get r = s.regs.get r) (hus : u.stopped = false)
+    (hcu : CodeAt C p u.rip (gen C u.rip c')) : R3 C p L (.run c' (ws ++ ρ) k, wm) u := by
+  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl, hle0, hocc⟩ := hR
+  set e := s.regs.get .r12 with he_def
+  set n := ws.length with hn_def
+  have hT := L.envTop.isLt
+  have hE' : (e - slot n).toNat = e.toNat - 8 * n := by simp only [slot, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+  have hEj : ∀ j, j < n → (e - slot n + slot j).toNat = e.toNat - 8 * n + 8 * j := by
+    intro j hj; simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+  -- a word that lies in ENV at or above e is apart from the new words
+  have new_apart_hi : ∀ x, e.toNat ≤ x.toNat → x.toNat + 8 ≤ L.envTop.toNat → ∀ j, j < n →
+      VIRBridge.Apart (e - slot n + slot j) x := fun x h1 h2 j hj => order_apart (by rw [hEj j hj]; omega) (by omega)
+  -- the new words lie in ENV
+  have new_env : ∀ j, j < n → ∀ q, q < 8 → inEnv L (e - slot n + slot j + BitVec.ofNat 64 q) := by
+    intro j hj q hq
+    have : (e - slot n + slot j + BitVec.ofNat 64 q).toNat = e.toNat - 8 * n + 8 * j + q := by
+      simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+    simp only [inEnv, this]; omega
+  have g12 : u.regs.get .r12 = e - slot n := hr12
+  have gsp := hreg .rsp (by decide) (by decide) (by decide) (by decide)
+  have cb_new : ∀ m, m < 4 → ∀ j, j < n → VIRBridge.Apart (e - slot n + slot j) (L.cb + BitVec.ofNat 64 (8 * m)) :=
+    fun m hm j hj => apart_of_disjoint hL.env_cb (new_env j hj) (cb_word L hm)
+  have agOn : AgreeOn L e s.mem u.mem := by
+    refine ⟨fun x h1 h2 => hm x (fun i hi => buf_stk_apart hL hi h1 h2) (fun j hj =>
+      apart_of_disjoint hL.env_stk (new_env j hj) (stk_word L h1 h2 hL)), fun x h1 h2 => hm x ?_ (fun j hj => new_apart_hi x h1 h2 j hj)⟩
+    intro i hi
+    refine apart_of_disjoint (fun a h3 h4 => hL.env_buf a h4 h3) (buf_word L hi) ?_
+    intro q hq
+    have : (x + BitVec.ofNat 64 q).toNat = x.toNat + q := by simp only [BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+    simp only [inEnv, this]; omega
+  refine ⟨hus, hcu, ⟨by rw [hreg .r14 (by decide) (by decide) (by decide) (by decide), hB],
+    by rw [hreg .rbx (by decide) (by decide) (by decide) (by decide), hX], ⟨?_, ?_, ?_⟩, ?_⟩, ?_, ?_, ?_, ?_, by rw [gsp]; exact hsl, ?_⟩
+  · rw [hm (L.cb + 8) (fun i hi => buf_cb_apart hL hi (m := 1) (by decide)) (fun j hj => cb_new 1 (by decide) j hj)]; exact hc1
+  · rw [hm (L.cb + 16) (fun i hi => buf_cb_apart hL hi (m := 2) (by decide)) (fun j hj => cb_new 2 (by decide) j hj)]; exact hc2
+  · rw [hm (L.cb + 24) (fun i hi => buf_cb_apart hL hi (m := 3) (by decide)) (fun j hj => cb_new 3 (by decide) j hj)]; exact hc3
+  · intro a ha
+    have := hm a (fun i hi => buf_live_apart hL hi ha) (fun j hj => apart_of_disjoint hL.env_live (new_env j hj) (live_word L ha))
+    simp only [rd] at this; rw [this]; exact hRep a ha
+  · rw [g12, hE']; omega
+  · rw [g12, hE', List.length_append]; omega
+  · rw [g12]
+    intro j hj
+    rw [show e - slot n + BitVec.ofNat 64 (8 * j) = e - slot n + slot j from rfl]
+    by_cases hjn : j < n
+    · rw [List.getElem_append_left hjn]; exact hnew j hjn
+    · rw [List.getElem_append_right (by omega)]
+      simp only [List.length_append] at hj
+      have hx : e - slot n + slot j = e + slot (j - n) := by
+        apply BitVec.eq_of_toNat_eq
+        simp only [slot, BitVec.toNat_add, BitVec.toNat_sub, BitVec.toNat_ofNat]; omega
+      rw [hx]
+      have hxe : (e + slot (j - n)).toNat = e.toNat + 8 * (j - n) := by
+        simp only [slot, BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+      have hjr : j - n < ρ.length := by omega
+      have hb1 : e.toNat ≤ (e + slot (j - n)).toNat := by rw [hxe]; omega
+      have hb2 : (e + slot (j - n)).toNat + 8 ≤ L.envTop.toNat := by rw [hxe]; omega
+      have := agOn.2 (e + slot (j - n)) hb1 hb2
+      simp only [rd] at this; rw [this]
+      exact hw (j - n) hjr
+  · rw [g12, gsp]
+    exact frames_lo_mono k _ e _ (by rw [hE']; omega) (frames_on hL agOn k _ e (le_refl _) hsl hfr)
+  · rw [g12, hE', List.length_append]
+    constructor <;> omega
+
 end S3
