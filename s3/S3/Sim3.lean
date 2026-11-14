@@ -1301,4 +1301,49 @@ theorem evalTo_run {C : Ctx3} {p : Program} (hcan : canonical C.ovf = true) :
             hfr2 a (ha t (le_refl _) (by omega))]
         · intro r h1 _ _; rw [show u3.regs = u2.regs from hreg3]; exact hreg2 r h1
 
+/-! ## From the layout premise (byte-disjoint regions) to word-level `Apart` -/
+
+theorem apart_of_disjoint {P Q : W → Prop} (hd : ∀ a, P a → ¬ Q a) {a b : W}
+    (ha : ∀ i, i < 8 → P (a + BitVec.ofNat 64 i)) (hb : ∀ j, j < 8 → Q (b + BitVec.ofNat 64 j)) : VIRBridge.Apart a b :=
+  fun i j hi hj e => hd _ (ha i hi) (by rw [e]; exact hb j hj)
+
+/-- Every byte of BUF slot i (i < bufN) is in BUF. -/
+theorem buf_word (L : Lay3) {i : Nat} (hi : i < L.bufN) : ∀ k, k < 8 → inBuf L (L.buf + slot i + BitVec.ofNat 64 k) := by
+  intro k hk
+  refine ⟨8 * i + k, by omega, ?_⟩
+  simp only [slot, BitVec.add_assoc, ← ofNat_add64]
+
+/-- Every byte of ENV word j of a list of n words at e (inside ENV) is in ENV. -/
+theorem env_word (L : Lay3) {e : W} {n j : Nat} (hlo : L.envLo.toNat ≤ e.toNat) (hhi : e.toNat + 8 * n ≤ L.envTop.toNat)
+    (hj : j < n) : ∀ k, k < 8 → inEnv L (e + slot j + BitVec.ofNat 64 k) := by
+  intro k hk
+  have hT := L.envTop.isLt
+  have : (e + slot j + BitVec.ofNat 64 k).toNat = e.toNat + 8 * j + k := by
+    simp only [slot, BitVec.toNat_add, BitVec.toNat_ofNat]; omega
+  simp only [inEnv, this]; omega
+
+/-- Every byte of the cell at a live address is a live byte. -/
+theorem live_word (L : Lay3) {c : W} (hc : L.live c) : ∀ k, k < 8 → inLive L (c + BitVec.ofNat 64 k) :=
+  fun k hk => ⟨c, hc, k, hk, rfl⟩
+
+/-- Every byte of CB word m (m < 4) is in CB. -/
+theorem cb_word (L : Lay3) {m : Nat} (hm : m < 4) : ∀ k, k < 8 → inCb L (L.cb + BitVec.ofNat 64 (8 * m) + BitVec.ofNat 64 k) := by
+  intro k hk
+  refine ⟨8 * m + k, by omega, ?_⟩
+  simp only [BitVec.add_assoc, ← ofNat_add64]
+
+/-- A BUF slot is apart from an ENV word. -/
+theorem buf_env_apart {L : Lay3} (hL : L.Ok) {i : Nat} (hi : i < L.bufN) {e : W} {n j : Nat}
+    (hlo : L.envLo.toNat ≤ e.toNat) (hhi : e.toNat + 8 * n ≤ L.envTop.toNat) (hj : j < n) :
+    VIRBridge.Apart (L.buf + slot i) (e + slot j) :=
+  apart_of_disjoint (fun a h1 h2 => hL.env_buf a h2 h1) (buf_word L hi) (env_word L hlo hhi hj)
+
+theorem buf_live_apart {L : Lay3} (hL : L.Ok) {i : Nat} (hi : i < L.bufN) {c : W} (hc : L.live c) :
+    VIRBridge.Apart (L.buf + slot i) c :=
+  apart_of_disjoint hL.buf_live (buf_word L hi) (live_word L hc)
+
+theorem buf_cb_apart {L : Lay3} (hL : L.Ok) {i : Nat} (hi : i < L.bufN) {m : Nat} (hm : m < 4) :
+    VIRBridge.Apart (L.buf + slot i) (L.cb + BitVec.ofNat 64 (8 * m)) :=
+  apart_of_disjoint hL.buf_cb (buf_word L hi) (cb_word L hm)
+
 end S3
