@@ -156,3 +156,12 @@ and ENV's declared size is env0 − envLo. R3 gains `env0 − envLow ≤ 8·(|ρ
 bound at its saved envLow, over its own ρ and the frames outside it. The bottom frame's saved envLow is env0 exactly. So an ENV RES
 before a prepend of n words is claimed only when `env0 − envLo < 8·(|ρ| + Σ|ρᵢ| + n)`. Sharing (a `letE`'s c₁ runs on the caller's ρ)
 only lowers the true occupancy, so this is still Addendum 2's upper bound, now with its reference point named.
+
+## ADDENDUM 7 (2026-11-14, the 77th head, before any load or store proof): where a capability's cells come from
+A `load` or `store` reads or writes the cell `cellAddr base i` of the capability at ρ[capOff], ρ[capOff+1]. S3 relates word memory to
+bytes only on the live cells (`Rep … L.live`). So the step needs that cell to be live. That is S2's invariant, not S3's: under S2's
+`SRel` (its `EnvRel` and `Layout`), a capability in ρ is `(lay p, n)` for a region p of length n in σ, and S2's `store` keeps the
+regions (`layout_store`: σ'.R = σ.R). So `L.live` is instantiated as bridge's `Live σ lay`, fixed for the run. `sim_load` and
+`sim_store` take **CapLive**: for 0 ≤ i < len, `L.live (cellAddr base i)`. It is discharged where `s3_refines` composes with S2's
+`SRel`, and it is not a premise of the final theorem. That theorem's premises stay the ones S3's main text lists, so this is not a
+premise on stored values.
