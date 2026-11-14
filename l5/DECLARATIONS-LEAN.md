@@ -145,3 +145,19 @@ defines it, before the first count:
 - **Instrument:** `l5/Lv9.lean` (`#eval` over the defined terms, one tab-separated `LV9` line per row), run through
   logged-build.sh as `lv9-NNN`. `count.py --arm lv9` reads the newest lv9 log, refuses one without `saltbuild EXIT=0`, and
   recomputes every difference. Its selftest arm is written red first.
+
+## ADDENDUM 7 (2026-11-14, the 76th head, BEFORE any LV4 count is taken): LV4's case cut
+Line 40 above reads LV4 on "the per-constructor cases of preservation and progress, C5 per case". This fixes the cut, written
+before any per-case figure was looked at:
+- **The cases** are the top-level arms of `pres₅` (Preservation5.lean, one arm per `Step₅` constructor, written `  | name …`) and
+  of `progress₅` (Progress5.lean, one arm per `RT₅` constructor, written `  | _, …, .name …`). An arm's text runs from its `|` line
+  to the line before the next top-level arm, or to the end of the theorem. Nested `|` lines belong to the arm that contains them.
+- **C5 per case** is whitespace tokens after comments are stripped, the same strip C5 uses everywhere (`l4_strip`). Lines are
+  reported beside.
+- **The fix case** is the Step₅ arms that unroll a `fix`: `appFix` (k = 0) and `appKFix` (k ≥ 1, the body checked with its
+  annotated Δ). PRIMARY: the LARGER of the two ALONE. LV4 HOLDS iff it is strictly larger than every non-fix arm of both
+  theorems. The ratio to the next-largest arm is reported. BESIDE: the two arms summed, which is not the verdict, because summing
+  two arms against single arms would favour the prediction. Progress has no fix arm: its fix branch sits inside the `app`/`appK`
+  arms, which count as application cases.
+- **Instrument:** `count.py --arm l5`, rows `L5.LV4.*`, selftest arm written red first. The same arm reads LV2 from the newest
+  `l5/logs/audit-NNN.log` (EXIT=0, each `#print axioms` line within the three, a `sorryAx` count of 0), and refuses a control log.
