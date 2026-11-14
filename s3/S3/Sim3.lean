@@ -1353,7 +1353,7 @@ theorem frames_bound {C : Ctx3} {p : Program} {L : Lay3} {m : Mem} :
     ∀ (k : List (WCode × List W)) (rsp lo : W), Frames C p L m rsp lo k → rsp.toNat + 16 * (k.length + 1) = L.rsp0.toNat
   | [], rsp, lo, h => by simpa using h.2.2.2.1
   | (c, ρ) :: k, rsp, lo, h => by
-    obtain ⟨q, a, _, _, _, _, _, _, hb, hf⟩ := h
+    obtain ⟨q, a, _, _, _, _, _, _, hb, _, hf⟩ := h
     have ih := frames_bound k (rsp + 16) a hf
     have hR := L.rsp0.isLt
     have : (rsp + 16).toNat = rsp.toNat + 16 := by simp only [BitVec.toNat_add]; simp; omega
@@ -1384,19 +1384,19 @@ theorem wordsAt_agree {L : Lay3} (hL : L.Ok) {m m' : Mem} (hag : AgreeBuf L m m'
 theorem frames_agree {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {m m' : Mem} (hag : AgreeBuf L m m') :
     ∀ (k : List (WCode × List W)) (rsp lo : W), L.envLo.toNat ≤ lo.toNat → L.stkLo.toNat ≤ rsp.toNat →
       Frames C p L m rsp lo k → Frames C p L m' rsp lo k
-  | [], rsp, lo, hel, hsl, ⟨h1, h2, h3, h4, h5⟩ => by
+  | [], rsp, lo, hel, hsl, ⟨h1, h2, h3, h4, h5, h6⟩ => by
     have hR := L.rsp0.isLt
     have hst := hL.stk_nowrap
     have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
-    refine ⟨?_, h2, ?_, h4, ?_⟩
+    refine ⟨?_, h2, ?_, h4, ?_, h6⟩
     · rw [hag rsp (fun i hi => buf_stk_apart hL hi hsl (by omega))]; exact h1
     · rw [hag (rsp + 8) (fun i hi => buf_stk_apart hL hi (by omega) (by omega))]; exact h3
     · rw [hag L.rsp0 (fun i hi => buf_stk_apart hL hi (by omega) (le_refl _))]; exact h5
-  | (c, ρ) :: k, rsp, lo, hel, hsl, ⟨q, a, h1, h2, h3, h4, h5, h6, h7, h8⟩ => by
+  | (c, ρ) :: k, rsp, lo, hel, hsl, ⟨q, a, h1, h2, h3, h4, h5, h6, h7, h9, h8⟩ => by
     have hR := L.rsp0.isLt
     have e8 : (rsp + 8).toNat = rsp.toNat + 8 := by simp only [BitVec.toNat_add]; simp; omega
     have e16 : (rsp + 16).toNat = rsp.toNat + 16 := by simp only [BitVec.toNat_add]; simp; omega
-    refine ⟨q, a, ?_, ?_, h3, h4, h5, wordsAt_agree hL hag (by omega) h5 h6, h7,
+    refine ⟨q, a, ?_, ?_, h3, h4, h5, wordsAt_agree hL hag (by omega) h5 h6, h7, h9,
       frames_agree hL hag k (rsp + 16) a (by omega) (by omega) h8⟩
     · rw [hag rsp (fun i hi => buf_stk_apart hL hi hsl (by omega))]; exact h1
     · rw [hag (rsp + 8) (fun i hi => buf_stk_apart hL hi (by omega) (by omega))]; exact h2
@@ -1411,13 +1411,13 @@ theorem r3_of_buf {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {c c' : WCode}
     {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s) (hm : AgreeBuf L s.mem u.mem)
     (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) (hus : u.stopped = false)
     (hcu : CodeAt C p u.rip (gen C u.rip c')) : R3 C p L (.run c' ρ k, wm) u := by
-  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl⟩ := hR
+  obtain ⟨_, _, ⟨hB, hX, ⟨hc1, hc2, hc3⟩, hRep⟩, hlo, hhi, hw, hfr, hsl, hocc⟩ := hR
   have g12 := hreg .r12 (by decide) (by decide) (by decide)
   have gsp := hreg .rsp (by decide) (by decide) (by decide)
   refine ⟨hus, hcu, ⟨by rw [hreg .r14 (by decide) (by decide) (by decide), hB],
     by rw [hreg .rbx (by decide) (by decide) (by decide), hX], ⟨?_, ?_, ?_⟩, ?_⟩, by rw [g12]; exact hlo,
     by rw [g12]; exact hhi, by rw [g12]; exact wordsAt_agree hL hm hlo hhi hw,
-    by rw [g12, gsp]; exact frames_agree hL hm k _ _ hlo hsl hfr, by rw [gsp]; exact hsl⟩
+    by rw [g12, gsp]; exact frames_agree hL hm k _ _ hlo hsl hfr, by rw [gsp]; exact hsl, by rw [g12]; exact hocc⟩
   · rw [hm (L.cb + 8) (fun i hi => buf_cb_apart hL hi (m := 1) (by decide))]; exact hc1
   · rw [hm (L.cb + 16) (fun i hi => buf_cb_apart hL hi (m := 2) (by decide))]; exact hc2
   · rw [hm (L.cb + 24) (fun i hi => buf_cb_apart hL hi (m := 3) (by decide))]; exact hc3
@@ -1516,8 +1516,8 @@ theorem common_of_buf {L : Lay3} (hL : L.Ok) {wm : WMem} {s u : Cpu} (hc : Commo
 
 theorem frames_ret0 {C : Ctx3} {p : Program} {L : Lay3} {m : Mem} :
     ∀ (k : List (WCode × List W)) (rsp lo : W), Frames C p L m rsp lo k → rd m L.rsp0 = L.ret0
-  | [], _, _, h => h.2.2.2.2
-  | (_, _) :: k, rsp, _, ⟨_, a, _, _, _, _, _, _, _, hf⟩ => frames_ret0 k (rsp + 16) a hf
+  | [], _, _, h => h.2.2.2.2.1
+  | (_, _) :: k, rsp, _, ⟨_, a, _, _, _, _, _, _, _, _, hf⟩ => frames_ret0 k (rsp + 16) a hf
 
 /-- A Frame from slot 0 over all of BUF, from a state whose r14 is BUF's base, is an AgreeBuf. -/
 theorem agree_of_frame {L : Lay3} {s u : Cpu} (hB : s.regs.get .r14 = L.buf) (hf : Frame s u 0 L.bufN) : AgreeBuf L s.mem u.mem :=
@@ -1543,7 +1543,7 @@ theorem ovf_exit {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c : WC
     {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s) (hm : AgreeBuf L s.mem u.mem)
     (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) (hus : u.stopped = false) (hrip : u.rip = C.ovf) :
     ∃ v, runP p 4 u = v ∧ R3 C p L (.ovf, wm) v := by
-  obtain ⟨_, _, hcom, hlo, _, _, hfr, hsl⟩ := hR
+  obtain ⟨_, _, hcom, hlo, _, _, hfr, hsl, _⟩ := hR
   have hret : rd u.mem L.rsp0 = L.ret0 := by
     have hR0 := frames_ret0 k _ _ hfr
     rw [hm L.rsp0 (fun i hi => buf_stk_apart E.ok hi (E.ok.stk_lo_le) (le_refl _))]; exact hR0
@@ -1561,7 +1561,7 @@ theorem sim_ite {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : T
     (hneed : need o ≤ L.bufN) {W' : WSt × WMem} (hstep : stepW tbl (.run (.ite o c₁ c₂) ρ k, wm) = some W') :
     ∃ n, 0 < n ∧ R3 C p L W' (runP p n s) := by
   have hR0 := hR
-  obtain ⟨hs, hcode, hcom, hlo, hhi, hw, hfr, hsl⟩ := hR
+  obtain ⟨hs, hcode, hcom, hlo, hhi, hw, hfr, hsl, hocc⟩ := hR
   have hB : s.regs.get .r14 = L.buf := hcom.1
   have hL := E.ok
   set pre : List AI := evalTo C 0 o ++ [ld .rax .r14 (slot 0), .op (.bin .cmp .q (.reg .rax) (.imm 1))] with hpre_def

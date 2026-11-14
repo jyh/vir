@@ -15,6 +15,8 @@ open VIRC X86
 structure Lay3 where
   envLo : W
   envTop : W
+  /-- The envLow the driver passes at entry (Addendum 6): ENV's declared size is env0 − envLo. -/
+  env0 : W
   stkLo : W
   /-- The driver's `rsp` at the entry stub: `[rsp0]` holds the driver's return address `ret0`. -/
   rsp0 : W
@@ -37,6 +39,8 @@ structure Lay3.Ok (L : Lay3) : Prop where
   env_nowrap : L.envLo.toNat ≤ L.envTop.toNat
   stk_nowrap : L.rsp0.toNat + 16 < 2 ^ 64
   stk_lo_le : L.stkLo.toNat ≤ L.rsp0.toNat
+  env0_le_top : L.env0.toNat ≤ L.envTop.toNat
+  envlo_le_env0 : L.envLo.toNat ≤ L.env0.toNat
   buf_nowrap : L.buf.toNat + 8 * L.bufN < 2 ^ 64
   cb_nowrap : L.cb.toNat + 32 < 2 ^ 64
   env_stk : ∀ a, inEnv L a → ¬ inStk L a
@@ -56,6 +60,11 @@ def WordsAt (m : Mem) (a : W) (ws : List W) : Prop :=
   ∀ j (h : j < ws.length), m.readN (a + BitVec.ofNat 64 (8 * j)) 8 = ws[j]
 
 def rd (m : Mem) (a : W) : W := m.readN a 8
+
+/-- The words held by pending continuations' environments (Addendum 6's Σ |ρᵢ|). -/
+def kSize : List (WCode × List W) → Nat
+  | [] => 0
+  | (_, ρ) :: k => ρ.length + kSize k
 
 /-- The code a frame's return address points at: `pop r12`, the runtime prepend, then the continuation's code (gen's `letE`
     layout from the `pop` on). -/
@@ -81,11 +90,12 @@ theorem gen_letE (C : Ctx3) (pc : W) (c₁ c₂ : WCode) :
     saved `envLow`, and that `envLow` at or above `lo` (the current activation writes only below its base, so nothing pending is
     overwritten). The bottom frame is the entry stub's: its return point, the entry `envLow`, and the driver's slot above it. -/
 def Frames (C : Ctx3) (p : Program) (L : Lay3) (m : Mem) : W → W → List (WCode × List W) → Prop
-  | rsp, lo, [] => rd m rsp = L.stubRet ∧ CodeAt C p L.stubRet stubCont ∧ lo.toNat ≤ (rd m (rsp + 8)).toNat ∧
-      rsp.toNat + 16 = L.rsp0.toNat ∧ rd m L.rsp0 = L.ret0
+  | rsp, lo, [] => rd m rsp = L.stubRet ∧ CodeAt C p L.stubRet stubCont ∧ rd m (rsp + 8) = L.env0 ∧
+      rsp.toNat + 16 = L.rsp0.toNat ∧ rd m L.rsp0 = L.ret0 ∧ lo.toNat ≤ L.env0.toNat
   | rsp, lo, (c, ρ) :: k => ∃ q a, rd m rsp = q ∧ rd m (rsp + 8) = a ∧ CodeAt C p q (contCode C q c) ∧
       lo.toNat ≤ a.toNat ∧ a.toNat + 8 * ρ.length ≤ L.envTop.toNat ∧ WordsAt m a ρ ∧
-      rsp.toNat + 16 ≤ L.rsp0.toNat ∧ Frames C p L m (rsp + 16) a k
+      rsp.toNat + 16 ≤ L.rsp0.toNat ∧
+      (a.toNat ≤ L.env0.toNat ∧ L.env0.toNat - a.toNat ≤ 8 * (ρ.length + kSize k)) ∧ Frames C p L m (rsp + 16) a k
 
 /-- The control block (S3-M): `[cb+8]` the driver's `rsp`, `[cb+16]` ENV's low bound, `[cb+24]` STACK's. -/
 def CbOk (L : Lay3) (m : Mem) : Prop :=
@@ -105,7 +115,8 @@ def R3 (C : Ctx3) (p : Program) (L : Lay3) : WSt × WMem → Cpu → Prop
       s.stopped = false ∧ CodeAt C p s.rip (gen C s.rip c) ∧ Common L wm s ∧
       L.envLo.toNat ≤ (s.regs.get .r12).toNat ∧ (s.regs.get .r12).toNat + 8 * ρ.length ≤ L.envTop.toNat ∧
       WordsAt s.mem (s.regs.get .r12) ρ ∧
-      Frames C p L s.mem (s.regs.get .rsp) (s.regs.get .r12) k ∧ L.stkLo.toNat ≤ (s.regs.get .rsp).toNat
+      Frames C p L s.mem (s.regs.get .rsp) (s.regs.get .r12) k ∧ L.stkLo.toNat ≤ (s.regs.get .rsp).toNat ∧
+      ((s.regs.get .r12).toNat ≤ L.env0.toNat ∧ L.env0.toNat - (s.regs.get .r12).toNat ≤ 8 * (ρ.length + kSize k))
   | (.done ws, wm), s =>
       Returned L stDone s ∧ Common L wm s ∧ s.regs.get .r13 = BitVec.ofNat 64 ws.length ∧ WordsAt s.mem L.buf ws
   | (.fault, wm), s => Returned L stFault s ∧ Common L wm s
