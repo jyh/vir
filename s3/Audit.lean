@@ -54,3 +54,7 @@ import S3
 #print axioms S3.entry_run
 #print axioms S3.frames_base
 #print axioms S3.sim_app
+#print axioms S3.ret_resWhy
+#print axioms S3.app_resWhy
+#print axioms S3.sim_step
+#print axioms S3.s3_run
