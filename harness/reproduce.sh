@@ -97,6 +97,16 @@ chk2 "$V/l3/out/counts-z1.tsv" "python3 '$C' --arm w8 --base dc95b53 --ext 037dd
 # the Lean L4 column (STATUS 168), at the sealed Lean tip's files; W8 from L3-closed to L4-closed on each lower layer
 chk "$V/l4/out/counts-l4.tsv" --arm l4 "$V/l4"
 chk2 "$V/l4/out/counts-q1.tsv" "for p in l1:VIRL1 l2:VIRL2 l3:VIRL3; do d=\${p%%:*}; python3 '$C' --arm w8 --base 7f82f94 --ext 4017931 --prefix \$d/\${p##*:} '$V' | sed \"s/\tW8\./\tQ1.\$d.W8./\"; done"
+# amend-24 LV9 (STATUS-vir 333; l5/DECLARATIONS-LEAN Addendum 6): the Lean arm's LV9 rows, read from l5/ AT THEIR COUNTS COMMIT
+# (a later lv9 log must not move them; the sha is DERIVED from git, as L1-L3).
+LV9SHA=$(git -C "$V" log -1 --format=%H -- l5/out/counts-lv9.tsv)
+if [ -z "$LV9SHA" ]; then n=$((n+1)); echo "  MISSING  l5/out/counts-lv9.tsv (never committed)"; fail=1
+else
+  mkdir -p "$M/lv9at" && git -C "$V" archive "$LV9SHA" l5/logs l5/out | tar -x -C "$M/lv9at" \
+    || { echo "REPRODUCE MISSING-INPUT l5/ at $LV9SHA"; exit 2; }
+  echo "  PINNED   l5/ (LV9) at its counts commit ${LV9SHA:0:12}"
+  chk "$V/l5/out/counts-lv9.tsv" --arm lv9 "$M/lv9at/l5"
+fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
   NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
