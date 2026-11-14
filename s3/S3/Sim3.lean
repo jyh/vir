@@ -434,4 +434,77 @@ theorem cc_le_sub (x y : W) (f : Flags) : Cc.eval .le (Flags.sub .q x y f) = dec
 theorem writeView_b_zero (b : Bool) : Value.writeView .b 0 (if b then 1 else 0) = boolW b := by
   cases b <;> rfl
 
+/-! ## The comparison blocks (lt, le, eq): one lemma, the condition's bridge as a premise -/
+
+/-- The comparison block for condition `c`, whatever its operator. -/
+def cmpBlock (t : Nat) (c : Cc) : List AI :=
+  [movi .rdx 0, ld .rax .r14 (slot t), ld .rcx .r14 (slot (t + 1)), .op (.bin .cmp .q (.reg .rax) (.reg .rcx)),
+   .op (.setcc c (.reg .rdx)), st .r14 (slot t) .rdx]
+
+theorem arithCode_lt (C : Ctx3) (t : Nat) : arithCode C t .lt = cmpBlock t .l := rfl
+theorem arithCode_le (C : Ctx3) (t : Nat) : arithCode C t .le = cmpBlock t .le := rfl
+theorem arithCode_eq (C : Ctx3) (t : Nat) : arithCode C t .eq = cmpBlock t .e := rfl
+
+/-- **cmp_run.** With slots t, t+1 holding x, y and `c`'s condition after `cmp x, y` equal to b, the block leaves `boolW b` at
+    slot t in 6 steps; words apart from slot t keep their value; among the registers only rax, rcx and rdx change. -/
+theorem cmp_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {c : Cc} {x y : W} {b : Bool} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (cmpBlock t c ++ rest))
+    (hx : rd s.mem (s.regs.get .r14 + slot t) = x) (hy : rd s.mem (s.regs.get .r14 + slot (t + 1)) = y)
+    (hb : ∀ f, Cc.eval c (Flags.sub .q x y f) = b) :
+    ∃ u, runP p 6 s = u ∧ u.stopped = false ∧ u.rip = s.rip + BitVec.ofNat 64 (bytes C (cmpBlock t c)) ∧
+      rd u.mem (s.regs.get .r14 + slot t) = boolW b ∧
+      (∀ a, VIRBridge.Apart (s.regs.get .r14 + slot t) a → rd u.mem a = rd s.mem a) ∧
+      ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r := by
+  have c0 : CodeAt C p s.rip (movi .rdx 0 :: ld .rax .r14 (slot t) :: ld .rcx .r14 (slot (t + 1)) ::
+      .op (.bin .cmp .q (.reg .rax) (.reg .rcx)) :: .op (.setcc c (.reg .rdx)) :: st .r14 (slot t) .rdx :: rest) := by
+    simpa [cmpBlock] using hc
+  have e1 := stepP_movi hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (ld .rax .r14 (slot t) :: ld .rcx .r14 (slot (t + 1)) ::
+      .op (.bin .cmp .q (.reg .rax) (.reg .rcx)) :: .op (.setcc c (.reg .rdx)) :: st .r14 (slot t) .rdx :: rest) := by
+    rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_ld h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (ld .rcx .r14 (slot (t + 1)) ::
+      .op (.bin .cmp .q (.reg .rax) (.reg .rcx)) :: .op (.setcc c (.reg .rdx)) :: st .r14 (slot t) .rdx :: rest) := by
+    rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_ld h2 c2
+  set s3 := stepP p s2
+  have h3 : s3.stopped = false := by rw [e3]; exact h2
+  have c3 : CodeAt C p s3.rip (.op (.bin .cmp .q (.reg .rax) (.reg .rcx)) :: .op (.setcc c (.reg .rdx)) ::
+      st .r14 (slot t) .rdx :: rest) := by
+    rw [e3]; exact codeAt_tail c2
+  have e4 := stepP_cmp_rr h3 c3
+  set s4 := stepP p s3
+  have h4 : s4.stopped = false := by rw [e4]; exact h3
+  have c4 : CodeAt C p s4.rip (.op (.setcc c (.reg .rdx)) :: st .r14 (slot t) .rdx :: rest) := by
+    rw [e4]; exact codeAt_tail c3
+  have e5 := stepP_setcc h4 c4
+  set s5 := stepP p s4
+  have h5 : s5.stopped = false := by rw [e5]; exact h4
+  have c5 : CodeAt C p s5.rip (st .r14 (slot t) .rdx :: rest) := by rw [e5]; exact codeAt_tail c4
+  have e6 := stepP_st h5 c5
+  have mem5 : s5.mem = s.mem := by rw [e5, e4, e3, e2, e1]
+  have regs5 : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → s5.regs.get r = s.regs.get r := by
+    intro r ha hc' hd; rw [e5, e4, e3, e2, e1]
+    simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc'), Regs.get_set_ne _ _ _ _ (Ne.symm hd)]
+  have r14_2 : s2.regs.get .r14 = s.regs.get .r14 := by rw [e2, e1]; simp
+  have rax3 : s3.regs.get .rax = x := by rw [e3, e2]; simp [e1, hx]
+  have rcx3 : s3.regs.get .rcx = y := by rw [e3]; simp [r14_2, e2, e1, hy]
+  have rdx3 : s3.regs.get .rdx = 0 := by rw [e3, e2, e1]; simp
+  have rdx5 : s5.regs.get .rdx = boolW b := by
+    rw [e5]; simp only [Regs.get_set_same]
+    rw [show s4.regs = s3.regs by rw [e4], rdx3, show s4.flags = Flags.sub .q (s3.regs.get .rax) (s3.regs.get .rcx) s3.flags by
+      rw [e4], rax3, rcx3, hb]
+    exact writeView_b_zero b
+  have r14_5 : s5.regs.get .r14 = s.regs.get .r14 := regs5 .r14 (by decide) (by decide) (by decide)
+  refine ⟨stepP p s5, rfl, by rw [e6]; exact h5, ?_, ?_, ?_, ?_⟩
+  · rw [e6, e5, e4, e3, e2, e1]
+    simp only [nxt, cmpBlock, movi, ld, st, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+  · rw [e6, r14_5, rdx5, mem5]; exact rd_write_same _ _ _
+  · intro a ha; rw [e6, r14_5, mem5]; exact rd_write_apart _ _ _ _ ha
+  · intro r ha hc' hd; rw [e6]; exact regs5 r ha hc' hd
+
 end S3
