@@ -161,3 +161,14 @@ before any per-case figure was looked at:
   arms, which count as application cases.
 - **Instrument:** `count.py --arm l5`, rows `L5.LV4.*`, selftest arm written red first. The same arm reads LV2 from the newest
   `l5/logs/audit-NNN.log` (EXIT=0, each `#print axioms` line within the three, a `sorryAx` count of 0), and refuses a control log.
+
+## ADDENDUM 8 (2026-11-14, the 76th head, BEFORE any LV5 count is taken): LV5's population and its "application or fix case"
+- **The L1′ files** are the eight language files planned above (Syntax · Typing5 · Step5 · CE · Runtime5 · Preservation5 ·
+  Progress5 · Y5L5) plus the five language helpers the plan did not name, declared here before they are scored: Shift5 · Subst5 ·
+  Weak5 · RTSubst5 · SemBase5. The routines, DEFLATE's and the router's files, the logic (Logic5, Ops5) and the cost files are not
+  L1′ files.
+- **A hit** is one match of CAST_RE (count.py, the L3 Z2 extractor, ≍ included) after comments are stripped.
+- **The application or fix case** is the application arms of `pres₅` (appLam · appFix · appKLam · appKFix) and of `progress₅`
+  (app · appK), cut as in Addendum 7. LV5 HOLDS iff the total is ≥ 1 AND hits in those arms are ≥ half of the total. Hits per file
+  are reported beside.
+- Same instrument: `count.py --arm l5`, rows `L5.LV5.*`, its selftest arm written red first.
