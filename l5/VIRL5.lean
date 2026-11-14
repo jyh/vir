@@ -31,3 +31,4 @@ import VIRL5.CwF
 import VIRL5.RunTriple5
 import VIRL5.ScopyCost5
 import VIRL5.ScopyRun5
+import VIRL5.ScopyWorld5
