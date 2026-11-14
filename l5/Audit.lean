@@ -150,3 +150,7 @@ open VIRL5
 #print axioms refine_copy
 #print axioms copy5_chunk
 #print axioms copy5_chunk_world
+#print axioms scopy5_end_cost
+#print axioms scopy5_end_world
+#print axioms scopy_iter
+#print axioms refine_scopy
