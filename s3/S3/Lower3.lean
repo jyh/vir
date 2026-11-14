@@ -203,7 +203,7 @@ def gen (C : Ctx3) : W → WCode → List AI
         .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]
     pre ++ gen C (pc + BitVec.ofNat 64 (bytes C pre)) k
   | pc, .app f x =>
-    let pre := evalTo C 0 f ++ [ld .rdx .r14 (slot 0)] ++ evalTo C 0 x ++ [ld .r12 .rsp 8]
+    let pre := evalTo C (need x) f ++ evalTo C 0 x ++ [ld .rdx .r14 (slot (need x)), ld .r12 .rsp 8]
     pre ++ dispatch C (wid x) (pc + BitVec.ofNat 64 (bytes C pre)) C.tblLen 0
   | pc, .ite o c₁ c₂ =>
     let pre := evalTo C 0 o ++ [ld .rax .r14 (slot 0), .op (.bin .cmp .q (.reg .rax) (.imm 1))]
@@ -321,7 +321,7 @@ def gsz (C : Ctx3) : WCode → Nat
       envRoom C 2 ++ [ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
         .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]) +
       gsz C k
-  | .app f x => bytes C (evalTo C 0 f ++ [ld .rdx .r14 (slot 0)] ++ evalTo C 0 x ++ [ld .r12 .rsp 8]) +
+  | .app f x => bytes C (evalTo C (need x) f ++ evalTo C 0 x ++ [ld .rdx .r14 (slot (need x)), ld .r12 .rsp 8]) +
       dsz C (wid x) C.tblLen 0
   | .ite o c₁ c₂ => bytes C (evalTo C 0 o ++ [ld .rax .r14 (slot 0), .op (.bin .cmp .q (.reg .rax) (.imm 1))]) + 6 +
       gsz C c₁ + bytes C [.op (.bin .cmp .q (.reg .rax) (.imm 0)), .jccA .ne C.fault] + gsz C c₂
