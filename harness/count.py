@@ -2216,6 +2216,45 @@ def lv4_arms(path, thm, prog):
     return [(n, len(' '.join(t).split()), len([x for x in t if x.strip()])) for n, t in arms]
 
 
+def lv4_texts(path, thm, prog):
+    """The same arms as lv4_arms, as (name, text)."""
+    if not os.path.isfile(path):
+        return []
+    lines = l4_strip(read(path)).splitlines()
+    start = next((i for i, l in enumerate(lines) if l.startswith('theorem ' + thm + ' ')), None)
+    if start is None:
+        return []
+    arms, cur = [], None
+    for l in lines[start + 1:]:
+        if l and not l[0].isspace():
+            break
+        if LV4_ARM_RE.match(l):
+            m = re.search(r'\.([A-Za-z][A-Za-z0-9_]*)', l) if prog else re.match(r'^\s*\|\s*([A-Za-z][A-Za-z0-9_]*)', l)
+            cur = [m.group(1) if m else '?', []]
+            arms.append(cur)
+        if cur is not None:
+            cur[1].append(l)
+    return [(n, '\n'.join(t)) for n, t in arms]
+
+
+LV5_FILES = ('Syntax.lean', 'Typing5.lean', 'Step5.lean', 'CE.lean', 'Runtime5.lean', 'Preservation5.lean', 'Progress5.lean',
+             'Y5L5.lean', 'Shift5.lean', 'Subst5.lean', 'Weak5.lean', 'RTSubst5.lean', 'SemBase5.lean')  # LV5-FILES
+LV5_PRES_APP = ('appLam', 'appFix', 'appKLam', 'appKFix')
+LV5_PROG_APP = ('app', 'appK')
+
+
+def lv5_rows(d):
+    src = os.path.join(d, 'VIRL5')
+    per = {f: len(CAST_RE.findall(l4_strip(read(os.path.join(src, f))))) for f in LV5_FILES if os.path.isfile(os.path.join(src, f))}
+    tot = sum(per.values())
+    ina = sum(len(CAST_RE.findall(t)) for n, t in lv4_texts(os.path.join(src, 'Preservation5.lean'), 'pres₅', False) if n in LV5_PRES_APP) + \
+          sum(len(CAST_RE.findall(t)) for n, t in lv4_texts(os.path.join(src, 'Progress5.lean'), 'progress₅', True) if n in LV5_PROG_APP)
+    rows = [('L5.LV5.hits', tot, 'MEASURED:%d of %d declared L1′ files present' % (len(per), len(LV5_FILES))),
+            ('L5.LV5.inAppFix', ina, 'MEASURED:pres₅ appLam/appFix/appKLam/appKFix + progress₅ app/appK'),
+            ('L5.LV5.direction', 'HOLDS' if tot >= 1 and 2 * ina >= tot else 'FALSIFIED', 'MEASURED:hits >= 1 and in-arm >= half')]
+    return rows + [('L5.LV5.file.' + f, v, 'BESIDE') for f, v in sorted(per.items())]
+
+
 def leanl5(d):
     d = os.path.abspath(d)
     rows = []
@@ -2239,6 +2278,7 @@ def leanl5(d):
                      ('L5.LV4.direction', 'HOLDS' if ft > nt else 'FALSIFIED', 'MEASURED:larger fix arm alone > every other arm')]
         else:
             rows.append(('L5.LV4.direction', 'EMPTY', 'EMPTY:no fix arm or no other arm'))
+    rows += lv5_rows(d)
     logs = os.path.join(d, 'logs')
     got = sorted((int(m.group(1)), f) for f in (os.listdir(logs) if os.path.isdir(logs) else []) for m in [LV2_AUDIT_RE.match(f)] if m)
     if not got:

@@ -36,6 +36,22 @@ l5	L5.LV4.nextCase	722	MEASURED:pres.op
 l5	L5.LV4.ratioPermille	209	MEASURED:floor(1000 x fix / next)
 l5	L5.LV4.fixSum	264	BESIDE:appFix + appKFix (not the verdict)
 l5	L5.LV4.direction	FALSIFIED	MEASURED:larger fix arm alone > every other arm
+l5	L5.LV5.hits	29	MEASURED:13 of 13 declared L1′ files present
+l5	L5.LV5.inAppFix	4	MEASURED:pres₅ appLam/appFix/appKLam/appKFix + progress₅ app/appK
+l5	L5.LV5.direction	FALSIFIED	MEASURED:hits >= 1 and in-arm >= half
+l5	L5.LV5.file.CE.lean	0	BESIDE
+l5	L5.LV5.file.Preservation5.lean	13	BESIDE
+l5	L5.LV5.file.Progress5.lean	0	BESIDE
+l5	L5.LV5.file.RTSubst5.lean	10	BESIDE
+l5	L5.LV5.file.Runtime5.lean	0	BESIDE
+l5	L5.LV5.file.SemBase5.lean	0	BESIDE
+l5	L5.LV5.file.Shift5.lean	0	BESIDE
+l5	L5.LV5.file.Step5.lean	0	BESIDE
+l5	L5.LV5.file.Subst5.lean	6	BESIDE
+l5	L5.LV5.file.Syntax.lean	0	BESIDE
+l5	L5.LV5.file.Typing5.lean	0	BESIDE
+l5	L5.LV5.file.Weak5.lean	0	BESIDE
+l5	L5.LV5.file.Y5L5.lean	0	BESIDE
 l5	L5.LV2.audit	40	MEASURED:audit-040.log
 l5	L5.LV2.rows	243	MEASURED
 l5	L5.LV2.outside	0	MEASURED:none

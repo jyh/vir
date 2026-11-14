@@ -1363,6 +1363,29 @@ if cmp -s "$H/count.py" "$F/mutant60.py"; then say "ARM60 mutant NOT PLANTED"; f
 elif check60 "$F/mutant60.py"; then say "ARM60 mutant SURVIVED (a nested | read as a top-level arm)"; fail=1
 else say "ARM60 mutant KILLED"; fi
 
+# ARM61 (STATUS-vir LV5; l5/DECLARATIONS-LEAN Addendum 8): `--arm l5`, LV5 = CAST_RE hits over the thirteen declared L1′ files (comments
+# stripped), the share inside pres₅/progress₅'s application arms. Fixture: hits placed by construction; a hit in a comment and three in a
+# NON-L1′ file (Logic5.lean) that must not count.
+D61="$F/d61"; mkdir -p "$D61/VIRL5"
+I61=2; O61=1; Q61=1; S61=1; L61=3   # in appKFix · in letRet · in progress app · in Syntax · in Logic5 (not counted)
+{ printf 'theorem pres₅ : True\n  | letRet h => exact cast h\n  | appKFix h =>\n    exact HEq.symm (h ▸ rfl)\n'; printf 'theorem z : True := trivial\n'; } > "$D61/VIRL5/Preservation5.lean"
+{ printf 'theorem progress₅ : True\n  | _, .app h => exact h ≍ h\n  | _, .ret h => trivial\n'; } > "$D61/VIRL5/Progress5.lean"
+printf -- '-- a cast in a comment, never counted\ndef s := Eq.mpr rfl\n' > "$D61/VIRL5/Syntax.lean"
+printf 'theorem l := HEq.refl (HEq.refl (HEq.refl 0))\n' > "$D61/VIRL5/Logic5.lean"
+E61_T=$(( I61 + O61 + Q61 + S61 )); E61_A=$(( I61 + Q61 )); E61_D=$( [ $E61_T -ge 1 ] && [ $(( 2 * E61_A )) -ge $E61_T ] && echo HOLDS || echo FALSIFIED )
+check61() {
+  o=$(python3 "$1" --arm l5 "$D61" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v L5.LV5.hits)" = "$E61_T" ] && [ "$(v L5.LV5.inAppFix)" = "$E61_A" ] && [ "$(v L5.LV5.direction)" = "$E61_D" ] \
+  && [ "$(v L5.LV5.file.Syntax.lean)" = "$S61" ]
+}
+if check61 "$H/count.py"; then say "ARM61 lv5 fixture OK (hits $E61_T, in app/fix arms $E61_A, $E61_D; Logic5's $L61 not counted)"
+else say "ARM61 lv5 fixture FAIL"; python3 "$H/count.py" --arm l5 "$D61"; fail=1; fi
+sed "s/'SemBase5.lean')  # LV5-FILES/'SemBase5.lean', 'Logic5.lean')/" "$H/count.py" > "$F/mutant61.py"  # a non-L1′ file counted
+if cmp -s "$H/count.py" "$F/mutant61.py"; then say "ARM61 mutant NOT PLANTED"; fail=1
+elif check61 "$F/mutant61.py"; then say "ARM61 mutant SURVIVED (Logic5 counted as an L1′ file)"; fail=1
+else say "ARM61 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
