@@ -159,4 +159,51 @@ theorem evalTo_slice_run {C : Ctx3} {p : Program} {s : Cpu} {rest : List AI} {ρ
   rw [show s.regs.get .r12 + slot (off + j) = s.regs.get .r12 + BitVec.ofNat 64 (8 * (off + j)) from rfl, hw]
   simp [List.getElem_take, List.getElem_drop]
 
+/-! ## Checked arithmetic: x86's OF is S2's range check (`chk`) -/
+
+theorem msb_q (v : W) : Value.msb .q v = v.msb := by
+  simp [Value.msb, Size.signBit, BitVec.msb_eq_getLsbD_last]
+
+theorem addOF_q (x y : W) : Flags.addOF .q x y (x + y) = BitVec.saddOverflow x y := by
+  rw [BitVec.saddOverflow_eq]; simp only [Flags.addOF, msb_q]
+  cases x.msb <;> cases y.msb <;> cases (x + y).msb <;> rfl
+
+theorem subOF_q (x y : W) : Flags.subOF .q x y (x - y) = BitVec.ssubOverflow x y := by
+  rw [BitVec.ssubOverflow_eq]; simp only [Flags.subOF, msb_q]
+  cases x.msb <;> cases y.msb <;> cases (x - y).msb <;> rfl
+
+theorem inRange_iff (n : Int) : inRange n = !((n ≥ 2 ^ 63) || (n < -2 ^ 63)) := by
+  unfold inRange
+  by_cases h : -2 ^ 63 ≤ n ∧ n < 2 ^ 63
+  · rw [decide_eq_true h]
+    have h1 : ¬ (n ≥ 2 ^ 63) := by omega
+    have h2 : ¬ (n < -2 ^ 63) := by omega
+    simp <;> omega
+  · rw [decide_eq_false h]
+    by_cases h1 : n ≥ 2 ^ 63
+    · simp <;> omega
+    · have h2 : n < -2 ^ 63 := by omega
+      simp <;> omega
+
+/-- S2's checked add is x86's add with OF as the overflow. -/
+theorem chk_add (x y : W) : chk (x.toInt + y.toInt) = if BitVec.saddOverflow x y then .ovf else .ok [x + y] := by
+  unfold chk
+  have hr : inRange (x.toInt + y.toInt) = !BitVec.saddOverflow x y := by rw [inRange_iff]; rfl
+  rw [hr]
+  cases h : BitVec.saddOverflow x y
+  · simp only [Bool.not_false, if_true]
+    rw [← BitVec.toInt_add_of_not_saddOverflow (by simp [h]), BitVec.ofInt_toInt]
+    simp
+  · rfl
+
+theorem chk_sub (x y : W) : chk (x.toInt - y.toInt) = if BitVec.ssubOverflow x y then .ovf else .ok [x - y] := by
+  unfold chk
+  have hr : inRange (x.toInt - y.toInt) = !BitVec.ssubOverflow x y := by rw [inRange_iff]; rfl
+  rw [hr]
+  cases h : BitVec.ssubOverflow x y
+  · simp only [Bool.not_false, if_true]
+    rw [← BitVec.toInt_sub_of_not_ssubOverflow (by simp [h]), BitVec.ofInt_toInt]
+    simp
+  · rfl
+
 end S3
