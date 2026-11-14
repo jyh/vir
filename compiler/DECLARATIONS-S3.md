@@ -215,3 +215,12 @@ machine code of a BAD operand has no claimed behaviour. Lower3's `gen` and `gsz`
   from S2's `SRel` and S3's `Fragment3.ok` is the composition's job (next), and none of it is a premise on stored values.
 - **`s3_run`**: for a word run `WN tbl n W Wf` from an R3 state, the machine reaches R3 at Wf in m ≥ n steps (divergence is kept:
   every word step takes at least one machine step), OR it returns RES at some reached state Wr whose `ResWhy` holds.
+
+## ADDENDUM 13 (2026-11-14, the 78th head, before Place3.lean): lower3's placement discharges StepEnv's code facts and TblOk
+`Place3.lean` proves that in `lower3 ilen tbl main base`, under `1 ≤ ilen` and the whole code under 2⁶⁴ bytes (Fragment3's encoding
+facts), the entry stub sits at `base`, FAULT, OVF and RES at `C.fault`, `C.ovf` and `C.res`, main at `mainAddr C`, and table body
+i at `C.body i` (TblOk, with `C.fix i` the table's flag). The sizes `ctxOf` measures in its first contexts C0 and C1 equal the
+final context's (S3-E: a size depends on `ilen`, the fix flags and the table length, never on an address or a target). That is
+proved by ERASURE: `AI.er` maps every jump target to 0, erasure keeps sizes, and two contexts that agree on `fix` and `tblLen`
+generate the same erased code (`gen_er`). The canonical-address and layout facts of StepEnv (`ok`, `canon`, `ret_canon`) stay
+premises of the driver's layout. They are facts about where the driver puts the code and data, not about the code.
