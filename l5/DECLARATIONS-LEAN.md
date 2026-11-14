@@ -121,3 +121,27 @@ For bitR the per-bit constant includes DEFLATE's `BITc` run, counted through the
 (not re-derived). Composition rules (`letE`, `letK`, `letOp`, `ite`, the calls) add the counts, plus one step per head; they live
 in `Cost5.lean` with the run lemmas they need. The triples are NOT changed: the cost is a second lemma per routine, so nothing
 already scored at 5e2782a…b0c363b is re-proved.
+
+## ADDENDUM 6 (2026-11-14, the 76th head, AFTER LV8's assembly and Router5 and BEFORE any LV9 count is taken): LV9's reading
+amend-24 LV9 asks for "the AST nodes removed … COUNTED (per program, per routine)", but it does not define a node. This addendum
+defines it, before the first count:
+- **A node** is one constructor of `Tm₅` or `Atom₅`. Types (`Ty₅`), ops, constants' payloads and list cells are not nodes; they
+  ride inside the node that carries them.
+- **A routine atom** is a `.fix τ₁ k τ₂ e` with k ≥ 1. Embedded L2 code has k = 0 everywhere, because ιA writes 0. A routine
+  atom counts as ONE node, and its body is the library's, not the program's. It is NAMED by a FINGERPRINT (τ₁, k, τ₂, nodes of
+  e), which the instrument computes from the six library definitions themselves (bitR, copyR, fillR, scanR, cmpR, copyWithinR)
+  and checks pairwise distinct. A signature alone is NOT distinct: τfill and τcopy are both int × (int × int), so fillR and
+  copyWithinR share (int×int×int, 1, unit). This was found while writing the instrument, before any count. A routine atom whose
+  fingerprint matches none of the six is printed UNKNOWN, and the harness refuses the log.
+- **A call** is one occurrence of a routine atom.
+- **Per mode (DEFLATE):** L2 = nodes(`lift₅ m`) for DEFLATE's own mode term m (ιE maps constructor to constructor, so this is
+  m's node count). L5 = nodes of that mode's `modes₅` entry. **Removed = L2 − L5**, computed by the harness from the two
+  printed numbers and reported WITH ITS SIGN. The modes are the seven entries of `modes₅` that are not `lift₅`: READ, FIXLENS,
+  SCOPY, BUILD, DECODE, COPY, REP. Every other mode is `lift₅` of its own term and reads 0 by construction. The harness checks
+  that, and does not assume it.
+- **Per program:** DEFLATE's total is nodes(ιE `stepT`) − nodes(`stepT₅`). The ROUTER's is nodes(ιE F) − nodes(F₅), with F₅'s
+  calls; LV8-MAP Addendum 9 already reads it as 0 and 0 (V-F8).
+- **Direction (LV9, per program):** HOLDS iff calls ≥ 1 AND removed > 0. Otherwise FALSIFIED.
+- **Instrument:** `l5/Lv9.lean` (`#eval` over the defined terms, one tab-separated `LV9` line per row), run through
+  logged-build.sh as `lv9-NNN`. `count.py --arm lv9` reads the newest lv9 log, refuses one without `saltbuild EXIT=0`, and
+  recomputes every difference. Its selftest arm is written red first.
