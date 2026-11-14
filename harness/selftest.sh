@@ -1386,6 +1386,26 @@ if cmp -s "$H/count.py" "$F/mutant61.py"; then say "ARM61 mutant NOT PLANTED"; f
 elif check61 "$F/mutant61.py"; then say "ARM61 mutant SURVIVED (Logic5 counted as an L1′ file)"; fail=1
 else say "ARM61 mutant KILLED"; fi
 
+# ARM62 (STATUS-vir LV7; l5/DECLARATIONS-LEAN Addendum 9): `--arm l5`, LV7 = premises of each <r>R_spec naming a content variable
+# (a binder typed Int → Int). Fixture: a clean spec, a spec with ONE content premise, and a content variable that appears only in
+# RegionAt (not a premise).
+D62="$F/d62"; mkdir -p "$D62/VIRL5"
+printf 'theorem fillR_spec (p : Int) (n : Nat) (v : Int) : ∀ (len : Nat) (d : Int) (g : Int → Int), 0 ≤ d → d + len ≤ n →\n    Triple₅ (RegionAt p n g) x y\n  | 0 => by\n' > "$D62/VIRL5/Fill.lean"
+printf 'theorem scanR_spec (p : Int) (n : Nat) (f : Int → Int) (v : Int) : ∀ (len : Nat) (fr tt : Int),\n    tt = fr + len → f fr = v → 0 ≤ fr →\n    Triple₅ (RegionAt p n f) x y\n  | 0 => by\n' > "$D62/VIRL5/Scan.lean"
+E62_C=1; E62_P=$(( 2 + 3 ))
+check62() {
+  o=$(python3 "$1" --arm l5 "$D62" 2>&1) || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v k="$1" '$2==k{print $3}'; }
+  [ "$(v L5.LV7.specs)" = 2 ] && [ "$(v L5.LV7.premises)" = "$E62_P" ] && [ "$(v L5.LV7.contentPremises)" = "$E62_C" ] \
+  && [ "$(v L5.LV7.scanR.content)" = 1 ] && [ "$(v L5.LV7.fillR.content)" = 0 ] && [ "$(v L5.LV7.direction)" = FALSIFIED ]
+}
+if check62 "$H/count.py"; then say "ARM62 lv7 fixture OK (2 specs, $E62_P premises, $E62_C content premise, FALSIFIED)"
+else say "ARM62 lv7 fixture FAIL"; python3 "$H/count.py" --arm l5 "$D62"; fail=1; fi
+sed "s/'Int → Int'  # LV7-CONTENT/'Int → Int → Int'/" "$H/count.py" > "$F/mutant62.py"  # content variables never found
+if cmp -s "$H/count.py" "$F/mutant62.py"; then say "ARM62 mutant NOT PLANTED"; fail=1
+elif check62 "$F/mutant62.py"; then say "ARM62 mutant SURVIVED (content variables not recognised)"; fail=1
+else say "ARM62 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

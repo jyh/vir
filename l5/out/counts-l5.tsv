@@ -52,6 +52,16 @@ l5	L5.LV5.file.Syntax.lean	0	BESIDE
 l5	L5.LV5.file.Typing5.lean	0	BESIDE
 l5	L5.LV5.file.Weak5.lean	0	BESIDE
 l5	L5.LV5.file.Y5L5.lean	0	BESIDE
+l5	L5.LV7.specs	6	MEASURED:bitR,cmpR,copyR,copyWithinR,fillR,scanR
+l5	L5.LV7.premises	18	MEASURED:over the five named by LV7 present (5)
+l5	L5.LV7.contentPremises	0	MEASURED
+l5	L5.LV7.direction	HOLDS	MEASURED:0 content premises over the five
+l5	L5.LV7.bitR.content	0	MEASURED:5 premises; content vars f
+l5	L5.LV7.cmpR.content	0	MEASURED:4 premises; content vars f,g
+l5	L5.LV7.copyR.content	0	MEASURED:4 premises; content vars f,g
+l5	L5.LV7.copyWithinR.content	0	BESIDE:4 premises; content vars g
+l5	L5.LV7.fillR.content	0	MEASURED:2 premises; content vars g
+l5	L5.LV7.scanR.content	0	MEASURED:3 premises; content vars f
 l5	L5.LV2.audit	40	MEASURED:audit-040.log
 l5	L5.LV2.rows	243	MEASURED
 l5	L5.LV2.outside	0	MEASURED:none

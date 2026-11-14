@@ -2237,6 +2237,56 @@ def lv4_texts(path, thm, prog):
     return [(n, '\n'.join(t)) for n, t in arms]
 
 
+LV7_TY = 'Int → Int'  # LV7-CONTENT
+LV7_FIVE = ('copyR', 'fillR', 'cmpR', 'scanR', 'bitR')
+
+
+def lv7_split0(t, sep):
+    out, depth, cur = [], 0, ''
+    i = 0
+    while i < len(t):
+        ch = t[i]
+        if ch in '([{':
+            depth += 1
+        elif ch in ')]}':
+            depth -= 1
+        if depth == 0 and t.startswith(sep, i):
+            out.append(cur); cur = ''; i += len(sep); continue
+        cur += ch; i += 1
+    out.append(cur)
+    return out
+
+
+def lv7_rows(d):
+    src = os.path.join(d, 'VIRL5')
+    specs = {}
+    for fn_ in sorted(os.listdir(src)) if os.path.isdir(src) else []:
+        if not fn_.endswith('.lean'):
+            continue
+        t = l4_strip(read(os.path.join(src, fn_)))
+        for m in re.finditer(r'^theorem ([A-Za-z]+R)_spec\b', t, re.M):
+            end = t.find('Triple₅', m.end())
+            if end < 0:
+                continue
+            specs[m.group(1)] = t[m.end():end]
+    rows, prem_all, content_all = [], 0, 0
+    for name, st in sorted(specs.items()):
+        cvars = [v for g in re.findall(r'\(([^():]+) : ' + re.escape(LV7_TY) + r'\)', st) for v in g.split()]
+        q = st.find('∀')
+        body = st[q + 1:] if q >= 0 else st
+        parts = lv7_split0(body, ',')
+        prem = [x.strip() for x in lv7_split0(parts[-1], '→') if x.strip()] if len(parts) > 1 else []
+        cont = [x for x in prem if any(re.search(r'(?<![\w.])' + re.escape(v) + r'(?![\w])', x) for v in cvars)]
+        if name in LV7_FIVE:
+            prem_all += len(prem); content_all += len(cont)
+        rows.append(('L5.LV7.%s.content' % name, len(cont), ('MEASURED' if name in LV7_FIVE else 'BESIDE') + ':%d premises; content vars %s' % (len(prem), ','.join(cvars) or '-')))
+    five = [n for n in specs if n in LV7_FIVE]
+    return [('L5.LV7.specs', len(specs), 'MEASURED:%s' % ','.join(sorted(specs)) if specs else 'EMPTY'),
+            ('L5.LV7.premises', prem_all, 'MEASURED:over the five named by LV7 present (%d)' % len(five)),
+            ('L5.LV7.contentPremises', content_all, 'MEASURED'),
+            ('L5.LV7.direction', 'HOLDS' if five and content_all == 0 else 'FALSIFIED', 'MEASURED:0 content premises over the five')] + rows
+
+
 LV5_FILES = ('Syntax.lean', 'Typing5.lean', 'Step5.lean', 'CE.lean', 'Runtime5.lean', 'Preservation5.lean', 'Progress5.lean',
              'Y5L5.lean', 'Shift5.lean', 'Subst5.lean', 'Weak5.lean', 'RTSubst5.lean', 'SemBase5.lean')  # LV5-FILES
 LV5_PRES_APP = ('appLam', 'appFix', 'appKLam', 'appKFix')
@@ -2279,6 +2329,7 @@ def leanl5(d):
         else:
             rows.append(('L5.LV4.direction', 'EMPTY', 'EMPTY:no fix arm or no other arm'))
     rows += lv5_rows(d)
+    rows += lv7_rows(d)
     logs = os.path.join(d, 'logs')
     got = sorted((int(m.group(1)), f) for f in (os.listdir(logs) if os.path.isdir(logs) else []) for m in [LV2_AUDIT_RE.match(f)] if m)
     if not got:
