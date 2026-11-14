@@ -1667,4 +1667,66 @@ theorem sim_ite {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : T
     | [], hstep, _ => simp at hstep
     | _ :: _ :: _, hstep, _ => simp at hstep
 
+/-! ## The ENV room check -/
+
+theorem stepP_mov_rr {C : Ctx3} {p : Program} {s : Cpu} {r r' : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.mov .q (.reg r) (.reg r')) :: l)) :
+    stepP p s = { s with regs := s.regs.set r (s.regs.get r'), rip := nxt C s.rip (.op (.mov .q (.reg r) (.reg r'))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_mov_reg_reg .q r r' (live_of hs)]
+  simp [Value.writeView, Cpu.getReg, nxt, AI.size]
+
+/-- **envRoom_run.** The ENV room check for n words: in 5 steps it reaches RES exactly when `r12 − envLo < 8n` (bytes), and
+    otherwise falls through; memory unchanged, registers other than rax, rcx unchanged. -/
+theorem envRoom_run {C : Ctx3} {p : Program} {s : Cpu} {n : Nat} {lo : W} {rest : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (envRoom C n ++ rest)) (hcb : rd s.mem (s.regs.get .rbx + 16) = lo)
+    (hge : lo.toNat ≤ (s.regs.get .r12).toNat) (h8n : 8 * n < 2 ^ 64) (hcan : canonical C.res = true) :
+    ∃ u, runP p 5 s = u ∧ u.stopped = false ∧ u.mem = s.mem ∧
+      (∀ r, r ≠ .rax → r ≠ .rcx → u.regs.get r = s.regs.get r) ∧
+      u.rip = (if (s.regs.get .r12).toNat - lo.toNat < 8 * n then C.res else s.rip + BitVec.ofNat 64 (bytes C (envRoom C n))) := by
+  have c0 : CodeAt C p s.rip (ld .rcx .rbx 16 :: .op (.mov .q (.reg .rax) (.reg .r12)) :: .op (.bin .sub .q (.reg .rax) (.reg .rcx)) ::
+      .op (.bin .cmp .q (.reg .rax) (.imm (slot n))) :: .jccA .b C.res :: rest) := by simpa [envRoom] using hc
+  have e1 := stepP_ld hs c0
+  set s1 := stepP p s
+  have h1 : s1.stopped = false := by rw [e1]; exact hs
+  have c1 : CodeAt C p s1.rip (.op (.mov .q (.reg .rax) (.reg .r12)) :: .op (.bin .sub .q (.reg .rax) (.reg .rcx)) ::
+      .op (.bin .cmp .q (.reg .rax) (.imm (slot n))) :: .jccA .b C.res :: rest) := by rw [e1]; exact codeAt_tail c0
+  have e2 := stepP_mov_rr h1 c1
+  set s2 := stepP p s1
+  have h2 : s2.stopped = false := by rw [e2]; exact h1
+  have c2 : CodeAt C p s2.rip (.op (.bin .sub .q (.reg .rax) (.reg .rcx)) ::
+      .op (.bin .cmp .q (.reg .rax) (.imm (slot n))) :: .jccA .b C.res :: rest) := by rw [e2]; exact codeAt_tail c1
+  have e3 := stepP_sub_rr h2 c2
+  set s3 := stepP p s2
+  have h3 : s3.stopped = false := by rw [e3]; exact h2
+  have c3 : CodeAt C p s3.rip (.op (.bin .cmp .q (.reg .rax) (.imm (slot n))) :: .jccA .b C.res :: rest) := by
+    rw [e3]; exact codeAt_tail c2
+  have e4 := stepP_cmp_ri h3 c3
+  set s4 := stepP p s3
+  have h4 : s4.stopped = false := by rw [e4]; exact h3
+  have c4 : CodeAt C p s4.rip (.jccA .b C.res :: rest) := by rw [e4]; exact codeAt_tail c3
+  have e5 := stepP_jccA h4 c4 hcan
+  have rax3 : s3.regs.get .rax = s.regs.get .r12 - lo := by
+    have hcb' : rd s.mem (s.regs.get .rbx + 16) = lo := hcb
+    rw [e3, e2, e1]; simp only [Regs.get_set_same, Regs.get_set_ne _ _ _ _ (show GPR.rax ≠ GPR.rcx by decide),
+      Regs.get_set_ne _ _ _ _ (show GPR.rcx ≠ GPR.r12 by decide), Regs.get_set_ne _ _ _ _ (show GPR.rcx ≠ GPR.rbx by decide)]
+    rw [hcb']
+  have hb : Cc.eval .b s4.flags = decide ((s.regs.get .r12).toNat - lo.toNat < 8 * n) := by
+    rw [e4, rax3, cc_b_of_sub]
+    simp only [Value.uval, Value.trunc_q, slot, BitVec.toNat_sub, BitVec.toNat_ofNat]
+    congr 1; apply propext
+    have := (s.regs.get .r12).isLt
+    constructor <;> intro h <;> omega
+  refine ⟨stepP p s4, rfl, by rw [e5]; exact h4, by rw [e5, e4, e3, e2, e1], ?_, ?_⟩
+  · intro r ha hc'; rw [e5, e4, e3, e2, e1]
+    simp [Regs.get_set_ne _ _ _ _ (Ne.symm ha), Regs.get_set_ne _ _ _ _ (Ne.symm hc')]
+  · rw [e5, hb]
+    by_cases hlt : (s.regs.get .r12).toNat - lo.toNat < 8 * n
+    · simp [hlt]
+    · simp only [hlt, decide_false, Bool.false_eq_true, if_false]
+      rw [e4, e3, e2, e1]
+      simp only [nxt, envRoom, ld, bytes_cons, bytes_nil, AI.size, ofNat_add64, BitVec.add_assoc, Nat.add_zero]
+      all_goals rfl
+
 end S3
