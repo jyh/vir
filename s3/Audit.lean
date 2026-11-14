@@ -65,3 +65,7 @@ import S3
 #print axioms S3.place_bodies
 #print axioms S3.lower3_placed
 #print axioms S3.s3_refines_lower3
+#print axioms S3.stepOk_of
+#print axioms S3.needOk_step
+#print axioms S3.needOk_run
+#print axioms S3.s3_refines_lower3_static
