@@ -26,3 +26,4 @@ import VIRL5.Costs
 import VIRL5.Lift5
 import VIRL5.Bridge5
 import VIRL5.ChunkRun
+import VIRL5.Scopy5
