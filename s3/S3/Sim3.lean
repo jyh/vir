@@ -2153,4 +2153,42 @@ theorem sim_case {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : 
         · rw [if_neg ht0, if_neg ht1] at hstep; cases hstep
     | [], hstep, _, _ => simp at hstep
 
+/-! ## load's pieces: test, the sign and ge conditions, lea with an index, the FAULT exit -/
+
+theorem stepP_test_rr {C : Ctx3} {p : Program} {s : Cpu} {r : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.bin .test .q (.reg r) (.reg r)) :: l)) :
+    stepP p s = { s with flags := Flags.logic .q (s.regs.get r &&& s.regs.get r) (s.oracle.bits s.oracle.cursor) s.flags, oracle := { s.oracle with cursor := s.oracle.cursor + 1 }, rip := nxt C s.rip (.op (.bin .test .q (.reg r) (.reg r))) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_test_reg_op .q r false (.reg r) (live_of hs) rfl]
+  simp [Cpu.getReg, Cpu.readOperand, nxt, AI.size]
+
+theorem cc_s_logic (x : W) (af : Bool) (f : Flags) : Cc.eval .s (Flags.logic .q (x &&& x) af f) = decide (x.toInt < 0) := by
+  simp [Cc.eval, Flags.logic, Flags.fromResult, msb_q, BitVec.msb_eq_toInt]
+
+theorem cc_ge_sub (x y : W) (f : Flags) : Cc.eval .ge (Flags.sub .q x y f) = !decide (x.toInt < y.toInt) := by
+  have := cc_l_sub x y f
+  simp only [Cc.eval] at this ⊢
+  rw [← this]; cases (Flags.sub .q x y f).sf <;> cases (Flags.sub .q x y f).of <;> rfl
+
+theorem stepP_lea_idx {C : Ctx3} {p : Program} {s : Cpu} {d b i : GPR} {l : List AI}
+    (hs : s.stopped = false) (hc : CodeAt C p s.rip (.op (.lea .q d { base := some b, index := some i, scale := .s8 }) :: l)) :
+    stepP p s = { s with regs := s.regs.set d (s.regs.get b + s.regs.get i * 8), rip := nxt C s.rip (.op (.lea .q d { base := some b, index := some i, scale := .s8 })) } := by
+  rw [stepP_of_at hs (codeAt_head hc)]
+  simp only [AI.toInstr]
+  rw [step_lea .q d _ (live_of hs) rfl]
+  simp [Value.writeView, Ea.offset, Scale.toVal, nxt, AI.size]
+
+/-- A FAULT reached from a state related to an R3 run state by a BUF-confined change ends at the driver as R3 `fault`. -/
+theorem fault_exit {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {c : WCode} {ρ : List W}
+    {k : List (WCode × List W)} {wm : WMem} {s u : Cpu} (hR : R3 C p L (.run c ρ k, wm) s) (hm : AgreeBuf L s.mem u.mem)
+    (hreg : ∀ r, r ≠ .rax → r ≠ .rcx → r ≠ .rdx → u.regs.get r = s.regs.get r) (hus : u.stopped = false) (hrip : u.rip = C.fault) :
+    ∃ v, runP p 4 u = v ∧ R3 C p L (.fault, wm) v := by
+  obtain ⟨_, _, hcom, hlo, _, _, hfr, hsl, _⟩ := hR
+  have hret : rd u.mem L.rsp0 = L.ret0 := by
+    rw [hm L.rsp0 (fun i hi => buf_stk_apart E.ok hi (E.ok.stk_lo_le) (le_refl _))]; exact frames_ret0 k _ _ hfr
+  obtain ⟨v, hv, hret', hcom'⟩ := exit_run (rest := []) E.ok hus (by rw [hrip]; simpa using E.fault) (common_of_buf E.ok hcom hm hreg)
+    hret E.ret_canon
+  exact ⟨v, hv, hret', hcom'⟩
+
 end S3
