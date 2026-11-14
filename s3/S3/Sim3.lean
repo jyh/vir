@@ -389,4 +389,49 @@ theorem arith_sub_run {C : Ctx3} {p : Program} {s : Cpu} {t : Nat} {x y : W} {re
     · intro a ha; rw [e5, r14_4, show s4.mem = s.mem by rw [e4]; exact mem3]; exact rd_write_apart _ _ _ _ ha
     · intro r ha hc'; rw [e5]; rw [e4]; exact regs3 r ha hc'
 
+/-! ## Signed comparison: the `l`, `le`, `e` conditions after `cmp` are S2's `<`, `≤`, `=` on `toInt` (no `bv_decide`: it would
+    add `Lean.ofReduceBool` to the axioms) -/
+
+theorem toInt_bounds (x : W) : -2 ^ 63 ≤ x.toInt ∧ x.toInt < 2 ^ 63 :=
+  ⟨by have := BitVec.le_toInt x; simpa using this, by have := BitVec.toInt_lt (x := x); simpa using this⟩
+
+theorem cc_l_sub (x y : W) (f : Flags) : Cc.eval .l (Flags.sub .q x y f) = decide (x.toInt < y.toInt) := by
+  obtain ⟨hx1, hx2⟩ := toInt_bounds x
+  obtain ⟨hy1, hy2⟩ := toInt_bounds y
+  simp only [Cc.eval, Flags.sub, Flags.fromResult, Flags.subResult, Value.trunc_q, subOF_q, msb_q, BitVec.ssubOverflow,
+    BitVec.msb_eq_toInt, BitVec.toInt_sub, Int.bmod_def]
+  rw [Bool.eq_iff_iff]
+  simp only [bne_iff_ne, ne_eq, decide_eq_true_eq, ← Bool.decide_or, decide_eq_decide]
+  split <;> omega
+
+theorem sub_zero_iff (x y : W) : Value.isZero .q (Flags.subResult .q x y) = decide (x = y) := by
+  simp only [Value.isZero, Flags.subResult, Value.trunc_q]
+  by_cases h : x = y
+  · subst h; simp
+  · have : x - y ≠ 0 := fun e => h (by rw [← BitVec.sub_add_cancel x y, e]; simp)
+    simpa [h] using this
+
+theorem cc_e_sub (x y : W) (f : Flags) : Cc.eval .e (Flags.sub .q x y f) = decide (x = y) := by
+  simp only [Cc.eval, Flags.sub, Flags.fromResult]; exact sub_zero_iff x y
+
+theorem cc_le_sub (x y : W) (f : Flags) : Cc.eval .le (Flags.sub .q x y f) = decide (x.toInt ≤ y.toInt) := by
+  have hl := cc_l_sub x y f
+  simp only [Cc.eval] at hl ⊢
+  have he : (Flags.sub .q x y f).zf = decide (x = y) := by simp only [Flags.sub, Flags.fromResult]; exact sub_zero_iff x y
+  rw [he, hl]
+  rw [Bool.eq_iff_iff]
+  simp only [Bool.or_eq_true, decide_eq_true_eq]
+  constructor
+  · rintro (h | h)
+    · subst h; omega
+    · omega
+  · intro h
+    by_cases h' : x.toInt < y.toInt
+    · exact Or.inr h'
+    · exact Or.inl (BitVec.toInt_inj.mp (by omega))
+
+/-- setcc into a zeroed register leaves exactly the condition's 0/1. -/
+theorem writeView_b_zero (b : Bool) : Value.writeView .b 0 (if b then 1 else 0) = boolW b := by
+  cases b <;> rfl
+
 end S3
