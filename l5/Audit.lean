@@ -132,3 +132,13 @@ open VIRL5
 #print axioms stepS_sole
 #print axioms lookup_lifted
 #print axioms refine_lifted
+#print axioms disp₅_reach
+#print axioms stepS₅_reex
+#print axioms wf_of_sole
+#print axioms world_congr
+#print axioms iterS_sole
+#print axioms rep5_end_cost
+#print axioms rep5_end_world
+#print axioms rep_iter
+#print axioms sole_world_eq'
+#print axioms refine_rep
