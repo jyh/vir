@@ -58,3 +58,16 @@ Nothing here is first scored here; each line names its source.
   and probes); k7/logs 36 logs, 36 lines (24 / 12; 19 builds `k7-NNN`). One k7 probe run is NOT logged (its log was deleted by
   the 79th head; saltbuild's audit log records it, k7/STAGE-K7.md). Counted by `cat <dir>/logs/*.log | grep -h 'saltbuild EXIT='
   | sort | uniq -c` at l5-lean 30e0e85 (the tree #78 lands).
+
+## Addendum 2 (2026-11-15, the 80th vir head): the router at the machine for every world — beside K7, not a score
+- **OVF excluded for every world:** `K7.router_inR` (k7/K7/RouterAll.lean): F's SrcInRange for every 87-cell world (W87) whose wire
+  cells hold bytes; `exit_code_all` is exit_code without the checked-run premise. Source: k7/STAGE-K7.md, DECLARATIONS-K7 Add. 4.
+- **R4 at the machine, total on R4's premises:** `K7.router_R4_x86` (k7/K7/RouterR4.lean): for every such world with sender < 4
+  and topic < 4, the machine returns DONE with every cell at its scaled address equal to R4's post-state (termination by
+  `router_halts`, contents from L3's R4 at frame ∅). This closes K7's limit (a) on R4's premise set. Source: k7/STAGE-K7.md,
+  DECLARATIONS-K7 Add. 5.
+- **No score moves:** both are lemmas about F, so by K7's declared rule they sit beside K7 (still HOLDS on its five witnesses,
+  non-author read owed), never inside it.
+- **Runs (C6, logged):** k7/logs 55 logs, 55 `saltbuild EXIT=` lines (32 EXIT=0, 23 EXIT=1), +19 since Addendum 1. Sources of six
+  of those probes (k7-probe-inR-002…007) are not in the tree (stated in STAGE-K7); their logs are. Counted by the same command at
+  l5-lean 4199385.
