@@ -67,3 +67,14 @@
 - **Project:** k7 now requires ../s3 by path (manifest by edit: s3, x86lean at 4f08f91 inherited, bridge inherited; x86lean
   APFS-cloned from s3/.lake).
 - **K7 itself stays OWED:** the five exits witnessed at the machine (K7-b2) needs OVF and RES excluded per witness.
+
+## K7-b2 piece (1), RES excluded generically (79th head; DECLARATIONS-K7 Addendum 2, declared before the file)
+- **`S3.res_free` / `S3.resWhy_false` PROVED** (s3/S3/ResFree.lean; s3-136 EXIT=0, s3-134 red; audit s3-audit-020 94/94 within
+  the three). Static measures on WCode (`rW`, `envM`, `frD`) and potentials over the pending frames (`topM`, `topF`) never increase
+  under `stepW` with an EMPTY table (`top_step`); so along every word run from main the ENV words (with `grow`) are at most
+  `envM main |ρ₀|` and the frames at most `frD main`, and a layout sized from them makes `ResWhy` false at every reached state.
+  Names no program. The router's table is empty (`F_tbl_nil`), so it applies to F.
+- **Going red** (s3-probe-mut-001): `envM`'s load clause with its `+1` dropped is refused at two places (envM_mono's load case,
+  line 46; top_step's load case, line 147; read in the log). The unmutated copy (s3-probe-ctl-001) is green.
+- **Pieces (2)–(4) OWED:** a finishing source run per witness (termination + progress for fix-free terms, then L3's R4 for the
+  CODE value), OVF excluded per witness, and the assembly.

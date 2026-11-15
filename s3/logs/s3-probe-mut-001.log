@@ -1,0 +1,49 @@
+saltqueue: ticket P1 seat=root pid=13373
+probes/MutResFree.lean:46:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  f ≥ 0
+  e ≥ 0
+  e - f ≤ -1
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 0
+  b ≥ 0
+  b - f ≤ -1
+  a ≥ 0
+  a - b ≥ 0
+  a - e ≤ -1
+where
+ a := ↑n'
+ b := ↑n
+ c := ↑(envM k (n' + 1))
+ d := ↑(envM k (n + 1))
+ e := ↑(envM k n')
+ f := ↑(envM k n)
+probes/MutResFree.lean:73:73: warning: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/MutResFree.lean:73:73: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/MutResFree.lean:94:84: warning: 'omega' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+probes/MutResFree.lean:94:84: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+probes/MutResFree.lean:147:46: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  c - d ≥ 1
+  a ≥ 0
+  a - b ≤ -1
+where
+ a := BitVec.toInt i✝
+ b := BitVec.toInt len✝
+ c := ↑(envM kc (ρ.length + 1))
+ d := ↑(envM kc ρ.length)
+ e := ↑ρ.length
+saltbuild EXIT=1
