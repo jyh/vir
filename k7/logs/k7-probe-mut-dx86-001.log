@@ -1,0 +1,12 @@
+saltqueue: ticket P1 seat=root pid=18152
+probes/MutDeflateX86.lean:32:88: error: Application type mismatch: The argument
+  hA
+has type
+  AtHead L H ρw0 (scaleMem (initStore b om lit p)) s
+but is expected to have type
+  AtHead L H (capWords scaleLay p (L0 b.size om)) (scaleMem (initStore b om lit p)) s
+in the application
+  driver_x86_R stepT stepT_typed stepT_wfB stepT_fnOk stepT_ok2 hT hCdef hP hC hb hNm hNt hL hcanon hretc hstub hcode
+    hbase hX hH hret hN hE (iterS_iterRel p k (initStore b om lit p) σ hk) hlv (envRel_cap hreg) h0.left h0.right.left
+    hA
+saltbuild EXIT=1

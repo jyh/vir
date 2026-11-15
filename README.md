@@ -47,9 +47,12 @@ committed. For the Lean arm this is recorded in `SUMMARY-first-act.md`, which al
 ## Where to start
 1. `SUMMARY-first-act.md`: every verdict, with its count, the reading it is scored under and when that
    reading was pinned.
-2. `RESULTS-1.md`, `RESULTS-2.md`, `RESULTS-3.md`: the measurements and their addenda.
-3. `FINDINGS.md`: what each arm found about the object and about itself.
-4. `REVIEW-O95-2026-11.md`: the open questions.
+2. `SUMMARY-compiler.md`: the compiler from VIR source to x86-64 over x86lean (amend-23 §K), DEFLATE through it, and the
+   results proved beside its scoreboard, each with its limit and its record (each one is in the axiom audit
+   `k7/Audit.lean`, run as k7-audit-011). This is the Lean arm only.
+3. `RESULTS-1.md` … `RESULTS-13.md`: the measurements and their addenda.
+4. `FINDINGS.md`: what each arm found about the object and about itself.
+5. `REVIEW-O95-2026-11.md`: the open questions.
 
 To re-derive every committed count file from the artifacts, run `harness/reproduce.sh <metaprl-root>`.
 It extracts counts only and does not rebuild. `harness/selftest.sh` shows that the extractor can fail.

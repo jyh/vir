@@ -71,3 +71,29 @@ Nothing here is first scored here; each line names its source.
 - **Runs (C6, logged):** k7/logs 55 logs, 55 `saltbuild EXIT=` lines (32 EXIT=0, 23 EXIT=1), +19 since Addendum 1. Sources of six
   of those probes (k7-probe-inR-002…007) are not in the tree (stated in STAGE-K7); their logs are. Counted by the same command at
   l5-lean 4199385.
+
+## Addendum 3 (2026-11-15, the 80th vir head): DEFLATE at the x86 machine, in the driver's disjunctive form
+- **`K7.deflate_x86`** (k7/K7/DeflateX86.lean): `S3.driver_x86_R` instantiated at DEFLATE's step from the loader's image of the
+  initial store. For every k steps that DEFLATE's iteration takes, the machine reaches its loop head again with memory related to
+  the k-th store, OR some iteration leaves the loop with a non-DONE status. Source: k7/STAGE-K7.md, DECLARATIONS-DRIVER Add. 7.
+- **Not DONE-only:** the non-DONE exit is not excluded, because the driver does not name the status. K5's no-overflow result holds at
+  S2 and does not pass through this driver; RES is not excluded for DEFLATE (its table is not empty). A driver variant carrying a
+  per-iteration no-overflow premise is queued, not claimed.
+- **Runs (C6, logged):** k7/logs 61 logs, 61 `saltbuild EXIT=` lines (35 EXIT=0, 26 EXIT=1), +6 since Addendum 2. Same command, at
+  l5-lean 0a8d495.
+
+## Addendum 4 (2026-11-15, the 80th vir head): DEFLATE at the x86 machine with overflow excluded
+- **`K7.deflate_x86_N`** (k7/K7/DeflateX86N.lean) supersedes Addendum 3's disjunct. For every k steps DEFLATE's iteration takes, the
+  machine reaches its loop head with memory related to the k-th store, OR it has left the loop with status RES. **OVF is excluded
+  at the machine**, through a new generic driver step `S3.drv_iter_N` (s3/S3/DriverN.lean, names no program) and K5's per-step
+  range result. RES (ENV or STACK outgrown) is not excluded. Source: k7/STAGE-K7.md, compiler/STAGE-S3.md, DECLARATIONS-DRIVER Add. 8.
+- **Runs (C6, logged):** k7/logs 64 logs (38 EXIT=0, 26 EXIT=1); s3/logs 163 logs (91 / 72). Same command, at l5-lean e0e443a.
+
+## Addendum 5 (2026-11-15, the 80th vir head): the router served k times at the machine, DONE-only — beside K7
+- **`K7.router_served_x86`** (k7/K7/RouterDriver.lean): from any 87-cell world with wire bytes and R4's premises, loaded and placed
+  at the driver's loop head, the machine returns to the loop head after EVERY k calls of the compiled router. Its memory is related
+  to the k-th store of the router's source iteration, and no call ends in OVF, RES or FAULT. One call keeps the world's invariant
+  (`router_inv_step`), so the iteration exists for every k. The driver step for an empty table, `K7.drv_iter_D`, is generic.
+  Source: k7/STAGE-K7.md, DECLARATIONS-K7 Add. 6.
+- **No score moves** (a router result, beside K7).
+- **Runs (C6, logged):** k7/logs 70 logs (42 EXIT=0, 28 EXIT=1). Same command, at l5-lean 53ce4b8.

@@ -136,3 +136,50 @@
 - **Builds:** k7-022 (root) EXIT=0; k7-audit-008 32/32 constants within propext · Classical.choice · Quot.sound. Probes
   k7-probe-R4-001 … 004 (sources R4a, R4b, R4c, R4d all kept; 004 EXIT=0, no sorry). **Going red:** k7-probe-mut-R4-001, the walk
   with the sender bound widened to < 5, EXIT=1: at each `halts_ret` the configuration is still a load, not a `ret`.
+
+## ADDENDUM (2026-11-15, the 80th head): DEFLATE at the x86 machine (DECLARATIONS-DRIVER Addendum 7, STATUS-vir 369)
+- **`deflate_x86` (K7/DeflateX86.lean):** `S3.driver_x86_R` instantiated at DEFLATE's stepT from the loader's image of
+  `initStore b om lit p`, under DEFLATE's premises (bytes < 256; n, OUTMAX < 2³²; 0 ≤ p; p + L0 ≤ 2⁶⁰) and the driver's S3 premises
+  on stepT's lowering, kept as premises. For every k with `iterS p k (initStore …) = some σ`, the machine reaches the loop head again
+  with memory related to σ, OR some iteration leaves the loop at X with a non-DONE status. `iterS_iterRel` turns DEFLATE's iteration
+  into the driver's IterRel.
+- **Declared limit, unchanged:** the non-DONE disjunct is not excluded. The driver does not name the status, so `deflate_noovf` (S2)
+  cannot be applied through it, and RES is not excluded generically (stepT's table is not empty). This is the x86 half of C0 (a) for
+  DEFLATE in the driver's own disjunctive form. It is NOT DONE-only.
+- **Builds:** k7-023 and k7-024 EXIT=1 (implicit arguments of `deflate_noovf_loaded` and `reach_shape` not inferred); k7-025
+  (K7.DeflateX86) EXIT=0; k7-026 (root) EXIT=0; k7-audit-009 34/34 within propext · Classical.choice · Quot.sound. **Going red:**
+  k7-probe-mut-dx86-001, the same statement with the machine's start words ρw0 not the loader's, EXIT=1 at `hA` (type mismatch:
+  EnvRel holds for capWords only). k7-023 and k7-024 are redacted (home path → `~/fleet`, as earlier logs are).
+
+## ADDENDUM (2026-11-15, the 80th head): DEFLATE at the x86 machine with OVF EXCLUDED (DECLARATIONS-DRIVER Addendum 8, STATUS-vir 371)
+- **`deflate_x86_N` (K7/DeflateX86N.lean):** for every k with `iterS p k (initStore …) = some σ`, the machine reaches the loop head
+  with memory related to σ (EnvRel, Layout, MemRel, σ.R = σ₀.R), OR it has left the loop at X with cb = **stRes**. This is induction
+  on k with `S3.drv_iter_N` at each step: SrcInRange from K5's `deflate_inrange`, L.live carried by σ.R. **OVF is excluded at the
+  machine for DEFLATE. RES (ENV or STACK outgrown) is the one non-DONE exit left, and it is not excluded.** This supersedes
+  `deflate_x86`'s disjunct; deflate_x86 stays as proved.
+- **Builds:** k7-027 (K7.DeflateX86N) EXIT=0; k7-028 (root) EXIT=0; k7-audit-010 36/36 within propext · Classical.choice ·
+  Quot.sound. The mutant is s3's (compiler/STAGE-S3.md, drv_iter_N).
+
+## ADDENDUM (2026-11-15, the 80th head): the router SERVED k times at the machine, DONE-only (DECLARATIONS-K7 Addendum 6, STATUS-vir 374)
+- **`router_served_x86` (K7/RouterDriver.lean):** for every σ with `RInv σ` (W87, wire bytes, sender < 4, topic < 4), the driver's
+  S3 premises on F's lowering plus ENV and STACK room for F's main, L.live covering σ's live cells, and a machine at the loop head on
+  σ's loader image: for EVERY k, F's iteration reaches some σk (`router_iter`) and the machine is at the loop head again after k
+  calls, its memory related to σk. **No call ends in OVF, RES or FAULT.**
+- **Route:** `router_inv_step` (one finishing call keeps RInv: F writes only cells 1 and 2 and the bucket, all outside the wire
+  cells; the post-state from `router_post_s`, R5_contents for the unchanged cells, `postF_inR` for the range) · `router_iter`
+  (router_halts at every call) · `router_driver` (induction on IterRel, `drv_iter_D` at each call with SrcInRange from router_inR).
+- **`drv_iter_D` (K7/DriverD.lean, generic, names no program):** drv_iter_N for an empty lowered table under ENV/STACK room, with
+  NO exit disjunct; RES is closed by `resWhy_false`.
+- **Builds:** k7-029 (K7.DriverD) EXIT=0; k7-030 (K7.RouterDriver) EXIT=0, first build; k7-031 (root) EXIT=0; k7-audit-011 41/41
+  within propext · Classical.choice · Quot.sound, 0 sorryAx. **Going red:** k7-probe-mut-drvD-001 (empty-table premise dropped)
+  EXIT=1 at `Unknown identifier htbl`, which is weak. k7-probe-mut-drvD-002 removes the rewrite to [] as well: EXIT=1 at
+  `resWhy_false hj`, type mismatch, because `resWhy_false` takes a run over the EMPTY table and F's general table is refused.
+
+## ADDENDUM (2026-11-15, the 80th head): K3's tool on the two new generic driver steps (the "names no program" claims of DECLARATIONS-DRIVER Add. 8 and DECLARATIONS-K7 Add. 6)
+- k5/tools/k3_check.py over k7/logs/k7-probe-K3-005.log (probes/K3DriverND2.lean; whitelist derived as before): `S3.drv_iter_N`
+  FALSIFIED (106 constants) and `K7.drv_iter_D` FALSIFIED (106). **Every offender is in S3.\*, the compiler's own x86 stage. No
+  DEFLATE, router, K5 or K7 constant appears.** That is the same reading as K3's on `S3.driver_x86`: tool FALSIFIED, author reading
+  "names no program". It rides K3's open fork (A/B) and does not settle it. Positive control: `K7.router_served_x86` names VIRL3.F,
+  K7.RInv and K5.capWords/scaleLay/scaleMem, so the tool does see program constants. `K7.deflate_x86_N` names K5.* (expected: it is
+  DEFLATE's instance).
+- k7-probe-K3-004 EXIT=1: my probe sliced the template inside the `elab` string (unterminated string literal). Measured nothing.

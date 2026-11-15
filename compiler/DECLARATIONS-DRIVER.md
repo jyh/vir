@@ -92,3 +92,48 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   iteration carries it by `live_of_R`. `driver_x86` stays as proved; nothing proved is edited.
 - **What would show it wrong:** an IR step of an accepted program that changes σ.R (stepIR_R's NoAF not available from SRel at
   some step); the finish branch's final store not being the IR's.
+
+## Addendum 7 (2026-11-15, the 80th head, BEFORE k7/K7/DeflateX86.lean): DEFLATE at the x86 machine (STATUS-vir 369)
+- **`iterS_iterRel`:** `iterS p k σ = some σ'` ⇒ `IterRel stepT p k σ σ'` (both recurse at the front; each step by `stepS_steps_p`).
+- **`deflate_x86`:** `driver_x86_R` instantiated at e = stepT, lay = scaleLay, from the loader's image of `initStore b om lit p`
+  (Layout and MemRel by `deflate_noovf_loaded` at k = 0; EnvRel by `K5.envRel_cap`), under DEFLATE's own premises (bytes < 256,
+  n, OUTMAX < 2³², 0 ≤ p, p + L0 ≤ 2⁶⁰) and the driver's S3 premises on `lower3` of stepT, which stay PREMISES here (needW, code
+  size, table length, layout, loop code at H), with L.live covering the START store's live cells. Conclusion, for every k with
+  `iterS p k (initStore …) = some σ`: the machine reaches the loop head again with memory related to σ, OR some iteration leaves the
+  loop at X with a non-DONE status.
+- **Declared limit:** the second disjunct is NOT excluded here. `driver_x86_R` does not say WHICH non-DONE status, so DEFLATE's
+  no-OVF (`deflate_noovf`, at S2) cannot be applied through it; RES is not excluded generically either (stepT's table is not empty,
+  so `resWhy_false` does not apply). Excluding OVF at the machine needs a driver variant carrying a per-iteration no-OVF premise:
+  queued as its own item, not claimed here.
+- **Going red:** start the iteration from a store the loader did not produce (drop `initStore`'s EnvRel), and the instantiation must
+  fail to close.
+
+## Addendum 8 (2026-11-15, the 80th head, BEFORE s3/S3/DriverN.lean and k7/K7/DeflateX86N.lean): OVF excluded at the machine (STATUS-vir 371)
+- **`S3.drv_iter_N` (new file s3/S3/DriverN.lean; no existing s3 file edited):** `drv_iter_R` with one more premise, SrcInRange of
+  the iteration's source run, and a narrower exit: the machine reaches the head again (EnvRel, Layout, MemRel at σ₁, σ₁.R = σ.R), or
+  it leaves the loop at X with the cb word EXACTLY `stRes`. The OVF branch is closed by `compile_noovf`. It names no program.
+- **`deflate_x86_N` (k7/K7/DeflateX86N.lean):** induction on k through `iterS_succ'`, `drv_iter_N` at each step with SrcInRange from
+  K5's `deflate_inrange` and L.live carried by σ.R = σ₀.R. Conclusion, for every k with `iterS p k (initStore …) = some σ`: the
+  machine reaches the head with memory related to σ, OR it has left the loop at X with cb = stRes. **OVF is excluded at the machine
+  for DEFLATE; RES (ENV or STACK outgrown) is the one remaining non-DONE exit, and is NOT excluded** (stepT's table is not empty).
+- **Going red:** drop the SrcInRange premise from drv_iter_N, and the OVF branch must fail to close.
+
+## Addendum 9 (2026-11-15, the 80th head): RES for DEFLATE at the machine, MEASURED; UNREACHED by a static measure (STATUS-vir 373)
+- **Measured** (k7/probes/ResNeed2.lean, k7-probe-res-002 EXIT=0; res-001 printed the first four lines, then went red on a missing
+  import): stepT's lowered table has **4** functions. **All 4, and main, make NON-tail calls** (an `app` inside a `letE`'s first arm,
+  so the continuation is a pushed frame). Static measures: main envM(·, 2) = **41** words, frD = **1**. Per function (from 3 words):
+  envM 10 · 8 · 8 · 8, frD 1 each.
+- **Verdict: a `resWhy_false` analogue by STATIC measure is UNREACHED for DEFLATE.** res_free bounds frames by frD along a run of
+  main only because an empty table makes every call terminal. With non-tail recursive calls, the frames pushed grow with the
+  recursion DEPTH, which is a property of the inputs, not of the code.
+- **What would reach it (queued, not claimed):** (1) a generic depth-indexed res_free: frames ≤ frD(main) + Σ over the live call
+  chain of frD(fᵢ), ENV ≤ the chain's sum of envM; (2) DEFLATE's per-function depth bound, taken from its termination measures
+  (D3's: OUTMAX − m or the pending count, and the bit count per read); (3) ENV/STACK premises sized from (1)+(2). Until then
+  `deflate_x86_N`'s RES disjunct stands, and it is stated as a limit wherever DEFLATE at the machine is cited.
+- **Sizing, EMPIRICAL and NOT a proof (k7/probes/DepthMeasure2.lean, k7-probe-depth-002 EXIT=0; depth-001 red on a name clash):** the
+  deepest letE context (S1's Match pairs letE frames with word frames one to one) reached by stepT's runs is **10** on each of five
+  corpus streams (stored-empty, fixed-empty, fixed-one-literal, fixed-overlap-copy, two-blocks; OUTMAX 64), over 400 steps each.
+  The probe's stop rule never fired, so it is NOT shown that each stream had finished within the 400. The structure agrees with a
+  small constant: POW recurses non-tail on k ≤ 8; STRIP is tail-recursive but calls POW non-tail; BITc calls STRIPc then POW.
+  **Cost of a proof:** a value-dependent depth invariant over every mode of stepT, on the scale of K5's SrcInRange campaign. That
+  campaign is not in amend-23's plan, so it is posted as a fork, not started.
