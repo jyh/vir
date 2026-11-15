@@ -81,3 +81,10 @@ Nothing here is first scored here; each line names its source.
   per-iteration no-overflow premise is queued, not claimed.
 - **Runs (C6, logged):** k7/logs 61 logs, 61 `saltbuild EXIT=` lines (35 EXIT=0, 26 EXIT=1), +6 since Addendum 2. Same command, at
   l5-lean 0a8d495.
+
+## Addendum 4 (2026-11-15, the 80th vir head): DEFLATE at the x86 machine with overflow excluded
+- **`K7.deflate_x86_N`** (k7/K7/DeflateX86N.lean) supersedes Addendum 3's disjunct. For every k steps DEFLATE's iteration takes, the
+  machine reaches its loop head with memory related to the k-th store, OR it has left the loop with status RES. **OVF is excluded
+  at the machine**, through a new generic driver step `S3.drv_iter_N` (s3/S3/DriverN.lean, names no program) and K5's per-step
+  range result. RES (ENV or STACK outgrown) is not excluded. Source: k7/STAGE-K7.md, compiler/STAGE-S3.md, DECLARATIONS-DRIVER Add. 8.
+- **Runs (C6, logged):** k7/logs 64 logs (38 EXIT=0, 26 EXIT=1); s3/logs 163 logs (91 / 72). Same command, at l5-lean e0e443a.
