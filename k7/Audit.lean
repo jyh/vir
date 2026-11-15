@@ -35,3 +35,8 @@ import K7
 #print axioms K7.deflate_x86
 #print axioms S3.drv_iter_N
 #print axioms K7.deflate_x86_N
+#print axioms K7.drv_iter_D
+#print axioms K7.router_inv_step
+#print axioms K7.router_iter
+#print axioms K7.router_driver
+#print axioms K7.router_served_x86

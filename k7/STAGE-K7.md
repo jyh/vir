@@ -159,3 +159,18 @@
   `deflate_x86`'s disjunct; deflate_x86 stays as proved.
 - **Builds:** k7-027 (K7.DeflateX86N) EXIT=0; k7-028 (root) EXIT=0; k7-audit-010 36/36 within propext · Classical.choice ·
   Quot.sound. The mutant is s3's (compiler/STAGE-S3.md, drv_iter_N).
+
+## ADDENDUM (2026-11-15, the 80th head): the router SERVED k times at the machine, DONE-only (DECLARATIONS-K7 Addendum 6, STATUS-vir 374)
+- **`router_served_x86` (K7/RouterDriver.lean):** for every σ with `RInv σ` (W87, wire bytes, sender < 4, topic < 4), the driver's
+  S3 premises on F's lowering plus ENV and STACK room for F's main, L.live covering σ's live cells, and a machine at the loop head on
+  σ's loader image: for EVERY k, F's iteration reaches some σk (`router_iter`) and the machine is at the loop head again after k
+  calls, its memory related to σk. **No call ends in OVF, RES or FAULT.**
+- **Route:** `router_inv_step` (one finishing call keeps RInv: F writes only cells 1 and 2 and the bucket, all outside the wire
+  cells; the post-state from `router_post_s`, R5_contents for the unchanged cells, `postF_inR` for the range) · `router_iter`
+  (router_halts at every call) · `router_driver` (induction on IterRel, `drv_iter_D` at each call with SrcInRange from router_inR).
+- **`drv_iter_D` (K7/DriverD.lean, generic, names no program):** drv_iter_N for an empty lowered table under ENV/STACK room, with
+  NO exit disjunct; RES is closed by `resWhy_false`.
+- **Builds:** k7-029 (K7.DriverD) EXIT=0; k7-030 (K7.RouterDriver) EXIT=0, first build; k7-031 (root) EXIT=0; k7-audit-011 41/41
+  within propext · Classical.choice · Quot.sound, 0 sorryAx. **Going red:** k7-probe-mut-drvD-001 (empty-table premise dropped)
+  EXIT=1 at `Unknown identifier htbl`, which is weak. k7-probe-mut-drvD-002 removes the rewrite to [] as well: EXIT=1 at
+  `resWhy_false hj`, type mismatch, because `resWhy_false` takes a run over the EMPTY table and F's general table is refused.
