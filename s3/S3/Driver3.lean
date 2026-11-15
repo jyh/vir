@@ -173,4 +173,69 @@ theorem head_call {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {H base : W} {
     exact apart_of_disjoint (fun a h1 h2 => hL.env_stk a h2 h1) stkw
       (env_word L (e := L.env0) hL.envlo_le_env0 hA.hi hj)
 
+set_option maxHeartbeats 1000000 in
+/-- **after_done.** From the stub's DONE return with the two result words at BUF: 10 steps of the loop reach H in AtHead, the next
+    call's argument words being those two, the word memory unchanged. -/
+theorem after_done {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {X H w0 w1 : W} {wm : WMem} {u : Cpu}
+    (hR : Returned L stDone u) (hcm : Common L wm u) (hbuf : WordsAt u.mem L.buf [w0, w1])
+    (hc : CodeAt C p u.rip (loopTail L.env0 X H)) (hX : canonical X = true) (hH : canonical H = true) (hN : 2 ≤ L.bufN)
+    (hE : L.env0.toNat + 8 * 2 ≤ L.envTop.toNat) (hstk : L.stkLo.toNat + 16 ≤ L.rsp0.toNat) :
+    ∃ w, runP p 10 u = w ∧ AtHead L H [w0, w1] wm w := by
+  obtain ⟨hus, -, hursp, hcb⟩ := hR
+  obtain ⟨v, hv, hvs, hvm, hvr, hvrip⟩ := loop_check hus hc hcm hX
+  have h0 : rd u.mem L.cb = 0 := hcb
+  rw [if_pos h0] at hvrip
+  have hsplit : loopTail L.env0 X H = (loopTail L.env0 X H).take 4 ++
+      [movi .r12 L.env0, ld .rcx .r14 0, st .r12 0 .rcx, ld .rcx .r14 8, st .r12 8 .rcx, .jmpA H] := rfl
+  have hc' : CodeAt C p v.rip [movi .r12 L.env0, ld .rcx .r14 0, st .r12 0 .rcx, ld .rcx .r14 8, st .r12 8 .rcx, .jmpA H] := by
+    rw [hvrip]; rw [hsplit] at hc; exact codeAt_right hc
+  have hcmv : Common L wm v := by
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · rw [hvr .r14 (by decide) (by decide)]; exact hcm.1
+    · rw [hvr .rbx (by decide) (by decide)]; exact hcm.2.1
+    · rw [hvm]; exact hcm.2.2.1
+    · rw [hvm]; exact hcm.2.2.2
+  have hbufv : WordsAt v.mem L.buf [w0, w1] := by rw [hvm]; exact hbuf
+  have hlo := hL.envlo_le_env0
+  obtain ⟨w, hw, hws, hwrip, hwr12, hwr, hwm⟩ := loop_copy hL hvs hc' hH hcmv hbufv hN hlo hE
+  have z0 : L.env0 + slot 0 = L.env0 := by simp [slot]
+  have z1 : L.env0 + slot 1 = L.env0 + 8 := by simp [slot]
+  have ew0 := env_word L (e := L.env0) hlo hE (j := 0) (by decide)
+  have ew1 := env_word L (e := L.env0) hlo hE (j := 1) (by decide)
+  rw [z0] at ew0; rw [z1] at ew1
+  have cbw2 : ∀ k, k < 8 → inCb L (L.cb + 16 + BitVec.ofNat 64 k) := cb_word L (m := 2) (by decide)
+  have cbw3 : ∀ k, k < 8 → inCb L (L.cb + 24 + BitVec.ofNat 64 k) := cb_word L (m := 3) (by decide)
+  have hT := L.envTop.isLt
+  have h8 : (8 : W).toNat = 8 := rfl
+  have a01 : VIRBridge.Apart L.env0 (L.env0 + 8) := order_apart (by simp only [BitVec.toNat_add, h8]; omega)
+    (by simp only [BitVec.toNat_add, h8]; omega)
+  refine ⟨w, by rw [show (10 : Nat) = 4 + 6 from rfl, runP_add, hv, hw], ⟨hws, hwrip, ?_, ?_, hwr12, ?_, ?_, ?_, ?_, ?_, ?_, hstk⟩⟩
+  · rw [hwr .r14 (by decide) (by decide), hvr .r14 (by decide) (by decide)]; exact hcm.1
+  · rw [hwr .rbx (by decide) (by decide), hvr .rbx (by decide) (by decide)]; exact hcm.2.1
+  · rw [hwr .rsp (by decide) (by decide), hvr .rsp (by decide) (by decide)]; exact hursp
+  · rw [hwm, rd_write_apart _ _ _ _ (apart_of_disjoint hL.env_cb ew1 cbw2),
+      rd_write_apart _ _ _ _ (apart_of_disjoint hL.env_cb ew0 cbw2), hvm]; exact hcm.2.2.1.2.1
+  · rw [hwm, rd_write_apart _ _ _ _ (apart_of_disjoint hL.env_cb ew1 cbw3),
+      rd_write_apart _ _ _ _ (apart_of_disjoint hL.env_cb ew0 cbw3), hvm]; exact hcm.2.2.1.2.2
+  · intro a ha
+    have e1 := rd_write_apart (v.mem.writeSize .q L.env0 w0) (L.env0 + 8) a w1
+      (apart_of_disjoint hL.env_live ew1 (live_word L ha))
+    have e2 := rd_write_apart v.mem L.env0 a w0 (apart_of_disjoint hL.env_live ew0 (live_word L ha))
+    simp only [rd] at e1 e2
+    rw [hwm, e1, e2, hvm]; exact hcm.2.2.2 a ha
+  · intro j hj
+    simp only [List.length_cons, List.length_nil] at hj
+    rw [hwm]
+    match j, hj with
+    | 0, _ =>
+      have e1 := rd_write_apart (v.mem.writeSize .q L.env0 w0) (L.env0 + 8) L.env0 w1 a01.symm'
+      simp only [rd] at e1
+      have z : L.env0 + BitVec.ofNat 64 (8 * 0) = L.env0 := by simp
+      show Mem.readN _ (L.env0 + BitVec.ofNat 64 (8 * 0)) 8 = w0
+      rw [z, e1]; exact rd_write_same _ _ _
+    | 1, _ =>
+      show Mem.readN _ (L.env0 + BitVec.ofNat 64 (8 * 1)) 8 = w1
+      rw [show (BitVec.ofNat 64 (8 * 1) : W) = 8 from rfl]; exact rd_write_same _ _ _
+  · simpa using hE
+
 end S3
