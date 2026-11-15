@@ -1,0 +1,24 @@
+saltqueue: ticket P1 seat=root pid=73671
+probes/InR2.lean:17:108: error: unexpected token '('; expected ')'
+probes/InR2.lean:44:2: error: Tactic `K7.«tacticWs[_,,]»` has not been implemented
+probes/InR2.lean:43:65: warning: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/InR2.lean:43:80: warning: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]̵N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲S̲u̲b̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1

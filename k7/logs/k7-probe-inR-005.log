@@ -1,0 +1,2319 @@
+saltqueue: ticket P1 seat=root pid=92147
+probes/InR5.lean:43:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : 24 ≤ f 0
+⊢ (inRange ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * NTp) = true ∧
+      inRange
+          ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * NTp +
+            (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14)))) =
+        true) ∧
+    inRange
+        (A +
+          ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * NTp +
+            (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14))))) =
+      true
+probes/InR5.lean:43:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : 24 ≤ f 0
+⊢ 0 ≤
+      A +
+        ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * NTp +
+          (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14)))) ∧
+    A +
+        ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * NTp +
+          (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14)))) <
+      87
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: unsolved goals
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : ¬24 ≤ f 0
+⊢ False
+probes/InR5.lean:47:11: error: maximum number of errors (100; from option `maxErrors`) reached, exiting
+saltbuild EXIT=1

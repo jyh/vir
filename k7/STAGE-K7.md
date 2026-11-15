@@ -102,3 +102,23 @@
   router's SrcInRange in general is not proved); (b) whether `exit_code`, `Rig` and `five_exits` count as "the instantiation" and not
   as router-specific lemmas is the author's reading (they mention F only through its evaluation facts and generic theorems); a
   non-author read is owed.
+
+## ADDENDUM (2026-11-15, the 80th head): limit (a)'s OVF clause lifted for every world (DECLARATIONS-K7 Addendum 4, STATUS-vir 361)
+- **`router_inR` (K7/RouterAll.lean):** F's SrcInRange for EVERY world σ with `W87 σ` and the wire premise `WireB σ` (cells 3 … 66
+  hold bytes in [0, 256), inputs/L3-programs.md). No premise on LEN, magic, ACL, tokens, sender or topic. A load outside the
+  region (sender·4 + topic ≥ 20, or sender ≥ 4) is a stuck configuration with an in-range head, in range by `srcInRange_stuck`
+  (from `step₂_complete`). The proof is a symbolic walk on `World σ 0 f` (L3's Sym.lean form), one checked step at a time,
+  splitting on LEN ≥ 24, the two load bounds and the three emit conjuncts.
+- **`exit_code_all`:** `exit_code`'s conclusion with `run₂C` replaced by `WireB σ`. The source run to `ret ⟨0⟩` stays a premise
+  (partial correctness, as R4 is). So the machine returns DONE with the CODE word at cell 1's scaled address on EVERY W87 world with
+  the wire premise on which F's source run finishes, with OVF excluded generically.
+- **K7's score does not move and RouterExits.lean is not edited:** `router_inR` is a lemma about F's structure, so by Addendum 3's
+  rule it is reported beside K7, not inside it. Limit (a) now reads: OVF is excluded for every W87 world with the wire premise;
+  what remains open is TERMINATION (every such world's run reaches `ret`, or sticks at an out-of-region load), which R4 at the
+  machine for all worlds also needs.
+- **Builds:** k7-020 (K7.RouterAll) EXIT=0; k7-021 (root) EXIT=0; k7-audit-007 28/28 constants within propext · Classical.choice
+  · Quot.sound (router_inR_f, router_inR, exit_code_all, srcInRange_stuck all three). **Going red:** k7-probe-mut-inR-001,
+  router_inR_f's walk with the wire premise dropped, EXIT=1 at the RD32 sum's let (its range obligation does not close).
+- **Probes:** k7-probe-inR-001 … 008 (the walk, explored before the file; 008 EXIT=0 with no sorry). **Sources kept for 001 and 008
+  only:** probes 002–007 were each edited forward under the next name (`mv`), so their sources are not in the tree; each run's
+  source sha is in the fleet saltbuild audit log, and each log is committed. C6 counts all eight.

@@ -23,3 +23,7 @@ import K7
 #print axioms K7.five_exits
 #print axioms K7.code_wTrunc
 #print axioms K7.code_wEmit
+#print axioms K7.srcInRange_stuck
+#print axioms K7.router_inR_f
+#print axioms K7.router_inR
+#print axioms K7.exit_code_all
