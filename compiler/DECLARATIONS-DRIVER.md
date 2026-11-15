@@ -107,3 +107,13 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   queued as its own item, not claimed here.
 - **Going red:** start the iteration from a store the loader did not produce (drop `initStore`'s EnvRel), and the instantiation must
   fail to close.
+
+## Addendum 8 (2026-11-15, the 80th head, BEFORE s3/S3/DriverN.lean and k7/K7/DeflateX86N.lean): OVF excluded at the machine (STATUS-vir 371)
+- **`S3.drv_iter_N` (new file s3/S3/DriverN.lean; no existing s3 file edited):** `drv_iter_R` with one more premise, SrcInRange of
+  the iteration's source run, and a narrower exit: the machine reaches the head again (EnvRel, Layout, MemRel at σ₁, σ₁.R = σ.R), or
+  it leaves the loop at X with the cb word EXACTLY `stRes`. The OVF branch is closed by `compile_noovf`. It names no program.
+- **`deflate_x86_N` (k7/K7/DeflateX86N.lean):** induction on k through `iterS_succ'`, `drv_iter_N` at each step with SrcInRange from
+  K5's `deflate_inrange` and L.live carried by σ.R = σ₀.R. Conclusion, for every k with `iterS p k (initStore …) = some σ`: the
+  machine reaches the head with memory related to σ, OR it has left the loop at X with cb = stRes. **OVF is excluded at the machine
+  for DEFLATE; RES (ENV or STACK outgrown) is the one remaining non-DONE exit, and is NOT excluded** (stepT's table is not empty).
+- **Going red:** drop the SrcInRange premise from drv_iter_N, and the OVF branch must fail to close.
