@@ -117,3 +117,16 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   machine reaches the head with memory related to σ, OR it has left the loop at X with cb = stRes. **OVF is excluded at the machine
   for DEFLATE; RES (ENV or STACK outgrown) is the one remaining non-DONE exit, and is NOT excluded** (stepT's table is not empty).
 - **Going red:** drop the SrcInRange premise from drv_iter_N, and the OVF branch must fail to close.
+
+## Addendum 9 (2026-11-15, the 80th head): RES for DEFLATE at the machine, MEASURED; UNREACHED by a static measure (STATUS-vir 373)
+- **Measured** (k7/probes/ResNeed2.lean, k7-probe-res-002 EXIT=0; res-001 printed the first four lines, then went red on a missing
+  import): stepT's lowered table has **4** functions. **All 4, and main, make NON-tail calls** (an `app` inside a `letE`'s first arm,
+  so the continuation is a pushed frame). Static measures: main envM(·, 2) = **41** words, frD = **1**. Per function (from 3 words):
+  envM 10 · 8 · 8 · 8, frD 1 each.
+- **Verdict: a `resWhy_false` analogue by STATIC measure is UNREACHED for DEFLATE.** res_free bounds frames by frD along a run of
+  main only because an empty table makes every call terminal. With non-tail recursive calls, the frames pushed grow with the
+  recursion DEPTH, which is a property of the inputs, not of the code.
+- **What would reach it (queued, not claimed):** (1) a generic depth-indexed res_free: frames ≤ frD(main) + Σ over the live call
+  chain of frD(fᵢ), ENV ≤ the chain's sum of envM; (2) DEFLATE's per-function depth bound, taken from its termination measures
+  (D3's: OUTMAX − m or the pending count, and the bit count per read); (3) ENV/STACK premises sized from (1)+(2). Until then
+  `deflate_x86_N`'s RES disjunct stands, and it is stated as a limit wherever DEFLATE at the machine is cited.
