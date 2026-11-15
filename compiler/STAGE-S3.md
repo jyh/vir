@@ -41,6 +41,11 @@ compiler and bridge by path).
   whitelist was typed. Whether they count is a reading the author does not make about its own result after the fact: the precedent
   (driver_l2, row 307) MOVED definitions into VIRC rather than widen the list. The tool's verdict stands as the score until a
   non-author rules.
+- **The driver's start-only form: `S3.driver_x86_R`** (s3/S3/SrcR.lean, DECLARATIONS-DRIVER Addendum 6; s3-132 EXIT=0, first
+  build; audit s3-audit-019 90/90 within the three) takes L.live ⊇ Live σ lay at the START store only. It carries σ.R through S2
+  (`s2_run_R`: each IR step keeps σ.R by `stepIR_R` with NoAF from that step's SRel; `compile_refines_mem_R`) and the live set by
+  `live_of_R`. Addendum 5's per-reached-store premise is no longer needed; `driver_x86` stays as proved beside it. Its statement's
+  constants are driver_x86's (the same K3 reading applies).
 - **K7: OWED.** K7-b1 `router_x86` (k7/STAGE-K7.md) carries compile_x86 to the router; the five exits witnessed is K7-b2.
 
 ## Runs
