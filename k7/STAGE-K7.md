@@ -174,3 +174,12 @@
   within propext · Classical.choice · Quot.sound, 0 sorryAx. **Going red:** k7-probe-mut-drvD-001 (empty-table premise dropped)
   EXIT=1 at `Unknown identifier htbl`, which is weak. k7-probe-mut-drvD-002 removes the rewrite to [] as well: EXIT=1 at
   `resWhy_false hj`, type mismatch, because `resWhy_false` takes a run over the EMPTY table and F's general table is refused.
+
+## ADDENDUM (2026-11-15, the 80th head): K3's tool on the two new generic driver steps (the "names no program" claims of DECLARATIONS-DRIVER Add. 8 and DECLARATIONS-K7 Add. 6)
+- k5/tools/k3_check.py over k7/logs/k7-probe-K3-005.log (probes/K3DriverND2.lean; whitelist derived as before): `S3.drv_iter_N`
+  FALSIFIED (106 constants) and `K7.drv_iter_D` FALSIFIED (106). **Every offender is in S3.\*, the compiler's own x86 stage. No
+  DEFLATE, router, K5 or K7 constant appears.** That is the same reading as K3's on `S3.driver_x86`: tool FALSIFIED, author reading
+  "names no program". It rides K3's open fork (A/B) and does not settle it. Positive control: `K7.router_served_x86` names VIRL3.F,
+  K7.RInv and K5.capWords/scaleLay/scaleMem, so the tool does see program constants. `K7.deflate_x86_N` names K5.* (expected: it is
+  DEFLATE's instance).
+- k7-probe-K3-004 EXIT=1: my probe sliced the template inside the `elab` string (unterminated string literal). Measured nothing.
