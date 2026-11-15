@@ -67,3 +67,18 @@ is not witnessed.
   (byte 0 = 0) → 2; ACL bit 0 → 2; 0 tokens → 2; emit → 0. Each witness's facts are evaluation only (`rfl`/`decide`).
 - **K7 is scored on these:** HOLDS if all five are witnessed at the machine with no lemma about F's structure, layout or cells
   (world-builder lemmas and evaluation facts are not router lemmas, by K7-a's reading); FALSIFIED if any needs one.
+
+## ADDENDUM 4 (2026-11-15, the 80th head, BEFORE k7/K7/RouterAll.lean; probes k7-probe-inR-001…008 explored the walk first and are counted as runs): STATUS-vir 361, K7 limit (a)
+- **`router_inR` (RouterAll.lean): F's SrcInRange for EVERY world**, not only the five witnesses. Premises: `W87 σ` (one 87-cell
+  region at base 0, every cell in range) and the WIRE premise of inputs/L3-programs.md (cells 3 … 3+NW−1 hold bytes in [0, 256)).
+  Nothing about LEN, magic, ACL, tokens, sender or topic. A run that LOADS outside the region (sender·4 + topic ≥ 20, or sender ≥ 4)
+  is stuck there, and a stuck configuration whose head is in range satisfies SrcInRange (`srcInRange_stuck`, from
+  `step₂_complete`). Proof: a symbolic walk over the arbitrary world (`World σ 0 f`, L3's Sym.lean form), one checked step at a
+  time (`srcInRange_step`), splitting on LEN ≥ 24, the two load bounds, and the three conjuncts of the emit condition.
+- **`exit_code_all`:** `exit_code`'s conclusion with the checked-run premise (`run₂C`) replaced by the wire premise: SrcInRange
+  comes from `router_inR`, the rest of the route is `exit_code`'s, unchanged. The source run to `ret ⟨0⟩` (`run₂`) stays a premise:
+  this is partial correctness, as R4 is. A run that sticks never reaches `ret`.
+- **What this does to K7:** limit (a)'s OVF clause is lifted for every W87 world with the wire premise. K7's score does NOT move and
+  its route is not edited: `router_inR` IS a lemma about F's structure, so it is outside K7's scoring rule (Addendum 3) and is
+  reported beside K7, never inside it. RouterExits.lean is not edited.
+- **Going red:** drop the wire premise (cells unconstrained), and the RD32 sums' range obligations must fail to close.
