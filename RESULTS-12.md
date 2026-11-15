@@ -71,3 +71,13 @@ Nothing here is first scored here; each line names its source.
 - **Runs (C6, logged):** k7/logs 55 logs, 55 `saltbuild EXIT=` lines (32 EXIT=0, 23 EXIT=1), +19 since Addendum 1. Sources of six
   of those probes (k7-probe-inR-002…007) are not in the tree (stated in STAGE-K7); their logs are. Counted by the same command at
   l5-lean 4199385.
+
+## Addendum 3 (2026-11-15, the 80th vir head): DEFLATE at the x86 machine, in the driver's disjunctive form
+- **`K7.deflate_x86`** (k7/K7/DeflateX86.lean): `S3.driver_x86_R` instantiated at DEFLATE's step from the loader's image of the
+  initial store. For every k steps that DEFLATE's iteration takes, the machine reaches its loop head again with memory related to
+  the k-th store, OR some iteration leaves the loop with a non-DONE status. Source: k7/STAGE-K7.md, DECLARATIONS-DRIVER Add. 7.
+- **Not DONE-only:** the non-DONE exit is not excluded, because the driver does not name the status. K5's no-overflow result holds at
+  S2 and does not pass through this driver; RES is not excluded for DEFLATE (its table is not empty). A driver variant carrying a
+  per-iteration no-overflow premise is queued, not claimed.
+- **Runs (C6, logged):** k7/logs 61 logs, 61 `saltbuild EXIT=` lines (35 EXIT=0, 26 EXIT=1), +6 since Addendum 2. Same command, at
+  l5-lean 0a8d495.
