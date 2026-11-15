@@ -53,3 +53,23 @@ scored on them.
 
 ## Addendum 3 (same head): the homing of Addendum 1 DONE
 Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statements unchanged; under the derived-namespace k3_check, `VIRC.driver_l2` and `VIRC.compile_refines_mem` read OK (k7/logs/k7-probe-K3-002.log).
+
+## Addendum 4 (2026-11-15, the 79th head, BEFORE its file): the driver at the x86 machine (C0 (a) whole; K3 scored on it)
+- **The loop (machine code, fixed, generic in the step):** at H: `call rel (base − …)` (5 bytes; it pushes ret0 = H + 5 at rsp0,
+  which is DriverCall's `ret`); at ret0: `mov rax, [rbx+0]` (STATUS), `test rax, rax`, `jne X` (any status but DONE leaves the loop),
+  then the returned capability's two words are copied BUF → ENV (`mov rcx, [r14+0]; mov [r12+0], rcx; mov rcx, [r14+8];
+  mov [r12+8], rcx`; the stub's `pop r12` has restored r12 = env0), then `jmp H`. Its instructions are ⊆ K4's emitted set.
+- **Statement `driver_x86`** (s3/S3/Driver3.lean, namespace S3): for a step-shaped e (`[tcap] ⊢ e : tcap` + the compiler's side
+  conditions, as `driver_l2`), k chained ⟶₂ runs `IterRel e p k σ σ'` from a store related to the start memory, S3's premises for
+  `lower3` of e at base, the loop at H in the same program, and a machine state at H whose post-call state is `DriverCall`: either
+  the machine reaches H again after the k-th iteration with the next DriverCall (memory related to σ'), or some iteration i ≤ k
+  leaves the loop at X with STATUS ∈ {FAULT, OVF, RES} (OVF from S2's int range, RES with `ResWhy`). Names no program.
+- **Route.** One iteration = the call's effect (one `stepP`) → `compile_x86` clause (1) at the reached store (it ends `Returned`
+  at ret0) → the check block → the copy block → `jmp`. paris's `driver_iteration` / `call_ret` (X86/Effects.lean at 4f08f91) are
+  used if their shape fits S3's `Returned`; if the direct composition is shorter, the record says which was used and why.
+  Induction on k as in `driver_l2`.
+- **Premises that are new here, all about the driver's own code and layout:** the loop's bytes at H (CodeAt), canonical H and X,
+  `L.ret0 = H + 5`, ENV ≥ 2 words at env0, BUF ≥ 2 words, and the loop's memory writes (ENV words 0–1) lying outside L.live.
+- **K3** is read on `driver_x86`'s statement by `k5/tools/k3_check.py` (derived whitelist), with router_refines as the positive
+  control. **What would show it wrong:** a premise that names e's structure; an iteration whose returned words are not the next
+  call's DriverCall words (the copy block or the stub's r12 restore misread); a write of the loop that lands in L.live.
