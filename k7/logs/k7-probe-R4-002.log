@@ -1,0 +1,44 @@
+saltqueue: ticket P1 seat=root pid=43908
+probes/R4b.lean:37:65: warning: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/R4b.lean:37:80: warning: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]̵N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲S̲u̲b̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/R4b.lean:64:66: error: unsolved goals
+case b
+σ : Store
+hW : W87 σ
+p : ℤ
+hp : ¬p = 0
+⊢ ?m.61 0
+
+σ : Store
+hW : W87 σ
+p : ℤ
+hp : ¬p = 0
+⊢ ℤ → Type ?u.25
+probes/R4b.lean:78:68: error: unsolved goals
+σ : Store
+hW : W87 σ
+i : ℤ
+h0 : 0 ≤ i
+h1 : i < 87
+v : ℤ
+hv : Finmap.lookup (0 + i) σ.H = some v
+⊢ v = (Finmap.lookup i σ.H).getD 0
+saltbuild EXIT=1

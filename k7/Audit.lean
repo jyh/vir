@@ -27,3 +27,7 @@ import K7
 #print axioms K7.router_inR_f
 #print axioms K7.router_inR
 #print axioms K7.exit_code_all
+#print axioms K7.router_halts
+#print axioms K7.router_post
+#print axioms K7.exit_cells_all
+#print axioms K7.router_R4_x86

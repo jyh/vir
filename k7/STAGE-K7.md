@@ -122,3 +122,17 @@
 - **Probes:** k7-probe-inR-001 … 008 (the walk, explored before the file; 008 EXIT=0 with no sorry). **Sources kept for 001 and 008
   only:** probes 002–007 were each edited forward under the next name (`mv`), so their sources are not in the tree; each run's
   source sha is in the fleet saltbuild audit log, and each log is committed. C6 counts all eight.
+
+## ADDENDUM (2026-11-15, the 80th head): R4 at the machine for every world, TOTAL on R4's premises (DECLARATIONS-K7 Addendum 5, STATUS-vir 361 part 2)
+- **`router_R4_x86` (K7/RouterR4.lean):** for EVERY σ with `W87 σ`, `WireB σ` and R4's own premises (SvA < 4, TvA < 4 on σ's
+  cells), and a machine in DriverCall on σ's loader image under Rig's S3 premises with L.live covering σ's live cells: ∃ mm, the
+  machine RETURNS DONE and every cell i < 87 is at its scaled address with value `postF (cells σ) 0 i`, R4's post-state.
+- **Route:** `router_halts` (termination: a symbolic walk with a `Halts` step lemma; under R4's premises no load leaves the region)
+  · `router_post` (L3's `R4` used as proved, at frame ∅, from `w87_regionAt`) · `exit_cells_all` (exit_code_all's route with every
+  cell, not only CODE) · OVF by `router_inR`, RES by `resWhy_false`. l3 is not edited.
+- **K7 limit (a) is now CLOSED for R4's premise set:** the L3 router triple holds at the machine as total correctness for every world
+  satisfying it. Outside R4's premises (sender ≥ 4 or an ACL index past the region), the source run sticks at an out-of-region load:
+  OVF is still excluded there (`router_inR`) but no DONE is claimed. K7's score does not move (a router result, beside K7).
+- **Builds:** k7-022 (root) EXIT=0; k7-audit-008 32/32 constants within propext · Classical.choice · Quot.sound. Probes
+  k7-probe-R4-001 … 004 (sources R4a, R4b, R4c, R4d all kept; 004 EXIT=0, no sorry). **Going red:** k7-probe-mut-R4-001, the walk
+  with the sender bound widened to < 5, EXIT=1: at each `halts_ret` the configuration is still a load, not a `ret`.
