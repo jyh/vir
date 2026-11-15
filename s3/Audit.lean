@@ -77,3 +77,11 @@ import S3
 #print axioms S3.s3_refines_from_s2
 #print axioms S3.lift3
 #print axioms S3.compile_x86
+#print axioms S3.fragment3_sound
+#print axioms S3.loop_check
+#print axioms S3.loop_copy
+#print axioms S3.head_call
+#print axioms S3.after_done
+#print axioms S3.after_exit
+#print axioms S3.drv_iter
+#print axioms S3.driver_x86

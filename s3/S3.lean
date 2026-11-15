@@ -11,3 +11,5 @@ import S3.Place3
 import S3.Need3
 import S3.Sem3
 import S3.Cross3
+import S3.Fragment3
+import S3.Driver3

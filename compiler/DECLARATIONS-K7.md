@@ -22,3 +22,21 @@ is not witnessed.
   reported against K7.
 - **What would show it wrong:** an evaluation fact that fails (wfB/fnOk/ok2 false at F: a finding about the L3 term or the S2
   predicate); a router-specific lemma being needed; `F_typed`'s context not being [tcap].
+
+## ADDENDUM 1 (2026-11-15, the 79th head, before any K7-b file): K7 at the machine, in two parts
+- **K7-b1 `router_x86`** (k7/K7/RouterX86.lean): `S3.compile_x86` instantiated at F exactly as K7-a instantiates compile_refines
+  (Γ₀ = [tcap], vs = [cap p], ρw₀ = `capWords scaleLay p n`, m = `scaleMem σ`, the loader's Layout/MemRel), lowered by `lower3` at
+  `base`. New per-program facts, closed by evaluation only: `needW` of F's main and of every table body ≤ a NUMBER c, read off by
+  `decide` (c is printed by the build; L.bufN ≥ c is then a layout premise). The code-size premise `bytes … < 2⁶⁴` stays a premise:
+  it mentions the abstract encoder length `ilen`, so it does not close by evaluation; a generic lemma (`blen ≤ 15` ⇒ bytes ≤ 15 ×
+  instruction count) would remove it and is not claimed here. S3's layout premises (L.Ok, canonical addresses, the stub's return
+  point, DriverCall, L.live ⊇ Live σ scaleLay) stay premises on the caller. The OVF and RES disjuncts STAY.
+- **"No router-specific lemma"** is read as in K7-a: the file may hold only evaluation facts and the one instantiation.
+- **K7-b2, the five exits witnessed (NOT in this addendum's build):** the five are A.4's five witness INPUTS (virp/VIRP/Exits.lean,
+  from compose/Compose/Drops.lean's bytes, sender 0, topic 0): truncated (LEN 10), bad magic, ACL bit 0, 0 tokens, and emit. F has
+  ONE EXIT(2) site (its guard is the conjunction), so three of the five land on the same site with CODE 2, as the VIR's one code for
+  them already says (V5's mapping). For each input, a world whose source run reaches its exit, carried to a machine run that returns
+  stDone with the exit's CODE word in memory. *(Corrected by its author before any K7-b2 file: the first text said "EXIT(2) at its
+  three sites", which is U's shape, not F's.)* That needs, per witness, OVF excluded (the router's own SrcInRange, not claimed by K7-a) and RES excluded (a
+  bound on the reached word states' ENV/STACK size against the layout). Each is a separate declaration before its file; whether
+  any of it needs a router-specific lemma is exactly what K7 scores.

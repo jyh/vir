@@ -30,6 +30,27 @@
    "configFile": "lakefile.toml"
   },
   {
+   "type": "path",
+   "scope": "",
+   "name": "s3",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../s3",
+   "configFile": "lakefile.toml"
+  },
+  {
+   "url": "https://github.com/jyh/x86lean",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "4f08f91a537ff3fbbf1c805abf98e0b1061a376a",
+   "name": "x86lean",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "4f08f91a537ff3fbbf1c805abf98e0b1061a376a",
+   "inherited": true,
+   "configFile": "lakefile.toml"
+  },
+  {
    "url": "https://github.com/leanprover-community/mathlib4",
    "type": "git",
    "subDir": null,
@@ -162,6 +183,15 @@
    "manifestFile": "lake-manifest.json",
    "inherited": true,
    "dir": "../k5/../deflate",
+   "configFile": "lakefile.toml"
+  },
+  {
+   "type": "path",
+   "scope": "",
+   "name": "bridge",
+   "manifestFile": "lake-manifest.json",
+   "inherited": true,
+   "dir": "../s3/../bridge",
    "configFile": "lakefile.toml"
   }
  ],

@@ -52,3 +52,18 @@
   EXIT=0; audit k7-audit-004 15 rows within the three, 0 sorryAx. **K3 re-read (k7-probe-K3-002, derived whitelist):
   `VIRC.driver_l2` OK (56 constants), `VIRC.compile_refines_mem` OK (60); control router_refines FALSIFIED.** The driver
   statement's L2 half now names only whitelisted constants. K3 itself is still scored at S3, on the assembled driver theorem.
+
+## K7-b1, the router through S3 (79th head, 2026-11-15; DECLARATIONS-K7 Addendum 1, declared before the file)
+- **`router_x86` PROVED** (k7/K7/RouterX86.lean, k7-012 EXIT=0; k7-011 red on a docstring placed before `set_option … in`; root
+  k7-013). `S3.compile_x86` at F with k5's loader: for every WF world placed in [0, 2⁶⁰) with in-range cells and the cap region at
+  p, and `lower3`'s code under S3's layout premises with |BUF| ≥ 5, the three clauses hold at the x86 machine (finish → returned
+  stDone with the words related to the value, or OVF; fault → FAULT or OVF; k source steps → ≥ k `stepP` steps or OVF; RES with
+  `ResWhy` beside each).
+- **Evaluation facts only:** `F_need` (needW of F's main ≤ 5) and `F_tbl_nil` (F's lowered table is empty), both `decide`, read
+  off first by k7-probe-need-001 (`#eval`: 5 and []). No lemma about F's structure, layout or cells.
+- **Premises that stay:** the code-size bound (it names the abstract encoder length), S3's layout facts, `DriverCall` on F's
+  cap words, L.live ⊇ Live σ scaleLay. The OVF and RES disjuncts stay.
+- **Audit k7-audit-005:** 18 rows; F_need and F_tbl_nil read [propext], router_x86 reads the three; 0 sorryAx.
+- **Project:** k7 now requires ../s3 by path (manifest by edit: s3, x86lean at 4f08f91 inherited, bridge inherited; x86lean
+  APFS-cloned from s3/.lake).
+- **K7 itself stays OWED:** the five exits witnessed at the machine (K7-b2) needs OVF and RES excluded per witness.

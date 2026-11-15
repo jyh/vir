@@ -14,3 +14,6 @@ import K7
 #print axioms VIRC.WDone.snoc
 #print axioms K7.envRel_cap_inv
 #print axioms K7.deflate_driver
+#print axioms K7.F_need
+#print axioms K7.F_tbl_nil
+#print axioms K7.router_x86

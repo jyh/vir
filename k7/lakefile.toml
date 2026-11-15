@@ -18,3 +18,8 @@ path = "../k5"
 
 [[lean_lib]]
 name = "K7"
+
+# K7-b (DECLARATIONS-K7 Addendum 1): S3 by path, for compile_x86 (x86lean arrives through s3, APFS-cloned from s3/.lake).
+[[require]]
+name = "s3"
+path = "../s3"

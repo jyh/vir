@@ -29,8 +29,19 @@ compiler and bridge by path).
   lowered program, so push/pop is emitted for every program, not only for max or letE. All three are x86lean `Op`s that `stepP`
   executes, and each has a T-exact row in x86lean's docs/COVERAGE.md at 4f08f91 (`push` r q, `pop` r q, `cmovcc`; read by
   the row text, not re-run), so the finding is about the prediction's list, not about an unvalidated instruction.
-- **K3, K7: OWED here.** K3's driver theorem is C0 (a)'s; `compile_x86` is the stage composition, not the driver loop. K7 needs
-  the router through S3.
+- **K3: the tool reads FALSIFIED; the author reads HOLDS on the prediction's words; a NON-AUTHOR call is owed.** The driver theorem
+  is `S3.driver_x86` (s3/S3/Driver3.lean, DECLARATIONS-DRIVER Addenda 4–5; s3-130 EXIT=0; audit s3-audit-018 86/86 within the
+  three). `k5/tools/k3_check.py` over k7/logs/k7-probe-K3-003.log (derived whitelist VIRC · VIRL1 · VIRL2 · X86): **FALSIFIED**,
+  100 constants, offending only `S3.*` (21 names: AtHead, CodeAt, Ctx3, Lay3 and its fields, allCode, bytes, ctxOf, loopCode,
+  lower3, needW, rd, stubHead) and `VIRBridge.Live`. `S3.compile_x86` reads the same way (S3.* and VIRBridge.Live). The positive
+  control `K7.router_x86` reads FALSIFIED with `VIRL3.F` and `K5.*` among its offenders, so the check separates a statement about
+  the router from one that is not. **No constant of DEFLATE or the router** (VIRL3 · K5 · K7 · VIRDeflate) is in driver_x86's
+  statement. amend-23 K3 says the constants are drawn from "the compiler's, L2's and x86lean's namespaces"; S3 (the compiler's x86
+  stage, DECLARATIONS-S3) and VIRBridge (its word↔byte bridge, DECLARATIONS-S3-bridge) are the compiler's own, born after the
+  whitelist was typed. Whether they count is a reading the author does not make about its own result after the fact: the precedent
+  (driver_l2, row 307) MOVED definitions into VIRC rather than widen the list. The tool's verdict stands as the score until a
+  non-author rules.
+- **K7: OWED.** K7-b1 `router_x86` (k7/STAGE-K7.md) carries compile_x86 to the router; the five exits witnessed is K7-b2.
 
 ## Runs
 s3/logs through s3-118 and s3-audit-016: 136 logs (118 builds `s3-NNN`, 18 audits and controls), 136 `saltbuild EXIT=` lines
