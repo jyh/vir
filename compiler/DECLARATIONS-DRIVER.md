@@ -57,8 +57,10 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
 ## Addendum 4 (2026-11-15, the 79th head, BEFORE its file): the driver at the x86 machine (C0 (a) whole; K3 scored on it)
 - **The loop (machine code, fixed, generic in the step):** at H: `call rel (base − …)` (5 bytes; it pushes ret0 = H + 5 at rsp0,
   which is DriverCall's `ret`); at ret0: `mov rax, [rbx+0]` (STATUS), `test rax, rax`, `jne X` (any status but DONE leaves the loop),
-  then the returned capability's two words are copied BUF → ENV (`mov rcx, [r14+0]; mov [r12+0], rcx; mov rcx, [r14+8];
-  mov [r12+8], rcx`; the stub's `pop r12` has restored r12 = env0), then `jmp H`. Its instructions are ⊆ K4's emitted set.
+  then `mov r12, env0` (an immediate: the loop is generated for the layout) and the returned capability's two words are copied
+  BUF → ENV (`mov rcx, [r14+0]; mov [r12+0], rcx; mov rcx, [r14+8]; mov [r12+8], rcx`), then `jmp H`. Its instructions are ⊆ K4's
+  emitted set. *(Amended by its author before the file: the first text relied on the stub's `pop r12`, but R3's `Returned` does not
+  carry r12, so the loop sets it.)*
 - **Statement `driver_x86`** (s3/S3/Driver3.lean, namespace S3): for a step-shaped e (`[tcap] ⊢ e : tcap` + the compiler's side
   conditions, as `driver_l2`), k chained ⟶₂ runs `IterRel e p k σ σ'` from a store related to the start memory, S3's premises for
   `lower3` of e at base, the loop at H in the same program, and a machine state at H whose post-call state is `DriverCall`: either
@@ -72,4 +74,4 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   `L.ret0 = H + 5`, ENV ≥ 2 words at env0, BUF ≥ 2 words, and the loop's memory writes (ENV words 0–1) lying outside L.live.
 - **K3** is read on `driver_x86`'s statement by `k5/tools/k3_check.py` (derived whitelist), with router_refines as the positive
   control. **What would show it wrong:** a premise that names e's structure; an iteration whose returned words are not the next
-  call's DriverCall words (the copy block or the stub's r12 restore misread); a write of the loop that lands in L.live.
+  call's DriverCall words (the copy block misread); a write of the loop that lands in L.live.
