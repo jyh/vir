@@ -203,3 +203,49 @@ evaluated into BUF slots 0…, and rdx is loaded from slot `need x` after both: 
 `need x + need f ≤ |BUF|`. As in Addendum 8, `sim_app` takes that f's evaluation is not BAD: S2 answers OVF for (BAD, OVF), and the
 machine code of a BAD operand has no claimed behaviour. Lower3's `gen` and `gsz` change in their `app` case only, and every
 `app`-free proof is unaffected. This file's main text is not edited; this addendum is its erratum.
+
+## ADDENDUM 12 (2026-11-14, the 78th head, before Step3.lean): one step for every code form, then runs
+- **`sim_step`** dispatches on the code form to the seven `sim_*` lemmas. Its RES side is stated once, of the PRE-state
+  `run c ρ k`, as `ResWhy`: either `EnvOver L ρ k (grow c)`, i.e. `env0 − envLo < 8·(|ρ| + Σ over k of |ρᵢ| + grow c)`, or
+  `StkOver L ((c, ρ) :: k)`. Here `grow` is the step's static prepend bound: ret o ↦ wid o, app f x ↦ wid x + 1, load ↦ 1,
+  store ↦ 2, case o ↦ wid o, ite and letE ↦ 0. This is Addendum 2's S3-S with n made static. Each step's own condition implies it,
+  because EnvOver is monotone in n, and a ret's or an app's successor bound counts Σ over k and not ρ, so it is only weaker.
+- **`StepOk`** collects the per-step premises the lemmas take: the `need` bounds against |BUF|, CapLive (Addendum 7), and the
+  operand that must not be BAD (Addenda 8 and 11). `s3_run` takes `StepOk` at every state the word run reaches. Discharging it
+  from S2's `SRel` and S3's `Fragment3.ok` is the composition's job (next), and none of it is a premise on stored values.
+- **`s3_run`**: for a word run `WN tbl n W Wf` from an R3 state, the machine reaches R3 at Wf in m ≥ n steps (divergence is kept:
+  every word step takes at least one machine step), OR it returns RES at some reached state Wr whose `ResWhy` holds.
+
+## ADDENDUM 13 (2026-11-14, the 78th head, before Place3.lean): lower3's placement discharges StepEnv's code facts and TblOk
+`Place3.lean` proves that in `lower3 ilen tbl main base`, under `1 ≤ ilen` and the whole code under 2⁶⁴ bytes (Fragment3's encoding
+facts), the entry stub sits at `base`, FAULT, OVF and RES at `C.fault`, `C.ovf` and `C.res`, main at `mainAddr C`, and table body
+i at `C.body i` (TblOk, with `C.fix i` the table's flag). The sizes `ctxOf` measures in its first contexts C0 and C1 equal the
+final context's (S3-E: a size depends on `ilen`, the fix flags and the table length, never on an address or a target). That is
+proved by ERASURE: `AI.er` maps every jump target to 0, erasure keeps sizes, and two contexts that agree on `fix` and `tblLen`
+generate the same erased code (`gen_er`). The canonical-address and layout facts of StepEnv (`ok`, `canon`, `ret_canon`) stay
+premises of the driver's layout. They are facts about where the driver puts the code and data, not about the code.
+
+## ADDENDUM 14 (2026-11-14, the 78th head, before Need3.lean): StepOk splits into a static half and S2's half
+- **Static (S3's own; this file).** `needW c` is the largest BUF demand any step of c makes (ret o ↦ need o; app f x ↦ need x +
+  need f; store ↦ max(need idx, 1 + need v); and so on through the sub-codes). `Fragment3`'s BUF clause is `needW main ≤ |BUF|`
+  and `needW b ≤ |BUF|` for every table body b. `NeedOk` (the current code and every pending continuation's code within |BUF|) is
+  preserved by every word step (`needOk_step`), because a successor's codes are sub-codes, pending codes, or table bodies. So it
+  holds at every reached state, and it gives StepOk's `need` conjuncts.
+- **S2's half (next).** CapLive and the not-BAD operands come from S2's `SRel` at the same reached state. Take `L.live := Live σ lay`
+  (S2's store keeps σ's regions, `layout_store`). `cap_lookup` gives the capability words at the offsets `lower2T` emits, and
+  `WOut` gives "OVF or ok" for every typed operand. `StepSem` names that half, and `stepOk_of` composes the two.
+
+## ADDENDUM 15 (2026-11-15, the 79th head, before Cross3.lean): the compiler from the SOURCE to x86, one statement
+`Cross3.lean` composes S1 ∘ S2 (`VIRC.compile_refines`, about the source program) with `s3_refines_from_s2`, starting from
+`s2_init`'s SRel. It adds no premise of its own beyond the union of the two: the source side's (⊢₂ typing, C2, S2's predicate,
+caller values, `EnvRel`, `Layout`, `MemRel`, table < 2⁶⁴), and S3's (layout `L.Ok`, canonical addresses, the stub's return point,
+`DriverCall` on the caller words, Fragment3's static clauses, and L.live ⊇ `Live σ lay` at the start store).
+- **`lift3`**: a word run of k steps from main's start, `WN T k W₀ W'`, is matched by a machine run of m ≥ k + 3 steps ending in
+  R3 at W', or by RES at some reached word state whose `ResWhy` holds (ENV or STACK outgrown, the only reason RES can occur).
+- **`compile_x86`**, three clauses about the source run `instL 0 vs e` from σ, each concluding "∃ m, the machine after m steps is
+  R3-related to a word state W' with P W' ∨ RES with ResWhy at a reached word state":
+  (1) a run that FINISHES with `ret a`, a evaluating to w: P W' = W' is `done ws` with `VRel … σ' τ (valOf w) ws`, or W' is OVF;
+      (R3 at `done ws` is: returned with stDone, r13 = |ws|, the words at BUF);
+  (2) a run that FAULTS: P W' = W' is FAULT or OVF;
+  (3) n source steps: m ≥ n, or W' is OVF.
+  The OVF exit is the int-range stop S2 already has; `compile_noovf`-style lemmas remove it per program, and none is used here.

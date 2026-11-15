@@ -28,9 +28,9 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
 | id | prediction (short) | verdict | source |
 |---|---|---|---|
 | K1 | 40 < S1 builds ≤ 80 | **FALSIFIED (low)**: S1 = 9 by the declared rule (all `s1-*` logs: 13) | compiler/STAGE-S1.md |
-| K2 | no translation-validation fallback: each stage one ∀-program theorem | **HOLDS for S1 and S2** (`s1_refines`, `s2_refines`); S3 **OWED** | STAGE-S1.md; STAGE-S2.md |
+| K2 | no translation-validation fallback: each stage one ∀-program theorem | **HOLDS** for S1, S2 and S3 (`s1_refines`, `s2_refines`, `s3_refines_from_s2`; composed: `compile_x86`) | STAGE-S1.md; STAGE-S2.md; compiler/STAGE-S3.md |
 | K3 | the driver theorem names no program | **OWED as a score** (the driver is S3's). **Provisional HOLDS** at the S1∘S2 statements: compile_refines, compile_noovf, compile_refines_noovf, s2_refines, through `k5/tools/k3_check.py`; positive control deflate_noovf reads FALSIFIED | compiler/STAGE-K5.md, row 296's reading |
-| K4 | emitted instructions ⊆ §3 ∪ {imul, setcc, jo} | **OWED** (S3's code generator) | — |
+| K4 | emitted instructions ⊆ §3 ∪ {imul, setcc, jo} | **FALSIFIED**: S3 emits `push`/`pop` (entry stub, every program; `letE`) and `cmovle` (`max`), outside the list; all three are T-exact in x86lean COVERAGE | compiler/STAGE-S3.md "K4" |
 | K5 | the overflow exit is unreachable for DEFLATE's step, n, OUTMAX < 2³², no per-input premise | **HOLDS**: `deflate_noovf` (k5p-118; audit k5-audit-009). † Strengthened: `deflate_noovf_loaded` discharges the loader premise, leaving the region's placement as the only caller premise (k5p-133; k5-audit-010) | compiler/STAGE-K5.md |
 | K6 | 0 per-program layout lemmas | **HOLDS** on its declared population (DECLARATIONS-S2 §"K6's population": no file under compiler/ states a one-program layout lemma). Its first reading by the 70th head (UNREACHED) is withdrawn in the record | compiler/STAGE-K5.md, row 296's reading as corrected |
 | K7 | the router compiled reproduces A.4's verdict, five exits witnessed, no router-specific lemma | **OWED** (needs S3). † K7-a, the S1∘S2 half: `router_refines` with no router-specific lemma (k7-001; k7-audit-001) | k7/STAGE-K7.md; compiler/DECLARATIONS-K7.md |
