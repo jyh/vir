@@ -2,12 +2,12 @@ name = "s3"
 defaultTargets = ["S3"]
 
 # O95, STATUS-vir 338 (compiler/DECLARATIONS-S3.md): S3, word code → x86lean Program over stepP. A SEPARATE project, so compiler/'s
-# and bridge/'s counts stay put. x86lean by git at paris's C3 sha (re-pinned by EDIT to the merge sha when the C3 PR lands; never a
-# path into a working tree); compiler and bridge by path. Packages APFS-cloned from bridge/, manifest by edit; never a bare lake update.
+# and bridge/'s counts stay put. x86lean by git at the C3 PR's merge sha (x86lean #191 = 6f85116, re-pinned by EDIT from paris's C3 sha 4f08f91,
+# its ancestor; the only .lean change between them is Main.lean; never a path into a working tree); compiler and bridge by path. Packages APFS-cloned from bridge/, manifest by edit; never a bare lake update.
 [[require]]
 name = "x86lean"
 git = "https://github.com/jyh/x86lean"
-rev = "4f08f91a537ff3fbbf1c805abf98e0b1061a376a"
+rev = "6f85116b138d435ce3e9d971427e6fe9c95ea982"
 
 [[require]]
 name = "compiler"

@@ -632,3 +632,5 @@ import VIRDeflate
 #print axioms VIRDeflate.Step.dyn_tail
 #print axioms VIRDeflate.Step.dynamic_sim
 #print axioms VIRDeflate.Step.correct
+#print axioms VIRDeflate.Step.safety_bytes
+#print axioms VIRDeflate.Step.correct_bytes

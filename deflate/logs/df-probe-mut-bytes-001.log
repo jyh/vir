@@ -1,0 +1,8 @@
+saltqueue: ticket P1 seat=root pid=98403
+probes/MutBytes.lean:10:2: error: Type mismatch
+  UInt8.toNat_lt u
+has type
+  u.toNat < 2 ^ 8
+but is expected to have type
+  u.toNat * 2 < 256
+saltbuild EXIT=1

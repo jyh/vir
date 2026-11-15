@@ -395,3 +395,10 @@ and inside a build. The triples relate states only at entry and exit, so these a
 reaches where S accepts, or the reverse (a defect in the PROGRAM, raised as a finding before the proof routes round it); a need
 for reasons, or for a backward simulation, to get the iffs; a post-condition that needs a cell `Inv` does not fix; a `Code`
 reached by S that is not `assign` of the lengths the machine holds.
+
+## Addendum (2026-11-15, the 81st head, BEFORE deflate/VIRDeflate/Bytes.lean): D7's byte-type corollary, the non-author read's test
+The non-author read of D7 (paper, 11-15; vir RESULTS-12 Addendum 6) found D7 HOLDS: over `Array Nat`, `∀ x ∈ b, x < 256` is what a
+byte string IS. It named the test that retires the reading: a `ByteArray` form of SAFETY and CORRECTNESS whose byte premise is
+discharged by `UInt8.toNat_lt`. **Declared:** `Bytes.lean` states `safety_bytes` and `correct_bytes` over `bs : ByteArray`, reading
+`bs.data.map UInt8.toNat` as the input, with NO hypothesis on the bytes, each proved from `safety`/`correct` and nothing else. The
+bound N is the same function of the input's size and OUTMAX. **Wrong if:** either needs a premise on `bs`.
