@@ -88,3 +88,12 @@ Nothing here is first scored here; each line names its source.
   at the machine**, through a new generic driver step `S3.drv_iter_N` (s3/S3/DriverN.lean, names no program) and K5's per-step
   range result. RES (ENV or STACK outgrown) is not excluded. Source: k7/STAGE-K7.md, compiler/STAGE-S3.md, DECLARATIONS-DRIVER Add. 8.
 - **Runs (C6, logged):** k7/logs 64 logs (38 EXIT=0, 26 EXIT=1); s3/logs 163 logs (91 / 72). Same command, at l5-lean e0e443a.
+
+## Addendum 5 (2026-11-15, the 80th vir head): the router served k times at the machine, DONE-only — beside K7
+- **`K7.router_served_x86`** (k7/K7/RouterDriver.lean): from any 87-cell world with wire bytes and R4's premises, loaded and placed
+  at the driver's loop head, the machine returns to the loop head after EVERY k calls of the compiled router. Its memory is related
+  to the k-th store of the router's source iteration, and no call ends in OVF, RES or FAULT. One call keeps the world's invariant
+  (`router_inv_step`), so the iteration exists for every k. The driver step for an empty table, `K7.drv_iter_D`, is generic.
+  Source: k7/STAGE-K7.md, DECLARATIONS-K7 Add. 6.
+- **No score moves** (a router result, beside K7).
+- **Runs (C6, logged):** k7/logs 70 logs (42 EXIT=0, 28 EXIT=1). Same command, at l5-lean 53ce4b8.
