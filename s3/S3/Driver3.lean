@@ -127,4 +127,50 @@ theorem loop_copy {C : Ctx3} {p : Program} {L : Lay3} {wm : WMem} {v : Cpu} {env
     rw [e6, e5, e4, e3, e2, e1]; dsimp only
     rw [Regs.get_set_ne _ _ _ _ (Ne.symm hr1), Regs.get_set_ne _ _ _ _ (Ne.symm hr1), Regs.get_set_ne _ _ _ _ (Ne.symm hr2)]
 
+/-- The loop head's invariant: at H, the registers the stub expects except the pushed return address, the control block's ENV/STACK
+    bounds, the word memory represented on L.live, and the next call's argument words at env0. -/
+structure AtHead (L : Lay3) (H : W) (ρ : List W) (wm : WMem) (s : Cpu) : Prop where
+  stopped : s.stopped = false
+  rip : s.rip = H
+  r14 : s.regs.get .r14 = L.buf
+  rbx : s.regs.get .rbx = L.cb
+  r12 : s.regs.get .r12 = L.env0
+  rsp : s.regs.get .rsp = L.rsp0 + 8
+  cb16 : rd s.mem (L.cb + 16) = L.envLo
+  cb24 : rd s.mem (L.cb + 24) = L.stkLo
+  rep : VIRBridge.Rep wm s.mem L.live
+  words : WordsAt s.mem L.env0 ρ
+  hi : L.env0.toNat + 8 * ρ.length ≤ L.envTop.toNat
+  stk : L.stkLo.toNat + 16 ≤ L.rsp0.toNat
+
+/-- **head_call.** The loop's `call base` from AtHead lands at base in DriverCall (it pushes ret0 = H + 5 at rsp0). -/
+theorem head_call {C : Ctx3} {p : Program} {L : Lay3} (hL : L.Ok) {H base : W} {ρ : List W} {wm : WMem} {s : Cpu}
+    {l : List AI} (hA : AtHead L H ρ wm s) (hc : CodeAt C p s.rip (.callA base :: l)) (hbase : canonical base = true)
+    (hret : L.ret0 = H + 5) : DriverCall L ρ wm (stepP p s) ∧ (stepP p s).rip = base := by
+  have e := stepP_callA hA.stopped hc hbase
+  have hsp : s.regs.get .rsp - 8 = L.rsp0 := by rw [hA.rsp]; exact BitVec.add_sub_cancel _ _
+  have stkw : ∀ k, k < 8 → inStk L (L.rsp0 + BitVec.ofNat 64 k) :=
+    stk_word L (x := L.rsp0) (by have := hL.stk_lo_le; omega) (le_refl _) hL
+  have cbw2 : ∀ k, k < 8 → inCb L (L.cb + 16 + BitVec.ofNat 64 k) := cb_word L (m := 2) (by decide)
+  have cbw3 : ∀ k, k < 8 → inCb L (L.cb + 24 + BitVec.ofNat 64 k) := cb_word L (m := 3) (by decide)
+  have a2 : VIRBridge.Apart L.rsp0 (L.cb + 16) := apart_of_disjoint hL.stk_cb stkw cbw2
+  have a3 : VIRBridge.Apart L.rsp0 (L.cb + 24) := apart_of_disjoint hL.stk_cb stkw cbw3
+  rw [e]
+  refine ⟨⟨hA.stopped, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, hA.hi, hA.stk⟩, rfl⟩
+  · dsimp only; rw [Regs.get_set_ne _ _ _ _ (by decide : GPR.rsp ≠ GPR.r14)]; exact hA.r14
+  · dsimp only; rw [Regs.get_set_ne _ _ _ _ (by decide : GPR.rsp ≠ GPR.rbx)]; exact hA.rbx
+  · dsimp only; rw [Regs.get_set_ne _ _ _ _ (by decide : GPR.rsp ≠ GPR.r12)]; exact hA.r12
+  · dsimp only; rw [Regs.get_set_same]; exact hsp
+  · dsimp only; rw [hsp, rd_write_same, hA.rip, hret]
+  · dsimp only; rw [hsp, rd_write_apart _ _ _ _ a2]; exact hA.cb16
+  · dsimp only; rw [hsp, rd_write_apart _ _ _ _ a3]; exact hA.cb24
+  · dsimp only; rw [hsp]
+    intro a ha
+    have := rd_write_apart s.mem L.rsp0 a (s.rip + 5) (apart_of_disjoint hL.stk_live stkw (live_word L ha))
+    simp only [rd] at this; rw [this]; exact hA.rep a ha
+  · dsimp only; rw [hsp]
+    refine wordsAt_write_apart (fun j hj => ?_) hA.words
+    exact apart_of_disjoint (fun a h1 h2 => hL.env_stk a h2 h1) stkw
+      (env_word L (e := L.env0) hL.envlo_le_env0 hA.hi hj)
+
 end S3
