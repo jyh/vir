@@ -77,3 +77,4 @@ import S3
 #print axioms S3.s3_refines_from_s2
 #print axioms S3.lift3
 #print axioms S3.compile_x86
+#print axioms S3.fragment3_sound

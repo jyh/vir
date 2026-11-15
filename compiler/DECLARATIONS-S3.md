@@ -249,3 +249,14 @@ caller values, `EnvRel`, `Layout`, `MemRel`, table < 2⁶⁴), and S3's (layout 
   (2) a run that FAULTS: P W' = W' is FAULT or OVF;
   (3) n source steps: m ≥ n, or W' is OVF.
   The OVF exit is the int-range stop S2 already has; `compile_noovf`-style lemmas remove it per program, and none is used here.
+
+## ADDENDUM 16 (2026-11-15, the 79th head, before Fragment3.lean): `Fragment3.ok` as a Bool, and what it leaves out
+- **`Fragment3.ok ilen tbl main base N : Bool`** is the conjunction of the static premises `compile_x86` and `s3_refines_from_s2`
+  take about the code: `bytes C (allCode C tbl main) < 2⁶⁴` with C = `ctxOf ilen tbl main base`, `tbl.length < 2⁶⁴`,
+  `needW main ≤ N`, and `needW b ≤ N` for every table body b. **`fragment3_sound`**: ok = true ⇒ those four premises, so a
+  concrete program discharges them by evaluating one Bool.
+- **Left out, each stated:** (a) `1 ≤ ilen o` is a fact about the encoder length function, quantified over every `Op`, not about
+  the program, and stays a premise; (b) the main text's displacement clause (offsets fit the disp32 form) is NOT used by any S3
+  theorem, because x86lean's `Instr` carries the displacement already sign-extended to 64 bits (X86/Syntax.lean:55); it is an
+  ENCODING fact that S4 (bytes) owes, and this Bool does not claim it; (c) the main text's dispatch-chain clause is subsumed by
+  `tbl.length < 2⁶⁴` and the code-size bound (Place3). The main text is not edited; this addendum records the change.
