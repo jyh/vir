@@ -1,0 +1,175 @@
+saltqueue: ticket P1 seat=root pid=18560
+⚠ [5/337] Replayed VIRL1.Semantics
+[replay_filter: dropped 5 lines (243 bytes) sha256/16=7b4d9f345d6cdb4b]
+⚠ [621/657] Replayed VIRL1.L1
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=8529f3b7fecc5094]
+⚠ [625/657] Replayed VIRL2.Sig2
+[replay_filter: dropped 3 lines (174 bytes) sha256/16=780f8bb5a3e5867c]
+⚠ [730/779] Replayed VIRL2.Step2
+[replay_filter: dropped 5 lines (239 bytes) sha256/16=62789eecf67292c9]
+⚠ [733/779] Replayed VIRL2.Axioms
+[replay_filter: dropped 3 lines (147 bytes) sha256/16=bc72b474001432b0]
+⚠ [736/779] Replayed VIRL2.Denot2
+[replay_filter: dropped 14 lines (450 bytes) sha256/16=019a0409b19d2290]
+⚠ [738/779] Replayed VIRL2.Triples
+[replay_filter: dropped 21 lines (825 bytes) sha256/16=14cdccf42c4596f5]
+⚠ [740/779] Replayed VIRL2.Adequacy2
+[replay_filter: dropped 6 lines (307 bytes) sha256/16=508b4650232bab24]
+⚠ [741/779] Replayed VIRL2.Conservative
+[replay_filter: dropped 10 lines (479 bytes) sha256/16=336a1071e7076d3a]
+⚠ [743/779] Replayed VIRL2.SemBase
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=70ba3b3d0d6642dc]
+⚠ [744/779] Replayed VIRL2.MaskLemmas
+[replay_filter: dropped 19 lines (1143 bytes) sha256/16=b49371008c5127a3]
+⚠ [745/779] Replayed VIRL2.Subst2
+[replay_filter: dropped 23 lines (1003 bytes) sha256/16=7725c0a861f971ce]
+⚠ [748/779] Replayed VIRL2.RTSubst
+[replay_filter: dropped 28 lines (1078 bytes) sha256/16=63a107cfe3cb7d2f]
+⚠ [755/779] Replayed VIRL3.Typing
+[replay_filter: dropped 20 lines (971 bytes) sha256/16=ab867ab908b86064]
+⚠ [770/779] Replayed VIRC.Sim
+[replay_filter: dropped 15 lines (794 bytes) sha256/16=db7f200245125f82]
+⚠ [771/779] Replayed VIRC.S1
+[replay_filter: dropped 14 lines (468 bytes) sha256/16=618ea2df615c4029]
+⚠ [773/779] Replayed VIRC.Sim2
+[replay_filter: dropped 22 lines (1083 bytes) sha256/16=5a1990c3a2abca8c]
+⚠ [775/779] Replayed VIRC.NoOvf
+[replay_filter: dropped 22 lines (1068 bytes) sha256/16=edb80afbb8b3884c]
+⚠ [777/779] Replayed VIRC.NoOvfSrc
+[replay_filter: dropped 14 lines (480 bytes) sha256/16=4c68996c157712df]
+✖ [779/779] Building K7.World (938ms)
+trace: .> LEAN_PATH=~/fleet/vir/k7/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/x86lean/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/k5/.lake/build/lib/lean:~/fleet/vir/s3/.lake/build/lib/lean:~/fleet/vir/k7/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/k7/K7/World.lean -o ~/fleet/vir/k7/.lake/build/lib/lean/K7/World.olean -i ~/fleet/vir/k7/.lake/build/lib/lean/K7/World.ilean -c ~/fleet/vir/k7/.lake/build/ir/K7/World.c --setup ~/fleet/vir/k7/.lake/build/ir/K7/World.setup.json --json
+error: K7/World.lean:14:36: Unknown identifier `inRange`
+error: K7/World.lean:23:2: unsolved goals
+case refine_2
+hb : Store.empty.nextBase = 0
+a : ℤ
+⊢ a ∈ ∅ → 0 ≤ a ∧ a < 87
+error: K7/World.lean:24:8: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: K7/World.lean:29:64: Function expected at
+  inRange
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c.2
+
+Hint: The identifier `inRange` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: K7/World.lean:36:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  if 0 ≤ c.1 ∧ c.1 < ↑87 then ?m.69 else ?m.70
+in the target expression
+  W87
+    ((match some 87 with
+        | some n => if 0 ≤ c.1 ∧ c.1 < ↑n then some { H := Finmap.insert (0 + c.1) c.2 σ.H, R := σ.R } else none
+        | none => none).getD
+      σ)
+
+case pos
+x✝ : Sort u_1
+inRange : x✝
+σ : Store
+c : ℤ × ℤ
+hv : sorry = true
+hR : ∀ (p : ℤ), Finmap.lookup p σ.R = if p = 0 then some 87 else none
+hD : ∀ (a : ℤ), a ∈ σ.H ↔ 0 ≤ a ∧ a < 87
+hI : ∀ (a v : ℤ), Finmap.lookup a σ.H = some v → sorry = true
+h0 : Finmap.lookup 0 σ.R = some 87
+hi : 0 ≤ c.1 ∧ c.1 < ↑87
+⊢ W87
+    ((match some 87 with
+        | some n => if 0 ≤ c.1 ∧ c.1 < ↑n then some { H := Finmap.insert (0 + c.1) c.2 σ.H, R := σ.R } else none
+        | none => none).getD
+      σ)
+error: K7/World.lean:42:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  if 0 ≤ c.1 ∧ c.1 < ↑87 then ?m.74 else ?m.75
+in the target expression
+  W87
+    ((match some 87 with
+        | some n => if 0 ≤ c.1 ∧ c.1 < ↑n then some { H := Finmap.insert (0 + c.1) c.2 σ.H, R := σ.R } else none
+        | none => none).getD
+      σ)
+
+case neg
+x✝ : Sort u_1
+inRange : x✝
+σ : Store
+c : ℤ × ℤ
+hv : sorry = true
+hR : ∀ (p : ℤ), Finmap.lookup p σ.R = if p = 0 then some 87 else none
+hD : ∀ (a : ℤ), a ∈ σ.H ↔ 0 ≤ a ∧ a < 87
+hI : ∀ (a v : ℤ), Finmap.lookup a σ.H = some v → sorry = true
+h0 : Finmap.lookup 0 σ.R = some 87
+hi : ¬(0 ≤ c.1 ∧ c.1 < ↑87)
+⊢ W87
+    ((match some 87 with
+        | some n => if 0 ≤ c.1 ∧ c.1 < ↑n then some { H := Finmap.insert (0 + c.1) c.2 σ.H, R := σ.R } else none
+        | none => none).getD
+      σ)
+error: K7/World.lean:44:86: Function expected at
+  inRange
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c.2
+
+Hint: The identifier `inRange` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: K7/World.lean:47:25: unsolved goals
+x✝ : Sort u_1
+inRange : x✝
+c : ℤ × ℤ
+cs : List (ℤ × ℤ)
+σ : Store
+h : W87 σ
+hv : ∀ c_1 ∈ c :: cs, sorry = true
+⊢ W87 (List.foldl (fun σ c => (Store.store 0 c.1 c.2 σ).getD σ) ((Store.store 0 c.1 c.2 σ).getD σ) cs)
+error: K7/World.lean:51:66: Function expected at
+  inRange
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c.2
+
+Hint: The identifier `inRange` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: K7/World.lean:54:67: unsolved goals
+σ : Store
+h : W87 σ
+⊢ Finmap.lookup 0 σ.R = some 87
+error: K7/World.lean:57:16: unsolved goals
+σ : Store
+h : W87 σ
+p : ℤ
+n : ℕ
+hp : Finmap.lookup p σ.R = some n
+⊢ 0 < n
+error: K7/World.lean:58:28: unsolved goals
+σ : Store
+h : W87 σ
+p q : ℤ
+n m : ℕ
+hp : Finmap.lookup p σ.R = some n
+hq : Finmap.lookup q σ.R = some m
+hpq : p ≠ q
+⊢ ∀ (a : ℤ), Store.InRegion a p n → ¬Store.InRegion a q m
+error: K7/World.lean:61:12: unsolved goals
+σ : Store
+h : W87 σ
+a : ℤ
+⊢ a ∈ σ.H ↔ ∃ p n, Finmap.lookup p σ.R = some n ∧ Store.InRegion a p n
+error: K7/World.lean:72:41: unknown tactic
+error: K7/World.lean:70:57: unsolved goals
+σ : Store
+h : W87 σ
+p : ℤ
+n : ℕ
+hp : Finmap.lookup p σ.R = some n
+⊢ 0 ≤ p ∧ p + ↑n ≤ 2 ^ 60
+warning: K7/World.lean:75:8: declaration uses `sorry`
+error: Lean exited with code 1
+Some required targets logged failures:
+- K7.World
+error: build failed
+saltbuild EXIT=1

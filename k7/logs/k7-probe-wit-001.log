@@ -1,0 +1,15 @@
+saltqueue: ticket P1 seat=root pid=33334
+probes/WitnessFacts.lean:11:22: error: failed to synthesize
+  Decidable σW.WF
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+probes/WitnessFacts.lean:12:64: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≤ -1
+where
+ a := p
+probes/WitnessFacts.lean:13:28: error: failed to synthesize
+  Decidable (CellsInR σW)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+saltbuild EXIT=1

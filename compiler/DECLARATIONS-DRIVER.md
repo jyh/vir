@@ -83,3 +83,12 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   σ.R (the IR has it, `stepIR_R`; the source does not yet). Removing it needs that lemma; it is not claimed.
 - The loop's ENV demand is stated as `env0 + 16 ≤ envTop` and its BUF demand as `2 ≤ |BUF|` (the capability's two words), as
   Addendum 4 said.
+
+## Addendum 6 (2026-11-15, the 79th head, BEFORE its code): removing Addendum 5's premise (STATUS-vir 354)
+- **`s2_run_R`** (s3/S3/SrcR.lean): `VIRC.s2_run` with `I'.2.R = I.2.R` added to its SRel branch (each IR step keeps σ.R by
+  `stepIR_R`, its NoAF from the SRel at that step, `noAF_of_srel`). **`compile_refines_mem_R`**: `compile_refines_mem` with
+  `σ'.R = σ.R` added to its FINISH branch (the IR's final store is the source's, `stepIR_done_store`).
+- **`driver_x86_R`** (same file): `driver_x86` with the premise replaced by L.live ⊇ Live σ lay at the START store only; the
+  iteration carries it by `live_of_R`. `driver_x86` stays as proved; nothing proved is edited.
+- **What would show it wrong:** an IR step of an accepted program that changes σ.R (stepIR_R's NoAF not available from SRel at
+  some step); the finish branch's final store not being the IR's.

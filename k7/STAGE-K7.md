@@ -67,3 +67,38 @@
 - **Project:** k7 now requires ../s3 by path (manifest by edit: s3, x86lean at 4f08f91 inherited, bridge inherited; x86lean
   APFS-cloned from s3/.lake).
 - **K7 itself stays OWED:** the five exits witnessed at the machine (K7-b2) needs OVF and RES excluded per witness.
+
+## K7-b2 piece (1), RES excluded generically (79th head; DECLARATIONS-K7 Addendum 2, declared before the file)
+- **`S3.res_free` / `S3.resWhy_false` PROVED** (s3/S3/ResFree.lean; s3-136 EXIT=0, s3-134 red; audit s3-audit-020 94/94 within
+  the three). Static measures on WCode (`rW`, `envM`, `frD`) and potentials over the pending frames (`topM`, `topF`) never increase
+  under `stepW` with an EMPTY table (`top_step`); so along every word run from main the ENV words (with `grow`) are at most
+  `envM main |ρ₀|` and the frames at most `frD main`, and a layout sized from them makes `ResWhy` false at every reached state.
+  Names no program. The router's table is empty (`F_tbl_nil`), so it applies to F.
+- **Going red** (s3-probe-mut-001): `envM`'s load clause with its `+1` dropped is refused at two places (envM_mono's load case,
+  line 46; top_step's load case, line 147; read in the log). The unmutated copy (s3-probe-ctl-001) is green.
+- **Pieces (2)–(4) OWED:** a finishing source run per witness (termination + progress for fix-free terms, then L3's R4 for the
+  CODE value), OVF excluded per witness, and the assembly.
+
+## K7-b2 pieces (2)–(4): the five exits witnessed at the machine (79th head; DECLARATIONS-K7 Addendum 3, declared before the files)
+- **`K7.five_exits` PROVED** (k7/K7/RouterExits.lean, k7-018 EXIT=0, first build; root k7-019; audit k7-audit-006 24/24, 0
+  sorryAx). For F's lowered code P under the shared S3 premises (`Rig`: S3's layout facts, |BUF| ≥ 5, ENV ≥ 8 · envM(F's main, 2),
+  STACK room for frD + 2 frames) and L.live covering a W87 world's live cells: each of A.4's five inputs (sender 0, topic 0, on
+  L3's 87-cell world), run by the machine from DriverCall on its loader image, RETURNS DONE with its CODE word at cell 1's scaled
+  address: truncated (LEN 10) → 1 · bad magic → 2 · ACL bit 0 → 2 · no tokens → 2 · emit → 0. These are A.4's labels under V5's
+  mapping (the VIR has one code for the last three drops).
+- **Route (`exit_code`, generic in the world):** the source run from `run₂` (`run₂_steps`), SrcInRange from k5's checked runner
+  (`srcInRange_of_runC`) ⇒ OVF excluded (`compile_noovf`); `compile_refines_mem_R` gives MemRel at the final store with σ.R kept;
+  `s3_refines_from_s2` gives R3 at DONE or RES, and RES is excluded by `resWhy_false` (F's table is empty). The CODE word is read
+  through Common's Rep on L.live and MemRel.
+- **Per-witness facts are evaluation only** (`rfl`: the two runs reach `ret ⟨0⟩` in 80 steps, the CODE cell's value) plus the
+  world-builder lemmas of World.lean (W87 ⇒ WF, Placed, CellsInR; about `mkWorld`, not F).
+- **Going red** (k7-probe-mut-exits-001): CODE claimed 2 for truncated and 2 for emit is refused at both lines; the control with
+  the right values (k7-probe-ctl-exits-001) is green.
+- **A LOST LOG (self-finding):** one run of probes/CtlExits.lean was fired under a throwaway name and its log was then deleted by
+  the 79th head. It is recorded in the fleet saltbuild audit log at 2026-11-15 03:47:55 (`args=probes/CtlExits.lean`, EXIT=0, line
+  53258). k7's C6 count of logged runs is one short of the runs made.
+- **Limits, stated:** (a) "the L3 router triple carried to the machine" holds in R4's own partial-correctness form through
+  `router_x86` (every finishing source run is matched), but OVF is excluded only at the five witnesses, not for every world (the
+  router's SrcInRange in general is not proved); (b) whether `exit_code`, `Rig` and `five_exits` count as "the instantiation" and not
+  as router-specific lemmas is the author's reading (they mention F only through its evaluation facts and generic theorems); a
+  non-author read is owed.

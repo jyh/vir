@@ -85,3 +85,11 @@ import S3
 #print axioms S3.after_exit
 #print axioms S3.drv_iter
 #print axioms S3.driver_x86
+#print axioms S3.s2_run_R
+#print axioms S3.compile_refines_mem_R
+#print axioms S3.drv_iter_R
+#print axioms S3.driver_x86_R
+#print axioms S3.envM_mono
+#print axioms S3.top_step
+#print axioms S3.res_free
+#print axioms S3.resWhy_false
