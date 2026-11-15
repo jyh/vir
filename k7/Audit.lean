@@ -31,3 +31,5 @@ import K7
 #print axioms K7.router_post
 #print axioms K7.exit_cells_all
 #print axioms K7.router_R4_x86
+#print axioms K7.iterS_iterRel
+#print axioms K7.deflate_x86

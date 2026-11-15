@@ -136,3 +136,17 @@
 - **Builds:** k7-022 (root) EXIT=0; k7-audit-008 32/32 constants within propext · Classical.choice · Quot.sound. Probes
   k7-probe-R4-001 … 004 (sources R4a, R4b, R4c, R4d all kept; 004 EXIT=0, no sorry). **Going red:** k7-probe-mut-R4-001, the walk
   with the sender bound widened to < 5, EXIT=1: at each `halts_ret` the configuration is still a load, not a `ret`.
+
+## ADDENDUM (2026-11-15, the 80th head): DEFLATE at the x86 machine (DECLARATIONS-DRIVER Addendum 7, STATUS-vir 369)
+- **`deflate_x86` (K7/DeflateX86.lean):** `S3.driver_x86_R` instantiated at DEFLATE's stepT from the loader's image of
+  `initStore b om lit p`, under DEFLATE's premises (bytes < 256; n, OUTMAX < 2³²; 0 ≤ p; p + L0 ≤ 2⁶⁰) and the driver's S3 premises
+  on stepT's lowering, kept as premises. For every k with `iterS p k (initStore …) = some σ`, the machine reaches the loop head again
+  with memory related to σ, OR some iteration leaves the loop at X with a non-DONE status. `iterS_iterRel` turns DEFLATE's iteration
+  into the driver's IterRel.
+- **Declared limit, unchanged:** the non-DONE disjunct is not excluded. The driver does not name the status, so `deflate_noovf` (S2)
+  cannot be applied through it, and RES is not excluded generically (stepT's table is not empty). This is the x86 half of C0 (a) for
+  DEFLATE in the driver's own disjunctive form. It is NOT DONE-only.
+- **Builds:** k7-023 and k7-024 EXIT=1 (implicit arguments of `deflate_noovf_loaded` and `reach_shape` not inferred); k7-025
+  (K7.DeflateX86) EXIT=0; k7-026 (root) EXIT=0; k7-audit-009 34/34 within propext · Classical.choice · Quot.sound. **Going red:**
+  k7-probe-mut-dx86-001, the same statement with the machine's start words ρw0 not the loader's, EXIT=1 at `hA` (type mismatch:
+  EnvRel holds for capWords only). k7-023 and k7-024 are redacted (home path → `~/fleet`, as earlier logs are).
