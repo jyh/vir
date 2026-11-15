@@ -32,8 +32,11 @@ is not witnessed.
   instruction count) would remove it and is not claimed here. S3's layout premises (L.Ok, canonical addresses, the stub's return
   point, DriverCall, L.live ⊇ Live σ scaleLay) stay premises on the caller. The OVF and RES disjuncts STAY.
 - **"No router-specific lemma"** is read as in K7-a: the file may hold only evaluation facts and the one instantiation.
-- **K7-b2, the five exits witnessed (NOT in this addendum's build):** for each exit site of F (EMIT; EXIT(1); EXIT(2) at its three
-  sites, inputs/L3-programs.md), a world whose source run reaches it, carried to a machine run that returns stDone with the exit's
-  CODE word in memory. That needs, per witness, OVF excluded (the router's own SrcInRange, not claimed by K7-a) and RES excluded (a
+- **K7-b2, the five exits witnessed (NOT in this addendum's build):** the five are A.4's five witness INPUTS (virp/VIRP/Exits.lean,
+  from compose/Compose/Drops.lean's bytes, sender 0, topic 0): truncated (LEN 10), bad magic, ACL bit 0, 0 tokens, and emit. F has
+  ONE EXIT(2) site (its guard is the conjunction), so three of the five land on the same site with CODE 2, as the VIR's one code for
+  them already says (V5's mapping). For each input, a world whose source run reaches its exit, carried to a machine run that returns
+  stDone with the exit's CODE word in memory. *(Corrected by its author before any K7-b2 file: the first text said "EXIT(2) at its
+  three sites", which is U's shape, not F's.)* That needs, per witness, OVF excluded (the router's own SrcInRange, not claimed by K7-a) and RES excluded (a
   bound on the reached word states' ENV/STACK size against the layout). Each is a separate declaration before its file; whether
   any of it needs a router-specific lemma is exactly what K7 scores.
