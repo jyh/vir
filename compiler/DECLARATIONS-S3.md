@@ -234,3 +234,18 @@ premises of the driver's layout. They are facts about where the driver puts the 
 - **S2's half (next).** CapLive and the not-BAD operands come from S2's `SRel` at the same reached state. Take `L.live := Live σ lay`
   (S2's store keeps σ's regions, `layout_store`). `cap_lookup` gives the capability words at the offsets `lower2T` emits, and
   `WOut` gives "OVF or ok" for every typed operand. `StepSem` names that half, and `stepOk_of` composes the two.
+
+## ADDENDUM 15 (2026-11-15, the 79th head, before Cross3.lean): the compiler from the SOURCE to x86, one statement
+`Cross3.lean` composes S1 ∘ S2 (`VIRC.compile_refines`, about the source program) with `s3_refines_from_s2`, starting from
+`s2_init`'s SRel. It adds no premise of its own beyond the union of the two: the source side's (⊢₂ typing, C2, S2's predicate,
+caller values, `EnvRel`, `Layout`, `MemRel`, table < 2⁶⁴), and S3's (layout `L.Ok`, canonical addresses, the stub's return point,
+`DriverCall` on the caller words, Fragment3's static clauses, and L.live ⊇ `Live σ lay` at the start store).
+- **`lift3`**: a word run of k steps from main's start, `WN T k W₀ W'`, is matched by a machine run of m ≥ k + 3 steps ending in
+  R3 at W', or by RES at some reached word state whose `ResWhy` holds (ENV or STACK outgrown, the only reason RES can occur).
+- **`compile_x86`**, three clauses about the source run `instL 0 vs e` from σ, each concluding "∃ m, the machine after m steps is
+  R3-related to a word state W' with P W' ∨ RES with ResWhy at a reached word state":
+  (1) a run that FINISHES with `ret a`, a evaluating to w: P W' = W' is `done ws` with `VRel … σ' τ (valOf w) ws`, or W' is OVF;
+      (R3 at `done ws` is: returned with stDone, r13 = |ws|, the words at BUF);
+  (2) a run that FAULTS: P W' = W' is FAULT or OVF;
+  (3) n source steps: m ≥ n, or W' is OVF.
+  The OVF exit is the int-range stop S2 already has; `compile_noovf`-style lemmas remove it per program, and none is used here.

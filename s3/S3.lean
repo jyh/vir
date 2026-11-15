@@ -10,3 +10,4 @@ import S3.Top3
 import S3.Place3
 import S3.Need3
 import S3.Sem3
+import S3.Cross3
