@@ -40,3 +40,17 @@ is not witnessed.
   three sites", which is U's shape, not F's.)* That needs, per witness, OVF excluded (the router's own SrcInRange, not claimed by K7-a) and RES excluded (a
   bound on the reached word states' ENV/STACK size against the layout). Each is a separate declaration before its file; whether
   any of it needs a router-specific lemma is exactly what K7 scores.
+
+## ADDENDUM 2 (2026-11-15, the 79th head, BEFORE s3/S3/ResFree.lean): K7-b2's route, and its first generic piece
+- **Route, four pieces, each declared before its file:** (1) RES excluded — GENERIC (this addendum); (2) a finishing source run
+  exists for each witness (L3's `R4` gives no fault and CODE = postF f p at cell 1, but `Triple` is partial correctness, so a
+  generic termination + progress lemma for fix-free terms is owed); (3) OVF excluded per witness (the router's SrcInRange at the
+  witness worlds); (4) the assembly through `router_x86`/`compile_x86`. Whether (2)–(3) need a router-specific lemma is K7's score.
+- **(1) `ResFree.lean` (namespace S3, names no program):** three static measures on `WCode`: `rW` (an upper bound on a returned
+  value's width), `envM c n` (the most ENV words, counting `grow`, executing c from n words until it returns) and `frD c` (the most
+  frames c pushes). Potentials `topM c n k` and `topF c k` over the pending frames never increase under `stepW` with an EMPTY table
+  (`app` is then stuck), and bound the current state. **`res_free`**: along every word run from `(run main ρ₀ [], m)` with tbl = [],
+  `|ρ| + kSize k + grow c ≤ envM main |ρ₀|` and `|k| ≤ frD main`; so a layout with `8 · envM main |ρ₀| ≤ env0 − envLo` and STACK
+  room for `frD main + 2` frames makes `ResWhy` false at every reached state.
+- **What would show it wrong:** a word step whose successor's size exceeds the potential (a measure clause misread); `evalW`'s
+  result width differing from `wid` (it is `evalW_length`).
