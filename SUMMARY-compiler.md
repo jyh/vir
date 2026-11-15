@@ -36,7 +36,8 @@ beside K7, never inside it.
 
 ## Open, and whose
 
-- ~~**K3 and K7 non-author reads:** the helm's to route.~~ DONE 11-15 by paper (RESULTS-12 Add. 6): K3 HOLDS, K7 conjunct (2) was uncovered and is now proved, D7 HOLDS.
+- ~~**K3 and K7 non-author reads:** the helm's to route.~~ DONE 11-15 by paper (RESULTS-12 Add. 6): K3 HOLDS, K7 conjunct (2) was uncovered and is now proved, D7 HOLDS. D7's byte-type reading is retired by `safety_bytes` and
+  `correct_bytes` (deflate/VIRDeflate/Bytes.lean, no premise on the input bytes; RESULTS-12 Add. 7; non-author read by paper; merged in #82).
 - **RES for DEFLATE at the machine:** the fork is posted. The default is (B): it stays a stated limit.
 - **Findings of the compiler stage:** DECLARATIONS-S3 Addendum 11 (the declared `app` code miscompiled; fixed before any claim
   covered it) and K4's instruction list (push, pop and cmovcc missing). Both are in RESULTS-12 Addendum 1.
