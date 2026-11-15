@@ -92,3 +92,18 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   iteration carries it by `live_of_R`. `driver_x86` stays as proved; nothing proved is edited.
 - **What would show it wrong:** an IR step of an accepted program that changes σ.R (stepIR_R's NoAF not available from SRel at
   some step); the finish branch's final store not being the IR's.
+
+## Addendum 7 (2026-11-15, the 80th head, BEFORE k7/K7/DeflateX86.lean): DEFLATE at the x86 machine (STATUS-vir 369)
+- **`iterS_iterRel`:** `iterS p k σ = some σ'` ⇒ `IterRel stepT p k σ σ'` (both recurse at the front; each step by `stepS_steps_p`).
+- **`deflate_x86`:** `driver_x86_R` instantiated at e = stepT, lay = scaleLay, from the loader's image of `initStore b om lit p`
+  (Layout and MemRel by `deflate_noovf_loaded` at k = 0; EnvRel by `K5.envRel_cap`), under DEFLATE's own premises (bytes < 256,
+  n, OUTMAX < 2³², 0 ≤ p, p + L0 ≤ 2⁶⁰) and the driver's S3 premises on `lower3` of stepT, which stay PREMISES here (needW, code
+  size, table length, layout, loop code at H), with L.live covering the START store's live cells. Conclusion, for every k with
+  `iterS p k (initStore …) = some σ`: the machine reaches the loop head again with memory related to σ, OR some iteration leaves the
+  loop at X with a non-DONE status.
+- **Declared limit:** the second disjunct is NOT excluded here. `driver_x86_R` does not say WHICH non-DONE status, so DEFLATE's
+  no-OVF (`deflate_noovf`, at S2) cannot be applied through it; RES is not excluded generically either (stepT's table is not empty,
+  so `resWhy_false` does not apply). Excluding OVF at the machine needs a driver variant carrying a per-iteration no-OVF premise:
+  queued as its own item, not claimed here.
+- **Going red:** start the iteration from a store the loader did not produce (drop `initStore`'s EnvRel), and the instantiation must
+  fail to close.
