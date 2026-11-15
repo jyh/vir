@@ -109,3 +109,24 @@ is not witnessed.
   head again after k calls with its memory related to the k-th store of F's iteration. DONE-only: no OVF, no RES, no FAULT.
 - **Scoring:** a router result, beside K7, never inside it.
 - **Going red:** drop the empty-table premise from drv_iter_D, and the RES branch must fail to close.
+
+## ADDENDUM 7 (2026-11-15, the 81st head, BEFORE k7/K7/RouterTriple86.lean): the non-author read of K7, and the test it names
+- **The read (paper, bus 11-15 11:47, record in the fleet's private store; object vir 60dda68):** K7's frozen text has TWO conjuncts:
+  (1) the five exits witnessed, and (2) *"the L3 router triple is carried to the machine with no router-specific lemma"*.
+  RESULTS-12's HOLDS cell scored (1) and the instantiation; it does not cover (2). R4 reaches the machine in k7/ only through
+  `router_halts` and `router_inR`, which Addendum 4 itself calls a lemma about F's structure, and K7-a's rule (above, written
+  before the files) says such a lemma *"is reported against K7"*. Addenda 4–6 put those results BESIDE K7 after the score. The
+  reader's verdict: conjunct (1) HOLDS (non-author); conjunct (2) is FALSIFIED by K7-a's rule as the files stand, or UNPROVED in
+  partial-correctness form. **vir accepts the read.** STAGE-K7 limit (a)'s "holds in R4's partial-correctness form through
+  router_x86" was a sentence with no theorem.
+- **The test the reader named:** a corollary of `router_x86` and R4 with NO `router_inR` and NO `router_halts`: from R4's own
+  premises on the world's contents f (0 ≤ sender, topic < 4) and `RegionAt 0 87 f σ`, for every FINISHING source run, the machine
+  ends DONE with the result related to the final store, or at OVF, or at RES; and the final store is `RegionAt 0 87 (postF f 0)`.
+  Partial correctness, as R4 is. OVF and RES stay as disjuncts: excluding them needs `router_inR` (a router lemma), so they are not
+  excluded here.
+- **The rule for this file, K7-a's:** only `router_x86` (the instantiation), L3's `R4` (the triple itself), and generic L2 facts
+  (frame ∅, store union with empty, `regionAt_lookup_p`). Nothing that mentions F's cells or layout. If the corollary needs more,
+  conjunct (2) is FALSIFIED and RESULTS-12 says so.
+- **Re-score on the outcome:** EXIT 0 and the audit within the three axioms ⇒ K7 conjunct (2) HOLDS in partial-correctness form,
+  with OVF and RES as stated disjuncts; the total form stays beside K7 (`router_R4_x86`, through router lemmas). Either way RESULTS-12
+  gets an addendum, and SUMMARY-compiler's K7 row is corrected in the same push.
