@@ -40,3 +40,4 @@ import K7
 #print axioms K7.router_iter
 #print axioms K7.router_driver
 #print axioms K7.router_served_x86
+#print axioms K7.router_triple_x86

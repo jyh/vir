@@ -21,7 +21,7 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
 | D4 | bit extraction uses no new primitive; ≥ 1 `fix` | **HOLDS** †: stepT has 4 `fix` nodes and applies {add, sub, mul, lt, le, eq} ⊆ P; P unchanged (D2) | deflate/STAGE-DEFLATE.md "D4 HOLDS"; k5/probes/D4Fix.lean, k5p-probe-D4-1 |
 | D5 | canonical code ≥ 25 % of the arm's C5 tokens | **FALSIFIED**: 3,743 / 184,961 = 2.0 % (2.3 % over the nine declared files only) | deflate/out/counts-d5.tsv + .cmd; STAGE-DEFLATE "SCORED" |
 | D6 | > 109 builds to correctness | **HOLDS**: 404 `saltbuild EXIT=` lines to df-audit-031 (builds alone: 310) | STAGE-DEFLATE "SCORED" |
-| D7 | Safety on every input with no premise on the bytes | **OWED**: `SafetyStmt` carries `∀ x ∈ b, x < 256`; byte TYPE or premise is a NON-AUTHOR call (STATUS-vir 297; the author recommends the type) | STAGE-DEFLATE "SCORED", last bullets |
+| D7 | Safety on every input with no premise on the bytes | ⚠️ HOLDS by the non-author read, Addendum 6. Was **OWED**: `SafetyStmt` carries `∀ x ∈ b, x < 256`; byte TYPE or premise is a NON-AUTHOR call (STATUS-vir 297; the author recommends the type) | STAGE-DEFLATE "SCORED", last bullets |
 
 ## §K — the compiler
 
@@ -33,7 +33,7 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
 | K4 | emitted instructions ⊆ §3 ∪ {imul, setcc, jo} | **FALSIFIED**: S3 emits `push`/`pop` (entry stub, every program; `letE`) and `cmovle` (`max`), outside the list; all three are T-exact in x86lean COVERAGE | compiler/STAGE-S3.md "K4" |
 | K5 | the overflow exit is unreachable for DEFLATE's step, n, OUTMAX < 2³², no per-input premise | **HOLDS**: `deflate_noovf` (k5p-118; audit k5-audit-009). † Strengthened: `deflate_noovf_loaded` discharges the loader premise, leaving the region's placement as the only caller premise (k5p-133; k5-audit-010) | compiler/STAGE-K5.md |
 | K6 | 0 per-program layout lemmas | **HOLDS** on its declared population (DECLARATIONS-S2 §"K6's population": no file under compiler/ states a one-program layout lemma). Its first reading by the 70th head (UNREACHED) is withdrawn in the record | compiler/STAGE-K5.md, row 296's reading as corrected |
-| K7 | the router compiled reproduces A.4's verdict, five exits witnessed, no router-specific lemma | **HOLDS** on its declared rule (DECLARATIONS-K7 Add. 3): `five_exits` witnesses all five of A.4's inputs at the x86 machine (DONE, CODE 1·2·2·2·0; k7-audit-006), `router_x86` carries every finishing run, no lemma about F's structure, layout or cells. Limits: OVF excluded only at the witnesses; the instantiation reading is the author's (non-author read owed) | k7/STAGE-K7.md; compiler/STAGE-S3.md "K7" |
+| K7 | the router compiled reproduces A.4's verdict, five exits witnessed, no router-specific lemma | **HOLDS** on its declared rule (DECLARATIONS-K7 Add. 3): `five_exits` witnesses all five of A.4's inputs at the x86 machine (DONE, CODE 1·2·2·2·0; k7-audit-006), `router_x86` carries every finishing run, no lemma about F's structure, layout or cells. Limits: OVF excluded only at the witnesses; the instantiation reading is the author's (non-author read owed) · ⚠️ SUPERSEDED by Addendum 6: the cell did not cover K7's second conjunct; read (non-author) and re-scored there | k7/STAGE-K7.md; compiler/STAGE-S3.md "K7" |
 
 ## Readings beside the scores (not scores)
 - S2 took 41 builds to its first green audit against the plan's ~40. No amend-23 row predicts it (STAGE-S2.md).
@@ -97,3 +97,35 @@ Nothing here is first scored here; each line names its source.
   Source: k7/STAGE-K7.md, DECLARATIONS-K7 Add. 6.
 - **No score moves** (a router result, beside K7).
 - **Runs (C6, logged):** k7/logs 70 logs (42 EXIT=0, 28 EXIT=1). Same command, at l5-lean 53ce4b8.
+
+## Addendum 6 (2026-11-15, the 81st vir head): the three non-author reads (K3, K7, D7), and K7's second conjunct proved
+**The reads** were made by the seat paper, which built none of this, at vir 60dda68 (bus 11-15 11:47; its record is in the fleet's
+private store). Its coverage, as it states it: statements, declarations and the K7 proof files read; K3's tool re-run on
+k7-probe-K3-003.log; NO Lean build, audit or mutant; the bodies of Safety.lean, RouterAll and RouterDriver not read.
+- **K3: HOLDS on the prediction's falsifier (non-author).** amend-23's falsifier is "a program constant". The S1 declaration's
+  whitelist has two sentences: (i) constants "must lie in" VIRC/VIRL1/VIRL2/X86/core; (ii) the listed namespaces and the
+  router/inflate/deflate names "FALSIFY K3". Applied by (ii) alone, `driver_x86` reads 0 and `compile_x86` 0 (control 1, VIRL3.F).
+  The tool's FALSIFIED (on S3.* and VIRBridge.Live) comes from (i), which was typed before S3 and the bridge existed, and is
+  recorded as an INSTRUMENT finding beside the verdict. The fork's arm A ("they gain whitelist status by declaration") is not
+  supported: DECLARATIONS-S3 and -S3-bridge name no namespace and do not mention K3.
+- **K7: conjunct (1) HOLDS (non-author); conjunct (2) was NOT COVERED by the cell above.** K7 reads *"its five exits are witnessed
+  … AND the L3 router triple is carried to the machine with no router-specific lemma"*. The cell scored (1) and the instantiation.
+  For (2), R4 reached the machine only through `router_halts`/`router_inR`, lemmas about F's structure, which K7-a's rule (written
+  before the files) reports AGAINST K7. vir accepts the read (DECLARATIONS-K7 Addendum 7, written before the test below).
+- **K7 conjunct (2), the test the reader named, run: HOLDS in partial-correctness form.** `K7.router_triple_x86`
+  (k7/K7/RouterTriple86.lean): from R4's own premises on the world's contents f and `RegionAt 0 87 f σ`, for every FINISHING
+  source run, the final store is `RegionAt 0 87 (postF f 0)` AND the machine ends DONE with the result related to it, or at OVF,
+  or at RES. Its proof uses only `router_x86` (the instantiation), L3's `R4` (the triple), and generic L2 facts
+  (`regionAt_lookup_p`, the empty frame); no `router_inR`, no `router_halts`, nothing about F's cells or layout (grep of the file:
+  those names appear only in its header comment). k7-035 EXIT=0; k7-audit-013 EXIT=0, 42 rows within the three axioms, 0 sorryAx,
+  the new row [propext, Classical.choice, Quot.sound]. **Red backwards:** k7-probe-mut-triple-001 (the post-state weakened to the
+  pre-state f) EXIT=1, one error, at the post-state line. **Limit:** OVF and RES are NOT excluded in this form (excluding them
+  needs `router_inR`, a router lemma); the TOTAL form stays beside K7 as `router_R4_x86`.
+- **K7, re-scored: HOLDS, both conjuncts** — (1) the five exits, (2) the triple in partial-correctness form with OVF and RES as
+  stated disjuncts — non-author read on (1) and on the instantiation reading; (2) proved after the read, by its named test.
+- **D7: HOLDS (non-author).** Over `Array Nat`, "< 256" is what a byte string is (OBJECT-DEFLATE X3 (a); DECLARATIONS-DEFLATE), and
+  the bound N depends on the input's size and OUTMAX only. A `ByteArray` corollary (premise discharged by `UInt8.toNat_lt`) would
+  retire the reading; it is not built.
+- **Runs (C6, logged):** k7/logs 84 logs (48 EXIT=0, 36 EXIT=1); this addendum's: k7-032 (a wrong saltbuild argument, EXIT=1),
+  k7-033/034 (a missing import, a destructuring slip; EXIT=1, redacted home path → `~/fleet`, `~/.elan` as earlier logs are),
+  k7-035 EXIT=0, k7-036 (the root, EXIT=0), k7-audit-012 (the root not yet rebuilt, EXIT=1), k7-audit-013 EXIT=0, the mutant EXIT=1.

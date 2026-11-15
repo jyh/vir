@@ -15,11 +15,11 @@ compiler nor DEFLATE (amend-23's notes). The writer of the predictions is the bu
 |---|---|---|
 | K1 | 40 < S1 builds ≤ 80 | **FALSIFIED (low)**: S1 = 9 |
 | K2 | each stage one ∀-program theorem, no translation validation | **HOLDS** for S1, S2, S3 (composed: `compile_x86`) |
-| K3 | the driver theorem names no program | **FALSIFIED by the tool** on S3.* / VIRBridge.Live only; author reading HOLDS; **non-author call owed** |
+| K3 | the driver theorem names no program | **HOLDS** on the prediction's falsifier (non-author read, RESULTS-12 Add. 6); the tool's FALSIFIED on S3.* / VIRBridge.Live is an instrument finding beside it |
 | K4 | emitted instructions ⊆ §3 ∪ {imul, setcc, jo} | **FALSIFIED**: push, pop, cmovle (all T-exact in x86lean COVERAGE) |
 | K5 | OVF unreachable for DEFLATE's step, no per-input premise | **HOLDS** (`deflate_noovf`; strengthened by `deflate_noovf_loaded`) |
 | K6 | 0 per-program layout lemmas | **HOLDS** on its declared population |
-| K7 | the compiled router reproduces A.4's five exits, no router lemma | **HOLDS** on its declared rule; **non-author read owed** on the instantiation reading |
+| K7 | the compiled router reproduces A.4's five exits, and carries the L3 triple to the machine, no router lemma | **HOLDS**, both conjuncts (RESULTS-12 Add. 6): the five exits (non-author read); the triple in partial-correctness form, `router_triple_x86`, OVF and RES as stated disjuncts |
 
 ## Beside the scoreboard: proved, router- or program-specific, and NOT scores
 
@@ -36,7 +36,7 @@ beside K7, never inside it.
 
 ## Open, and whose
 
-- **K3 and K7 non-author reads:** the helm's to route. Defaults stand.
+- ~~**K3 and K7 non-author reads:** the helm's to route.~~ DONE 11-15 by paper (RESULTS-12 Add. 6): K3 HOLDS, K7 conjunct (2) was uncovered and is now proved, D7 HOLDS.
 - **RES for DEFLATE at the machine:** the fork is posted. The default is (B): it stays a stated limit.
 - **Findings of the compiler stage:** DECLARATIONS-S3 Addendum 11 (the declared `app` code miscompiled; fixed before any claim
   covered it) and K4's instruction list (push, pop and cmovcc missing). Both are in RESULTS-12 Addendum 1.
