@@ -54,3 +54,16 @@ is not witnessed.
   room for `frD main + 2` frames makes `ResWhy` false at every reached state.
 - **What would show it wrong:** a word step whose successor's size exceeds the potential (a measure clause misread); `evalW`'s
   result width differing from `wid` (it is `evalW_length`).
+
+## ADDENDUM 3 (2026-11-15, the 79th head, BEFORE k7/K7/World.lean and k7/K7/RouterExits.lean): K7-b2 pieces (2)–(4)
+- **World.lean (about L3's test-world builder `mkWorld`, not about F):** a predicate `W87` (regions = {0 ↦ 87}, the heap's domain =
+  [0, 87), every cell in range), true of mkWorld's base and kept by each of its stores when the written value is in range; so
+  `mkWorld cells` with in-range values is WF, Placed, CellsInR, with R(0) = 87.
+- **RouterExits.lean.** `router_exit` (generic in the world σ at base 0): from a source run to `ret ⟨0⟩` given by `run₂` and a
+  checked run given by `run₂C`, under router_x86's S3 premises plus ENV ≥ 8 · envM(F's main, 2) and STACK room for frD + 2
+  frames, the machine returns `stDone` with every live cell of σ' (the run's final store) at its scaled address: the CODE cell is
+  cell 1. OVF is excluded by `compile_noovf` (SrcInRange from `srcInRange_of_runC`), RES by `resWhy_false` (F's table is empty).
+  Then the FIVE witnesses (A.4's inputs on L3's world, sender 0, topic 0, LEN ≤ NW = 64): truncated (LEN 10) → CODE 1; bad magic
+  (byte 0 = 0) → 2; ACL bit 0 → 2; 0 tokens → 2; emit → 0. Each witness's facts are evaluation only (`rfl`/`decide`).
+- **K7 is scored on these:** HOLDS if all five are witnessed at the machine with no lemma about F's structure, layout or cells
+  (world-builder lemmas and evaluation facts are not router lemmas, by K7-a's reading); FALSIFIED if any needs one.
