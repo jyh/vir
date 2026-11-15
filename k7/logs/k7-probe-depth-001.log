@@ -1,0 +1,43 @@
+saltqueue: ticket P1 seat=root pid=94078
+probes/DepthMeasure.lean:25:4: error: `measure` has already been declared
+probes/DepthMeasure.lean:27:14: error: Application type mismatch: The argument
+  Run.i_stored_empty_final
+has type
+  Array ℕ
+but is expected to have type
+  ?m.2 → ℕ
+in the application
+  measure Run.i_stored_empty_final
+probes/DepthMeasure.lean:28:14: error: Application type mismatch: The argument
+  Run.i_fixed_empty_final
+has type
+  Array ℕ
+but is expected to have type
+  ?m.2 → ℕ
+in the application
+  measure Run.i_fixed_empty_final
+probes/DepthMeasure.lean:29:14: error: Application type mismatch: The argument
+  Run.i_fixed_one_literal
+has type
+  Array ℕ
+but is expected to have type
+  ?m.2 → ℕ
+in the application
+  measure Run.i_fixed_one_literal
+probes/DepthMeasure.lean:30:14: error: Application type mismatch: The argument
+  Run.i_fixed_overlap_copy
+has type
+  Array ℕ
+but is expected to have type
+  ?m.2 → ℕ
+in the application
+  measure Run.i_fixed_overlap_copy
+probes/DepthMeasure.lean:31:14: error: Application type mismatch: The argument
+  Run.i_two_blocks
+has type
+  Array ℕ
+but is expected to have type
+  ?m.2 → ℕ
+in the application
+  measure Run.i_two_blocks
+saltbuild EXIT=1

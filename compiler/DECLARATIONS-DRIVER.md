@@ -130,3 +130,10 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
   chain of frD(fᵢ), ENV ≤ the chain's sum of envM; (2) DEFLATE's per-function depth bound, taken from its termination measures
   (D3's: OUTMAX − m or the pending count, and the bit count per read); (3) ENV/STACK premises sized from (1)+(2). Until then
   `deflate_x86_N`'s RES disjunct stands, and it is stated as a limit wherever DEFLATE at the machine is cited.
+- **Sizing, EMPIRICAL and NOT a proof (k7/probes/DepthMeasure2.lean, k7-probe-depth-002 EXIT=0; depth-001 red on a name clash):** the
+  deepest letE context (S1's Match pairs letE frames with word frames one to one) reached by stepT's runs is **10** on each of five
+  corpus streams (stored-empty, fixed-empty, fixed-one-literal, fixed-overlap-copy, two-blocks; OUTMAX 64), over 400 steps each.
+  The probe's stop rule never fired, so it is NOT shown that each stream had finished within the 400. The structure agrees with a
+  small constant: POW recurses non-tail on k ≤ 8; STRIP is tail-recursive but calls POW non-tail; BITc calls STRIPc then POW.
+  **Cost of a proof:** a value-dependent depth invariant over every mode of stepT, on the scale of K5's SrcInRange campaign. That
+  campaign is not in amend-23's plan, so it is posted as a fork, not started.
