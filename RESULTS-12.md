@@ -21,7 +21,7 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
 | D4 | bit extraction uses no new primitive; ≥ 1 `fix` | **HOLDS** †: stepT has 4 `fix` nodes and applies {add, sub, mul, lt, le, eq} ⊆ P; P unchanged (D2) | deflate/STAGE-DEFLATE.md "D4 HOLDS"; k5/probes/D4Fix.lean, k5p-probe-D4-1 |
 | D5 | canonical code ≥ 25 % of the arm's C5 tokens | **FALSIFIED**: 3,743 / 184,961 = 2.0 % (2.3 % over the nine declared files only) | deflate/out/counts-d5.tsv + .cmd; STAGE-DEFLATE "SCORED" |
 | D6 | > 109 builds to correctness | **HOLDS**: 404 `saltbuild EXIT=` lines to df-audit-031 (builds alone: 310) | STAGE-DEFLATE "SCORED" |
-| D7 | Safety on every input with no premise on the bytes | ⚠️ HOLDS by the non-author read, Addendum 6. Was **OWED**: `SafetyStmt` carries `∀ x ∈ b, x < 256`; byte TYPE or premise is a NON-AUTHOR call (STATUS-vir 297; the author recommends the type) | STAGE-DEFLATE "SCORED", last bullets |
+| D7 | Safety on every input with no premise on the bytes | ⚠️ HOLDS by the non-author read, Addendum 6; the ByteArray form with no premise, Addendum 7. Was **OWED**: `SafetyStmt` carries `∀ x ∈ b, x < 256`; byte TYPE or premise is a NON-AUTHOR call (STATUS-vir 297; the author recommends the type) | STAGE-DEFLATE "SCORED", last bullets |
 
 ## §K — the compiler
 
@@ -129,3 +129,12 @@ k7-probe-K3-003.log; NO Lean build, audit or mutant; the bodies of Safety.lean, 
 - **Runs (C6, logged):** k7/logs 84 logs (48 EXIT=0, 36 EXIT=1); this addendum's: k7-032 (a wrong saltbuild argument, EXIT=1),
   k7-033/034 (a missing import, a destructuring slip; EXIT=1, redacted home path → `~/fleet`, `~/.elan` as earlier logs are),
   k7-035 EXIT=0, k7-036 (the root, EXIT=0), k7-audit-012 (the root not yet rebuilt, EXIT=1), k7-audit-013 EXIT=0, the mutant EXIT=1.
+
+## Addendum 7 (2026-11-15, the 81st vir head): D7's byte-type corollary — the reading retired
+The non-author read (Addendum 6) found D7 HOLDS and named the test that would retire the reading. Run: `safety_bytes` and
+`correct_bytes` (deflate/VIRDeflate/Bytes.lean) state SAFETY and CORRECTNESS over `bs : ByteArray` with NO hypothesis on the bytes;
+the `< 256` premise is discharged by `UInt8.toNat_lt` (`ofBytes_lt`), and N is the same function of the size and OUTMAX. Proved
+from `safety` and `correct` only. df-312 EXIT=0; df-313 (the root) EXIT=0; df-audit-032 EXIT=0, both rows
+[propext, Classical.choice, Quot.sound], 0 sorryAx. Red backwards: df-probe-mut-bytes-001 (input read as 2 × each byte) EXIT=1 at
+the discharge. df-311 (a `simp` recursion in the size lemma, EXIT=1) was redacted as earlier logs are. Declared first in
+DECLARATIONS-DEFLATE's 81st-head addendum. **D7: HOLDS, now with no premise on the input at all.**
