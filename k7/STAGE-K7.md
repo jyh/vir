@@ -183,3 +183,13 @@
   K7.RInv and K5.capWords/scaleLay/scaleMem, so the tool does see program constants. `K7.deflate_x86_N` names K5.* (expected: it is
   DEFLATE's instance).
 - k7-probe-K3-004 EXIT=1: my probe sliced the template inside the `elab` string (unterminated string literal). Measured nothing.
+
+## ADDENDUM (2026-11-15, the 81st head): K7 conjunct (2), `router_triple_x86` (DECLARATIONS-K7 Addendum 7; RESULTS-12 Addendum 6)
+- **Why:** the non-author read (paper, 11-15) found that limit (a)'s sentence above, *"holds in R4's own partial-correctness form
+  through router_x86"*, had no theorem, and that K7's HOLDS cell did not cover the triple conjunct.
+- **K7/RouterTriple86.lean:** `router_triple_x86`, router_x86 + L3's R4 at frame ∅, nothing else. Imports K7.RouterX86,
+  VIRL3.RouterTriple and VIRL2.Triples only (not RouterAll, RouterR4 or RouterDriver).
+- **Runs:** k7-032 (wrong saltbuild argument `build`), k7-033 (missing import), k7-034 (a destructuring slip, `hq.2` for `hq`),
+  k7-035 EXIT=0, k7-036 (the root K7, EXIT=0), k7-audit-012 (run before the root was rebuilt; unknown constant, EXIT=1),
+  k7-audit-013 EXIT=0 (42 rows), k7-probe-mut-triple-001 (probes/MutTriple86.lean, post-state weakened to f) EXIT=1 at that line.
+  k7-033/034 carried a home path in their trace lines and were redacted as earlier logs are.
