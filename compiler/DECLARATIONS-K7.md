@@ -96,3 +96,16 @@ is not witnessed.
 - **Scoring:** a router-specific result, reported beside K7 (Addendum 3's rule), never inside it; K7's score does not move.
 - **Going red:** drop R4's sender bound (sender < 5 admits sender 4, whose bucket load at 83 + 4 = 87 is out of the region), and
   router_halts' walk must fail to close.
+
+## ADDENDUM 6 (2026-11-15, the 80th head, BEFORE k7/K7/DriverD.lean and k7/K7/RouterDriver.lean): the router served k times at the machine (STATUS-vir 374)
+- **`drv_iter_D` (DriverD.lean, generic, names no program):** `S3.drv_iter_N` for a step whose lowered table is EMPTY, under ENV and
+  STACK room for the main code (8 · envM(main, 2) and 16 · (frD + 2) + 8, the forms `resWhy_false` takes): the machine reaches the
+  loop head again, with NO exit disjunct. RES is closed by `resWhy_false`, OVF by `compile_noovf` (SrcInRange premise).
+- **`RInv σ` := W87 σ ∧ WireB σ ∧ R4's premises on σ's cells.** `router_inv_step`: one finishing call of F keeps RInv. F writes only
+  cell 1, cell 2 and the bucket at 83 + sender, all outside the wire cells 3 … 66; the post-state comes from `router_post`'s Steps₂
+  form, and R5_contents gives the unchanged cells.
+- **`router_iter`:** RInv σ ⇒ ∀ k, ∃ σ', IterRel F 0 k σ σ' (router_halts at each call). **`router_served_x86`:** for RInv σ and the
+  driver's S3 premises on F's lowering, from a machine at the loop head on σ's loader image, for EVERY k the machine reaches the loop
+  head again after k calls with its memory related to the k-th store of F's iteration. DONE-only: no OVF, no RES, no FAULT.
+- **Scoring:** a router result, beside K7, never inside it.
+- **Going red:** drop the empty-table premise from drv_iter_D, and the RES branch must fail to close.
