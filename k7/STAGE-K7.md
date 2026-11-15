@@ -150,3 +150,12 @@
   (K7.DeflateX86) EXIT=0; k7-026 (root) EXIT=0; k7-audit-009 34/34 within propext · Classical.choice · Quot.sound. **Going red:**
   k7-probe-mut-dx86-001, the same statement with the machine's start words ρw0 not the loader's, EXIT=1 at `hA` (type mismatch:
   EnvRel holds for capWords only). k7-023 and k7-024 are redacted (home path → `~/fleet`, as earlier logs are).
+
+## ADDENDUM (2026-11-15, the 80th head): DEFLATE at the x86 machine with OVF EXCLUDED (DECLARATIONS-DRIVER Addendum 8, STATUS-vir 371)
+- **`deflate_x86_N` (K7/DeflateX86N.lean):** for every k with `iterS p k (initStore …) = some σ`, the machine reaches the loop head
+  with memory related to σ (EnvRel, Layout, MemRel, σ.R = σ₀.R), OR it has left the loop at X with cb = **stRes**. This is induction
+  on k with `S3.drv_iter_N` at each step: SrcInRange from K5's `deflate_inrange`, L.live carried by σ.R. **OVF is excluded at the
+  machine for DEFLATE. RES (ENV or STACK outgrown) is the one non-DONE exit left, and it is not excluded.** This supersedes
+  `deflate_x86`'s disjunct; deflate_x86 stays as proved.
+- **Builds:** k7-027 (K7.DeflateX86N) EXIT=0; k7-028 (root) EXIT=0; k7-audit-010 36/36 within propext · Classical.choice ·
+  Quot.sound. The mutant is s3's (compiler/STAGE-S3.md, drv_iter_N).

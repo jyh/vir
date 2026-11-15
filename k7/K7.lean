@@ -7,3 +7,4 @@ import K7.RouterExits
 import K7.RouterAll
 import K7.RouterR4
 import K7.DeflateX86
+import K7.DeflateX86N

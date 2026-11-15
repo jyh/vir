@@ -57,3 +57,12 @@ s3/logs through s3-118 and s3-audit-016: 136 logs (118 builds `s3-NNN`, 18 audit
 builds (OBJECT-COMPILER §4); no amend-23 row predicts S3's build count. `compile_x86`: s3-117 EXIT=0 (s3-116 red: `Op` ambiguous
 between X86 and VIRL2); audit s3-audit-016 78/78 within propext · Classical.choice · Quot.sound (`axiom_gate.py --no-control`
 rc 0; positive control s3-audit-control-002 sorryAx, rc 0; s3-audit-015 red: the root olean predated the import, rebuilt s3-118).
+
+## ADDENDUM (2026-11-15, the 80th head): `drv_iter_N`, one driver iteration with OVF excluded (DECLARATIONS-DRIVER Addendum 8)
+- **`S3.drv_iter_N` (s3/S3/DriverN.lean, a new file; no existing S3 file edited, the root S3.lean does not import it):**
+  `drv_iter_R` plus SrcInRange of the iteration's source run. The machine reaches the head again (related at σ₁, σ₁.R = σ.R), or it
+  leaves the loop at X with cb = stRes. The OVF branch is closed by `compile_noovf`. It names no program.
+- **Builds:** s3-138 (S3.DriverN) EXIT=0. Audit: k7-audit-010 (k7 imports it), within propext · Classical.choice · Quot.sound.
+  **Going red, and how weak it is:** s3-probe-mut-drvN-001, the same proof with the premise dropped, EXIT=1 at the OVF branch's
+  `compile_noovf` call (`Unknown identifier hsrc`). That shows the premise is used there and nowhere else. It does NOT show that no
+  other proof could close the branch without it.
