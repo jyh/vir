@@ -308,4 +308,44 @@ theorem drv_iter (e : Tm₂) (hty : HasType₂ [tcap] [true] e tcap) (hw : Tm.wf
       exact ⟨1 + mm + 4, .inr ⟨stRes, by decide, by rw [runP_add, r1, hv']; exact hvrip, by rw [runP_add, r1, hv']; exact hvs,
         by rw [runP_add, r1, hv']; exact hvcb⟩⟩
 
+set_option maxHeartbeats 1000000 in
+open VIRL1 VIRL2 in
+/-- **driver_x86, the driver at the x86 machine (C0 (a); DECLARATIONS-DRIVER Addendum 4).** For a step-shaped e and k chained ⟶₂
+    runs `IterRel e p k σ σ'`, from a machine at the loop head whose argument words and memory are related to σ: the machine reaches
+    the head again after all k iterations with its memory related to σ', or some iteration leaves the loop at X with a status
+    other than DONE (FAULT, OVF or RES). Premises: the compiler's on e, S3's on `lower3` and the layout, the loop's code at H, and
+    L.live covering the live cells of every store the iteration reaches. Names no program. -/
+theorem driver_x86 (e : Tm₂) (hty : HasType₂ [tcap] [true] e tcap) (hw : Tm.wfB [tcap].length e = true)
+    (hf : Tm.fnOk e = true) (hok : Tm.ok2 e = true) (hT : (lower2T [tcap] e []).2.length < 2 ^ 64) {p : Int}
+    {lay : Int → W} {ilen : X86.Op → Nat} {base : W} {C : Ctx3} {P : Program} {L : Lay3} {H X : W}
+    (hCdef : C = ctxOf ilen (lower2T [tcap] e []).2 (lower2T [tcap] e []).1 base)
+    (hP : P = lower3 ilen (lower2T [tcap] e []).2 (lower2T [tcap] e []).1 base) (hC : ∀ o, 1 ≤ ilen o)
+    (hb : bytes C (allCode C (lower2T [tcap] e []).2 (lower2T [tcap] e []).1) < 2 ^ 64)
+    (hNm : needW (lower2T [tcap] e []).1 ≤ L.bufN) (hNt : ∀ x ∈ (lower2T [tcap] e []).2, needW x.2 ≤ L.bufN)
+    (hL : L.Ok) (hcanon : ∀ a i, P.at? a = some i → canonical a = true) (hretc : canonical L.ret0 = true)
+    (hstub : L.stubRet = base + BitVec.ofNat 64 (bytes C (stubHead C)))
+    (hcode : CodeAt C P H (loopCode base L.env0 X H)) (hbase : canonical base = true) (hX : canonical X = true)
+    (hH : canonical H = true) (hret : L.ret0 = H + 5) (hN : 2 ≤ L.bufN) (hE : L.env0.toNat + 8 * 2 ≤ L.envTop.toNat) :
+    ∀ {k : Nat} {σ σ' : Store}, IterRel e p k σ σ' →
+      (∀ i σ'', IterRel e p i σ σ'' → ∀ a, VIRBridge.Live σ'' lay a → L.live a) →
+      ∀ {m : WMem} {ρw : List W} {s : Cpu},
+      EnvRel (lower2T [tcap] e []).2 lay σ [tcap] ([(Atom.const (.cap p) : Atom₂)].map valOf) ρw →
+      Layout σ lay → MemRel lay σ m → AtHead L H ρw m s →
+      ∃ n, (∃ ρw' m', AtHead L H ρw' m' (runP P n s) ∧ Layout σ' lay ∧ MemRel lay σ' m') ∨
+        (∃ code, code ≠ 0 ∧ (runP P n s).rip = X ∧ (runP P n s).stopped = false ∧ rd (runP P n s).mem L.cb = code) := by
+  intro k σ σ' hI
+  induction hI with
+  | zero σ =>
+    intro _ m ρw s _ hl hm hA
+    exact ⟨0, .inl ⟨ρw, m, hA, hl, hm⟩⟩
+  | succ hs hrest ih =>
+    rename_i k₀ σ₀ σ₁ σ₂
+    intro hlv m ρw s he hl hm hA
+    obtain ⟨n₁, ⟨ρw', m', hA', he', hl', hm'⟩ | hx⟩ :=
+      drv_iter e hty hw hf hok hT hs he hl hm hCdef hP hC hb hNm hNt hL hcanon hretc hstub hcode hbase hX hH hret hN hE
+        (hlv 0 σ₀ (.zero σ₀)) hA
+    · obtain ⟨n₂, r⟩ := ih (fun i σ'' h => hlv (i + 1) σ'' (.succ hs h)) he' hl' hm' hA'
+      exact ⟨n₁ + n₂, by rw [runP_add]; exact r⟩
+    · exact ⟨n₁, .inr hx⟩
+
 end S3

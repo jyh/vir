@@ -75,3 +75,11 @@ Moved to compiler/VIRC/Driver.lean (DECLARATIONS-S2 "Added", 81bd82c), statement
 - **K3** is read on `driver_x86`'s statement by `k5/tools/k3_check.py` (derived whitelist), with router_refines as the positive
   control. **What would show it wrong:** a premise that names e's structure; an iteration whose returned words are not the next
   call's DriverCall words (the copy block misread); a write of the loop that lands in L.live.
+
+## Addendum 5 (2026-11-15, the 79th head, WRITTEN AFTER driver_x86 was proved; it records one premise Addendum 4 did not list)
+- `driver_x86` takes **L.live ⊇ Live σ'' lay for every store σ'' an `IterRel` prefix reaches from σ** (stated over `VIRC.IterRel`,
+  generic). Addendum 4 listed only the driver's own code/layout premises. The premise is there because S3's run theorem takes
+  L.live ⊇ the START store's live cells at each call, and no source-level lemma here shows a ⟶₂ run of an accepted program keeps
+  σ.R (the IR has it, `stepIR_R`; the source does not yet). Removing it needs that lemma; it is not claimed.
+- The loop's ENV demand is stated as `env0 + 16 ≤ envTop` and its BUF demand as `2 ≤ |BUF|` (the capability's two words), as
+  Addendum 4 said.
