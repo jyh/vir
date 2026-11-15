@@ -1,0 +1,14 @@
+saltqueue: ticket P1 seat=root pid=64107
+probes/MutExits.lean:4:70: error: Type mismatch
+  rfl
+has type
+  ?m.25 = ?m.25
+but is expected to have type
+  Finmap.lookup (0 + 1) (run₂ 80 (closeW F, wTrunc)).2.H = some 2
+probes/MutExits.lean:5:69: error: Type mismatch
+  rfl
+has type
+  ?m.25 = ?m.25
+but is expected to have type
+  Finmap.lookup (0 + 1) (run₂ 80 (closeW F, wEmit)).2.H = some 2
+saltbuild EXIT=1

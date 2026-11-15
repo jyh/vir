@@ -17,3 +17,9 @@ import K7
 #print axioms K7.F_need
 #print axioms K7.F_tbl_nil
 #print axioms K7.router_x86
+#print axioms K7.W87.wf
+#print axioms K7.mkWorld_w87
+#print axioms K7.exit_code
+#print axioms K7.five_exits
+#print axioms K7.code_wTrunc
+#print axioms K7.code_wEmit

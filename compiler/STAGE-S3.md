@@ -46,7 +46,10 @@ compiler and bridge by path).
   (`s2_run_R`: each IR step keeps σ.R by `stepIR_R` with NoAF from that step's SRel; `compile_refines_mem_R`) and the live set by
   `live_of_R`. Addendum 5's per-reached-store premise is no longer needed; `driver_x86` stays as proved beside it. Its statement's
   constants are driver_x86's (the same K3 reading applies).
-- **K7: OWED.** K7-b1 `router_x86` (k7/STAGE-K7.md) carries compile_x86 to the router; the five exits witnessed is K7-b2.
+- **K7: HOLDS on its declared rule (DECLARATIONS-K7 Addendum 3), limits stated; non-author read owed.** K7-b1 `router_x86` carries
+  compile_x86 to the router; K7-b2 `five_exits` (k7/K7/RouterExits.lean; audit k7-audit-006) witnesses all five of A.4's inputs at
+  the x86 machine (DONE, CODE 1 · 2 · 2 · 2 · 0), with only evaluation facts about F and world-builder lemmas. Limits (k7/STAGE-K7.md):
+  OVF excluded only at the five witnesses; the instantiation-vs-router-lemma reading is the author's.
 
 ## Runs
 s3/logs through s3-118 and s3-audit-016: 136 logs (118 builds `s3-NNN`, 18 audits and controls), 136 `saltbuild EXIT=` lines
