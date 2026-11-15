@@ -1,0 +1,83 @@
+saltqueue: ticket P1 seat=root pid=46224
+case pos.refine_3
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hwire : ∀ (i : ℤ), 3 ≤ i → i < 67 → 0 ≤ f i ∧ f i < 256
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hR1 : ∀ (i : ℤ), 0 < f i → inRange (f i - 1) = true
+h3 : 0 ≤ f 3 ∧ f 3 < 256
+h4 : 0 ≤ f 4 ∧ f 4 < 256
+h5 : 0 ≤ f 5 ∧ f 5 < 256
+h6 : 0 ≤ f 6 ∧ f 6 < 256
+h7 : 0 ≤ f 7 ∧ f 7 < 256
+h8 : 0 ≤ f 8 ∧ f 8 < 256
+h9 : 0 ≤ f 9 ∧ f 9 < 256
+h10 : 0 ≤ f 10 ∧ f 10 < 256
+h11 : 0 ≤ f 11 ∧ f 11 < 256
+h12 : 0 ≤ f 12 ∧ f 12 < 256
+h13 : 0 ≤ f 13 ∧ f 13 < 256
+h14 : 0 ≤ f 14 ∧ f 14 < 256
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : 24 ≤ f 0
+hA :
+  67 +
+      ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * 4 +
+        (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14)))) <
+    87
+hT : 83 + (f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) < 87
+⊢ SrcInRange
+    (Tm.ite
+        (Atom.prim L1.Prim.and
+          [Atom.prim L1.Prim.eq
+              [Atom.const (Const.int (f 3 + (256 * f 4 + (65536 * f 5 + 16777216 * f 6)))),
+                Atom.const (Const.int 1297303345)],
+            Atom.prim L1.Prim.and
+              [Atom.prim L1.Prim.eq
+                  [Atom.const
+                      (Const.int
+                        (f
+                          (67 +
+                            ((f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))) * 4 +
+                              (f 11 + (256 * f 12 + (65536 * f 13 + 16777216 * f 14))))))),
+                    Atom.const (Const.int 1)],
+                Atom.prim L1.Prim.lt
+                  [Atom.const (Const.int 0),
+                    Atom.const (Const.int (f (83 + (f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))))))]]])
+        (Tm.letOp Op.store
+          [Atom.const (Const.cap 0),
+            Atom.prim L1.Prim.add
+              [Atom.const (Const.int 83), Atom.const (Const.int (f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10))))],
+            Atom.prim L1.Prim.sub
+              [Atom.const (Const.int (f (83 + (f 7 + (256 * f 8 + (65536 * f 9 + 16777216 * f 10)))))),
+                Atom.const (Const.int 1)]]
+          tcap
+          (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 1), Atom.const (Const.int 0)] tcap
+            (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), Atom.const (Const.int 24)] tcap
+              (Tm.ret (Atom.var 0)))))
+        (Tm.letOp Op.store [Atom.const (Const.cap 0), Atom.const (Const.int 1), Atom.const (Const.int 2)] tcap
+          (Tm.ret (Atom.var 0))),
+      σ)
+probes/InR6.lean:28:0: warning: declaration uses `sorry`
+probes/InR6.lean:42:65: warning: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/InR6.lean:42:80: warning: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]̵N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲S̲u̲b̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=0

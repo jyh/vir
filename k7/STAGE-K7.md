@@ -102,3 +102,37 @@
   router's SrcInRange in general is not proved); (b) whether `exit_code`, `Rig` and `five_exits` count as "the instantiation" and not
   as router-specific lemmas is the author's reading (they mention F only through its evaluation facts and generic theorems); a
   non-author read is owed.
+
+## ADDENDUM (2026-11-15, the 80th head): limit (a)'s OVF clause lifted for every world (DECLARATIONS-K7 Addendum 4, STATUS-vir 361)
+- **`router_inR` (K7/RouterAll.lean):** F's SrcInRange for EVERY world σ with `W87 σ` and the wire premise `WireB σ` (cells 3 … 66
+  hold bytes in [0, 256), inputs/L3-programs.md). No premise on LEN, magic, ACL, tokens, sender or topic. A load outside the
+  region (sender·4 + topic ≥ 20, or sender ≥ 4) is a stuck configuration with an in-range head, in range by `srcInRange_stuck`
+  (from `step₂_complete`). The proof is a symbolic walk on `World σ 0 f` (L3's Sym.lean form), one checked step at a time,
+  splitting on LEN ≥ 24, the two load bounds and the three emit conjuncts.
+- **`exit_code_all`:** `exit_code`'s conclusion with `run₂C` replaced by `WireB σ`. The source run to `ret ⟨0⟩` stays a premise
+  (partial correctness, as R4 is). So the machine returns DONE with the CODE word at cell 1's scaled address on EVERY W87 world with
+  the wire premise on which F's source run finishes, with OVF excluded generically.
+- **K7's score does not move and RouterExits.lean is not edited:** `router_inR` is a lemma about F's structure, so by Addendum 3's
+  rule it is reported beside K7, not inside it. Limit (a) now reads: OVF is excluded for every W87 world with the wire premise;
+  what remains open is TERMINATION (every such world's run reaches `ret`, or sticks at an out-of-region load), which R4 at the
+  machine for all worlds also needs.
+- **Builds:** k7-020 (K7.RouterAll) EXIT=0; k7-021 (root) EXIT=0; k7-audit-007 28/28 constants within propext · Classical.choice
+  · Quot.sound (router_inR_f, router_inR, exit_code_all, srcInRange_stuck all three). **Going red:** k7-probe-mut-inR-001,
+  router_inR_f's walk with the wire premise dropped, EXIT=1 at the RD32 sum's let (its range obligation does not close).
+- **Probes:** k7-probe-inR-001 … 008 (the walk, explored before the file; 008 EXIT=0 with no sorry). **Sources kept for 001 and 008
+  only:** probes 002–007 were each edited forward under the next name (`mv`), so their sources are not in the tree; each run's
+  source sha is in the fleet saltbuild audit log, and each log is committed. C6 counts all eight.
+
+## ADDENDUM (2026-11-15, the 80th head): R4 at the machine for every world, TOTAL on R4's premises (DECLARATIONS-K7 Addendum 5, STATUS-vir 361 part 2)
+- **`router_R4_x86` (K7/RouterR4.lean):** for EVERY σ with `W87 σ`, `WireB σ` and R4's own premises (SvA < 4, TvA < 4 on σ's
+  cells), and a machine in DriverCall on σ's loader image under Rig's S3 premises with L.live covering σ's live cells: ∃ mm, the
+  machine RETURNS DONE and every cell i < 87 is at its scaled address with value `postF (cells σ) 0 i`, R4's post-state.
+- **Route:** `router_halts` (termination: a symbolic walk with a `Halts` step lemma; under R4's premises no load leaves the region)
+  · `router_post` (L3's `R4` used as proved, at frame ∅, from `w87_regionAt`) · `exit_cells_all` (exit_code_all's route with every
+  cell, not only CODE) · OVF by `router_inR`, RES by `resWhy_false`. l3 is not edited.
+- **K7 limit (a) is now CLOSED for R4's premise set:** the L3 router triple holds at the machine as total correctness for every world
+  satisfying it. Outside R4's premises (sender ≥ 4 or an ACL index past the region), the source run sticks at an out-of-region load:
+  OVF is still excluded there (`router_inR`) but no DONE is claimed. K7's score does not move (a router result, beside K7).
+- **Builds:** k7-022 (root) EXIT=0; k7-audit-008 32/32 constants within propext · Classical.choice · Quot.sound. Probes
+  k7-probe-R4-001 … 004 (sources R4a, R4b, R4c, R4d all kept; 004 EXIT=0, no sorry). **Going red:** k7-probe-mut-R4-001, the walk
+  with the sender bound widened to < 5, EXIT=1: at each `halts_ret` the configuration is still a load, not a `ret`.

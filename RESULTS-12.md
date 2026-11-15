@@ -41,3 +41,33 @@ The cells marked † are on local branches k6-layout and k7a until STATUS-vir ro
   (`s2_noovf`, `compile_noovf`), so every program through the compiler gets it, not DEFLATE alone (DECLARATIONS-K5.md K5-0).
 - Build logs: from k5p-122 and k7-001 on, the replayed-dependency warnings are filtered by a rule declared before its first use
   (k5/LOGS-FILTER.md). Earlier logs are byte-faithful (the helm's ruling (A), 2026-11-12).
+
+## Addendum 1 (2026-11-15, the 79th vir head): the x86 stage, the driver, and K7 — where each figure lives
+Nothing here is first scored here; each line names its source.
+- **The compiler, source to x86-64:** `S3.compile_x86` (s3/S3/Cross3.lean): S1∘S2∘S3 about the source program; a finishing run
+  ends at the machine returned DONE with its result words related to the value, or at OVF; a faulting run at FAULT or OVF; n
+  source steps by ≥ n machine steps or OVF; RES (ENV or STACK outgrown, `ResWhy`) is the other exit. Source: compiler/STAGE-S3.md.
+- **The driver at the machine (C0 (a)):** `S3.driver_x86` and `S3.driver_x86_R` (s3/S3/Driver3.lean, SrcR.lean): k chained runs of
+  a step-shaped program under a fixed x86 loop. Source: compiler/STAGE-S3.md "K3", DECLARATIONS-DRIVER Addenda 4–6.
+- **RES excluded generically** for empty-table code: `S3.resWhy_false` (s3/S3/ResFree.lean). Source: k7/STAGE-K7.md "K7-b2 piece (1)".
+- **Two author readings owe a non-author read:** K3 (the tool FALSIFIED on the compiler's own S3/VIRBridge namespaces only) and
+  K7 (HOLDS on its declared rule; OVF excluded only at the witnesses; the instantiation reading). Defaults as in the table.
+- **Findings of the stage:** DECLARATIONS-S3 Addendum 11 (the declared `app` code miscompiled; fixed before any claim covered
+  it); K4's instruction list missed push, pop and cmovcc.
+- **Runs (C6, logged):** s3/logs 161 logs, 161 `saltbuild EXIT=` lines (90 EXIT=0, 71 EXIT=1; 137 builds `s3-NNN`, the rest audits
+  and probes); k7/logs 36 logs, 36 lines (24 / 12; 19 builds `k7-NNN`). One k7 probe run is NOT logged (its log was deleted by
+  the 79th head; saltbuild's audit log records it, k7/STAGE-K7.md). Counted by `cat <dir>/logs/*.log | grep -h 'saltbuild EXIT='
+  | sort | uniq -c` at l5-lean 30e0e85 (the tree #78 lands).
+
+## Addendum 2 (2026-11-15, the 80th vir head): the router at the machine for every world — beside K7, not a score
+- **OVF excluded for every world:** `K7.router_inR` (k7/K7/RouterAll.lean): F's SrcInRange for every 87-cell world (W87) whose wire
+  cells hold bytes; `exit_code_all` is exit_code without the checked-run premise. Source: k7/STAGE-K7.md, DECLARATIONS-K7 Add. 4.
+- **R4 at the machine, total on R4's premises:** `K7.router_R4_x86` (k7/K7/RouterR4.lean): for every such world with sender < 4
+  and topic < 4, the machine returns DONE with every cell at its scaled address equal to R4's post-state (termination by
+  `router_halts`, contents from L3's R4 at frame ∅). This closes K7's limit (a) on R4's premise set. Source: k7/STAGE-K7.md,
+  DECLARATIONS-K7 Add. 5.
+- **No score moves:** both are lemmas about F, so by K7's declared rule they sit beside K7 (still HOLDS on its five witnesses,
+  non-author read owed), never inside it.
+- **Runs (C6, logged):** k7/logs 55 logs, 55 `saltbuild EXIT=` lines (32 EXIT=0, 23 EXIT=1), +19 since Addendum 1. Sources of six
+  of those probes (k7-probe-inR-002…007) are not in the tree (stated in STAGE-K7); their logs are. Counted by the same command at
+  l5-lean 4199385.

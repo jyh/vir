@@ -1,0 +1,166 @@
+saltqueue: ticket P1 seat=root pid=72472
+probes/MutInR.lean:16:2: error: unsolved goals
+case pos.refine_3.refine_3.refine_3.refine_3.refine_3.refine_1
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : 24 ≤ f 0
+⊢ headB
+      (Tm.letE tint
+            (Tm.ret
+              (Atom.prim L1.Prim.add
+                [Atom.const (Const.int (f 3)),
+                  Atom.prim L1.Prim.add
+                    [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.const (Const.int (f 4))],
+                      Atom.prim L1.Prim.add
+                        [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.const (Const.int (f 5))],
+                          Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.const (Const.int (f 6))]]]]))
+            (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 7)] tint
+              (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 8)] tint
+                (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 9)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 10)] tint
+                    (Tm.letE tint
+                      (Tm.ret
+                        (Atom.prim L1.Prim.add
+                          [Atom.var 3,
+                            Atom.prim L1.Prim.add
+                              [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                                Atom.prim L1.Prim.add
+                                  [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                                    Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+                      (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 11)] tint
+                        (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 12)] tint
+                          (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 13)] tint
+                            (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 14)] tint
+                              (Tm.letE tint
+                                (Tm.ret
+                                  (Atom.prim L1.Prim.add
+                                    [Atom.var 3,
+                                      Atom.prim L1.Prim.add
+                                        [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                                          Atom.prim L1.Prim.add
+                                            [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                                              Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+                                (Tm.letOp Op.load
+                                  [Atom.const (Const.cap 0),
+                                    Atom.prim L1.Prim.add
+                                      [Atom.const (Const.int 67),
+                                        Atom.prim L1.Prim.add
+                                          [Atom.prim L1.Prim.mul [Atom.var 5, Atom.const (Const.int 4)], Atom.var 0]]]
+                                  tint
+                                  (Tm.letOp Op.load
+                                    [Atom.const (Const.cap 0),
+                                      Atom.prim L1.Prim.add [Atom.const (Const.int 83), Atom.var 6]]
+                                    tint
+                                    (Tm.ite
+                                      (Atom.prim L1.Prim.and
+                                        [Atom.prim L1.Prim.eq [Atom.var 12, Atom.const (Const.int 1297303345)],
+                                          Atom.prim L1.Prim.and
+                                            [Atom.prim L1.Prim.eq [Atom.var 1, Atom.const (Const.int 1)],
+                                              Atom.prim L1.Prim.lt [Atom.const (Const.int 0), Atom.var 0]]])
+                                      (Tm.letOp Op.store
+                                        [Atom.const (Const.cap 0),
+                                          Atom.prim L1.Prim.add [Atom.const (Const.int 83), Atom.var 7],
+                                          Atom.prim L1.Prim.sub [Atom.var 0, Atom.const (Const.int 1)]]
+                                        tcap
+                                        (Tm.letOp Op.store
+                                          [Atom.var 0, Atom.const (Const.int 1), Atom.const (Const.int 0)] tcap
+                                          (Tm.letOp Op.store
+                                            [Atom.var 0, Atom.const (Const.int 2), Atom.const (Const.int 24)] tcap
+                                            (Tm.ret (Atom.var 0)))))
+                                      (Tm.letOp Op.store
+                                        [Atom.const (Const.cap 0), Atom.const (Const.int 1), Atom.const (Const.int 2)]
+                                        tcap (Tm.ret (Atom.var 0)))))))))))))))),
+          σ).1 =
+    true
+
+case pos.refine_3.refine_3.refine_3.refine_3.refine_3.refine_3
+σ : Store
+f : ℤ → ℤ
+hw : World σ 0 f
+hR : ∀ (i : ℤ), inRange (f i) = true
+hc : ∀ (i : ℤ), 0 ≤ i → i < 87 → Finmap.lookup i σ.H = some (f i)
+hreg : Finmap.lookup 0 σ.R = some 87
+hn : 24 ≤ f 0
+⊢ SrcInRange
+    (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 7)] tint
+        (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 8)] tint
+          (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 9)] tint
+            (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 10)] tint
+              (Tm.letE tint
+                (Tm.ret
+                  (Atom.prim L1.Prim.add
+                    [Atom.var 3,
+                      Atom.prim L1.Prim.add
+                        [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                          Atom.prim L1.Prim.add
+                            [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                              Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+                (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 11)] tint
+                  (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 12)] tint
+                    (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 13)] tint
+                      (Tm.letOp Op.load [Atom.const (Const.cap 0), Atom.const (Const.int 14)] tint
+                        (Tm.letE tint
+                          (Tm.ret
+                            (Atom.prim L1.Prim.add
+                              [Atom.var 3,
+                                Atom.prim L1.Prim.add
+                                  [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                                    Atom.prim L1.Prim.add
+                                      [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                                        Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+                          (Tm.letOp Op.load
+                            [Atom.const (Const.cap 0),
+                              Atom.prim L1.Prim.add
+                                [Atom.const (Const.int 67),
+                                  Atom.prim L1.Prim.add
+                                    [Atom.prim L1.Prim.mul [Atom.var 5, Atom.const (Const.int 4)], Atom.var 0]]]
+                            tint
+                            (Tm.letOp Op.load
+                              [Atom.const (Const.cap 0), Atom.prim L1.Prim.add [Atom.const (Const.int 83), Atom.var 6]]
+                              tint
+                              (Tm.ite
+                                (Atom.prim L1.Prim.and
+                                  [Atom.prim L1.Prim.eq
+                                      [Atom.const (Const.int (f 3 + (256 * f 4 + (65536 * f 5 + 16777216 * f 6)))),
+                                        Atom.const (Const.int 1297303345)],
+                                    Atom.prim L1.Prim.and
+                                      [Atom.prim L1.Prim.eq [Atom.var 1, Atom.const (Const.int 1)],
+                                        Atom.prim L1.Prim.lt [Atom.const (Const.int 0), Atom.var 0]]])
+                                (Tm.letOp Op.store
+                                  [Atom.const (Const.cap 0),
+                                    Atom.prim L1.Prim.add [Atom.const (Const.int 83), Atom.var 7],
+                                    Atom.prim L1.Prim.sub [Atom.var 0, Atom.const (Const.int 1)]]
+                                  tcap
+                                  (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 1), Atom.const (Const.int 0)]
+                                    tcap
+                                    (Tm.letOp Op.store [Atom.var 0, Atom.const (Const.int 2), Atom.const (Const.int 24)]
+                                      tcap (Tm.ret (Atom.var 0)))))
+                                (Tm.letOp Op.store
+                                  [Atom.const (Const.cap 0), Atom.const (Const.int 1), Atom.const (Const.int 2)] tcap
+                                  (Tm.ret (Atom.var 0))))))))))))))),
+      σ)
+probes/MutInR.lean:13:65: warning: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+probes/MutInR.lean:13:80: warning: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, F, Fn, RD32, EXIT, EMIT, NT.c, NA.c, add, sub, mul, le, lt, eq, conj,
+  ̲  ̲ ̲ ̲List.map, List.idxOf, List.findIdx, List.findIdx.go, String.reduceAppend, String.reduceBEq,
+  ̲  ̲ ̲ ̲cond_true, cond_false, Nat.reduceAdd, Nat.zero_add, Tm.subst, Atom.subst, Atom.substL,
+  ̲  ̲ ̲ ̲↓reduceIte, Nat.reduceLT, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]̵N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲S̲u̲b̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+saltbuild EXIT=1
