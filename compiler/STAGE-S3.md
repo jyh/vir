@@ -38,7 +38,7 @@ compiler and bridge by path).
   the router from one that is not. **No constant of DEFLATE or the router** (VIRL3 · K5 · K7 · VIRDeflate) is in driver_x86's
   statement. amend-23 K3 says the constants are drawn from "the compiler's, L2's and x86lean's namespaces"; S3 (the compiler's x86
   stage, DECLARATIONS-S3) and VIRBridge (its word↔byte bridge, DECLARATIONS-S3-bridge) are the compiler's own, born after the
-  whitelist was typed. Whether they count is a reading the author does not make for himself after the result: the precedent
+  whitelist was typed. Whether they count is a reading the author does not make about its own result after the fact: the precedent
   (driver_l2, row 307) MOVED definitions into VIRC rather than widen the list. The tool's verdict stands as the score until a
   non-author rules.
 - **K7: OWED.** K7-b1 `router_x86` (k7/STAGE-K7.md) carries compile_x86 to the router; the five exits witnessed is K7-b2.
