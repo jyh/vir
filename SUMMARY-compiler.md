@@ -19,7 +19,7 @@ compiler nor DEFLATE (amend-23's notes). The writer of the predictions is the bu
 | K4 | emitted instructions ⊆ §3 ∪ {imul, setcc, jo} | **FALSIFIED**: push, pop, cmovle (all T-exact in x86lean COVERAGE) |
 | K5 | OVF unreachable for DEFLATE's step, no per-input premise | **HOLDS** (`deflate_noovf`; strengthened by `deflate_noovf_loaded`) |
 | K6 | 0 per-program layout lemmas | **HOLDS** on its declared population |
-| K7 | the compiled router reproduces A.4's five exits, and carries the L3 triple to the machine, no router lemma | **HOLDS**, both conjuncts (RESULTS-12 Add. 6): the five exits (non-author read); the triple in partial-correctness form, `router_triple_x86`, OVF and RES as stated disjuncts |
+| K7 | the compiled router reproduces A.4's five exits, and carries the L3 triple to the machine, no router lemma | **HOLDS**, both conjuncts (RESULTS-12 Add. 6): the five exits (non-author read); the triple in partial-correctness form at every capability base p, `router_triple_x86_p` (RESULTS-12 Add. 8; `router_triple_x86` is its p = 0 instance), OVF and RES as stated disjuncts |
 
 ## Beside the scoreboard: proved, router- or program-specific, and NOT scores
 

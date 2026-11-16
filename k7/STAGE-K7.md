@@ -193,3 +193,9 @@
   k7-035 EXIT=0, k7-036 (the root K7, EXIT=0), k7-audit-012 (run before the root was rebuilt; unknown constant, EXIT=1),
   k7-audit-013 EXIT=0 (42 rows), k7-probe-mut-triple-001 (probes/MutTriple86.lean, post-state weakened to f) EXIT=1 at that line.
   k7-033/034 carried a home path in their trace lines and were redacted as earlier logs are.
+
+## ADDENDUM (2026-11-16, the 83rd head): K7 conjunct (2) at every p (DECLARATIONS-K7 Addendum 8; RESULTS-12 Addendum 8)
+- paper's read of Addendum 7 (bus 11-16 08:47): the re-score stands; LIMIT: the corollary was at p = 0. Lifted:
+  `router_triple_x86_p` at a free p; `router_triple_x86` is its p = 0 instance.
+- **Builds (P1):** k7-038 (K7.RouterTriple86) EXIT=0, first attempt; k7-039 (root) EXIT=0; k7-audit-015 EXIT=0 (43 rows, three
+  axioms, 0 sorryAx); k7-probe-mut-triple-002 (probes/MutTriple86p.lean, post-state at p = 0 against a region at p) EXIT=1 at 42:37.

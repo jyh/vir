@@ -138,3 +138,16 @@ from `safety` and `correct` only. df-312 EXIT=0; df-313 (the root) EXIT=0; df-au
 [propext, Classical.choice, Quot.sound], 0 sorryAx. Red backwards: df-probe-mut-bytes-001 (input read as 2 × each byte) EXIT=1 at
 the discharge. df-311 (a `simp` recursion in the size lemma, EXIT=1) was redacted as earlier logs are. Declared first in
 DECLARATIONS-DEFLATE's 81st-head addendum. **D7: HOLDS, now with no premise on the input at all.**
+
+## Addendum 8 (2026-11-16, the 83rd vir head): K7 conjunct (2) at every capability base p
+The non-author read of Addendum 6's re-score (paper, bus 11-16 08:47; object vir 4709d88) confirms it: the frozen K7 does not ask
+for total correctness, since L3's R4 is a `Triple` (partial correctness, no fault). It names one LIMIT, not a falsifier:
+`router_triple_x86` was stated at p = 0 while R4 and `router_x86` are general in p, and "the L3 router triple" is R4 at every p.
+Run (the reader's arm (a), declared first in DECLARATIONS-K7 Addendum 8): `K7.router_triple_x86_p` (k7/K7/RouterTriple86.lean),
+Addendum 6's statement at a free `p : Int` (region, R4's premises, capability words, source term, post-state). `router_triple_x86`
+keeps its statement and is now its p = 0 instance (one `exact`). Same rule as Addendum 7: only `router_x86`, L3's `R4` and generic
+L2 facts; the file's imports are unchanged, and none reaches `router_inR` or `router_halts`. k7-038 (the file) EXIT=0; k7-039 (the
+root) EXIT=0; k7-audit-015 EXIT=0, 43 rows (42 + the new one), every row within [propext, Classical.choice, Quot.sound], 0 sorryAx.
+**Red backwards:** k7-probe-mut-triple-002 (probes/MutTriple86p.lean: the post-state's p fixed at 0 against a region at p) EXIT=1,
+one error, at the declared line (42:37, the final `exact hq`). All four ran at P1. **K7: HOLDS on both conjuncts, (2) now at every
+p**, in partial-correctness form with OVF and RES as stated disjuncts. Logs: k7/logs 90 (53 EXIT=0, 37 EXIT=1).

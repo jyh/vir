@@ -1809,6 +1809,197 @@ def slangm(repo, base, ext):
     return rows
 
 
+# The surface-syntax arm (OBJECT-SURFACE-L1, PREDICTIONS-amend-25 SU1–SU8; STATUS-vir 403). DIR is a clone of the MetaPRL arm's
+# tree, --base its L5-closed sha (2d9a6c7f0, the object's base), --ext the sha it names when it posts the surface work. The arm
+# NAMES its rules, by env (the object fixes the targets, not the names): VIR_SURF_ROOT (§1's rule), VIR_SURF_SAFETY (§2's four,
+# comma-separated, order preservation,progress,safety,determinism), VIR_SURF_INLINE (§3's rule). Unset ⇒ that row is Q, never 0.
+# SU2's needle is its own control: it must read > 0 on l1s_induction's statement AT BASE, or every SU2/SU7/SU8 zero is VOID.
+# SURFACE-E1's reading (errata, before any proof): a token inside a sort's DEFINITION is not in a statement and is not counted; the
+# new modules' `define`s that carry one are printed BESIDE as the residue. SU3, SU5 and the per-case reading of SU4 stay hand reads;
+# the rows below give the reader the premises, the classes and the counts.
+SURF_TOK_RE = re.compile(r"(?<![A-Za-z0-9_'])(mk_bterm|bdepth|BTerm|L1Lang|wfs|is_tyterm|isNum|tyok)(?![A-Za-z0-9_'])")
+SURF_CONTROL = ('vir_l1slang', 'l1s_induction')
+SURF_EXISTING = ('preservation', 'progress', 'safety', 'determinism')  # virl1_pres at base: what §2 derives FROM
+SURF_BINDER_IN_RE = re.compile(r"\w\s*\.[\s\S]*\}\s+in\s+\S+\s*$")   # `a_lam{'ty; x.'e 'x} in L1Atom`: a binder form's membership
+SURF_DECL_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*:(?!:)")        # `ty: L1Ty`, `e: L1Atom -> L1Exp`
+SURF_MOTIVE_RE = re.compile(r"^'P[A-Za-z0-9_]*\[")
+SURF_VAR_RE = re.compile(r"(?<![A-Za-z0-9_'])var\{")
+
+
+def surf_split(s, sep):
+    """split s on the one-character sep at bracket depth 0 ({ [ ( )."""
+    out, d, cur = [], 0, ''
+    for ch in s:
+        if ch in '{[(':
+            d += 1
+        elif ch in '}])':
+            d -= 1
+        if ch == sep and d == 0:
+            out.append(cur); cur = ''
+        else:
+            cur += ch
+    out.append(cur)
+    return [x.strip() for x in out if x.strip()]
+
+
+def surf_sequents(stmt):
+    """[(label, hyps, concl)] for every `[label] sequent { hyps >- concl }` in a rule's statement, in order; the last is the goal."""
+    out, i = [], 0
+    for m in re.finditer(r"(?:\[([A-Za-z0-9_']+)\]\s*)?sequent\s*\{", stmt):
+        if m.start() < i:
+            continue
+        j, d = m.end(), 1
+        while j < len(stmt) and d:
+            d += {'{': 1, '}': -1}.get(stmt[j], 0); j += 1
+        body = stmt[m.end():j - 1]; i = j
+        k, d2 = None, 0
+        for q in range(len(body) - 1):
+            d2 += {'{': 1, '}': -1, '[': 1, ']': -1, '(': 1, ')': -1}.get(body[q], 0)
+            if d2 == 0 and body[q:q + 2] == '>-':
+                k = q; break
+        hyps, concl = (body[:k], body[k + 2:]) if k is not None else ('', body)
+        out.append((m.group(1) or '-', [h for h in surf_split(hyps, ';') if h != '<H>'], concl.strip()))
+    return out
+
+
+def surfm(repo, base, ext):
+    g = lambda *a: subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=True, errors='replace')
+    if not base or not ext or g('cat-file', '-e', ext + '^{commit}').returncode != 0:
+        return [('SU.src', 0, 'EMPTY')]
+    ls = lambda sha: set(g('ls-tree', '-r', '--name-only', sha, 'theories/').stdout.split())
+    lb, le = ls(base), ls(ext)
+    show = lambda sha, p: strip_ml_comments(g('show', sha + ':' + p).stdout)
+    new = sorted(le - lb)
+    changed = [p for p in g('diff', '--name-only', base, ext, '--', 'theories').stdout.split() if p in lb and p in le]
+    def items(sha, p):
+        out = {}
+        for blk in MPL_ITEM_RE.split(show(sha, p)):
+            m = re.match(r'(interactive_rw|interactive|prim_rw|prim|define|declare)\s+(\S+)', blk)
+            if m:
+                out[m.group(2)] = (m.group(1), ' '.join(blk.split()))
+        return out
+    # SU1: the census (slangm's form): pre-existing items edited or removed; prims new anywhere (new files, or added to old ones)
+    redit = dedit = nprim = 0
+    for p in changed:
+        if p.endswith('.ml'):
+            b, a = items(base, p), items(ext, p)
+            for k, (kind, txt) in b.items():
+                if k not in a or a[k][1] != txt:
+                    if kind.startswith(('interactive', 'prim')):
+                        redit += 1
+                    else:
+                        dedit += 1
+            nprim += sum(1 for k, (kind, _) in a.items() if kind.startswith('prim') and k not in b)
+    nprim += sum(len(PRIM_RE.findall(show(ext, p))) for p in new if p.endswith('.ml'))
+    prla_changed = [p for p in changed if p.endswith('.prla')]
+    rows = [('SU.newFiles', len(new), 'BESIDE:' + (','.join(os.path.basename(p) for p in new) or '-')),
+            ('SU.SU1.rulesEdited', redit, 'MEASURED:pre-existing theories/**/*.ml interactive/prim items edited or removed, comments stripped'),
+            ('SU.SU1.defsEdited', dedit, 'MEASURED'),
+            ('SU.SU1.newPrims', nprim, 'MEASURED:prim/prim_rw new at ext (new files, and new items in old files)'),
+            ('SU.SU1.prlaChanged', len(prla_changed), 'BESIDE:a stored proof re-saved is not an edit by itself:' + (','.join(os.path.basename(p) for p in prla_changed) or '-')),
+            ('SU.SU1.grounded', 0, 'Q:the arm\'s REPLAY post (status_all, fresh session)')]
+    # statements and stored proofs at ext: new files, and items new in changed files
+    st, kinds = {}, {}
+    for p in new + changed:
+        if p.endswith('.ml'):
+            b = items(base, p) if p in lb else {}
+            for k, (kind, txt) in items(ext, p).items():
+                if k not in b or b[k][1] != txt:
+                    st[k], kinds[k] = txt, kind
+    basenames = set()
+    for p in changed:
+        if p.endswith('.prla'):
+            basenames |= set(prla_rules(g('show', base + ':' + p).stdout))
+    R = {}
+    for p in new + prla_changed:
+        if p.endswith('.prla'):
+            for n, v in prla_rules(g('show', ext + ':' + p).stdout).items():
+                if n not in basenames:
+                    R[n] = v
+    body = lambda n: re.sub(r'^\S+\s+\S+\s*', '', st.get(n, ''), count=1)   # the statement without `interactive <name>`
+    toks = lambda t: SURF_TOK_RE.findall(t)
+    # the SU2 control: the needle on the object's own bterm rule at base
+    cp = 'theories/vir/%s.ml' % SURF_CONTROL[0]
+    ctl = items(base, cp).get(SURF_CONTROL[1], ('', ''))[1] if cp in lb else ''
+    cn = len(set(toks(re.sub(r'^\S+\s+\S+\s*', '', ctl, count=1))))
+    void = '' if cn else 'VOID:the control read 0, so a 0 here is not a pass:'
+    rows.append(('SU.SU2.control', cn, ('MEASURED:distinct SU2 tokens in %s\'s statement at base (%s)' % (SURF_CONTROL[1], SURF_CONTROL[1])) if ctl else 'INVALID:no %s at base' % SURF_CONTROL[1]))
+    resid = sorted(k for k in st if kinds[k] == 'define' and toks(st[k]))
+    rows.append(('SU.SU2.sortDefResidue', len(resid), 'BESIDE:SURFACE-E1, definitions carrying an SU2 token (not counted):' + (','.join(resid) or '-')))
+    env = lambda k: [x for x in os.environ.get(k, '').split(',') if x]
+    root = os.environ.get('VIR_SURF_ROOT', '')
+    def closure(names):
+        RT = {n: st.get(n, '') + ' ' + ' '.join(R[n][4] if n in R else []) for n in set(R) | set(st)}
+        seen, todo = set(), [n for n in names if n in RT]
+        while todo:
+            x = todo.pop()
+            if x not in seen:
+                seen.add(x); todo += list(mpl_refs(x, RT[x], set(RT)))
+        return seen, RT
+    if not root:
+        rows += [('SU.SU2.tokens', 0, 'Q:VIR_SURF_ROOT unset (the arm names §1\'s rule)')]
+    elif root not in st:
+        rows += [('SU.SU2.tokens', 0, 'EMPTY:no new statement named %s, so an absence proves nothing' % root)]
+    else:
+        tk = toks(body(root))
+        seqs = surf_sequents(body(root))
+        cases = [s for s in seqs[:-1] if s[0] != 'wf']
+        mem, extra, binder, var = [], [], [], []
+        for lab, hyps, concl in cases:
+            for h in hyps:
+                if SURF_BINDER_IN_RE.search(h):  # SURF-MEMBERSHIP
+                    mem.append(lab)
+                elif re.match(r'all\s', h):
+                    binder.append(lab)
+                elif SURF_DECL_RE.match(h) or SURF_MOTIVE_RE.match(h) or h.startswith('all_list{'):
+                    pass
+                else:
+                    extra.append('%s:%s' % (lab, h))
+            if SURF_VAR_RE.search(concl):
+                var.append(lab)
+        seen, _ = closure([root])
+        c5 = sum(R[n][1] for n in seen if n in R)
+        rows += [('SU.SU2.tokens', len(tk), (void or 'MEASURED:') + 'SU2 tokens in %s\'s statement:' % root + (','.join(sorted(set(tk))) or '-')),
+                 ('SU.SU3.binderPremises', len(binder), 'BESIDE:HOAS `all` hypotheses, by case; the form is read by hand:' + (','.join(binder) or '-')),
+                 ('SU.SU4.membership', len(mem), 'MEASURED:binder-form membership hypotheses (predicted 4), by case:' + (','.join(mem) or '-')),
+                 ('SU.SU4.extra', len(extra), 'MEASURED:hypotheses that are none of: a declaration, a motive, an `all`, an all_list, a membership:' + (' | '.join(extra) or '-')),
+                 ('SU.SU4.cases', len(cases), 'BESIDE:non-[wf] premises:' + (','.join(s[0] for s in cases) or '-')),
+                 ('SU.SU4.wf', len(seqs[:-1]) - len(cases), 'BESIDE:[wf] premises'),
+                 ('SU.SU5.varCases', len(var), 'MEASURED:premises whose conclusion names var{…}:' + (','.join(var) or '-')),
+                 ('SU.SU6.C5tok', c5, 'MEASURED:bound 30000; whitespace tokens of the stored proofs of %s\'s closure among NEW rules (l1s_induction\'s own is not new)' % root),
+                 ('SU.SU6.closure', len([n for n in seen if n in R]), 'BESIDE:' + (','.join(sorted(n for n in seen if n in R)) or '-')),
+                 ('SU.SU6.unstored', len([n for n in seen if n not in R]), 'BESIDE:closure statements with no stored proof (0 tokens):' + (','.join(sorted(n for n in seen if n not in R)) or '-'))]
+    saf = env('VIR_SURF_SAFETY')
+    if not saf:
+        rows.append(('SU.SU7.tokens', 0, 'Q:VIR_SURF_SAFETY unset (the arm names §2\'s four)'))
+    elif len(saf) != 4 or any(n not in st for n in saf):
+        rows.append(('SU.SU7.tokens', 0, 'INVALID:VIR_SURF_SAFETY must name four new statements; missing:' + (','.join(n for n in saf if n not in st) or 'count %d' % len(saf))))
+    else:
+        bad = ['%s:%s' % (n, t) for n in saf for t in sorted(set(toks(body(n))))]
+        seen, RT = closure(saf)
+        bp = 'theories/vir/virl1_pres.ml'
+        exist = [n for n in SURF_EXISTING if n in (items(base, bp) if bp in lb else {})]
+        text = ' '.join(RT[n] for n in seen)
+        cites = [n for n in exist if n not in st and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(n), text)]
+        br = sorted(n for n in seen if n not in saf and toks(body(n)) and 'tyok' in toks(body(n)))
+        rows += [('SU.SU7.tokens', len(bad), (void or 'MEASURED:') + (','.join(bad) or '-')),
+                 ('SU.SU7.citesExisting', len(cites), ('MEASURED:' if exist else 'INVALID:no base theorem found:') + 'base virl1_pres theorems named in the closure:' + (','.join(cites) or '-')),
+                 ('SU.SU7.bridges', len(br), 'MEASURED:closure rules naming tyok in their statement (predicted 1):' + (','.join(br) or '-')),
+                 ('SU.SU7.closure', len(seen), 'BESIDE:re-proof vs derivation is read by hand from the closure')]
+    inl = os.environ.get('VIR_SURF_INLINE', '')
+    if not inl:
+        rows.append(('SU.SU8.primRules', 0, 'Q:VIR_SURF_INLINE unset (the arm names §3\'s rule)'))
+    elif inl not in st:
+        rows.append(('SU.SU8.primRules', 0, 'EMPTY:no new statement named %s' % inl))
+    else:
+        rows += [('SU.SU8.primRules', int(kinds[inl].startswith('prim')), 'MEASURED:%s is %s' % (inl, kinds[inl])),
+                 ('SU.SU8.tokens', len(toks(body(inl))), (void or 'MEASURED:') + (','.join(sorted(set(toks(body(inl))))) or '-')),
+                 ('SU.SU8.stored', int(R.get(inl, (0,))[0] > 0), 'MEASURED:a stored derivation of >= 1 step'),
+                 ('SU.SU8.form', 0, 'Q:SURFACE-E3 (a) value premise or (b) general atom, read by hand')]
+    rows.append(('SU.lessons', 0, 'BESIDE:O104, the arm\'s lessons-learned log, is read beside the scores and never scored'))
+    return rows
+
+
 def w8(repo, base, ext, prefix):
     ls = lambda sha: [x for x in subprocess.run(['git', '-C', repo, 'ls-tree', '-r', '--name-only', sha, prefix],
                                                  capture_output=True, text=True).stdout.split() if x.endswith('.lean')]
@@ -2503,7 +2694,7 @@ def metaprll5(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2547,6 +2738,8 @@ def main():
         rows = metaprll3(a.dir, a.base, a.ext)
     elif a.arm == 'metaprll4':
         rows = metaprll4(a.dir, a.base, a.ext)
+    elif a.arm == 'surfm':
+        rows = surfm(a.dir, a.base, a.ext)
     elif a.arm == 'slangm':
         rows = slangm(a.dir, a.base, a.ext)
     elif a.arm == 'indm':

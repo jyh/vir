@@ -1490,6 +1490,85 @@ if cmp -s "$H/count.py" "$F/mutant64.py"; then say "ARM64 mutant NOT PLANTED"; f
 elif check64 "$F/mutant64.py"; then say "ARM64 mutant SURVIVED (shapes compared without renaming bound variables)"; fail=1
 else say "ARM64 mutant KILLED"; fi
 
+# ARM65 (STATUS-vir 403, amend-25 SU1–SU8): surfm, the surface-syntax arm's scorer. Fixture R65: base holds l1s_induction (its
+# statement carries mk_bterm + bdepth: the SU2 control), and preservation/progress over tyok. X65 (clean) adds vir_l1surf: a
+# sort DEFINED with bdepth (SURFACE-E1: not in any statement, so not counted), the root with one binder case (one membership,
+# one HOAS premise) and one plain case, four safety statements derived through ONE bridge naming tyok, and the inlining as an
+# `interactive`. X65b (dirty): the root gains a var case and a bdepth hypothesis (SU2 1, SU4 extra 1, SU5 1), the inlining
+# becomes a prim_rw (SU8 1, SU1 newPrims 1), base preservation is edited (SU1 rules 1), and surf_preservation's statement
+# names tyok (SU7 1). Expected C5 figures are DERIVED from the proof strings by `wc -w`.
+R65="$F/r65"; mkdir -p "$R65/theories/vir"; git -C "$R65" init -q; git -C "$R65" config user.email t@t; git -C "$R65" config user.name t
+printf 'interactive l1s_induction :\n   [T2] sequent { <H>; d: nat; t1: L1SLang{0}; bdepth{\x27t1} = \x27d in int; \x27Pt[\x27t1] >- \x27Pt[mk_bterm{\x27d; arrow_op; \x27t1 :: nil}] } -->\n   sequent { <H> >- all t: L1SLang{0}. \x27Pt[\x27t] }\n' > "$R65/theories/vir/vir_l1slang.ml"
+prla "$R65/theories/vir/vir_l1slang.prla" "l1s_induction=autoT"
+printf 'define unfold_tyok : tyok{\x27e} <--> \x27e\ninteractive preservation : sequent { <H>; tyok{\x27e} = btrue in bool >- \x27P }\ninteractive progress : sequent { <H>; tyok{\x27e} = btrue in bool >- \x27Q }\ninteractive safety : sequent { <H> >- \x27S }\ninteractive determinism : sequent { <H> >- \x27D }\n' > "$R65/theories/vir/virl1_pres.ml"
+prla "$R65/theories/vir/virl1_pres.prla" "preservation=autoT" "progress=autoT" "safety=autoT" "determinism=autoT"
+git -C "$R65" add -A; git -C "$R65" commit -qm base; B65=$(git -C "$R65" rev-parse HEAD)
+P65_ROOT='(l1s_induction thenT surf_subst thenT autoT)'; P65_SUBST='(dT 0 thenT autoT)'
+surf65() { # $1 = extra E1 hypothesis, $2 = extra root premise, $3 = inlining keyword, $4 = surf_preservation extra hyp
+  printf 'define unfold_L1Atom : L1Atom <--> {t: L1SLang{2} | bdepth{\x27t} = 0 in int}\n'
+  printf 'interactive l1_surf_induction :\n   [wf] sequent { <H>; t: L1Atom >- \x27Pa[\x27t] Type } -->\n'
+  printf '   [A4] sequent { <H>; ty: L1Ty; e: L1Atom -> L1Exp; a_lam{\x27ty; x.\x27e \x27x} in L1Atom; \x27Pt[\x27ty]; all x: L1Atom. (\x27Pa[\x27x] => \x27Pe[\x27e \x27x]) >- \x27Pa[a_lam{\x27ty; x.\x27e \x27x}] } -->\n'
+  printf '   [E1] sequent { <H>; a: L1Atom; %s\x27Pa[\x27a] >- \x27Pe[e_ret{\x27a}] } -->\n%s' "$1" "$2"
+  printf '   sequent { <H> >- all t: L1Atom. \x27Pa[\x27t] }\n'
+  printf 'interactive surf_subst : sequent { <H> >- \x27a }\ninteractive other_r : sequent { <H> >- \x27a }\n'
+  printf 'interactive surf_bridge : sequent { <H>; e: L1Exp >- tyok{\x27e} = btrue in bool }\n'
+  printf 'interactive surf_preservation : sequent { <H>; e: L1Exp; %shas_type{\x27e; \x27t} >- \x27P }\n' "$4"
+  printf 'interactive surf_progress : sequent { <H>; e: L1Exp >- \x27Q }\ninteractive surf_safety : sequent { <H>; e: L1Exp >- \x27S }\ninteractive surf_determinism : sequent { <H>; e: L1Exp >- \x27D }\n'
+  printf '%s surf_inline : sequent { <H>; a: L1Atom >- den{e_let{\x27ty; e_ret{\x27a}; x.\x27e2 \x27x}} = den{\x27e2 \x27a} in Den }\n' "$3"
+}
+surf65 '' '' interactive '' > "$R65/theories/vir/vir_l1surf.ml"
+prla "$R65/theories/vir/vir_l1surf.prla" "l1_surf_induction=$P65_ROOT" "surf_subst=$P65_SUBST" "other_r=autoT" "surf_bridge=autoT" \
+  "surf_preservation=(surf_bridge thenT preservation)" "surf_progress=(surf_bridge thenT progress)" "surf_safety=(surf_preservation thenT surf_progress)" \
+  "surf_determinism=autoT" "surf_inline=(dT 0)"
+git -C "$R65" add -A; git -C "$R65" commit -qm surf; X65=$(git -C "$R65" rev-parse HEAD)
+surf65 'bdepth{\x27a} = 0 in int; ' "$(printf '   [A1] sequent { <H>; l: nat; r: nat >- \x27Pa[var{\x27l; \x27r}] } -->\n')
+" prim_rw 'tyok{\x27e} = btrue in bool; ' > "$R65/theories/vir/vir_l1surf.ml"
+sed 's/^interactive preservation : sequent { <H>; tyok{\x27e} = btrue in bool >- \x27P }/interactive preservation : sequent { <H> >- \x27P }/' "$R65/theories/vir/virl1_pres.ml" > "$F/p65.ml"; mv "$F/p65.ml" "$R65/theories/vir/virl1_pres.ml"
+git -C "$R65" add -A; git -C "$R65" commit -qm dirty; X65b=$(git -C "$R65" rev-parse HEAD)
+C65=$(( $(printf '%s %s' "$P65_ROOT" "$P65_SUBST" | wc -w) ))   # SU6: the root's closure among NEW rules (l1s_induction is base, excluded)
+s65() { VIR_SURF_ROOT=l1_surf_induction VIR_SURF_SAFETY=surf_preservation,surf_progress,surf_safety,surf_determinism VIR_SURF_INLINE=surf_inline \
+  python3 "$1" --arm surfm --base "$B65" --ext "$2" "$R65" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+check65() {
+  case "$(s65 "$1" "$X65" SU.SU1.rulesEdited)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU1.defsEdited)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU1.newPrims)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU2.control)" in "2	MEASURED"*l1s_induction*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU2.tokens)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU2.sortDefResidue)" in "1	BESIDE"*L1Atom*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU3.binderPremises)" in "1	BESIDE"*A4*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU4.membership)" in "1	MEASURED"*A4*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU4.extra)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU4.cases)" in "2	BESIDE"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU5.varCases)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU6.C5tok)" in "$C65	MEASURED"*30000*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU6.closure)" in "2	BESIDE"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU7.tokens)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU7.citesExisting)" in "2	MEASURED"*preservation*progress*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU7.bridges)" in "1	MEASURED"*surf_bridge*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU8.primRules)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU8.tokens)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65" SU.SU8.stored)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU1.rulesEdited)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU1.newPrims)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU2.tokens)" in "1	MEASURED"*bdepth*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU4.extra)" in "1	MEASURED"*E1*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU5.varCases)" in "1	MEASURED"*A1*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU7.tokens)" in "1	MEASURED"*surf_preservation*) ;; *) return 1;; esac
+  case "$(s65 "$1" "$X65b" SU.SU8.primRules)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(VIR_SURF_ROOT=nosuch python3 "$1" --arm surfm --base "$B65" --ext "$X65" "$R65" | awk -F'\t' '$2=="SU.SU2.tokens"{print $4}')" in EMPTY*) ;; *) return 1;; esac
+  case "$(VIR_SURF_ROOT= python3 "$1" --arm surfm --base "$B65" --ext "$X65" "$R65" | awk -F'\t' '$2=="SU.SU2.tokens"{print $4}')" in Q*) ;; *) return 1;; esac
+}
+if check65 "$H/count.py"; then say "ARM65 surfm fixture OK (X65: SU1 0/0/0, SU2 0 with control 2 + sort residue 1, SU4 membership 1 extra 0, SU5 0, SU6 $C65 tok over 2 rules, SU7 0 tok cites 2 bridge 1, SU8 interactive; X65b: SU1 1/prims 1, SU2 1, SU4 extra 1, SU5 1, SU7 1, SU8 1; no root => Q)"
+else say "ARM65 surfm fixture FAIL"; for x in "$X65" "$X65b"; do VIR_SURF_ROOT=l1_surf_induction VIR_SURF_SAFETY=surf_preservation,surf_progress,surf_safety,surf_determinism VIR_SURF_INLINE=surf_inline python3 "$H/count.py" --arm surfm --base "$B65" --ext "$x" "$R65"; done; fail=1; fi
+sed 's/^SURF_TOK_RE = .*/SURF_TOK_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant65.py"  # SU2's needle blinded: the control must refuse the zero
+if cmp -s "$H/count.py" "$F/mutant65.py"; then say "ARM65 mutant NOT PLANTED"; fail=1
+elif check65 "$F/mutant65.py"; then say "ARM65 mutant SURVIVED (a blind token needle read 0 as a pass)"; fail=1
+else say "ARM65 mutant KILLED"; fi
+sed 's/            if SURF_BINDER_IN_RE.search(h):  # SURF-MEMBERSHIP/            if False:  # SURF-MEMBERSHIP/' "$H/count.py" > "$F/mutant65b.py"  # membership read as an extra premise
+if cmp -s "$H/count.py" "$F/mutant65b.py"; then say "ARM65 mutant b NOT PLANTED"; fail=1
+elif check65 "$F/mutant65b.py"; then say "ARM65 mutant b SURVIVED (membership hypotheses not classified)"; fail=1
+else say "ARM65 mutant b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
