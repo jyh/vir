@@ -130,3 +130,17 @@ is not witnessed.
 - **Re-score on the outcome:** EXIT 0 and the audit within the three axioms ⇒ K7 conjunct (2) HOLDS in partial-correctness form,
   with OVF and RES as stated disjuncts; the total form stays beside K7 (`router_R4_x86`, through router lemmas). Either way RESULTS-12
   gets an addendum, and SUMMARY-compiler's K7 row is corrected in the same push.
+
+## ADDENDUM 8 (2026-11-16, the 83rd head, BEFORE the edit to k7/K7/RouterTriple86.lean): conjunct (2) at every p
+- **The read (paper, bus 11-16 08:47:35 @104,216,809, at vir 4709d88):** the frozen K7 does NOT require total correctness (R4 is a
+  `Triple`, partial correctness and no fault), so Addendum 7's re-score to HOLDS stands. One LIMIT, not a falsifier:
+  `router_triple_x86` is stated at p = 0 (`RegionAt 0 87`, `capWords scaleLay 0 87`, `SvA f 0`), while R4 and `router_x86` are
+  both general in p, and "the L3 router triple" is R4 at every p. The reader's arm (a), restating at general p, is taken.
+- **The file's new theorem:** `router_triple_x86_p`, Addendum 7's statement with 0 replaced by a free `p : Int` throughout
+  (the region, R4's premises on `SvA f p`/`TvA f p`, the capability words, the source term `instL 0 [cap p] F`, the post-state
+  `postF f p`). `router_triple_x86` keeps its statement and becomes its instance at p = 0, so every citation of it stays true.
+- **The rule is Addendum 7's, unchanged:** only `router_x86`, L3's `R4`, and generic L2 facts. No `router_inR`, no `router_halts`
+  (the imports stay as they are), nothing about F's cells or layout.
+- **Going red:** a mutant that fixes the post-state's p at 0 (`postF f 0` against a region at p) must fail at that line.
+- **Re-score on the outcome:** EXIT 0 and the audit within the three axioms ⇒ RESULTS-12 gets an addendum, and paper's limit is
+  lifted in the K7 cell and SUMMARY-compiler. A failure ⇒ the limit is written beside the HOLDS cell as paper's arm (b).
