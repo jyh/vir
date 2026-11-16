@@ -1,0 +1,8 @@
+saltqueue: ticket P1 seat=root pid=35366
+probes/MutTriple86p.lean:42:37: error: Type mismatch
+  hq
+has type
+  RegionAt p 87 (postF f p) σq
+but is expected to have type
+  RegionAt p 87 (postF f 0) σq
+saltbuild EXIT=1
