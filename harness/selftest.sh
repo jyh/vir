@@ -1591,11 +1591,14 @@ git -C "$R65" show "$B65:theories/vir/virl1_pres.ml" > "$R65/theories/vir/virl1_
 git -C "$R65" show "$B65:theories/vir/vir_l1slang.ml" > "$R65/theories/vir/vir_l1slang.ml"
 surf65 '' '' interactive '' > "$R65/theories/vir/vir_l1surf.ml"
 prla "$R65/theories/vir/vir_l1surf.prla" "l1_surf_induction=$P65_ROOT" "surf_subst=$P65_SUBST" "other_r=autoT" "surf_bridge=autoT" \
-  "surf_preservation=(unfold_styp thenT preservation)" "surf_progress=(surf_bridge thenT progress)" "surf_safety=(surf_preservation thenT surf_progress)" \
+  "surf_preservation=(unfold_styp thenT preservation)" "surf_progress=(surf_bridge thenT unfold_mot thenT progress)" "surf_safety=(surf_preservation thenT surf_progress)" \
   "surf_determinism=autoT" "surf_inline=(dT 0)"
+sed 's/has_type{/styp{/' "$R65/theories/vir/vir_l1surf.ml" > "$F/s66.ml"; mv "$F/s66.ml" "$R65/theories/vir/vir_l1surf.ml"
 styp66 hoas '' > "$R65/theories/vir/vir_l1styp.ml"
+printf 'define unfold_mot : mot{\x27e} <--> tyok{\x27e}\n' >> "$R65/theories/vir/vir_l1styp.ml"
 git -C "$R65" add -A; git -C "$R65" commit -qm styp; X66=$(git -C "$R65" rev-parse HEAD)
 styp66 token 'bdepth{\x27a} = 0 in int; ' > "$R65/theories/vir/vir_l1styp.ml"
+printf 'define unfold_mot : mot{\x27e} <--> tyok{\x27e}\n' >> "$R65/theories/vir/vir_l1styp.ml"
 printf '(tvar_op, (2, ((0, 0) :: nil))) ::\n' >> "$R65/theories/vir/vir_l1slang.ml"
 git -C "$R65" add -A; git -C "$R65" commit -qm styp-dirty; X66b=$(git -C "$R65" rev-parse HEAD)
 M66=$(for f in $E66; do printf '%s=styp_%s,' "$f" "$f"; done)
@@ -1606,14 +1609,14 @@ check66() {
   case "$(s66 "$1" "$X66" SU.E4.ruleTokens)" in "0	BESIDE"*) ;; *) return 1;; esac
   case "$(s66 "$1" "$X66" SU.E4.binderTokenForm)" in "0	BESIDE"*"e_let:hoas"*"a_lam:hoas"*) ;; *) return 1;; esac
   case "$(s66 "$1" "$X66" SU.E4.tvarInSig)" in "0	MEASURED"*) ;; *) return 1;; esac
-  case "$(s66 "$1" "$X66" SU.SU7.bridges)" in "2	MEASURED"*surf_bridge*unfold_styp*) ;; *) return 1;; esac
-  case "$(s66 "$1" "$X66" SU.E4.bridgeDefinitional)" in "1	BESIDE"*unfold_styp*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.SU7.bridges)" in "3	MEASURED"*surf_bridge*unfold_mot*unfold_styp*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.E4.bridgeDefinitional)" in "1	BESIDE"*unfold_styp) ;; *) return 1;; esac   # unfold_mot names tyok but defines no judgement a safety statement uses
   case "$(s66 "$1" "$X66b" SU.E4.ruleTokens)" in "1	BESIDE"*styp_e_app:bdepth*) ;; *) return 1;; esac
   case "$(s66 "$1" "$X66b" SU.E4.binderTokenForm)" in "1	BESIDE"*"e_let:token"*) ;; *) return 1;; esac
   case "$(s66 "$1" "$X66b" SU.E4.tvarInSig)" in "1	MEASURED"*) ;; *) return 1;; esac
   case "$(VIR_SURF_RULES= python3 "$1" --arm surfm --base "$B65" --ext "$X66" "$R65" | awk -F'\t' '$2=="SU.E4.coverage"{print $4}')" in Q*) ;; *) return 1;; esac
 }
-if check66 "$H/count.py"; then say "ARM66 surfm E4 fixture OK (X66: coverage 14 missing e_eff, rule tokens 0, binder token-form 0, tvar 0, bridges 2 of which 1 definitional; X66b: rule tokens 1, token-form 1, tvar 1; no map => Q)"
+if check66 "$H/count.py"; then say "ARM66 surfm E4 fixture OK (X66: coverage 14 missing e_eff, rule tokens 0, binder token-form 0, tvar 0, bridges 3 of which 1 definitional (a motive define is not); X66b: rule tokens 1, token-form 1, tvar 1; no map => Q)"
 else say "ARM66 surfm E4 fixture FAIL"; for x in "$X66" "$X66b"; do VIR_SURF_ROOT=l1_surf_induction VIR_SURF_SAFETY=surf_preservation,surf_progress,surf_safety,surf_determinism VIR_SURF_RULES="$M66" python3 "$H/count.py" --arm surfm --base "$B65" --ext "$x" "$R65" | grep -E 'E4|SU7'; done; fail=1; fi
 sed 's/^SURF_TVAR_RE = .*/SURF_TVAR_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant66.py"  # E4's falsifier needle blinded: its control must refuse the zero
 if cmp -s "$H/count.py" "$F/mutant66.py"; then say "ARM66 mutant NOT PLANTED"; fail=1
