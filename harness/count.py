@@ -1990,7 +1990,10 @@ def surfm(repo, base, ext):
         text = ' '.join(RT[n] for n in seen)
         cites = [n for n in exist if n not in st and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(n), text)]
         br = sorted(n for n in seen if n not in saf and toks(body(n)) and 'tyok' in toks(body(n)))
-        rows += [('SU.E4.bridgeDefinitional', len([n for n in br if kinds.get(n) == 'define']), 'BESIDE:SURFACE-E4 1, bridges that are a definition (cost 0 by construction):' + (','.join(n for n in br if kinds.get(n) == 'define') or '-')),
+        safe_txt = ' '.join(body(n) for n in saf)
+        dhead = lambda n: (re.match(r"\s*:?\s*([A-Za-z_][A-Za-z0-9_]*)", body(n)) or re.match('()', '')).group(1)   # `define unfold_x : x{…} <--> …`
+        bdef = [n for n in br if kinds.get(n) == 'define' and dhead(n) and re.search(r"(?<![A-Za-z0-9_'])%s\{" % re.escape(dhead(n)), safe_txt)]
+        rows += [('SU.E4.bridgeDefinitional', len(bdef), 'BESIDE:SURFACE-E4 1, bridges that are the DEFINITION of a judgement the safety statements use (cost 0 by construction); a define naming tyok that no safety statement uses (a motive) is not one:' + (','.join(bdef) or '-')),
                  ('SU.SU7.tokens', len(bad), (void or 'MEASURED:') + (','.join(bad) or '-')),
                  ('SU.SU7.citesExisting', len(cites), ('MEASURED:' if exist else 'INVALID:no base theorem found:') + 'base virl1_pres theorems named in the closure:' + (','.join(cites) or '-')),
                  ('SU.SU7.bridges', len(br), 'MEASURED:closure rules naming tyok in their statement (predicted 1):' + (','.join(br) or '-')),
