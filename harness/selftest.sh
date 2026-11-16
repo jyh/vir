@@ -1569,6 +1569,61 @@ if cmp -s "$H/count.py" "$F/mutant65b.py"; then say "ARM65 mutant b NOT PLANTED"
 elif check65 "$F/mutant65b.py"; then say "ARM65 mutant b SURVIVED (membership hypotheses not classified)"; fail=1
 else say "ARM65 mutant b KILLED"; fi
 
+# ARM66 (STATUS-vir 409, errata SURFACE-E4): surfm's three reports BESIDE SU7 for §2 in the arm's own form (A). X66 (clean, on
+# R65): vir_l1styp.ml DEFINES styp via tyok and states per-form rules for 14 of the 15 typable forms (e_eff left out), every binder
+# rule in HOAS form; surf_preservation's proof cites unfold_styp, so the closure holds a DEFINITIONAL bridge beside surf_bridge.
+# X66b (dirty): styp_e_let takes the token form (a_tvar), styp_e_app carries bdepth, and ssig1's file gains a tvar clause.
+E66="num_z num_b0 num_b1 num_neg a_true a_false a_prim1 a_prim2 a_lam a_fix e_ret e_let e_eff e_app e_if"
+styp66() { # $1 = binder premise form for e_let (hoas|token), $2 = extra hypothesis in styp_e_app
+  printf 'define unfold_styp : styp{\x27e; \x27t} <--> tyok{\x27e}\n'
+  for f in $E66; do
+    case "$f" in
+      e_eff) ;;
+      e_let) if [ "$1" = token ]; then pr='sequent { <H> >- styp{\x27e2 a_tvar{\x27ty}; \x27t} }'; else pr='sequent { <H>; x: L1Atom; styp{\x27x; \x27ty} >- styp{\x27e2 \x27x; \x27t} }'; fi
+             printf "interactive styp_e_let : $pr --> sequent { <H> >- styp{e_let{\x27ty; \x27e1; x.\x27e2 \x27x}; \x27t} }\n" ;;
+      a_lam|a_fix) printf 'interactive styp_%s : sequent { <H>; x: L1Atom; styp{\x27x; \x27ty} >- styp{\x27e \x27x; \x27t} } --> sequent { <H> >- styp{%s; \x27t} }\n' "$f" "$f" ;;
+      e_app) printf 'interactive styp_e_app : sequent { <H>; %sa: L1Atom >- styp{e_app{\x27a; \x27a}; \x27t} }\n' "$2" ;;
+      *) printf 'interactive styp_%s : sequent { <H> >- styp{%s; \x27t} }\n' "$f" "$f" ;;
+    esac
+  done
+}
+git -C "$R65" show "$B65:theories/vir/virl1_pres.ml" > "$R65/theories/vir/virl1_pres.ml"
+git -C "$R65" show "$B65:theories/vir/vir_l1slang.ml" > "$R65/theories/vir/vir_l1slang.ml"
+surf65 '' '' interactive '' > "$R65/theories/vir/vir_l1surf.ml"
+prla "$R65/theories/vir/vir_l1surf.prla" "l1_surf_induction=$P65_ROOT" "surf_subst=$P65_SUBST" "other_r=autoT" "surf_bridge=autoT" \
+  "surf_preservation=(unfold_styp thenT preservation)" "surf_progress=(surf_bridge thenT progress)" "surf_safety=(surf_preservation thenT surf_progress)" \
+  "surf_determinism=autoT" "surf_inline=(dT 0)"
+styp66 hoas '' > "$R65/theories/vir/vir_l1styp.ml"
+git -C "$R65" add -A; git -C "$R65" commit -qm styp; X66=$(git -C "$R65" rev-parse HEAD)
+styp66 token 'bdepth{\x27a} = 0 in int; ' > "$R65/theories/vir/vir_l1styp.ml"
+printf '(tvar_op, (2, ((0, 0) :: nil))) ::\n' >> "$R65/theories/vir/vir_l1slang.ml"
+git -C "$R65" add -A; git -C "$R65" commit -qm styp-dirty; X66b=$(git -C "$R65" rev-parse HEAD)
+M66=$(for f in $E66; do printf '%s=styp_%s,' "$f" "$f"; done)
+s66() { VIR_SURF_ROOT=l1_surf_induction VIR_SURF_SAFETY=surf_preservation,surf_progress,surf_safety,surf_determinism VIR_SURF_INLINE=surf_inline \
+  VIR_SURF_RULES="$M66" python3 "$1" --arm surfm --base "$B65" --ext "$2" "$R65" | awk -F'\t' -v c="$3" '$2==c{print $3 "\t" $4}'; }
+check66() {
+  case "$(s66 "$1" "$X66" SU.E4.coverage)" in "14	BESIDE"*"missing:e_eff"*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.E4.ruleTokens)" in "0	BESIDE"*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.E4.binderTokenForm)" in "0	BESIDE"*"e_let:hoas"*"a_lam:hoas"*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.E4.tvarInSig)" in "0	MEASURED"*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.SU7.bridges)" in "2	MEASURED"*surf_bridge*unfold_styp*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66" SU.E4.bridgeDefinitional)" in "1	BESIDE"*unfold_styp*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66b" SU.E4.ruleTokens)" in "1	BESIDE"*styp_e_app:bdepth*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66b" SU.E4.binderTokenForm)" in "1	BESIDE"*"e_let:token"*) ;; *) return 1;; esac
+  case "$(s66 "$1" "$X66b" SU.E4.tvarInSig)" in "1	MEASURED"*) ;; *) return 1;; esac
+  case "$(VIR_SURF_RULES= python3 "$1" --arm surfm --base "$B65" --ext "$X66" "$R65" | awk -F'\t' '$2=="SU.E4.coverage"{print $4}')" in Q*) ;; *) return 1;; esac
+}
+if check66 "$H/count.py"; then say "ARM66 surfm E4 fixture OK (X66: coverage 14 missing e_eff, rule tokens 0, binder token-form 0, tvar 0, bridges 2 of which 1 definitional; X66b: rule tokens 1, token-form 1, tvar 1; no map => Q)"
+else say "ARM66 surfm E4 fixture FAIL"; for x in "$X66" "$X66b"; do VIR_SURF_ROOT=l1_surf_induction VIR_SURF_SAFETY=surf_preservation,surf_progress,surf_safety,surf_determinism VIR_SURF_RULES="$M66" python3 "$H/count.py" --arm surfm --base "$B65" --ext "$x" "$R65" | grep -E 'E4|SU7'; done; fail=1; fi
+sed 's/^SURF_TVAR_RE = .*/SURF_TVAR_RE = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant66.py"  # E4's falsifier needle blinded: its control must refuse the zero
+if cmp -s "$H/count.py" "$F/mutant66.py"; then say "ARM66 mutant NOT PLANTED"; fail=1
+elif check66 "$F/mutant66.py"; then say "ARM66 mutant SURVIVED (a blind tvar needle read 0 as E4 standing)"; fail=1
+else say "ARM66 mutant KILLED"; fi
+sed 's/^SURF_SIG_CONTROL = .*/SURF_SIG_CONTROL = re.compile(r"(?!x)x")/' "$H/count.py" > "$F/mutant66b.py"  # the control blinded: a 0 must read VOID, not MEASURED
+if cmp -s "$H/count.py" "$F/mutant66b.py"; then say "ARM66 mutant b NOT PLANTED"; fail=1
+elif check66 "$F/mutant66b.py"; then say "ARM66 mutant b SURVIVED (a blind signature control let a 0 read MEASURED)"; fail=1
+else say "ARM66 mutant b KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

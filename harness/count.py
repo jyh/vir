@@ -1824,6 +1824,14 @@ SURF_BINDER_IN_RE = re.compile(r"\w\s*\.[\s\S]*\}\s+in\s+\S+\s*$")   # `a_lam{'t
 SURF_DECL_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*:(?!:)")        # `ty: L1Ty`, `e: L1Atom -> L1Exp`
 SURF_MOTIVE_RE = re.compile(r"^'P[A-Za-z0-9_]*\[")
 SURF_VAR_RE = re.compile(r"(?<![A-Za-z0-9_'])var\{")
+# SURFACE-E4 (errata, after the arm's §2 design, before any §2 file): three reports BESIDE SU7, directions only, never a verdict.
+# VIR_SURF_RULES = form=rule,… (the arm's per-form §2 rules; a NEGATIVE rule, e.g. e_eff's "not styp", is named the same way).
+SURF_E4_FORMS = ('num_z', 'num_b0', 'num_b1', 'num_neg', 'a_true', 'a_false', 'a_prim1', 'a_prim2', 'a_lam', 'a_fix',
+                 'e_ret', 'e_let', 'e_eff', 'e_app', 'e_if')
+SURF_E4_BINDERS = ('e_let', 'e_eff', 'a_lam', 'a_fix')
+SURF_TVAR_RE = re.compile(r"(?<![A-Za-z0-9_'])tvar")                  # E4's falsifier: a tvar clause in a surface signature
+SURF_SIG_FILES = ('theories/vir/vir_l1slang.ml', 'theories/vir/virl1_sig.ml')
+SURF_SIG_CONTROL = re.compile(r"(?<![A-Za-z0-9_'])arrow_op(?![A-Za-z0-9_'])")   # ssig1 names it; 0 ⇒ the needle saw no signature
 
 
 def surf_split(s, sep):
@@ -1982,10 +1990,26 @@ def surfm(repo, base, ext):
         text = ' '.join(RT[n] for n in seen)
         cites = [n for n in exist if n not in st and re.search(r"(?<![A-Za-z0-9_'])%s(?![A-Za-z0-9_'])" % re.escape(n), text)]
         br = sorted(n for n in seen if n not in saf and toks(body(n)) and 'tyok' in toks(body(n)))
-        rows += [('SU.SU7.tokens', len(bad), (void or 'MEASURED:') + (','.join(bad) or '-')),
+        rows += [('SU.E4.bridgeDefinitional', len([n for n in br if kinds.get(n) == 'define']), 'BESIDE:SURFACE-E4 1, bridges that are a definition (cost 0 by construction):' + (','.join(n for n in br if kinds.get(n) == 'define') or '-')),
+                 ('SU.SU7.tokens', len(bad), (void or 'MEASURED:') + (','.join(bad) or '-')),
                  ('SU.SU7.citesExisting', len(cites), ('MEASURED:' if exist else 'INVALID:no base theorem found:') + 'base virl1_pres theorems named in the closure:' + (','.join(cites) or '-')),
                  ('SU.SU7.bridges', len(br), 'MEASURED:closure rules naming tyok in their statement (predicted 1):' + (','.join(br) or '-')),
                  ('SU.SU7.closure', len(seen), 'BESIDE:re-proof vs derivation is read by hand from the closure')]
+    rmap = dict(x.split('=', 1) for x in env('VIR_SURF_RULES') if '=' in x)
+    if not rmap:
+        rows.append(('SU.E4.coverage', 0, 'Q:VIR_SURF_RULES unset (form=rule,…; the arm names §2\'s per-form rules)'))
+    else:
+        have = [f for f in SURF_E4_FORMS if rmap.get(f) in st]
+        bad_f = sorted(f for f in rmap if f not in SURF_E4_FORMS)
+        rows.append(('SU.E4.coverage', len(have), ('INVALID:unknown forms %s; ' % ','.join(bad_f) if bad_f else 'BESIDE:') + 'of %d typable forms; missing:' % len(SURF_E4_FORMS) + (','.join(f for f in SURF_E4_FORMS if f not in have) or '-')))
+        rt = ['%s:%s' % (rmap[f], t) for f in have for t in sorted(set(toks(body(rmap[f]))))]
+        rows.append(('SU.E4.ruleTokens', len(rt), (void or 'BESIDE:') + 'SU2 tokens in the per-form rules\' statements:' + (','.join(rt) or '-')))
+        bf = ['%s:%s' % (f, 'token' if re.search(r"(?<![A-Za-z0-9_'])a_tvar\{", body(rmap[f])) else 'hoas') for f in SURF_E4_BINDERS if f in have]
+        rows.append(('SU.E4.binderTokenForm', sum(1 for x in bf if x.endswith(':token')), 'BESIDE:binder rules naming a_tvar in their statement; hoas is the absence, confirmed by hand:' + (','.join(bf) or '-')))
+    sig = [(p, show(ext, p)) for p in SURF_SIG_FILES if p in le]
+    tv = sum(len(SURF_TVAR_RE.findall(t)) for _, t in sig)
+    sc = sum(len(SURF_SIG_CONTROL.findall(t)) for _, t in sig)
+    rows.append(('SU.E4.tvarInSig', tv, ('MEASURED:' if sc else 'VOID:the control (arrow_op) read 0, so a 0 here is not a pass:') + 'tvar in %s at ext (E4 item 3 is wrong if > 0)' % (','.join(os.path.basename(p) for p, _ in sig) or 'no signature file')))
     inl = os.environ.get('VIR_SURF_INLINE', '')
     if not inl:
         rows.append(('SU.SU8.primRules', 0, 'Q:VIR_SURF_INLINE unset (the arm names §3\'s rule)'))
