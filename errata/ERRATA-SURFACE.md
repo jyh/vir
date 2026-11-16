@@ -69,3 +69,10 @@ exists, the HOAS form in 3 is cheap. Not known: which binder form the arm intend
 inside rather than a rule's premise.
 **What would show this read wrong:** an `a_tvar` clause in ssig1 or sig1 that the grep missed (a re-read of the two signatures at the
 arm's §2 head settles it), or a §2 rule set whose binder premises are already in HOAS form, which makes 3 a confirmation.
+**The arm's answer (mojave, bus 11-16 12:42:51, after this read and before any §2 export): item 3 is CONFIRMED in its HOAS branch.**
+The binder rules (let, lam, fix) take the form `all x: L1Atom. (atyp{x; ty} => styp{'e2 x; 'tau})`, with no token in a statement. A typed
+substitution lemma exists in one direction (virl1_tsub: tokens replaced by closed atoms of the same type keep `tc`'s `inl`), so the
+INVERSION rules are derivable; the INTRODUCTION rules need the converse, which the arm prices at 0.2–0.4 seat-day and declares NOT DERIVED
+beside SU7 until it exists. Item 2: `tc` types no `e_eff` term, so e_eff's rule is a NEGATIVE one (`not styp{e_eff{…}; tau}`), named in
+the rule map like any other. Item 1 narrows if the arm's next item lands (`styp := tc{btrue; e} = inl{tau}`, with `tyok` only inside
+the bridge lemma). `harness/count.py --arm surfm` reports all three from `VIR_SURF_RULES` (selftest ARM66).
