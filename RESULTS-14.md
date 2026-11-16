@@ -63,3 +63,22 @@ here. §3 goes through `den` directly (`den_let`, `den_ret`, `reduce_subst`) and
 an edit to a pre-existing L1 rule or definition at a later sha that the census misses (re-run `--ext` at the arm's close) · a binder premise
 whose HOAS reading depends on a definition the hand read did not open · an SU8 reading in which the type of a CTT equality is not part of
 a statement (that would be a new reading, declared and dated, not a re-score).
+
+## Addendum 1 (2026-11-16, the 84th vir head): binder INTRODUCTION derived at mojave 1fcceef92
+The arm closed its row 716 (bus 11-16 14:52:42): `virs2_rsub` (22 rules, the converse token lemma) and `virs2_intro` (16 rules), exported,
+fresh replays 22/22 and 16/16. The arm also reports a mutant run: retyping the body premise of `r_let_intro` and the binder of `r_lam_intro`
+left exactly those two incomplete. **This supersedes E4 report 2's "let, lam and fix are covered by INVERSION rules only".**
+- **No scored rule changed:** `git diff --stat 53e26e5e1 1fcceef92` is 8 files, +5,907, 0 deletions (two new modules and their
+  declarations), so SU1–SU8 stand as scored above. A re-run of `surfm` at 1fcceef92 gives the same value on every SU row. The one
+  difference is the E1 residue beside SU2, 8 → 12 (`unfold_ratom`, `unfold_rsubArgs`, `unfold_rsubP`, `unfold_rsubRest`: definitions inside
+  the new lemma, not in any statement).
+- **E4 report 2, re-run with the introduction rules** (`a_lam=r_lam_intro,a_fix=r_fix_intro,e_let=r_let_intro`, the rest as above): 15 of 15
+  forms, **0** SU2 tokens in any named statement, binder form HOAS for 4 of 4, `tvar` 0. Hand read of `r_let_intro`: its premises are
+  `styp{'e1; 't1}` and `all x: L1Atom. (atyp{'x; 't1} => styp{'e2 'x; 't2}`, with the let's membership `e_let{…} in L1Exp` as a [wf]
+  premise, the same side condition as §1's per-binder membership.
+- **For his question, one more condition, not a premise:** introduction needs every L1 type to have an atom (`s2_inhab_all`: `num_z`,
+  `a_true`, `a_lam{t1; x. e_ret{w}}`, by `l1_surface_induction`), because a HOAS premise has to be instantiated at some atom. It is a
+  derived lemma. The converse token lemma states one premise beyond the forward lemma, `ratom{v}`, which the arm declares semantically
+  redundant for an atom-typed `v`. That premise sits in a helper lemma, not in any surface rule scored here.
+- **Not re-measured here:** the arm's mutant (its report, Q); its row 717 (L1Exp closed under a step), which is optional, unpredicted and
+  in progress.
