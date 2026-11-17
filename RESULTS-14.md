@@ -82,3 +82,13 @@ left exactly those two incomplete. **This supersedes E4 report 2's "let, lam and
   redundant for an atom-typed `v`. That premise sits in a helper lemma, not in any surface rule scored here.
 - **Not re-measured here:** the arm's mutant (its report, Q); its row 717 (L1Exp closed under a step), which is optional, unpredicted and
   in progress.
+
+## Addendum 2 (2026-11-16, the 85th vir head): L1Exp closed under a step, at mojave 5159aabd3
+The arm closed its row 717 (bus 11-16 16:18:02, declaration D-SU11): module `virs2_step`, 27 rules, a fresh replay 27/27. Its theorem
+`s2_step_exp` says that a step from a surface expression gives a surface expression (e in L1Exp, l1step{e} = inl{e1} ⇒ e1 in L1Exp),
+so the e1 premise of `s2_preservation` is discharged by the step itself. The arm states no n-step (l1reach) form. No prediction was
+written for this row; nothing here is scored.
+- **No scored rule changed:** `git diff --numstat 1fcceef92 5159aabd3` is 5 files, +2,979, one deletion, which is a moved `## Status`
+  header in the declarations file. A re-run of `surfm` at 5159aabd3 differs from the 1fcceef92 run on one line only, `SU.newFiles` 31 → 34
+  (the three `virs2_step` files). Every SU row, and the E1 residue (12), is equal. SU1–SU8 stand.
+- **Not re-measured here:** the arm's mutant (25/27 with the let body at depth 0; its report) and its replay counts.
