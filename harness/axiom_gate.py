@@ -30,7 +30,7 @@ import glob, os, re, sys
 OK = {'propext', 'Classical.choice', 'Quot.sound'}
 IMP = ('Lean.reduceBool', {'Lean.trustCompiler'})
 LIM = ('(limit: reads logs only, no Lean re-run; gates only the names the audit prints; src = this repo\'s library sources; '
-       'a build outside logged-build.sh is not seen by the between-builds check)')
+       'the between-builds check reads every logs/ and repro/ directory of the repo; a build outside logged-build.sh is not seen by it)')
 
 def read(p):
     try:
@@ -50,6 +50,23 @@ def end_of(lines):
         return int(e[-1].split('=', 1)[1]) if e else None
     except ValueError:
         return None
+
+def log_dirs(*logs):
+    """h2c X1: a path dependency builds IN PLACE, so an edit-build-revert launched from a sibling project rewrites the same
+    oleans and logs in that project's directory. Scan every `logs`/`repro` directory of the repo holding the logs (walked
+    up to its .git), not only the two the logs sit in."""
+    dirs = {os.path.dirname(os.path.abspath(x)) for x in logs}
+    for x in logs:
+        d = os.path.dirname(os.path.abspath(x))
+        while d != '/' and not os.path.exists(os.path.join(d, '.git')):
+            d = os.path.dirname(d)
+        if d == '/':
+            continue
+        for w, ds, _ in os.walk(d):
+            ds[:] = [y for y in ds if y not in ('.lake', '.git', 'node_modules')]
+            if os.path.basename(w) in ('logs', 'repro'):
+                dirs.add(w)
+    return dirs
 
 def builds_between(dirs, lo, hi, src, root, skip):
     """h2c F3: another build in the same log directories, started between the chosen build and the audit, at a DIFFERENT
@@ -80,10 +97,10 @@ def rows_of(lines):
     out, i = [], 0
     while i < len(lines):
         ln = lines[i]
-        n = re.match(r"^'([^']+)' does not depend on any axioms$", ln)
+        n = re.match(r"^'(.+)' does not depend on any axioms$", ln)   # (.+): a PRIMED name holds a ' (h2c N5)
         if n:
             out.append((n.group(1), set())); i += 1; continue
-        m = re.match(r"^'([^']+)' depends on axioms: \[(.*)$", ln)
+        m = re.match(r"^'(.+?)' depends on axioms: \[(.*)$", ln)
         if m:
             body, j = m.group(2), i
             while ']' not in body and j + 1 < len(lines):
@@ -190,7 +207,7 @@ def triple(p, builds, controls=()):
                 bad.append(f'build {b}: NO end= line (it cannot be shown to have FINISHED before the audit started)'); continue
             if be >= as_:
                 bad.append(f'build {b}: ended at/after the audit started (overlap: the order is unknown)'); continue
-            mid = builds_between({os.path.dirname(os.path.abspath(p)), os.path.dirname(os.path.abspath(b))}, bs, as_,
+            mid = builds_between(log_dirs(p, b), bs, as_,
                                  ah.get('src'), ah.get('root'), {os.path.abspath(x) for x in builds})
             if mid:
                 bad.append(f'build {b}: a build at ANOTHER src ran between it and the audit ({",".join(mid)})'); continue

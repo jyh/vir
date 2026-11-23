@@ -243,9 +243,17 @@ t1=$(ag "$AG/a-noimp.log" --build "$AG/b.log" --control "$AG/c.log"); d8=$(ag "$
 t2=$(ag "$AG/a-wrapok.log" --build "$AG/b.log"); f1=$(ag "$AG/a-wrap.log" --build "$AG/b.log"); f1b=$(python3 "$H/axiom_gate.py" --legacy-pair "$AG/a-wrap.log" >/dev/null 2>&1; echo $?)
 f1c=$(ag "$AG/a-count.log" --build "$AG/b.log"); f2=$(ag "$AG/a.log" --build "$AG/b-noend.log"); f2b=$(ag "$AG/a.log" --build "$AG/b-overlap.log")
 f3=$(ag "$AG/f3/a.log" --build "$AG/f3/b.log"); f4=$(ag "$AG/a.log" --build "$AG/b-clone.log")
-got="T0=$t0 T1=$t1 T2=$t2 S0=$s0 S1=$s1 src=$d1 late=$d2 red=$d3 cone=$d4 noimp=$d5 deadimp=$d6 nohdr=$d7 ctlsrc=$d8 wrap=$f1 wraplegacy=$f1b count=$f1c noend=$f2 overlap=$f2b mid=$f3 clone=$f4"
-if [ "$got" = "T0=0 T1=0 T2=0 S0=1 S1=1 src=1 late=1 red=1 cone=1 noimp=1 deadimp=1 nohdr=1 ctlsrc=1 wrap=1 wraplegacy=1 count=1 noend=1 overlap=1 mid=1 clone=1" ]; then say "ARM17b axiom TRIPLE OK ($got)"
-else say "ARM17b axiom TRIPLE FAIL ($got; want T0..T2=0 and every other 1)"; fail=1; fi
+# h2c's delta read of b1ec2b1 (@109,600,234): N5 — a PRIMED name (`'X.safe_hdr'' depends on …`, real in deflate/l5 logs) was
+# not a row (triple failed closed on the count, legacy failed OPEN); X1 — an edit-build-revert logged in a SIBLING project's
+# logs/ (a path dependency builds in place) was outside the between-builds scan. Fixtures primeok/primebad/primelegacy, x1.
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.u' does not depend/'A.u'\'' does not depend/; s/^'A.t' depends/'A.t'\'' depends/")" > "$AG/a-primeok.log"
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.t' depends on axioms: \[propext/'A.t'\'' depends on axioms: [sorryAx, propext/")" > "$AG/a-primebad.log"
+t3=$(ag "$AG/a-primeok.log" --build "$AG/b.log"); n5=$(ag "$AG/a-primebad.log" --build "$AG/b.log"); n5b=$(python3 "$H/axiom_gate.py" --legacy-pair "$AG/a-primebad.log" >/dev/null 2>&1; echo $?)
+mkdir -p "$AG/x1/.git" "$AG/x1/p/logs" "$AG/x1/q/logs"; cp "$AG/a.log" "$AG/b.log" "$AG/x1/p/logs/"; cp "$AG/f3/b-mid.log" "$AG/x1/q/logs/"
+x1=$(ag "$AG/x1/p/logs/a.log" --build "$AG/x1/p/logs/b.log")
+got="T0=$t0 T1=$t1 T2=$t2 T3=$t3 primebad=$n5 primelegacy=$n5b x1=$x1 S0=$s0 S1=$s1 src=$d1 late=$d2 red=$d3 cone=$d4 noimp=$d5 deadimp=$d6 nohdr=$d7 ctlsrc=$d8 wrap=$f1 wraplegacy=$f1b count=$f1c noend=$f2 overlap=$f2b mid=$f3 clone=$f4"
+if [ "$got" = "T0=0 T1=0 T2=0 T3=0 primebad=1 primelegacy=1 x1=1 S0=1 S1=1 src=1 late=1 red=1 cone=1 noimp=1 deadimp=1 nohdr=1 ctlsrc=1 wrap=1 wraplegacy=1 count=1 noend=1 overlap=1 mid=1 clone=1" ]; then say "ARM17b axiom TRIPLE OK ($got)"
+else say "ARM17b axiom TRIPLE FAIL ($got; want T0..T3=0 and every other 1)"; fail=1; fi
 
 # (17c) END TO END: the real lean/VIRB/logged-build.sh with a stub saltbuild writes the build_header.py headers, and the gate
 # reads them: build VIR, then audit AuditControl.lean (imports VIR) => rc 0; the same audit against a build of a DIFFERENT
