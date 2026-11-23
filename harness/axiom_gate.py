@@ -10,11 +10,14 @@ upstream proof turned to `sorry` and only the upstream rebuilt, a downstream nam
 in-file control tests the printer only. A control can show the path REPORTS; only a build shows the tables are CURRENT.
 
 THE TRIPLE (every term read from the logs; headers are written by harness/build_header.py through logged-build.sh):
- (1) BUILD: each --build log carries `logged-build: mode=build … targets=… src=… start=…` and ends `saltbuild EXIT=0`;
-     its src (sha over every library source in the repo) EQUALS the audit's src (no library write between them); it
-     STARTED BEFORE the audit; and the union of the targets covers every vir-library module the audit file imports.
- (2) AUDIT: `logged-build: mode=audit … imports=… src=… start=…`, ends `saltbuild EXIT=0`, and every `#print axioms` row is
-     at most propext · Classical.choice · Quot.sound (or none), except the controls.
+ (1) BUILD: each --build log carries `logged-build: mode=build … root=… targets=… src=… start=…`, ends `saltbuild EXIT=0`
+     and then `logged-build: end=`; its src (sha over every library source in the repo) and root (which clone) EQUAL the
+     audit's; it ENDED before the audit STARTED; no other build log at a different src in the same log directories
+     started between them (edit, build, revert); and the union of the targets covers every vir-library module the
+     audit file imports, each EXACTLY.
+ (2) AUDIT: `logged-build: mode=audit … imports=… prints=… src=… start=…`, ends `saltbuild EXIT=0`, every `#print axioms`
+     row is at most propext · Classical.choice · Quot.sound (or none) except the controls, and the rows parsed equal
+     prints= (Lean wraps a row past 120 columns; a row is read from `[` to the first `]` across lines).
  (3) IMPORTED CONTROL: `'Lean.reduceBool' depends on axioms: [Lean.trustCompiler]` in the audit log (an imported core
      constant, read from its table), or in a --control log (mode=audit, EXIT=0, the SAME src as the audit: vir's
      AuditControl.lean run). An in-file `control_sorry`, if present, must still show sorryAx (a printer check).
@@ -23,10 +26,11 @@ LIMITS, printed with the verdict: it reads logs and does not re-run Lean; it gat
 src covers library sources of this repo (not .lake/packages, which the manifest pins); an import is covered only
 by a build target of EXACTLY that module (lake makes the target's cone current; a lib root need not import every submodule).
 """
-import re, sys
+import glob, os, re, sys
 OK = {'propext', 'Classical.choice', 'Quot.sound'}
 IMP = ('Lean.reduceBool', {'Lean.trustCompiler'})
-LIM = '(limit: reads logs only, no Lean re-run; gates only the names the audit prints; src = this repo\'s library sources)'
+LIM = ('(limit: reads logs only, no Lean re-run; gates only the names the audit prints; src = this repo\'s library sources; '
+       'a build outside logged-build.sh is not seen by the between-builds check)')
 
 def read(p):
     try:
@@ -40,17 +44,54 @@ def header(lines):
             return dict(kv.split('=', 1) for kv in ln[len('logged-build: '):].split() if '=' in kv)
     return None
 
+def end_of(lines):
+    e = [ln for ln in lines if ln.startswith('logged-build: end=')]
+    try:
+        return int(e[-1].split('=', 1)[1]) if e else None
+    except ValueError:
+        return None
+
+def builds_between(dirs, lo, hi, src, root, skip):
+    """h2c F3: another build in the same log directories, started between the chosen build and the audit, at a DIFFERENT
+    src, may have rewritten the tables the audit reads (edit, build, revert). Refuse it; a bare saltbuild is not seen."""
+    hits = []
+    for d in dirs:
+        for q in sorted(glob.glob(os.path.join(d, '*.log'))):
+            if os.path.abspath(q) in skip:
+                continue
+            h = header(read(q) or [])
+            if not h or h.get('mode') != 'build' or h.get('root') != root:
+                continue
+            try:
+                t = int(h.get('start', 'x'))
+            except ValueError:
+                continue
+            if lo < t < hi and h.get('src') != src:
+                hits.append(os.path.basename(q))
+    return hits
+
 def last_exit(lines):
     ex = [ln for ln in lines if ln.startswith('saltbuild EXIT=')]
     return ex[-1] if ex else 'MISSING'
 
 def rows_of(lines):
-    out = []
-    for ln in lines:
-        m = re.match(r"^'([^']+)' depends on axioms: \[(.*)\]$", ln)
+    """h2c F1 (measured at v4.32.0-rc1): Lean wraps a row past 120 columns, after a comma inside `[...]`, so a row is
+    every line from its `'name' depends on axioms: [` to the first `]`, joined."""
+    out, i = [], 0
+    while i < len(lines):
+        ln = lines[i]
         n = re.match(r"^'([^']+)' does not depend on any axioms$", ln)
-        if m or n:
-            out.append(((m or n).group(1), {a.strip() for a in m.group(2).split(',') if a.strip()} if m else set()))
+        if n:
+            out.append((n.group(1), set())); i += 1; continue
+        m = re.match(r"^'([^']+)' depends on axioms: \[(.*)$", ln)
+        if m:
+            body, j = m.group(2), i
+            while ']' not in body and j + 1 < len(lines):
+                j += 1; body += ' ' + lines[j].strip()
+            inner = body.split(']', 1)[0]
+            out.append((m.group(1), {a.strip() for a in inner.split(',') if a.strip()}))
+            i = j + 1; continue
+        i += 1
     return out
 
 def gate_rows(lines, bad):
@@ -92,7 +133,7 @@ def control_from(c, ah, bad):
         bad.append(f'control {c}: HEADER MISSING'); return None
     if last_exit(cl) != 'saltbuild EXIT=0':
         bad.append(f'control {c}: {last_exit(cl)}'); return None
-    if ah and ch.get('src') != ah.get('src'):
+    if ah and (ch.get('src') != ah.get('src') or ch.get('root') != ah.get('root')):
         bad.append(f'control {c}: src {ch.get("src")} != audit src {ah.get("src")}'); return None
     got = [ax for name, ax in rows_of(cl) if name == IMP[0]]
     return None if not got else got[-1] == IMP[1]
@@ -116,6 +157,13 @@ def triple(p, builds, controls=()):
         bad.append(f'IMPORTED CONTROL does not report ({IMP[0]} must print exactly [Lean.trustCompiler])')
     if ah is None or ah.get('mode') != 'audit':
         bad.append('AUDIT HEADER MISSING (no `logged-build: mode=audit` line: imports, src and start cannot be read)')
+    if ah:
+        try:
+            pr = int(ah.get('prints', 'x'))
+            if pr != n:
+                bad.append(f'ROW COUNT {n} != the audit file\'s {pr} `#print axioms` lines (a row the parser cannot read is not a pass)')
+        except ValueError:
+            bad.append('AUDIT HEADER has no prints= (the row count cannot be checked)')
     if not builds:
         bad.append('NO BUILD LINE (--build): a control cannot show an olean is CURRENT; the stale-clean shape passes without one')
     covered, used = set(), []
@@ -129,13 +177,23 @@ def triple(p, builds, controls=()):
         if last_exit(bl) != 'saltbuild EXIT=0':
             bad.append(f'build {b}: {last_exit(bl)}'); continue
         if ah:
+            if bh.get('root') != ah.get('root'):
+                bad.append(f'build {b}: root {bh.get("root")} != audit root {ah.get("root")} (another clone)'); continue
             if bh.get('src') != ah.get('src'):
                 bad.append(f'build {b}: src {bh.get("src")} != audit src {ah.get("src")} (a library source changed between build and audit)'); continue
+            be = end_of(bl)
             try:
-                if int(bh.get('start', 'x')) >= int(ah.get('start', 'x')):
-                    bad.append(f'build {b}: started at/after the audit'); continue
+                bs, as_ = int(bh.get('start', 'x')), int(ah.get('start', 'x'))
             except ValueError:
                 bad.append(f'build {b}: start unreadable'); continue
+            if be is None:
+                bad.append(f'build {b}: NO end= line (it cannot be shown to have FINISHED before the audit started)'); continue
+            if be >= as_:
+                bad.append(f'build {b}: ended at/after the audit started (overlap: the order is unknown)'); continue
+            mid = builds_between({os.path.dirname(os.path.abspath(p)), os.path.dirname(os.path.abspath(b))}, bs, as_,
+                                 ah.get('src'), ah.get('root'), {os.path.abspath(x) for x in builds})
+            if mid:
+                bad.append(f'build {b}: a build at ANOTHER src ran between it and the audit ({",".join(mid)})'); continue
         tg = [t for t in bh.get('targets', '').split(',') if t and t != '-']
         covered |= set(tg); used.append(','.join(tg))
     imports = [m for m in (ah or {}).get('imports', '-').split(',') if m and m != '-']

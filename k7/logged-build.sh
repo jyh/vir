@@ -43,5 +43,6 @@ if ! python3 -I "$here/../k5/tools/replay_filter.py" "$raw" - >> "$log"; then
   : >| "$log"; cat "$raw" >> "$log"
 fi
 rm -f -- "${raw:?}"
+python3 -I "$(git -C "$here" rev-parse --show-toplevel)/harness/build_header.py" --end >> "$log" 2>/dev/null || true   # h2c F2: build END < audit START
 grep -F 'saltbuild EXIT=' "$log" | tail -1
 exit $rc

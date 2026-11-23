@@ -8,8 +8,10 @@ planted-sorry control printing sorryAx in the same log. No control can show an o
 audited file's imports, taken over the same library sources, can. This header is what lets axiom_gate.py check that
 from the logs alone:
 
-  logged-build: mode=build project=<dir> targets=<M,...> src=<sha256/16> srcfiles=<n> start=<epoch ms>
-  logged-build: mode=audit project=<dir> file=<f.lean> file_sha256=<16> imports=<vir libs' modules> extimports=<others> src=… start=…
+  logged-build: mode=build project=<dir> root=<sha12 of the clone's path> targets=<M,...> src=<sha256/16> srcfiles=<n> start=<epoch ms>
+  logged-build: mode=audit project=<dir> root=… file=<f.lean> file_sha256=<16> imports=<vir libs' modules> extimports=<others>
+                prints=<number of `#print axioms` lines in the file> src=… start=…
+  logged-build: end=<epoch ms>        (build_header.py --end, written after saltbuild returns)
 
 src = sha256 over every LIBRARY source in this repo: for each lakefile.toml outside .lake/, each [[lean_lib]] name L gives
 <proj>/L.lean and <proj>/L/**.lean (path and bytes, sorted). Scratch files (Audit*.lean, probes/, mutants/) are NOT in it,
@@ -61,12 +63,15 @@ def src_hash(root):
     return h.hexdigest()[:16], len(files), libnames
 
 def main(argv):
+    if argv and argv[0] == '--end':   # h2c F2: the line logged-build.sh writes AFTER saltbuild returns
+        print(f'logged-build: end={int(time.time() * 1000)}'); return 0
     if not argv:
         print('logged-build: header REFUSED (no project dir)'); return 2
     proj = os.path.abspath(argv[0]); args = argv[1:]
     root = repo_root(proj)
     src, n, libnames = src_hash(root)
     rel = os.path.relpath(proj, root)
+    rootid = hashlib.sha256(os.path.realpath(root).encode()).hexdigest()[:12]   # h2c F4: which CLONE (a hash, never the path)
     pos = [a for a in args if not a.startswith('-')]
     # saltbuild: `--cap N X.lean` is an audit; the cap's value is not a target
     if '--cap' in args:
@@ -77,12 +82,14 @@ def main(argv):
         try:
             b = open(fp, 'rb').read()
         except OSError:
-            print(f'logged-build: mode=audit project={rel} file={f} file_sha256=MISSING src={src} srcfiles={n} start={start}'); return 0
+            print(f'logged-build: mode=audit project={rel} root={rootid} file={f} file_sha256=MISSING src={src} srcfiles={n} start={start}'); return 0
         imps = re.findall(r'^import\s+(\S+)', b.decode('utf-8', 'replace'), re.M)
         own = [m for m in imps if m.split('.')[0] in libnames]
         ext = [m for m in imps if m not in own]
-        print(f'logged-build: mode=audit project={rel} file={f} file_sha256={hashlib.sha256(b).hexdigest()[:16]} '
-              f'imports={",".join(own) or "-"} extimports={",".join(ext) or "-"} src={src} srcfiles={n} start={start}')
+        txt = b.decode('utf-8', 'replace')
+        prints = len(re.findall(r'^\s*#print\s+axioms\b', txt, re.M))   # h2c F1: the gate's row count must equal this
+        print(f'logged-build: mode=audit project={rel} root={rootid} file={f} file_sha256={hashlib.sha256(b).hexdigest()[:16]} '
+              f'imports={",".join(own) or "-"} extimports={",".join(ext) or "-"} prints={prints} src={src} srcfiles={n} start={start}')
     else:
         tg = [a for a in pos if a != 'build']
         if not tg:
@@ -90,7 +97,7 @@ def main(argv):
             tg = dflt; tag = ' (default)'
         else:
             tag = ''
-        print(f'logged-build: mode=build project={rel} targets={",".join(tg) or "-"}{tag} src={src} srcfiles={n} start={start}')
+        print(f'logged-build: mode=build project={rel} root={rootid} targets={",".join(tg) or "-"}{tag} src={src} srcfiles={n} start={start}')
     return 0
 
 if __name__ == '__main__':

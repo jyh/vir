@@ -34,5 +34,6 @@ python3 -I "$(git -C "$here" rev-parse --show-toplevel)/harness/build_header.py"
   || echo "logged-build: header FAILED (axiom_gate.py refuses this log as a receipt)" >> "$log"
 cd "$lean" && "$sb" "$@" >> "$log" 2>&1
 rc=$?
+python3 -I "$(git -C "$here" rev-parse --show-toplevel)/harness/build_header.py" --end >> "$log" 2>/dev/null || true   # h2c F2: build END < audit START
 grep -F 'saltbuild EXIT=' "$log" | tail -1
 exit $rc
