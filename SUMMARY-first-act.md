@@ -71,6 +71,8 @@ The arms:
 | every axiom receipt has a positive control | compose audits; vir `lean/AuditControl.lean` (added row 48: `lean/Audit.lean` never had one) | audit-control-002 EXIT=0, rows identical to audit-014 | the Lean control is one run later than audit-014, on the same sources |
 | program 2 is not lowered | paris @[bus] | — | F2_exit (vir 06ff140) offered and unused |
 
+⚠️ **Annotation 2026-11-23 (row "every axiom receipt has a positive control"):** that control is an in-file `sorry`, which tests the printer only. An imported constant's axioms come from a table written at build time, so a stale upstream can print clean beside a green in-file control (measured at this repo's toolchain pin). From 54e650c, `harness/axiom_gate.py` requires a build line, the audit, and an imported control (`Lean.reduceBool`); the receipts in this table are the old pair. None is shown wrong by this.
+
 **In one line:** for program 1, the method runs end to end. The spec composition U is fused to F in both logics, and F's exit relation is refined by repaired x86-64 code for every state, checked in Lean against x86lean. The repairs are part of the finding: the object's own lowering was wrong in two places, and step 2 says where.
 
 ## Amendment B′ (added 2026-11-02 by the 9th vir head; RESULTS-4)
