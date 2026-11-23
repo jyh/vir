@@ -27,6 +27,11 @@ sb=${SALTBUILD:-$here/../../saltbuild.sh}
 [ -x "$sb" ] || { echo "logged-build: saltbuild not found at $sb" >&2; exit 4; }
 set -o noclobber
 : > "$log" || { echo "logged-build: REFUSED — could not create $log without clobbering" >&2; exit 3; }
+# 2026-11-23 (axiom receipts are a TRIPLE): one header line (mode, targets or imports, library-source hash, start) BEFORE saltbuild,
+# so harness/axiom_gate.py can check from the logs that a build covered the audit's imports over the same sources. A failed header is
+# written as such and the gate refuses that log as a receipt; it never blocks the build.
+python3 -I "$(git -C "$here" rev-parse --show-toplevel)/harness/build_header.py" "$lean" "$@" >> "$log" 2>/dev/null \
+  || echo "logged-build: header FAILED (axiom_gate.py refuses this log as a receipt)" >> "$log"
 # From k7-001 on (k5/LOGS-FILTER.md; k7 uses it from its first log, compiler/DECLARATIONS-K7.md): saltbuild writes to a raw file outside the tree, and the committed log is
 # that file with each REPLAYED module's re-printed warning body replaced by one hash line (tools/replay_filter.py). Header lines,
 # every line containing "error", and the `saltbuild EXIT=` line are copied byte for byte. If the filter fails, the RAW log is kept.
