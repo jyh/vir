@@ -190,27 +190,94 @@ printf '%s\n' "$good" > "$AG/good.log"
 printf '%s\n' "$good" | sed "s/'A.t' depends on axioms: \[propext/'A.t' depends on axioms: [sorryAx, propext/" > "$AG/sorry.log"
 printf '%s\n' "$good" | sed "s/^'control_sorry' depends on axioms: \[sorryAx\]/'control_sorry' depends on axioms: [propext]/" > "$AG/nocontrol.log"
 printf '%s\n' "$good" | sed 's/^saltbuild EXIT=0/saltbuild EXIT=1/' > "$AG/exit1.log"
-r0=0; python3 "$H/axiom_gate.py" "$AG/good.log" >/dev/null 2>&1 || r0=$?
-r1=0; python3 "$H/axiom_gate.py" "$AG/sorry.log" >/dev/null 2>&1 || r1=$?
-r2=0; python3 "$H/axiom_gate.py" "$AG/nocontrol.log" >/dev/null 2>&1 || r2=$?
-r3=0; python3 "$H/axiom_gate.py" "$AG/exit1.log" >/dev/null 2>&1 || r3=$?
-if [ $r0 -eq 0 ] && [ $r1 -ne 0 ] && [ $r2 -ne 0 ] && [ $r3 -ne 0 ] && [ -f "$H/axiom_gate.py" ]; then say "ARM17 axiom gate OK"
-else say "ARM17 axiom gate FAIL (good=$r0 sorry=$r1 nocontrol=$r2 exit1=$r3)"; fail=1; fi
+r0=0; python3 "$H/axiom_gate.py" --legacy-pair "$AG/good.log" >/dev/null 2>&1 || r0=$?
+r1=0; python3 "$H/axiom_gate.py" --legacy-pair "$AG/sorry.log" >/dev/null 2>&1 || r1=$?
+r2=0; python3 "$H/axiom_gate.py" --legacy-pair "$AG/nocontrol.log" >/dev/null 2>&1 || r2=$?
+r3=0; python3 "$H/axiom_gate.py" --legacy-pair "$AG/exit1.log" >/dev/null 2>&1 || r3=$?
+if [ $r0 -eq 0 ] && [ $r1 -ne 0 ] && [ $r2 -ne 0 ] && [ $r3 -ne 0 ] && [ -f "$H/axiom_gate.py" ]; then say "ARM17 axiom gate (legacy pair) OK"
+else say "ARM17 axiom gate (legacy pair) FAIL (good=$r0 sorry=$r1 nocontrol=$r2 exit1=$r3)"; fail=1; fi
 
-# (18) amend-10: the B′ extractor (leanbp) sees a planted HEq and a planted extra axiom, and a missing control.
-BP="$F/bp"; mkdir -p "$BP/logs"
-bpgood="'control_sorry_bp' depends on axioms: [sorryAx]
-theorem VIR.BPrime.router_fusion_bp : U C b0 st = F C b0 st :=
-fun C b0 st => rfl
-'VIR.BPrime.router_fusion_bp' depends on axioms: [propext, Quot.sound]
+# (17b) the helm's 11-23 routing (h2c's STALE-CLEAN probe at salt's pin): an axiom receipt is a TRIPLE — a BUILD log whose
+# targets cover the audit file's vir imports, over the SAME library sources (src=) in the SAME clone (root=), that ENDED
+# before the audit started, with no build at another src between them; the AUDIT log, whose parsed rows equal the file's
+# `#print axioms` count (prints=); an IMPORTED control `Lean.reduceBool` -> [Lean.trustCompiler]. Headers as
+# harness/build_header.py writes them. T0 is the good triple (rc 0). h2c's p4 shape is S0: the audit log alone, every row
+# clean, an in-file control_sorry green, EXIT=0 — the old gate passed it. Every other fixture plants ONE defect.
+# h2c's read of 54e650c (@109,584,928) added F1 (a row Lean WRAPS past 120 columns was not a row: measured), F2 (start
+# only, no end), F3 (edit, build, revert), F4 (another clone): fixtures wrap/wrapok/count, noend/overlap, mid, clone.
+bh="logged-build: mode=build project=p root=r1 targets=A src=aaaa srcfiles=3 start=100"
+ah="logged-build: mode=audit project=p root=r1 file=Audit.lean file_sha256=ffff imports=A extimports=- prints=4 src=aaaa srcfiles=3 start=200"
+rows="'control_sorry' depends on axioms: [sorryAx]
+'Lean.reduceBool' depends on axioms: [Lean.trustCompiler]
+'A.t' depends on axioms: [propext, Classical.choice, Quot.sound]
+'A.u' does not depend on any axioms
 saltbuild EXIT=0"
-printf '%s\n' "$bpgood" > "$BP/logs/audit-bp-001.log"
-o0=$(python3 "$H/count.py" --arm leanbp "$BP")
-printf '%s\n' "$bpgood" | sed 's/fun C b0 st => rfl/fun C b0 st => HEq.refl ≍/; s/\[propext, Quot.sound\]/[propext, Quot.sound, Classical.em_ax]/; s/\[sorryAx\]/[propext]/' > "$BP/logs/audit-bp-002.log"
-o1=$(python3 "$H/count.py" --arm leanbp "$BP")
-if [ "$(g6 "$o0" BP1.C1heq)" = 0 ] && [ "$(g6 "$o0" BP1.C4)" = 0 ] && [ "$(g6 "$o0" B.control)" = 1 ] \
-   && [ "$(g6 "$o1" BP1.C1heq)" = 2 ] && [ "$(g6 "$o1" BP1.C4)" = 1 ] && [ "$(g6 "$o1" B.control)" = 0 ]; then say "ARM18 B′ extractor OK"
-else say "ARM18 B′ extractor FAIL"; printf '%s\n%s\n' "$o0" "$o1" | grep BP1; fail=1; fi
+mkb() { printf '%s\nBuild completed successfully (5 jobs).\nsaltbuild EXIT=%s\n%s\n' "$1" "${2:-0}" "${3-logged-build: end=150}"; }
+mkb "$bh" > "$AG/b.log"
+printf '%s\n%s\n' "$ah" "$rows" > "$AG/a.log"
+printf '%s\n' "$good" > "$AG/s0.log"                                                         # h2c p4: audit alone, no header
+mkb "$(printf '%s' "$bh" | sed 's/src=aaaa/src=bbbb/')" > "$AG/b-src.log"                      # upstream edited after the build
+mkb "$(printf '%s' "$bh" | sed 's/start=100/start=300/')" 0 "logged-build: end=350" > "$AG/b-late.log"   # built after the audit
+mkb "$bh" 1 > "$AG/b-red.log"                                                                   # the build failed
+mkb "$bh" 0 "" > "$AG/b-noend.log"                                                              # F2: no end line
+mkb "$bh" 0 "logged-build: end=250" > "$AG/b-overlap.log"                                       # F2: ended after the audit began
+mkb "$(printf '%s' "$bh" | sed 's/root=r1/root=r2/')" > "$AG/b-clone.log"                      # F4: another clone
+printf '%s\n%s\n' "$(printf '%s' "$ah" | sed 's/imports=A /imports=A,B /')" "$rows" > "$AG/a-cone.log"   # an import not built
+printf '%s\n%s\n' "$(printf '%s' "$ah" | sed 's/prints=4/prints=3/')" "$(printf '%s\n' "$rows" | grep -v reduceBool)" > "$AG/a-noimp.log"  # no imported control
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed 's/\[Lean.trustCompiler\]/[]/')" > "$AG/a-deadimp.log"   # control does not report
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.t' depends on axioms: \[propext, Classical.choice, Quot.sound\]/'A.t' depends on axioms: [propext,\n  sorryAx,\n  Quot.sound]/")" > "$AG/a-wrap.log"   # F1: Lean's wrap
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.t' depends on axioms: \[propext, Classical.choice, Quot.sound\]/'A.t' depends on axioms: [propext,\n  Classical.choice,\n  Quot.sound]/")" > "$AG/a-wrapok.log"   # F1: a clean wrapped row
+printf '%s\n%s\n' "$(printf '%s' "$ah" | sed 's/prints=4/prints=5/')" "$rows" > "$AG/a-count.log"   # F1: a row the parser did not see
+printf 'saltbuild EXIT=0\n' > "$AG/b-nohdr.log"                                                  # a build log with no header
+mkdir -p "$AG/f3"; cp "$AG/a.log" "$AG/b.log" "$AG/f3/"
+mkb "$(printf '%s' "$bh" | sed 's/src=aaaa/src=dddd/; s/start=100/start=160/')" 0 "logged-build: end=170" > "$AG/f3/b-mid.log"   # F3: edit, build, revert
+ag() { python3 "$H/axiom_gate.py" "$@" >/dev/null 2>&1; echo $?; }
+t0=$(ag "$AG/a.log" --build "$AG/b.log"); s0=$(ag "$AG/s0.log"); s1=$(ag "$AG/a.log")
+d1=$(ag "$AG/a.log" --build "$AG/b-src.log"); d2=$(ag "$AG/a.log" --build "$AG/b-late.log"); d3=$(ag "$AG/a.log" --build "$AG/b-red.log")
+d4=$(ag "$AG/a-cone.log" --build "$AG/b.log"); d5=$(ag "$AG/a-noimp.log" --build "$AG/b.log"); d6=$(ag "$AG/a-deadimp.log" --build "$AG/b.log")
+d7=$(ag "$AG/a.log" --build "$AG/b-nohdr.log")
+# the imported control from a SEPARATE run (vir's AuditControl.lean): good at the same src (T1), refused at another (d8)
+printf '%s\n%s\nsaltbuild EXIT=0\n' "$(printf '%s' "$ah" | sed 's/Audit.lean/AuditControl.lean/; s/prints=4/prints=1/')" "'Lean.reduceBool' depends on axioms: [Lean.trustCompiler]" > "$AG/c.log"
+sed 's/src=aaaa/src=cccc/' "$AG/c.log" > "$AG/c-src.log"
+t1=$(ag "$AG/a-noimp.log" --build "$AG/b.log" --control "$AG/c.log"); d8=$(ag "$AG/a-noimp.log" --build "$AG/b.log" --control "$AG/c-src.log")
+t2=$(ag "$AG/a-wrapok.log" --build "$AG/b.log"); f1=$(ag "$AG/a-wrap.log" --build "$AG/b.log"); f1b=$(python3 "$H/axiom_gate.py" --legacy-pair "$AG/a-wrap.log" >/dev/null 2>&1; echo $?)
+f1c=$(ag "$AG/a-count.log" --build "$AG/b.log"); f2=$(ag "$AG/a.log" --build "$AG/b-noend.log"); f2b=$(ag "$AG/a.log" --build "$AG/b-overlap.log")
+f3=$(ag "$AG/f3/a.log" --build "$AG/f3/b.log"); f4=$(ag "$AG/a.log" --build "$AG/b-clone.log")
+# h2c's delta read of b1ec2b1 (@109,600,234): N5 — a PRIMED name (`'X.safe_hdr'' depends on …`, real in deflate/l5 logs) was
+# not a row (triple failed closed on the count, legacy failed OPEN); X1 — an edit-build-revert logged in a SIBLING project's
+# logs/ (a path dependency builds in place) was outside the between-builds scan. Fixtures primeok/primebad/primelegacy, x1.
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.u' does not depend/'A.u'\'' does not depend/; s/^'A.t' depends/'A.t'\'' depends/")" > "$AG/a-primeok.log"
+printf '%s\n%s\n' "$ah" "$(printf '%s\n' "$rows" | sed "s/^'A.t' depends on axioms: \[propext/'A.t'\'' depends on axioms: [sorryAx, propext/")" > "$AG/a-primebad.log"
+t3=$(ag "$AG/a-primeok.log" --build "$AG/b.log"); n5=$(ag "$AG/a-primebad.log" --build "$AG/b.log"); n5b=$(python3 "$H/axiom_gate.py" --legacy-pair "$AG/a-primebad.log" >/dev/null 2>&1; echo $?)
+mkdir -p "$AG/x1/.git" "$AG/x1/p/logs" "$AG/x1/q/logs"; cp "$AG/a.log" "$AG/b.log" "$AG/x1/p/logs/"; cp "$AG/f3/b-mid.log" "$AG/x1/q/logs/"
+x1=$(ag "$AG/x1/p/logs/a.log" --build "$AG/x1/p/logs/b.log")
+got="T0=$t0 T1=$t1 T2=$t2 T3=$t3 primebad=$n5 primelegacy=$n5b x1=$x1 S0=$s0 S1=$s1 src=$d1 late=$d2 red=$d3 cone=$d4 noimp=$d5 deadimp=$d6 nohdr=$d7 ctlsrc=$d8 wrap=$f1 wraplegacy=$f1b count=$f1c noend=$f2 overlap=$f2b mid=$f3 clone=$f4"
+if [ "$got" = "T0=0 T1=0 T2=0 T3=0 primebad=1 primelegacy=1 x1=1 S0=1 S1=1 src=1 late=1 red=1 cone=1 noimp=1 deadimp=1 nohdr=1 ctlsrc=1 wrap=1 wraplegacy=1 count=1 noend=1 overlap=1 mid=1 clone=1" ]; then say "ARM17b axiom TRIPLE OK ($got)"
+else say "ARM17b axiom TRIPLE FAIL ($got; want T0..T3=0 and every other 1)"; fail=1; fi
+
+# (17c) END TO END: the real lean/VIRB/logged-build.sh with a stub saltbuild writes the build_header.py headers, and the gate
+# reads them: build VIR, then audit AuditControl.lean (imports VIR) => rc 0; the same audit against a build of a DIFFERENT
+# target (VIRB) => rc 1 (imports NOT BUILT); the audit log alone => rc 1. Real logs untouched (LOGDIR is the fixture).
+E="$F/e2e"; mkdir -p "$E/logs"
+cat > "$E/stub.sh" <<'STUB'
+#!/bin/sh
+case "$*" in
+  *.lean) f=$(printf '%s' "$*" | awk '{print $NF}')
+          echo "'Lean.reduceBool' depends on axioms: [Lean.trustCompiler]"; echo "'control_sorry' depends on axioms: [sorryAx]"
+          k=$(grep -c '^#print axioms' "$f"); i=2; while [ "$i" -lt "$k" ]; do echo "'E.r$i' does not depend on any axioms"; i=$((i+1)); done ;;
+  *) echo "Build completed successfully (1 jobs)." ;;
+esac
+echo "saltbuild EXIT=0"
+STUB
+chmod +x "$E/stub.sh"
+WV="$H/../lean/VIRB/logged-build.sh"
+SALTBUILD="$E/stub.sh" LOGDIR="$E/logs" "$WV" e2e-build VIR >/dev/null 2>&1
+SALTBUILD="$E/stub.sh" LOGDIR="$E/logs" "$WV" e2e-build-other VIRB >/dev/null 2>&1
+SALTBUILD="$E/stub.sh" LOGDIR="$E/logs" "$WV" e2e-audit AuditControl.lean >/dev/null 2>&1
+e0=$(ag "$E/logs/e2e-audit.log" --build "$E/logs/e2e-build.log"); e1=$(ag "$E/logs/e2e-audit.log" --build "$E/logs/e2e-build-other.log"); e2=$(ag "$E/logs/e2e-audit.log")
+hb=$(grep -c '^logged-build: mode=build .*targets=VIR src=' "$E/logs/e2e-build.log"); ha=$(grep -c '^logged-build: mode=audit .*imports=VIR ' "$E/logs/e2e-audit.log")
+if [ "$e0 $e1 $e2 $hb $ha" = "0 1 1 1 1" ]; then say "ARM17c axiom TRIPLE end to end OK (good=$e0 other-target=$e1 audit-alone=$e2; headers $hb/$ha)"
+else say "ARM17c axiom TRIPLE end to end FAIL (good=$e0 other-target=$e1 audit-alone=$e2 headers=$hb/$ha; want 0 1 1 1 1)"; head -2 "$E/logs/e2e-build.log" "$E/logs/e2e-audit.log"; fail=1; fi
 
 # (19) the per-run log rule (STATUS-vir row 65): lean/VIRB/logged-build.sh REFUSES a log name already used, so a
 # second run can never overwrite the first and hide it from B.C6. A stub stands in for saltbuild; real logs untouched.

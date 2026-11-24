@@ -135,7 +135,9 @@ if git clone -q --no-checkout "$M0/vir-metaprl" "$M/l5m" 2>/dev/null && git -C "
 else echo "REPRODUCE MISSING-INPUT mojave/vir-l5 at $L5M_SHA"; exit 2; fi
 # row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
 for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
-  NC=   # row 48: vir's Lean audit now has a control run (AuditControl.lean); --no-control stays in the tool, unused here
+  NC=--legacy-pair   # row 48: vir's Lean audit has a control run (AuditControl.lean). 2026-11-23: these two logs predate the TRIPLE
+                     # (no build header, no imported control), so they are read as the old pair and the verdict line says so;
+                     # a NEW receipt is `axiom_gate.py AUDIT --build BUILD [--control CONTROL]` (harness/axiom_gate.py)
   n=$((n+1)); python3 "$V/harness/axiom_gate.py" $NC "$L" > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
   sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
 done

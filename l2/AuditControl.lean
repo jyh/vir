@@ -3,3 +3,6 @@ import VIRL2
 theorem control_sorry : VIRL2.Triple VIRL2.Assn.emp VIRL2.M3 (fun _ _ => True) := by sorry
 #print axioms control_sorry
 #print axioms VIRL2.M3_no_triple
+-- 2026-11-23 THE IMPORTED CONTROL (term 3 of the axiom TRIPLE, harness/axiom_gate.py): an imported core constant, read from its
+-- olean table, must print [Lean.trustCompiler]. The in-file control_sorry above tests the printer only (stale clean, h2c 11-23).
+#print axioms Lean.reduceBool
