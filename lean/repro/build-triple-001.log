@@ -1,0 +1,11 @@
+logged-build: mode=build project=lean root=020263116fd6 targets=VIR src=67ee7fc71a9d0121 srcfiles=268 start=1795609518870
+saltqueue: ticket P1 seat=vir pid=69902
+⚠ [13/16] Replayed VIR.Router3
+warning: VIR/Router3.lean:39:43: Variable name `hv` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Build completed successfully (16 jobs).
+saltbuild EXIT=0
+logged-build: end=1795609519302
