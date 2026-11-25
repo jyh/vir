@@ -88,3 +88,7 @@ lists; AuditInduction (5 rows) is new.
 **Limits, revised:** the logs are still not in the repo (C6 counts logged runs, and a census drive is not one of them), so the
 table is the script's output at one source state, not a count recomputed from committed artifacts. The difference from the
 transcription above is that re-checking it is one command, run by anyone, and a malformed project is refused by name.
+
+**Fresh-clone check (row 436):** a clone from github.com/jyh/vir at 2def5d8 (#98's merge), with nothing else on the path,
+ran `python3 -I harness/triple_drive.py <scratch> --dry-run`: rc 0, 15 projects, 17 audits. That is the same population, read from the public
+artifacts alone. (A dry run builds nothing; the 17/17 above is the drive in this tree.)
