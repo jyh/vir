@@ -44,6 +44,12 @@ def header(lines):
             return dict(kv.split('=', 1) for kv in ln[len('logged-build: '):].split() if '=' in kv)
     return None
 
+def hdr_word(h, want):
+    """row 420: a header PRESENT in another mode is not a missing header; name what the log is."""
+    if h is None:
+        return 'HEADER MISSING (no `logged-build: mode=` line: targets, src and start unreadable)'
+    return f'mode={h.get("mode")}, not a{"n" if want == "audit" else ""} {want} log'
+
 def end_of(lines):
     e = [ln for ln in lines if ln.startswith('logged-build: end=')]
     try:
@@ -147,7 +153,7 @@ def control_from(c, ah, bad):
         bad.append(f'control {c}: NO-LOG'); return None
     ch = header(cl)
     if ch is None or ch.get('mode') != 'audit':
-        bad.append(f'control {c}: HEADER MISSING'); return None
+        bad.append(f'control {c}: ' + hdr_word(ch, 'audit')); return None
     if last_exit(cl) != 'saltbuild EXIT=0':
         bad.append(f'control {c}: {last_exit(cl)}'); return None
     if ah and (ch.get('src') != ah.get('src') or ch.get('root') != ah.get('root')):
@@ -172,8 +178,10 @@ def triple(p, builds, controls=()):
         bad.append(f'IMPORTED CONTROL MISSING (`#print axioms {IMP[0]}` must print [Lean.trustCompiler]; an in-file sorry tests the printer only)')
     elif imp is False:
         bad.append(f'IMPORTED CONTROL does not report ({IMP[0]} must print exactly [Lean.trustCompiler])')
-    if ah is None or ah.get('mode') != 'audit':
+    if ah is None:
         bad.append('AUDIT HEADER MISSING (no `logged-build: mode=audit` line: imports, src and start cannot be read)')
+    elif ah.get('mode') != 'audit':
+        bad.append(f'AUDIT LOG is mode={ah.get("mode")}, not an audit log (imports and prints= are not in its header)')
     if ah:
         try:
             pr = int(ah.get('prints', 'x'))
@@ -190,7 +198,7 @@ def triple(p, builds, controls=()):
             bad.append(f'build {b}: NO-LOG'); continue
         bh = header(bl)
         if bh is None or bh.get('mode') != 'build':
-            bad.append(f'build {b}: HEADER MISSING (targets, src and start unreadable)'); continue
+            bad.append(f'build {b}: ' + hdr_word(bh, 'build')); continue
         if last_exit(bl) != 'saltbuild EXIT=0':
             bad.append(f'build {b}: {last_exit(bl)}'); continue
         if ah:

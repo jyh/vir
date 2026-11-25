@@ -254,6 +254,17 @@ x1=$(ag "$AG/x1/p/logs/a.log" --build "$AG/x1/p/logs/b.log")
 got="T0=$t0 T1=$t1 T2=$t2 T3=$t3 primebad=$n5 primelegacy=$n5b x1=$x1 S0=$s0 S1=$s1 src=$d1 late=$d2 red=$d3 cone=$d4 noimp=$d5 deadimp=$d6 nohdr=$d7 ctlsrc=$d8 wrap=$f1 wraplegacy=$f1b count=$f1c noend=$f2 overlap=$f2b mid=$f3 clone=$f4"
 if [ "$got" = "T0=0 T1=0 T2=0 T3=0 primebad=1 primelegacy=1 x1=1 S0=1 S1=1 src=1 late=1 red=1 cone=1 noimp=1 deadimp=1 nohdr=1 ctlsrc=1 wrap=1 wraplegacy=1 count=1 noend=1 overlap=1 mid=1 clone=1" ]; then say "ARM17b axiom TRIPLE OK ($got)"
 else say "ARM17b axiom TRIPLE FAIL ($got; want T0..T3=0 and every other 1)"; fail=1; fi
+# (17d) row 420 (the 87th head's first real drive, l1): a header PRESENT in the wrong mode was named "HEADER MISSING", a false
+# statement about the log. Each refusal must name what it saw: no header -> HEADER MISSING; another mode -> that mode.
+agm() { python3 "$H/axiom_gate.py" "$@" 2>&1; }
+m1=$(agm "$AG/a.log" --build "$AG/c.log" | grep -cF "build $AG/c.log: mode=audit, not a build log")
+m2=$(agm "$AG/a.log" --build "$AG/b-nohdr.log" | grep -cF "build $AG/b-nohdr.log: HEADER MISSING")
+m3=$(agm "$AG/a-noimp.log" --build "$AG/b.log" --control "$AG/b.log" | grep -cF "control $AG/b.log: mode=build, not an audit log")
+printf '%s\n%s\n' "$bh" "$rows" > "$AG/a-buildmode.log"
+m4=$(agm "$AG/a-buildmode.log" --build "$AG/b.log" | grep -cF "AUDIT LOG is mode=build, not an audit log")
+got="wrongbuild=$m1 nohdr=$m2 wrongctl=$m3 wrongaudit=$m4"
+if [ "$got" = "wrongbuild=1 nohdr=1 wrongctl=1 wrongaudit=1" ]; then say "ARM17d header-mode messages OK ($got)"
+else say "ARM17d header-mode messages FAIL ($got; want every 1)"; fail=1; fi
 
 # (17c) END TO END: the real lean/VIRB/logged-build.sh with a stub saltbuild writes the build_header.py headers, and the gate
 # reads them: build VIR, then audit AuditControl.lean (imports VIR) => rc 0; the same audit against a build of a DIFFERENT
