@@ -50,12 +50,16 @@ committed. For the Lean arm this is recorded in `SUMMARY-first-act.md`, which al
 2. `SUMMARY-compiler.md`: the compiler from VIR source to x86-64 over x86lean (amend-23 §K), DEFLATE through it, and the
    results proved beside its scoreboard, each with its limit and its record (each one is in the axiom audit
    `k7/Audit.lean`, run as k7-audit-011). This is the Lean arm only.
-3. `RESULTS-1.md` … `RESULTS-13.md`: the measurements and their addenda.
+3. `RESULTS-1.md` … `RESULTS-14.md`: the measurements and their addenda.
 4. `FINDINGS.md`: what each arm found about the object and about itself.
 5. `REVIEW-O95-2026-11.md`: the open questions.
 
 To re-derive every committed count file from the artifacts, run `harness/reproduce.sh <metaprl-root>`.
 It extracts counts only and does not rebuild. `harness/selftest.sh` shows that the extractor can fail.
+To re-check the axiom receipts by BUILDING, run `PRIO=P1 python3 harness/triple_drive.py <a scratch dir outside the repo>`: it
+finds every lake project and `Audit*.lean`, builds and audits each through its `logged-build.sh`, gates each audit with
+`harness/axiom_gate.py`, and prints the table recorded in `harness/TRIPLE-CENSUS-2026-11-25.md` (addendum). `--dry-run` lists
+the population without building; `reproduce.sh` runs that dry run, and on a fresh clone of 2def5d8 it reads 15 projects, 17 audits.
 
 ## Limits (each one rides with the verdicts it bounds)
 - Three programs, all from one router family, and one proof chain per arm per program.
