@@ -133,12 +133,15 @@ if git clone -q --no-checkout "$M0/vir-metaprl" "$M/l5m" 2>/dev/null && git -C "
   echo "  PINNED   mojave/vir-l5 at ${L5M_SHA:0:12}"
   chk2 "$V/l5/out/metaprl-counts-l5.tsv" "VIR_L5M_CE='ce_tc,ce_typing,ce5_step' VIR_L5M_LV6='triple5_call1,triple5_call2,rtriple5_ret,rtriple5_tail,rtriple5_let,rtriple5_call1' python3 '$C' --arm metaprll5 --base $L5M_BASE --ext $L5M_SHA '$M/l5m'"
 else echo "REPRODUCE MISSING-INPUT mojave/vir-l5 at $L5M_SHA"; exit 2; fi
-# row 46: the axiom gate over the newest compose audit and the clean-rebuild Lean audit
-for L in "$(ls "$V"/compose/logs/audit-*.log 2>/dev/null | sort | tail -1)" "$V/lean/repro/audit-control-002.log"; do
-  NC=--legacy-pair   # row 48: vir's Lean audit has a control run (AuditControl.lean). 2026-11-23: these two logs predate the TRIPLE
-                     # (no build header, no imported control), so they are read as the old pair and the verdict line says so;
-                     # a NEW receipt is `axiom_gate.py AUDIT --build BUILD [--control CONTROL]` (harness/axiom_gate.py)
-  n=$((n+1)); python3 "$V/harness/axiom_gate.py" $NC "$L" > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
+# row 46: the axiom gate over the compose audit and the clean-rebuild Lean audit. 2026-11-25 (row 429): both are TRIPLE receipts
+# (build line + audit log + imported control; harness/axiom_gate.py), taken through the projects' logged-build.sh. Before this
+# the two logs read here were the old PAIR (compose/logs/audit-008, lean/repro/audit-control-002, `--legacy-pair`); they stay
+# in the tree as the record they were. Each receipt is named in full, so a newer log cannot silently replace it.
+for R in "compose/logs/audit-009.log --build compose/logs/build-025.log --control compose/logs/audit-control-001.log" \
+         "lean/repro/audit-control-003.log --build lean/repro/build-triple-001.log"; do
+  set -- $R; A=$1; shift; args=""
+  while [ $# -gt 0 ]; do args="$args $1 $V/$2"; shift 2; done
+  n=$((n+1)); python3 "$V/harness/axiom_gate.py" "$V/$A" $args > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
   sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
 done
 echo "REPRODUCE files=$n rc=$fail (limit: extraction only; no rebuild, no verdict re-run; Q rows stay Q)"
