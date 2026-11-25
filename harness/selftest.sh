@@ -1722,6 +1722,60 @@ if cmp -s "$H/count.py" "$F/mutant66b.py"; then say "ARM66 mutant b NOT PLANTED"
 elif check66 "$F/mutant66b.py"; then say "ARM66 mutant b SURVIVED (a blind signature control let a 0 read MEASURED)"; fail=1
 else say "ARM66 mutant b KILLED"; fi
 
+# ARM67 (STATUS-vir 430/431, the 89th head, 2026-11-25): triple_drive.py's POPULATION is derived from tracked lakefiles, and a malformed
+# member is REFUSED (rc 2) before any build. Fixture R67: a git repo holding the script + build_header.py and four projects: good/
+# (well formed), nowrap/ (no logged-build.sh: compose's shape before row 428), noctl/ (no AuditControl.lean), twoctl/ (two in-file
+# controls). Every refusal must be named; with only good/ the dry run reads 1 project, 1 audit, rc 0. Mutant: the wrapper check blinded.
+R67="$F/r67"; mkdir -p "$R67/harness"; cp "$H/build_header.py" "$R67/harness/"
+mk67() { mkdir -p "$R67/$1"; printf '[[lean_lib]]\nname = "%s"\n' "$2" > "$R67/$1/lakefile.toml"; printf '#print axioms %s.x\n' "$2" > "$R67/$1/Audit.lean"; }
+mk67 good G; : > "$R67/good/logged-build.sh"; : > "$R67/good/AuditControl.lean"
+mk67 nowrap N; : > "$R67/nowrap/AuditControl.lean"
+mk67 noctl C; : > "$R67/noctl/logged-build.sh"
+mk67 twoctl T; : > "$R67/twoctl/logged-build.sh"; : > "$R67/twoctl/AuditControl.lean"
+printf 'theorem control_sorry_a : 1 = 2 := sorry\ntheorem control_sorry_b : 1 = 2 := sorry\n' >> "$R67/twoctl/Audit.lean"
+check67() {  # $1 = the triple_drive.py under test
+  cp "$1" "$R67/harness/triple_drive.py"
+  (cd "$R67" && rm -rf .git && git init -q && git add -A) || return 1
+  out=$(python3 -I "$R67/harness/triple_drive.py" "$F/out67" --dry-run 2>&1); rc=$?
+  [ $rc -eq 2 ] || return 1
+  for n in 'nowrap: 0 logged-build.sh' 'noctl: no AuditControl.lean' 'twoctl/Audit.lean: 2 in-file controls'; do
+    printf '%s\n' "$out" | grep -qF "$n" || return 1; done
+  printf '%s\n' "$out" | grep -qF 'good:' && return 1
+  (cd "$R67" && git rm -rq --cached nowrap noctl twoctl) || return 1
+  out=$(python3 -I "$R67/harness/triple_drive.py" "$F/out67" --dry-run 2>&1); rc=$?
+  [ $rc -eq 0 ] && printf '%s\n' "$out" | grep -qF 'TRIPLE-DRIVE DRY 1 projects, 1 audits'
+}
+if check67 "$H/triple_drive.py"; then say "ARM67 triple_drive population OK (3 malformed projects refused by name, rc 2; good/ alone: 1 project, 1 audit, rc 0)"
+else say "ARM67 triple_drive population FAIL"; fail=1; fi
+sed 's/if len(wrappers) != 1:/if False:/' "$H/triple_drive.py" > "$F/mutant67.py"  # the wrapper check blinded: nowrap/ must not pass silently
+if cmp -s "$H/triple_drive.py" "$F/mutant67.py"; then say "ARM67 mutant NOT PLANTED"; fail=1
+elif check67 "$F/mutant67.py"; then say "ARM67 mutant SURVIVED (a wrapperless project was not refused)"; fail=1
+else say "ARM67 mutant KILLED"; fi
+
+# ARM68 (STATUS-vir 433, the 89th head, 2026-11-25): k5/tools/replay_filter.py (used by k5 AND k7 logged-build.sh) must not fold an
+# AUDIT's output into the last Replayed block. Since saltbuild 44f4f54 (desk AHM, 2026-11-25) an audit first runs `lake build` on its
+# imports, so lake's replayed warnings come straight before the `#print axioms` rows; the filter closed a block only at a lake/saltbuild
+# progress line, so drive-430 logged k5 (78 prints) and k7 (43) with ZERO rows and EXIT=0 (axiom_gate read EMPTY, rc 2). Fixture X68:
+# a replayed block, lake's `Build completed` line, two axiom rows, EXIT. The rows and the Build line must survive; the warning body
+# must still be dropped (one dropped-line marker, 2 lines). Mutant: the filter as it was at e53714f (before the fix).
+V68=$(dirname "$H"); X68="$F/x68.log"
+printf '%s\n' 'saltbuild: audit: building the imports first: K5' '⚠ [3074/3076] Replayed K5.DeflateLoaded' 'warning: unused variable' \
+  '  note: linter' 'Build completed successfully (3076 jobs).' "'K5.a' depends on axioms: [propext]" "'K5.b' does not depend on any axioms" \
+  'saltbuild EXIT=0' > "$X68"
+check68() {  # $1 = the replay_filter.py under test
+  o=$(python3 -I "$1" "$X68" - 2>&1) || return 1
+  [ "$(printf '%s\n' "$o" | grep -cE "^'K5\.[ab]' (depends on axioms|does not depend on any axioms)")" = 2 ] || return 1
+  printf '%s\n' "$o" | grep -qF 'Build completed successfully (3076 jobs).' || return 1
+  printf '%s\n' "$o" | grep -qF '[replay_filter: dropped 2 lines' || return 1
+  ! printf '%s\n' "$o" | grep -qF 'warning: unused variable'
+}
+if check68 "$V68/k5/tools/replay_filter.py"; then say "ARM68 replay_filter keeps audit rows OK (2 rows + Build line kept; 2 warning lines dropped)"
+else say "ARM68 replay_filter FAIL (audit rows folded into a Replayed block)"; fail=1; fi
+git -C "$V68" show e53714f:k5/tools/replay_filter.py > "$F/mutant68.py"  # the filter BEFORE the fix, at a pinned sha: red backwards
+if cmp -s "$V68/k5/tools/replay_filter.py" "$F/mutant68.py"; then say "ARM68 mutant NOT PLANTED"; fail=1
+elif check68 "$F/mutant68.py"; then say "ARM68 mutant SURVIVED (the old closers kept the rows)"; fail=1
+else say "ARM68 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

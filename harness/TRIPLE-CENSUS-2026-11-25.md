@@ -37,3 +37,54 @@ A receipt for `lean/AuditBP.lean` is
 repo, so this table is the author's transcription of their `AXIOM-GATE` lines, not a count anyone can reproduce from
 the artifacts. To re-check, re-run the drive. The gate reads logs and does not re-run Lean; it gates only the names
 an audit file prints.
+
+⚠️ *Annotation (rows 430–433):* this table omits `l1/AuditInduction.lean`, and "to re-check, re-run the drive" is now one
+command. See the addendum below, whose table is the script's output.
+
+## Addendum 2026-11-25 (rows 430–433): the census as a command
+
+The table above is a transcription. It is now reproducible by one command, `harness/triple_drive.py`, which derives the
+population from the tracked tree (every `lakefile.toml`, every `Audit*.lean` beside it), drives build → `AuditControl.lean` →
+each audit through the project's `logged-build.sh` into a scratch `LOGDIR`, gates each audit with `axiom_gate.py`, and prints
+the table below. To re-check: `PRIO=P1 SEAT=<seat> python3 harness/triple_drive.py <scratch dir outside the repo>` (it builds);
+`--dry-run` prints the population without building, and `harness/reproduce.sh` runs that dry run.
+
+**What the first drive found (drive-430, 14/17 OK, every saltbuild EXIT=0):**
+- `l1/AuditInduction.lean` (amend-19) was **not in the table above**: the hand census drove `Audit.lean` only. Its imports
+  include `VIRL1.Induction`, which `lake build VIRL1` does not build, so its gate read `imports NOT BUILT` (rc 1). The drive
+  now builds every in-repo module an audit imports.
+- k5 and k7 logged **zero** `#print axioms` rows at EXIT=0: `k5/tools/replay_filter.py` folded the audit's rows into the last
+  replayed-warning block, because saltbuild now builds an audit's imports first. `axiom_gate.py` read them EMPTY (rc 2), so
+  nothing passed on them. Fixed in the filter (`k5/LOGS-FILTER.md`, addendum 2026-11-25; selftest ARM68).
+
+**The drive after both fixes (drive-433), output verbatim except the scratch path:**
+
+```
+# population: 15 projects, 17 audits (from tracked lakefile.toml + Audit*.lean)
+project	targets	audit	rows	verdict	gate_rc
+bridge	VIRBridge	Audit.lean	8	OK	0
+compiler	VIRC	Audit.lean	29	OK	0
+compose	Compose	Audit.lean	30	OK	0
+deflate	VIRDeflate	Audit.lean	635	OK	0
+k5	K5	Audit.lean	78	OK	0
+k7	K7	Audit.lean	43	OK	0
+l1	VIRL1 VIRL1.Induction	Audit.lean	40	OK	0
+l1	VIRL1 VIRL1.Induction	AuditInduction.lean	5	OK	0
+l2	VIRL2	Audit.lean	205	OK	0
+l3	VIRL3	Audit.lean	14	OK	0
+l4	VIRL4	Audit.lean	157	OK	0
+l5	VIRL5	Audit.lean	243	OK	0
+lean	VIR VIRB	Audit.lean	18	OK	0
+lean	VIR VIRB	AuditBP.lean	7	OK	0
+s3	S3	Audit.lean	94	OK	0
+virp	VIRP	Audit.lean	32	OK	0
+x86compose	X86Compose	Audit.lean	4	OK	0
+TRIPLE-DRIVE 17/17 OK  projects=15  logs=<scratch>  (limits: gates only the names each audit prints; src = this repo's library sources, not .lake/packages; one drive at one source state)
+```
+
+47 saltbuild runs, all `saltbuild EXIT=0`, every one on a P1 ticket. The row counts equal the table above for every audit it
+lists; AuditInduction (5 rows) is new.
+
+**Limits, revised:** the logs are still not in the repo (C6 counts logged runs, and a census drive is not one of them), so the
+table is the script's output at one source state, not a count recomputed from committed artifacts. The difference from the
+transcription above is that re-checking it is one command, run by anyone, and a malformed project is refused by name.

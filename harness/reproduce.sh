@@ -144,5 +144,11 @@ for R in "compose/logs/audit-009.log --build compose/logs/build-025.log --contro
   n=$((n+1)); python3 "$V/harness/axiom_gate.py" "$V/$A" $args > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
   sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
 done
+# row 432 (2026-11-25): the triple's POPULATION, with no Lean run. harness/triple_drive.py --dry-run derives every lake project and
+# audit from the tracked tree and refuses (rc 2) any project that could not issue a triple receipt (no wrapper, no AuditControl.lean,
+# two in-file controls). No count is typed here: the script prints the population it found. The real drive (it builds) is
+# `PRIO=P1 SEAT=<seat> python3 harness/triple_drive.py <scratch dir>`, opt-in and never run by this script.
+n=$((n+1)); python3 -I "$V/harness/triple_drive.py" "${TMPDIR:-/tmp}/vir-td.$$" --dry-run > "${TMPDIR:-/tmp}/vir-td-out.$$" 2>&1; r=$?
+grep -E '^(# population|TRIPLE-DRIVE)' "${TMPDIR:-/tmp}/vir-td-out.$$" | sed 's/^/  /'; [ $r -eq 0 ] || fail=1
 echo "REPRODUCE files=$n rc=$fail (limit: extraction only; no rebuild, no verdict re-run; Q rows stay Q)"
 exit $fail
