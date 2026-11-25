@@ -265,6 +265,23 @@ m4=$(agm "$AG/a-buildmode.log" --build "$AG/b.log" | grep -cF "AUDIT LOG is mode
 got="wrongbuild=$m1 nohdr=$m2 wrongctl=$m3 wrongaudit=$m4"
 if [ "$got" = "wrongbuild=1 nohdr=1 wrongctl=1 wrongaudit=1" ]; then say "ARM17d header-mode messages OK ($got)"
 else say "ARM17d header-mode messages FAIL ($got; want every 1)"; fail=1; fi
+# (17e) row 426 (the 88th head's real drive of all 14 projects): lean/AuditBP.lean names its in-file control
+# `control_sorry_bp` (amend-10; count.py reads that name), and the gate knew only `control_sorry`, so it read the control as a
+# real row with sorryAx and REFUSED a good receipt. `--in-file-control NAME` names it: one exact string, never a pattern.
+# bp = the named control, accepted (0) · bpnoflag = refused without the flag (1) · bpabsent = a named control that is not
+# printed (1) · bpprefix = a real row `control_sorry_bp_x` with sorryAx under the flag is still a defect (1) ·
+# bplegacy = the legacy pair takes the flag (0) · bptwice = given twice (2) · bpcontra = with --no-control (2).
+bprows="$(printf '%s\n' "$rows" | sed "s/^'control_sorry'/'control_sorry_bp'/")"
+printf '%s\n%s\n' "$ah" "$bprows" > "$AG/a-bp.log"
+printf '%s\n%s\n' "$(printf '%s' "$ah" | sed 's/prints=4/prints=5/')" "$(printf '%s\n' "$bprows" | sed "s/^saltbuild EXIT=0/'control_sorry_bp_x' depends on axioms: [sorryAx]\nsaltbuild EXIT=0/")" > "$AG/a-bpx.log"
+e1=$(ag "$AG/a-bp.log" --build "$AG/b.log" --in-file-control control_sorry_bp); e2=$(ag "$AG/a-bp.log" --build "$AG/b.log")
+e3=$(ag "$AG/a.log" --build "$AG/b.log" --in-file-control control_sorry_bp); e4=$(ag "$AG/a-bpx.log" --build "$AG/b.log" --in-file-control control_sorry_bp)
+e5=$(python3 "$H/axiom_gate.py" --legacy-pair --in-file-control control_sorry_bp "$AG/a-bp.log" >/dev/null 2>&1; echo $?)
+e6=$(ag "$AG/a-bp.log" --build "$AG/b.log" --in-file-control control_sorry_bp --in-file-control x)
+e7=$(python3 "$H/axiom_gate.py" --legacy-pair --no-control --in-file-control control_sorry_bp "$AG/a-bp.log" >/dev/null 2>&1; echo $?)
+got="bp=$e1 bpnoflag=$e2 bpabsent=$e3 bpprefix=$e4 bplegacy=$e5 bptwice=$e6 bpcontra=$e7"
+if [ "$got" = "bp=0 bpnoflag=1 bpabsent=1 bpprefix=1 bplegacy=0 bptwice=2 bpcontra=2" ]; then say "ARM17e named in-file control OK ($got)"
+else say "ARM17e named in-file control FAIL ($got; want bp=0 bpnoflag=1 bpabsent=1 bpprefix=1 bplegacy=0 bptwice=2 bpcontra=2)"; fail=1; fi
 
 # (17c) END TO END: the real lean/VIRB/logged-build.sh with a stub saltbuild writes the build_header.py headers, and the gate
 # reads them: build VIR, then audit AuditControl.lean (imports VIR) => rc 0; the same audit against a build of a DIFFERENT

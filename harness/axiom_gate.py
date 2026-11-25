@@ -3,6 +3,7 @@
 
   axiom_gate.py AUDIT.log --build BUILD.log [--build ...] [--control CONTROL.log]   the receipt form (default)
   axiom_gate.py --legacy-pair [--no-control] AUDIT.log                      the pre-11-23 pair, for logs taken before it
+  either form takes [--in-file-control NAME]: the in-file sorry control is NAME, not `control_sorry` (and must be present)
 
 WHY: `#print axioms` on an IMPORTED name reads a table written into that name's olean when its module was built. With an
 upstream proof turned to `sorry` and only the upstream rebuilt, a downstream name prints "does not depend on any axioms"
@@ -21,6 +22,10 @@ THE TRIPLE (every term read from the logs; headers are written by harness/build_
  (3) IMPORTED CONTROL: `'Lean.reduceBool' depends on axioms: [Lean.trustCompiler]` in the audit log (an imported core
      constant, read from its table), or in a --control log (mode=audit, EXIT=0, the SAME src as the audit: vir's
      AuditControl.lean run). An in-file `control_sorry`, if present, must still show sorryAx (a printer check).
+     2026-11-25 (row 426): lean/AuditBP.lean names its in-file control `control_sorry_bp` (amend-10; count.py and
+     RESULTS-4 read that name, so the file is not renamed). `--in-file-control control_sorry_bp` names it; a NAMED
+     control that is absent is refused. The name is one exact string, never a pattern: a prefix match would pass any
+     sorry-dependent theorem whose name happens to start with it.
 rc 0 = all three hold; rc 1 = a named violation; rc 2 = no log / no axiom rows / bad usage.
 LIMITS, printed with the verdict: it reads logs and does not re-run Lean; it gates only the names the audit file prints;
 src covers library sources of this repo (not .lake/packages, which the manifest pins); an import is covered only
@@ -117,10 +122,12 @@ def rows_of(lines):
         i += 1
     return out
 
+CTRL = 'control_sorry'   # the in-file control's name; main() sets it from --in-file-control
+
 def gate_rows(lines, bad):
     rows, control, imp = rows_of(lines), None, None
     for name, ax in rows:
-        if name == 'control_sorry':
+        if name == CTRL:
             control = 'sorryAx' in ax
         elif name == IMP[0]:
             imp = ax == IMP[1]
@@ -129,7 +136,9 @@ def gate_rows(lines, bad):
     if last_exit(lines) != 'saltbuild EXIT=0':
         bad.append(f'audit exit line: {last_exit(lines)}')
     if control is False:
-        bad.append('control_sorry: does NOT show sorryAx')
+        bad.append(f'{CTRL}: does NOT show sorryAx')
+    if control is None and CTRL != 'control_sorry':
+        bad.append(f'{CTRL}: MISSING (named by --in-file-control, so it must be printed)')
     return len(rows), control, imp
 
 def legacy(p, no_control):
@@ -142,10 +151,10 @@ def legacy(p, no_control):
         print(f'AXIOM-GATE EMPTY {p} (no #print axioms rows)'); return 2
     lim = '(LEGACY PAIR: in-file control only; STALE CLEAN NOT EXCLUDED, no build line read; ' + LIM[1:]
     if control is None and not no_control:
-        bad.append('control_sorry: MISSING')
+        bad.append(f'{CTRL}: MISSING')
     if bad:
         print(f'AXIOM-GATE FAIL {p} rows={n} ' + '; '.join(bad) + ' ' + lim); return 1
-    print(f'AXIOM-GATE LEGACY-OK {p} rows={n} control=' + ('ABSENT (--no-control)' if control is None else 'sorryAx') + ' ' + lim); return 0
+    print(f'AXIOM-GATE LEGACY-OK {p} rows={n} control=' + ('ABSENT (--no-control)' if control is None else ('' if CTRL == 'control_sorry' else CTRL + ':') + 'sorryAx') + ' ' + lim); return 0
 
 def control_from(c, ah, bad):
     cl = read(c)
@@ -231,7 +240,7 @@ def triple(p, builds, controls=()):
     if bad:
         print(f'AXIOM-GATE FAIL {p} rows={n} ' + '; '.join(bad) + ' ' + LIM); return 1
     print(f'AXIOM-GATE OK {p} rows={n} TRIPLE build=[{" | ".join(used)}] imports={",".join(imports)} src={ah.get("src")} '
-          f'imported-control={IMP[0]}:trustCompiler in-file-control=' + ('ABSENT' if control is None else 'sorryAx') + ' ' + LIM); return 0
+          f'imported-control={IMP[0]}:trustCompiler in-file-control=' + ('ABSENT' if control is None else ('' if CTRL == 'control_sorry' else CTRL + ':') + 'sorryAx') + ' ' + LIM); return 0
 
 def main(argv):
     args, builds, controls, i = [], [], [], 0
@@ -240,12 +249,19 @@ def main(argv):
             builds.append(argv[i + 1]); i += 2
         elif argv[i] == '--control' and i + 1 < len(argv):
             controls.append(argv[i + 1]); i += 2
+        elif argv[i] == '--in-file-control' and i + 1 < len(argv) and not argv[i + 1].startswith('--'):
+            global CTRL
+            if CTRL != 'control_sorry':
+                print('usage: --in-file-control is given once (one exact name)'); return 2
+            CTRL = argv[i + 1]; i += 2
         else:
             args.append(argv[i]); i += 1
     flags = {a for a in args if a.startswith('--')}
     pos = [a for a in args if not a.startswith('--')]
     if len(pos) != 1 or flags - {'--legacy-pair', '--no-control'} or ('--no-control' in flags and '--legacy-pair' not in flags):
-        print('usage: axiom_gate.py AUDIT.log --build BUILD.log [...] [--control CONTROL.log] | axiom_gate.py --legacy-pair [--no-control] AUDIT.log'); return 2
+        print('usage: axiom_gate.py AUDIT.log --build BUILD.log [...] [--control CONTROL.log] [--in-file-control NAME] | axiom_gate.py --legacy-pair [--no-control | --in-file-control NAME] AUDIT.log'); return 2
+    if '--no-control' in flags and CTRL != 'control_sorry':
+        print('usage: --no-control and --in-file-control contradict each other'); return 2
     if '--legacy-pair' in flags:
         if builds or controls:
             print('usage: --legacy-pair takes no --build/--control (it is the pre-11-23 form)'); return 2
