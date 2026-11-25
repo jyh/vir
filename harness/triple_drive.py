@@ -8,7 +8,8 @@ a reader re-checks the census with one command and the table is the script's out
 POPULATION, derived from the tree (never a list in this file):
   projects = every tracked lakefile.toml's directory. Each must have exactly ONE logged-build.sh: <proj>/logged-build.sh,
              or <proj>/<sub>/logged-build.sh whose header builds <proj> (lean/ -> lean/VIRB). None or two: REFUSED.
-  targets  = the project's [[lean_lib]] names (build_header.libs_of).
+  targets  = the project's [[lean_lib]] names (build_header.libs_of), plus every in-repo module an audit imports that is
+             not a lib root (l1/AuditInduction.lean imports VIRL1.Induction, which `lake build VIRL1` does not build).
   audits   = every tracked <proj>/Audit*.lean directly in the project dir, except AuditControl.lean (probes/ etc. are scratch).
   control  = <proj>/AuditControl.lean, required (the imported control; axiom_gate refuses an audit without it).
   in-file  = an audit file declaring `theorem control_sorry<suffix>` with a suffix gets --in-file-control <that name>;
@@ -71,7 +72,14 @@ def population():
                 refusals.append(f'{a}: {len(set(names))} in-file controls {sorted(set(names))} (the gate takes one name)')
                 continue
             rows.append((a, names[0] if names and names[0] != 'control_sorry' else None))
-        projs.append({'proj': proj, 'wrapper': wrappers[0], 'libs': libs, 'audits': rows})
+        # the build covers every in-repo module an audit imports, not only the lib roots: l1/AuditInduction.lean imports
+        # VIRL1.Induction, which `lake build VIRL1` does not reach (drive-430: axiom_gate 'imports NOT BUILT', rc 1)
+        mods = set()
+        for a, _ in rows:
+            for m in re.findall(r'^import\s+(\S+)', open(os.path.join(ROOT, a), encoding='utf-8').read(), re.M):
+                if m.split('.')[0] in libs and m not in libs:
+                    mods.add(m)
+        projs.append({'proj': proj, 'wrapper': wrappers[0], 'libs': libs, 'targets': libs + sorted(mods), 'audits': rows})
     return projs, refusals
 
 
@@ -117,11 +125,11 @@ def main(argv):
         if dry:
             for a, ctl in p['audits']:
                 print(f"{proj}\t{' '.join(p['libs'])}\t{os.path.basename(a)}\t-\tDRY\t-\t"
-                      f"{p['wrapper']} build {' '.join(p['libs'])} · AuditControl.lean · {os.path.basename(a)}"
+                      f"{p['wrapper']} build {' '.join(p['targets'])} · AuditControl.lean · {os.path.basename(a)}"
                       + (f' · --in-file-control {ctl}' if ctl else ''))
             continue
         os.makedirs(logdir, exist_ok=False)
-        brc, blog, bexit = run_wrapper(p['wrapper'], logdir, 'build', p['libs'])
+        brc, blog, bexit = run_wrapper(p['wrapper'], logdir, 'build', p['targets'])
         crc, clog, cexit = run_wrapper(p['wrapper'], logdir, 'audit-control', ['AuditControl.lean'])
         for k, (a, ctl) in enumerate(p['audits']):
             base = os.path.basename(a)
@@ -138,7 +146,7 @@ def main(argv):
             m = re.search(r'rows=(\d+)', line)
             verdict = 'OK' if r.returncode == 0 else 'FAIL'
             ok += r.returncode == 0
-            print(f"{proj}\t{' '.join(p['libs'])}\t{base}\t{m.group(1) if m else '-'}\t{verdict}\t{r.returncode}\t{line[:300]}")
+            print(f"{proj}\t{' '.join(p['targets'])}\t{base}\t{m.group(1) if m else '-'}\t{verdict}\t{r.returncode}\t{line[:300]}")
     if dry:
         print(f'TRIPLE-DRIVE DRY {len(projs)} projects, {n_aud} audits; nothing run'); return 0
     print(f'TRIPLE-DRIVE {ok}/{n_aud} OK  projects={len(projs)}  logs={outdir}  {LIM}')

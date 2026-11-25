@@ -27,3 +27,12 @@ If the filter fails, the raw log is kept whole.
 - `saltbuild EXIT=` lines 1 → 1, and the error and EXIT lines of the failed build k5p-117 are byte-identical before and after;
 - a planted `error:` line inside a Replayed block is KEPT;
 - one block's printed hash recomputes from the raw bytes.
+
+**Addendum 2026-11-25 (STATUS-vir 433): two more block closers.** Since saltbuild 44f4f54 (the audit arm builds the audit's imports
+first), an audit log holds lake's import build and then the audit's `#print axioms` rows. The filter closed a Replayed block only at a
+lake progress line, `saltbuild ` or `saltqueue:`, so the last block ran on through the audit's rows and dropped them as warning body:
+in a scratch drive (drive-430, never committed) k5's Audit.lean (78 prints) and k7's (43) logged ZERO rows with `saltbuild EXIT=0`, and
+`harness/axiom_gate.py` read them EMPTY (rc 2), so nothing passed on them. lake's `Build completed ` line and any `#print axioms` row
+(`'<name>' depends on axioms` / `does not depend on any axioms`) now also close a block. No recorded log in k5/logs or k7/logs was
+taken after 44f4f54 (measured by `git log --since` and file times), so no recorded log is affected, and none is re-filtered.
+Checked by `harness/selftest.sh` ARM68; its mutant is this filter as it was at e53714f, which fails the arm.

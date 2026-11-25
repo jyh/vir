@@ -3,14 +3,17 @@
 
 usage: replay_filter.py RAW OUT   (OUT '-' = stdout)
 A block opens at a line `⚠ [i/n] Replayed <Module>` (lake re-printing a CACHED module's old warnings) and runs to the line before the
-next `✔ [`, `⚠ [`, `✖ [`, `saltbuild ` or `saltqueue:` line, or EOF. The header line is KEPT. The block's body is replaced by ONE line
+next `✔ [`, `⚠ [`, `✖ [`, `saltbuild `, `saltqueue:` or `Build completed ` line, or `#print axioms` row, or EOF. The header line is KEPT. The block's body is replaced by ONE line
   `[replay_filter: dropped N lines (B bytes) sha256/16=<hex>]`
 with the hash of the dropped bytes exactly. EXCEPT: any body line containing `error` (any case) is kept verbatim, in order, so a
 filter can never hide an error. Every line outside a Replayed block is copied byte for byte. Exit 2 if OUT exists (noclobber).
 """
 import hashlib, os, re, sys
 OPEN = re.compile(rb"^\xe2\x9a\xa0 \[\d+/\d+\] Replayed ")          # '⚠ [i/n] Replayed '
-CLOSE = re.compile(rb"^(\xe2\x9c\x94 \[|\xe2\x9a\xa0 \[|\xe2\x9c\x96 \[|saltbuild |saltqueue:)")  # ✔ [ · ⚠ [ · ✖ [
+# 2026-11-25 (STATUS-vir 433): lake's `Build completed` line and a `#print axioms` row also close a block. Since saltbuild 44f4f54
+# an audit builds its imports first, so the last Replayed block is followed by the audit's rows; without these closers they were
+# dropped as warning body (drive-430: k5 78 prints and k7 43 logged ZERO rows at EXIT=0). Covered by harness/selftest.sh ARM68.
+CLOSE = re.compile(rb"^(\xe2\x9c\x94 \[|\xe2\x9a\xa0 \[|\xe2\x9c\x96 \[|saltbuild |saltqueue:|Build completed |'[^']*' (depends on axioms|does not depend on any axioms))")  # ✔ [ · ⚠ [ · ✖ [
 def filt(raw: bytes) -> bytes:
     out, body, inblk = [], [], False
     def flush():
