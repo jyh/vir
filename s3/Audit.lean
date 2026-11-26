@@ -81,6 +81,11 @@ import S3
 #print axioms S3.s3_refines_from_s2B
 #print axioms S3.lift3u
 #print axioms S3.compile_x86_proved
+#print axioms S3.compile_x86_provedS
+#print axioms S3.readOnly_mem
+#print axioms S3.compile_x86S
+#print axioms S3.compile_entry
+#print axioms S3.compile_entry_run
 #print axioms S3.fragment3_sound
 #print axioms S3.loop_check
 #print axioms S3.loop_copy

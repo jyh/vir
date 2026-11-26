@@ -43,3 +43,7 @@ import K7
 #print axioms K7.router_triple_x86
 #print axioms K7.router_triple_x86_p
 #print axioms K7.router_triple_x86_proved_p
+#print axioms K7.dF_ptriple
+#print axioms K7.dF_sound
+#print axioms K7.router_entry
+#print axioms K7.pload_neg

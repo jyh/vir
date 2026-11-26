@@ -59,3 +59,16 @@ state, which compile_x86's premises do not carry. Every L2 `Triple` supplies the
 no speed figure (the 80 fewer instructions on F are a count, not a measurement of time) · overflow checks unchanged · no external-caller
 entry check (fork N3 (a): its object comes next, with its own predictions) · no claim beyond `compile_x86`'s trust (XED decode, the
 S4 differential run) · NC2 is measured on F only, and its "no other change" is a count argument over four classes plus the `gen` read.
+
+## Addendum 1 (2026-11-25, the 90th head): the non-author read, and NC3/NC4 re-scored on an unelided print
+**evidence, non-author read of `compile_x86_proved` at 8fc40b8 (bus 11-25 20:23:49): CONCUR.** It says what this page says. The premises
+differ from compile_x86's only by `ctxOf → ctxOfU`, `lower3 → lower3u` and the one added `S3.NoFaultP vs e σ`. `NoFaultP` is exactly
+E1's NC-P′. The conclusion is clauses (1) and (3), with 0 `fault`. NC5 is byte-identical by `cmp`. Read from source; the proof body,
+Sim3, the F count, NC7 and the K7 side were NOT read (the kernel and the audit rows are the witnesses there).
+**Its one LOW, taken:** the committed `#print`s elide with `⋯`, and elide clause (1) differently in the two theorems, so a diff of them
+is not the instrument NC3 needs (an elision could hide a real difference). NC3 and NC4 are re-scored on the `pp.deepTerms` output of
+`s3/probes/NcCheckDeep.lean` (`s3/logs/nc-016.log`), committed as `s3/probes/nc-compile_x86-check-deep.txt` and
+`s3/probes/nc-compile_x86_proved-check-deep.txt`: **0 `⋯`** in either. Diffed on top-level `→`, the differences are the name,
+`ctxOfU`/`lower3u`, `+S3.NoFaultP vs e σ`, and clause (2) removed. Clause (1) reads `∃ ws m', W' = (VIRC.WSt.done ws, m') ∧ VIRC.VRel …`
+in both. `.fault`, `WSt.fault` and `Faults` each occur **0** times in compile_x86_proved's. **NC3 and NC4 HELD on the unelided
+instrument**, and the table above stands.

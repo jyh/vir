@@ -17,3 +17,6 @@ import S3.SrcR
 import S3.ResFree
 import S3.NoFault
 import S3.Proved
+import S3.Contain
+import S3.ReadOnly
+import S3.Entry

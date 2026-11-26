@@ -1,0 +1,384 @@
+logged-build: mode=build project=k7 root=020263116fd6 targets=K7.RouterEntry src=8a97dbbb75e89af9 srcfiles=275 start=1795668998211
+saltqueue: ticket P1 seat=vir pid=49611
+⚠ [5/682] Replayed VIRL1.Semantics
+[replay_filter: dropped 5 lines (243 bytes) sha256/16=7b4d9f345d6cdb4b]
+⚠ [621/682] Replayed VIRL1.L1
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=8529f3b7fecc5094]
+⚠ [625/682] Replayed VIRL2.Sig2
+[replay_filter: dropped 3 lines (174 bytes) sha256/16=780f8bb5a3e5867c]
+⚠ [729/1189] Replayed VIRL2.Step2
+[replay_filter: dropped 5 lines (239 bytes) sha256/16=62789eecf67292c9]
+⚠ [732/1189] Replayed VIRL2.Axioms
+[replay_filter: dropped 3 lines (147 bytes) sha256/16=bc72b474001432b0]
+⚠ [735/1189] Replayed VIRL2.Denot2
+[replay_filter: dropped 14 lines (450 bytes) sha256/16=019a0409b19d2290]
+⚠ [737/1189] Replayed VIRL2.Triples
+[replay_filter: dropped 21 lines (825 bytes) sha256/16=14cdccf42c4596f5]
+⚠ [739/1189] Replayed VIRL2.Adequacy2
+[replay_filter: dropped 6 lines (307 bytes) sha256/16=508b4650232bab24]
+⚠ [740/1189] Replayed VIRL2.Conservative
+[replay_filter: dropped 10 lines (479 bytes) sha256/16=336a1071e7076d3a]
+⚠ [742/1189] Replayed VIRL2.SemBase
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=70ba3b3d0d6642dc]
+⚠ [743/1189] Replayed VIRL2.MaskLemmas
+[replay_filter: dropped 19 lines (1143 bytes) sha256/16=b49371008c5127a3]
+⚠ [744/1189] Replayed VIRL2.Subst2
+[replay_filter: dropped 23 lines (1003 bytes) sha256/16=7725c0a861f971ce]
+⚠ [747/1189] Replayed VIRL2.RTSubst
+[replay_filter: dropped 28 lines (1078 bytes) sha256/16=63a107cfe3cb7d2f]
+⚠ [754/1189] Replayed VIRL3.Typing
+[replay_filter: dropped 20 lines (971 bytes) sha256/16=ab867ab908b86064]
+⚠ [768/1189] Replayed VIRC.Sim
+[replay_filter: dropped 15 lines (794 bytes) sha256/16=db7f200245125f82]
+⚠ [769/1189] Replayed VIRC.S1
+[replay_filter: dropped 14 lines (468 bytes) sha256/16=618ea2df615c4029]
+⚠ [771/1189] Replayed VIRC.Sim2
+[replay_filter: dropped 22 lines (1083 bytes) sha256/16=5a1990c3a2abca8c]
+⚠ [773/1189] Replayed VIRC.NoOvf
+[replay_filter: dropped 22 lines (1068 bytes) sha256/16=edb80afbb8b3884c]
+⚠ [775/1189] Replayed VIRC.NoOvfSrc
+[replay_filter: dropped 14 lines (480 bytes) sha256/16=4c68996c157712df]
+⚠ [3043/3127] Replayed VIRDeflate.Bits
+[replay_filter: dropped 6 lines (309 bytes) sha256/16=67eb0cd1b4985dc3]
+⚠ [3044/3127] Replayed VIRDeflate.Huffman
+[replay_filter: dropped 28 lines (1290 bytes) sha256/16=c00b7258606d108c]
+⚠ [3045/3127] Replayed VIRDeflate.Spec
+[replay_filter: dropped 12 lines (691 bytes) sha256/16=8120ed8ef5a9a87e]
+⚠ [3046/3127] Replayed VIRDeflate.Step
+[replay_filter: dropped 26810 lines (2764956 bytes) sha256/16=3be83f67f0bc6431]
+⚠ [3047/3127] Replayed VIRDeflate.Dispatch
+[replay_filter: dropped 99 lines (5100 bytes) sha256/16=019755f1def785a2]
+⚠ [3049/3127] Replayed K5.Checked
+[replay_filter: dropped 14 lines (837 bytes) sha256/16=097c56fd6747df4f]
+⚠ [3050/3127] Replayed K5.Read
+[replay_filter: dropped 172 lines (11989 bytes) sha256/16=900f3b3d6d52dc06]
+⚠ [3051/3127] Replayed K5.Modes1
+[replay_filter: dropped 9461 lines (697722 bytes) sha256/16=456eec939faefadd]
+⚠ [3052/3127] Replayed VIRDeflate.Fit
+[replay_filter: dropped 149 lines (8728 bytes) sha256/16=aaef74aca096b6b4]
+⚠ [3054/3127] Replayed VIRDeflate.Safety
+[replay_filter: dropped 593 lines (30706 bytes) sha256/16=9163355b15a2c1d0]
+⚠ [3055/3127] Replayed K5.Bit
+[replay_filter: dropped 44 lines (2065 bytes) sha256/16=8123a541cfab637e]
+⚠ [3056/3127] Replayed K5.Table
+[replay_filter: dropped 66 lines (3598 bytes) sha256/16=38a5ed7aa3cd0a19]
+⚠ [3057/3127] Replayed K5.Dispatch
+[replay_filter: dropped 96 lines (5058 bytes) sha256/16=c5a0cb577fb51515]
+⚠ [3058/3127] Replayed VIRDeflate.Correct
+[replay_filter: dropped 418 lines (20544 bytes) sha256/16=5c35130419594ff7]
+⚠ [3059/3127] Replayed VIRDeflate.Typing
+[replay_filter: dropped 9 lines (392 bytes) sha256/16=392b1711254df83d]
+⚠ [3065/3127] Replayed X86.Value
+[replay_filter: dropped 21 lines (1140 bytes) sha256/16=5b3c35ddf2bc3386]
+⚠ [3070/3127] Replayed X86.Syntax
+[replay_filter: dropped 127 lines (6434 bytes) sha256/16=d8e8ae8e275a57f3]
+⚠ [3073/3127] Replayed X86.Semantics
+[replay_filter: dropped 21 lines (1756 bytes) sha256/16=563825612152ec5c]
+⚠ [3074/3127] Replayed X86.Theorems
+[replay_filter: dropped 457 lines (21880 bytes) sha256/16=427674df04037098]
+⚠ [3075/3127] Replayed X86.Program
+[replay_filter: dropped 7 lines (272 bytes) sha256/16=d6888482ae630223]
+⚠ [3076/3127] Replayed S3.Lower3
+[replay_filter: dropped 12 lines (583 bytes) sha256/16=e59be8de128591bb]
+⚠ [3081/3127] Replayed S3.Sim3
+[replay_filter: dropped 151 lines (7012 bytes) sha256/16=021d5bb57ec2cfc8]
+⚠ [3082/3127] Replayed S3.SimRet
+[replay_filter: dropped 8 lines (411 bytes) sha256/16=089747798b84368b]
+⚠ [3083/3127] Replayed S3.SimLet
+[replay_filter: dropped 21 lines (1199 bytes) sha256/16=5da4833b39242db9]
+⚠ [3084/3127] Replayed S3.SimApp
+[replay_filter: dropped 14 lines (584 bytes) sha256/16=9a1f44960b4653a7]
+⚠ [3085/3127] Replayed S3.Step3
+[replay_filter: dropped 3 lines (172 bytes) sha256/16=cdcd764aaee70fe3]
+⚠ [3087/3127] Replayed S3.Place3
+[replay_filter: dropped 243 lines (9738 bytes) sha256/16=5fd2509d1befb0e1]
+⚠ [3092/3127] Replayed VIRL3.Refusals
+[replay_filter: dropped 5 lines (242 bytes) sha256/16=449216a8f279a377]
+⚠ [3094/3127] Replayed VIRL3.Sym
+[replay_filter: dropped 13 lines (679 bytes) sha256/16=cbe03d785d5f17bf]
+⚠ [3096/3127] Replayed VIRL3.RouterTriple
+[replay_filter: dropped 7 lines (308 bytes) sha256/16=59591eb811764dbf]
+⚠ [3103/3127] Replayed S3.ReadOnly
+[replay_filter: dropped 18 lines (877 bytes) sha256/16=48fd8625d31a9b48]
+⚠ [3104/3127] Replayed S3.Entry
+[replay_filter: dropped 55 lines (2620 bytes) sha256/16=057446fff93a5208]
+⚠ [3105/3127] Replayed K5.Modes2
+[replay_filter: dropped 30726 lines (2971534 bytes) sha256/16=bdd97610b3e3c9d6]
+⚠ [3106/3127] Replayed K5.Modes3
+[replay_filter: dropped 6864 lines (462425 bytes) sha256/16=48600206d718ce18]
+⚠ [3107/3127] Replayed K5.Modes4
+[replay_filter: dropped 76135 lines (7594236 bytes) sha256/16=0adfe29e9de504fa]
+⚠ [3110/3127] Replayed K5.Safe2
+[replay_filter: dropped 3 lines (146 bytes) sha256/16=b1a373d6ec6d6808]
+⚠ [3111/3127] Replayed K5.Safe3
+[replay_filter: dropped 21 lines (1045 bytes) sha256/16=1fb6528f75ea8ec0]
+⚠ [3112/3127] Replayed K5.Safe4
+[replay_filter: dropped 12 lines (584 bytes) sha256/16=dfac7afd76a4dc0a]
+⚠ [3114/3127] Replayed K5.BuildLeftEnd
+[replay_filter: dropped 2870 lines (178765 bytes) sha256/16=60ed5e35cb3f493f]
+⚠ [3115/3127] Replayed K5.BuildZero
+[replay_filter: dropped 175 lines (10494 bytes) sha256/16=eef4fc1b4da281c3]
+⚠ [3116/3127] Replayed K5.SafeBuild
+[replay_filter: dropped 6 lines (328 bytes) sha256/16=17427bb36fe97bfc]
+⚠ [3118/3127] Replayed K5.MagStep
+[replay_filter: dropped 22 lines (1043 bytes) sha256/16=f482ad2791b5fbcc]
+⚠ [3119/3127] Replayed K5.MagBuild
+[replay_filter: dropped 249 lines (13395 bytes) sha256/16=e046af3e4cc21e04]
+⚠ [3120/3127] Replayed K5.MagAll
+[replay_filter: dropped 348 lines (18511 bytes) sha256/16=837dfba8873bf228]
+⚠ [3121/3127] Replayed K5.DeflateInRange
+[replay_filter: dropped 7 lines (335 bytes) sha256/16=a69a606e00763d7a]
+✖ [3127/3127] Building K7.RouterEntry (5.3s)
+trace: .> LEAN_PATH=~/fleet/vir/k7/.lake/packages/Cli/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/batteries/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/Qq/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/aesop/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/proofwidgets/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/importGraph/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/LeanSearchClient/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/plausible/.lake/build/lib/lean:~/fleet/vir/l1/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/mathlib/.lake/build/lib/lean:~/fleet/vir/l2/.lake/build/lib/lean:~/fleet/vir/deflate/.lake/build/lib/lean:~/fleet/vir/k7/.lake/packages/x86lean/.lake/build/lib/lean:~/fleet/vir/bridge/.lake/build/lib/lean:~/fleet/vir/compiler/.lake/build/lib/lean:~/fleet/vir/l3/.lake/build/lib/lean:~/fleet/vir/k5/.lake/build/lib/lean:~/fleet/vir/s3/.lake/build/lib/lean:~/fleet/vir/k7/.lake/build/lib/lean ~/.elan/toolchains/leanprover--lean4---v4.32.0-rc1/bin/lean ~/fleet/vir/k7/K7/RouterEntry.lean -o ~/fleet/vir/k7/.lake/build/lib/lean/K7/RouterEntry.olean -i ~/fleet/vir/k7/.lake/build/lib/lean/K7/RouterEntry.ilean -c ~/fleet/vir/k7/.lake/build/ir/K7/RouterEntry.c --setup ~/fleet/vir/k7/.lake/build/ir/K7/RouterEntry.setup.json --json
+warning: K7/RouterEntry.lean:33:67: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, dF, dFn, RD32, NT.c, NA.c, add, mul, le, lt, conj, List.map, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲List.findIdx,
+  ̵  ̵ ̵ ̵ ̵ ̵List.findIdx.go, String.reduceAppend, String.reduceBEq, cond_true, cond_false,
+  ̲  ̲ ̲ ̲ ̲ ̲Nat.reduceAdd, Nat.zero_add,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, Nat.reduceLT,
+  ̲ N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵  ̲ ̲ ̲ ̲Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:33:82: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [closeAt, dF, dFn, RD32, NT.c, NA.c, add, mul, le, lt, conj, List.map, List.idxOf,
+  ̲  ̲ ̲ ̲ ̲ ̲List.findIdx,
+  ̵  ̵ ̵ ̵ ̵ ̵List.findIdx.go, String.reduceAppend, String.reduceBEq, cond_true, cond_false,
+  ̲  ̲ ̲ ̲ ̲ ̲Nat.reduceAdd, Nat.zero_add,
+  ̵  ̵ ̵ ̵ ̵ ̵Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, Nat.reduceLT,
+  ̲  ̲ ̲ ̲ ̲ ̲Nat.reduceSub,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:40:39: This simp argument is unused:
+  Atom.substL
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst, A̵t̵o̵m̵.̵s̵u̵b̵s̵t̵L̵,̵ ̵↓reduceIte, Nat.reduceAdd, Nat.reduceLT, Nat.reduceSub,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:40:64: This simp argument is unused:
+  Nat.reduceAdd
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵A̵d̵d̵,̵ ̵Nat.reduceLT, Nat.reduceSub,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:40:93: This simp argument is unused:
+  Nat.reduceSub
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, Nat.reduceAdd, Nat.reduceLT,
+  ̲ N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵  ̲ ̲ ̲ ̲ ̲ ̲Nat.reduceEqDiff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:40:108: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  simp only [Tm.subst, Atom.subst, Atom.substL, ↓reduceIte, Nat.reduceAdd, Nat.reduceLT,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵S̵u̵b̵,̵ ̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵E̵q̵D̵i̵f̵f̵]̵N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲S̲u̲b̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: K7/RouterEntry.lean:41:43: This simp argument is unused:
+  Atom.evalL
+
+Hint: Omit it from the simp argument list.
+  simp [Atom.eval,̵ ̵A̵t̵o̵m̵.̵e̵v̵a̵l̵L̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: K7/RouterEntry.lean:66:81: unexpected token 'set_option'; expected 'lemma'
+error: K7/RouterEntry.lean:105:66: unsolved goals
+case refine_1
+σ : Store
+p₀ : ℤ
+f : ℤ → ℤ
+hreg : RegionAt p₀ 87 f σ
+hw : σ.WF
+hpl : Placed σ
+hc : CellsInR σ
+ilen : X86.Op → ℕ
+based basee H H₂ XF : W
+Cd Ce : S3.Ctx3
+P : X86.Program
+L : S3.Lay3
+hCd : Cd = S3.ctxOfB true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based
+hsubd :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3B true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based).at? a = some i → P.at? a = some i
+hCe : Ce = S3.ctxOfU ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee
+hsube :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3u ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee).at? a = some i → P.at? a = some i
+hC : ∀ (o : X86.Op), 1 ≤ ilen o
+hbd : S3.bytes Cd (S3.allCode Cd (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1) < 2 ^ 64
+hbe : S3.bytes Ce (S3.allCode Ce (lower2T [tcap] F []).2 (lower2T [tcap] F []).1) < 2 ^ 64
+hNmd : S3.needW (lower2T [tcap] dF []).1 ≤ L.bufN
+hNtd : ∀ x ∈ (lower2T [tcap] dF []).2, S3.needW x.2 ≤ L.bufN
+hNme : S3.needW (lower2T [tcap] F []).1 ≤ L.bufN
+hNte : ∀ x ∈ (lower2T [tcap] F []).2, S3.needW x.2 ≤ L.bufN
+hL : L.Ok
+hcanon : ∀ (a : BitVec 64) (i : X86.Instr), P.at? a = some i → X86.canonical a = true
+hretd : X86.canonical (H + 5) = true
+hrete : X86.canonical (H₂ + 5) = true
+hcodeH : S3.CodeAt Cd P H (S3.AI.callA based :: S3.gateTail L.env0 XF H₂)
+hcodeH₂ : S3.CodeAt Ce P H₂ [S3.AI.callA basee]
+hbased : X86.canonical based = true
+hbasee : X86.canonical basee = true
+hX : X86.canonical XF = true
+hH₂ : X86.canonical H₂ = true
+hN : 3 ≤ L.bufN
+hE : BitVec.toNat L.env0 + 8 * 2 ≤ BitVec.toNat L.envTop
+hstk : BitVec.toNat L.stkLo + 16 ≤ BitVec.toNat L.rsp0
+hlive : ∀ (a : W), VIRBridge.Live σ scaleLay a → L.live a
+s : X86.Cpu
+hA : S3.AtHead L H [scaleLay p₀, 87#64] (scaleMem σ) s
+hR : Finmap.lookup p₀ σ.R = some 87
+hl : Layout σ scaleLay
+hm : MemRel scaleLay σ (scaleMem σ)
+⊢ HasType₂ [tcap] (List.map (fun x => false) [true])
+    (Tm.letOp Op.load [Atom.var 0, Atom.const (Const.int (3 + 4))] tint
+      (Tm.letOp Op.load [Atom.var 1, Atom.const (Const.int (4 + 4))] tint
+        (Tm.letOp Op.load [Atom.var 2, Atom.const (Const.int (5 + 4))] tint
+          (Tm.letOp Op.load [Atom.var 3, Atom.const (Const.int (6 + 4))] tint
+            (Tm.letE tint
+              (Tm.ret
+                (Atom.prim L1.Prim.add
+                  [Atom.var 3,
+                    Atom.prim L1.Prim.add
+                      [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                        Atom.prim L1.Prim.add
+                          [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                            Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+              (Tm.letOp Op.load [Atom.var 5, Atom.const (Const.int (3 + 8))] tint
+                (Tm.letOp Op.load [Atom.var 6, Atom.const (Const.int (4 + 8))] tint
+                  (Tm.letOp Op.load [Atom.var 7, Atom.const (Const.int (5 + 8))] tint
+                    (Tm.letOp Op.load [Atom.var 8, Atom.const (Const.int (6 + 8))] tint
+                      (Tm.letE tint
+                        (Tm.ret
+                          (Atom.prim L1.Prim.add
+                            [Atom.var 3,
+                              Atom.prim L1.Prim.add
+                                [Atom.prim L1.Prim.mul [Atom.const (Const.int 256), Atom.var 2],
+                                  Atom.prim L1.Prim.add
+                                    [Atom.prim L1.Prim.mul [Atom.const (Const.int 65536), Atom.var 1],
+                                      Atom.prim L1.Prim.mul [Atom.const (Const.int 16777216), Atom.var 0]]]]))
+                        (Tm.ret
+                          (Atom.prim L1.Prim.and
+                            [Atom.prim L1.Prim.and
+                                [Atom.prim L1.Prim.le [Atom.const (Const.int 0), Atom.var 5],
+                                  Atom.prim L1.Prim.lt [Atom.var 5, Atom.const (Const.int 4)]],
+                              Atom.prim L1.Prim.and
+                                [Atom.prim L1.Prim.le [Atom.const (Const.int 0), Atom.var 0],
+                                  Atom.prim L1.Prim.lt [Atom.var 0, Atom.const (Const.int 4)]]]))))))))))))
+    tbool
+
+case refine_2.refine_1
+σ : Store
+p₀ : ℤ
+f : ℤ → ℤ
+hreg : RegionAt p₀ 87 f σ
+hw : σ.WF
+hpl : Placed σ
+hc : CellsInR σ
+ilen : X86.Op → ℕ
+based basee H H₂ XF : W
+Cd Ce : S3.Ctx3
+P : X86.Program
+L : S3.Lay3
+hCd : Cd = S3.ctxOfB true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based
+hsubd :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3B true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based).at? a = some i → P.at? a = some i
+hCe : Ce = S3.ctxOfU ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee
+hsube :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3u ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee).at? a = some i → P.at? a = some i
+hC : ∀ (o : X86.Op), 1 ≤ ilen o
+hbd : S3.bytes Cd (S3.allCode Cd (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1) < 2 ^ 64
+hbe : S3.bytes Ce (S3.allCode Ce (lower2T [tcap] F []).2 (lower2T [tcap] F []).1) < 2 ^ 64
+hNmd : S3.needW (lower2T [tcap] dF []).1 ≤ L.bufN
+hNtd : ∀ x ∈ (lower2T [tcap] dF []).2, S3.needW x.2 ≤ L.bufN
+hNme : S3.needW (lower2T [tcap] F []).1 ≤ L.bufN
+hNte : ∀ x ∈ (lower2T [tcap] F []).2, S3.needW x.2 ≤ L.bufN
+hL : L.Ok
+hcanon : ∀ (a : BitVec 64) (i : X86.Instr), P.at? a = some i → X86.canonical a = true
+hretd : X86.canonical (H + 5) = true
+hrete : X86.canonical (H₂ + 5) = true
+hcodeH : S3.CodeAt Cd P H (S3.AI.callA based :: S3.gateTail L.env0 XF H₂)
+hcodeH₂ : S3.CodeAt Ce P H₂ [S3.AI.callA basee]
+hbased : X86.canonical based = true
+hbasee : X86.canonical basee = true
+hX : X86.canonical XF = true
+hH₂ : X86.canonical H₂ = true
+hN : 3 ≤ L.bufN
+hE : BitVec.toNat L.env0 + 8 * 2 ≤ BitVec.toNat L.envTop
+hstk : BitVec.toNat L.stkLo + 16 ≤ BitVec.toNat L.rsp0
+hlive : ∀ (a : W), VIRBridge.Live σ scaleLay a → L.live a
+s : X86.Cpu
+hA : S3.AtHead L H [scaleLay p₀, 87#64] (scaleMem σ) s
+hR : Finmap.lookup p₀ σ.R = some 87
+hl : Layout σ scaleLay
+hm : MemRel scaleLay σ (scaleMem σ)
+⊢ Mask.empty [true]
+
+case refine_2.refine_2
+σ : Store
+p₀ : ℤ
+f : ℤ → ℤ
+hreg : RegionAt p₀ 87 f σ
+hw : σ.WF
+hpl : Placed σ
+hc : CellsInR σ
+ilen : X86.Op → ℕ
+based basee H H₂ XF : W
+Cd Ce : S3.Ctx3
+P : X86.Program
+L : S3.Lay3
+hCd : Cd = S3.ctxOfB true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based
+hsubd :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3B true ilen (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1 based).at? a = some i → P.at? a = some i
+hCe : Ce = S3.ctxOfU ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee
+hsube :
+  ∀ (a : BitVec 64) (i : X86.Instr),
+    (S3.lower3u ilen (lower2T [tcap] F []).2 (lower2T [tcap] F []).1 basee).at? a = some i → P.at? a = some i
+hC : ∀ (o : X86.Op), 1 ≤ ilen o
+hbd : S3.bytes Cd (S3.allCode Cd (lower2T [tcap] dF []).2 (lower2T [tcap] dF []).1) < 2 ^ 64
+hbe : S3.bytes Ce (S3.allCode Ce (lower2T [tcap] F []).2 (lower2T [tcap] F []).1) < 2 ^ 64
+hNmd : S3.needW (lower2T [tcap] dF []).1 ≤ L.bufN
+hNtd : ∀ x ∈ (lower2T [tcap] dF []).2, S3.needW x.2 ≤ L.bufN
+hNme : S3.needW (lower2T [tcap] F []).1 ≤ L.bufN
+hNte : ∀ x ∈ (lower2T [tcap] F []).2, S3.needW x.2 ≤ L.bufN
+hL : L.Ok
+hcanon : ∀ (a : BitVec 64) (i : X86.Instr), P.at? a = some i → X86.canonical a = true
+hretd : X86.canonical (H + 5) = true
+hrete : X86.canonical (H₂ + 5) = true
+hcodeH : S3.CodeAt Cd P H (S3.AI.callA based :: S3.gateTail L.env0 XF H₂)
+hcodeH₂ : S3.CodeAt Ce P H₂ [S3.AI.callA basee]
+hbased : X86.canonical based = true
+hbasee : X86.canonical basee = true
+hX : X86.canonical XF = true
+hH₂ : X86.canonical H₂ = true
+hN : 3 ≤ L.bufN
+hE : BitVec.toNat L.env0 + 8 * 2 ≤ BitVec.toNat L.envTop
+hstk : BitVec.toNat L.stkLo + 16 ≤ BitVec.toNat L.rsp0
+hlive : ∀ (a : W), VIRBridge.Live σ scaleLay a → L.live a
+s : X86.Cpu
+hA : S3.AtHead L H [scaleLay p₀, 87#64] (scaleMem σ) s
+hR : Finmap.lookup p₀ σ.R = some 87
+hl : Layout σ scaleLay
+hm : MemRel scaleLay σ (scaleMem σ)
+⊢ HasTypeA₂ [tbool, tcap] ((Atom.var 1).pair (Atom.var 0)) (Ty.prod tcap tbool)
+error: Lean exited with code 1
+Some required targets logged failures:
+- K7.RouterEntry
+error: build failed
+saltbuild EXIT=1
+logged-build: end=1795669005368
