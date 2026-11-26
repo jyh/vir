@@ -13,3 +13,13 @@ unchanged, and `P σ`. On ACCEPT the stub copies the argument words from BUF to 
 does for a capability. The verified result words are the only source.
 **Effect on the predictions (amend-27), declared before scoring:** NE1 reads "the decider's read-only predicate, its soundness" for the
 sum-returning d. NE5's one router lemma is `dF`'s soundness for the sum form. No row's threshold changes.
+
+## E2 (2026-11-25, the 90th head, still BEFORE the entry file): the decider returns `τarg × bool`, not `unit + τarg` (replaces E1's form; E1's reason stands)
+**Why the change.** Product values lower as concatenation, so `(cap, b)` lands in BUF as `[base, len, b]`, with the argument words at
+BUF[0..1]. Those are exactly the words Driver3's `after_done` already copies to `env0` (`loopTail`) before jumping to a head in
+`AtHead`. The sum form puts the argument at BUF[1..2] and would need a new copy lemma. With the product, the stub is a 4-instruction
+test of BUF[2] (= 1, else to the FAULT target) followed by `loopTail env0 XF H₂`, and `H₂: call base_e`. `after_done` is reused through
+a copy of the layout with `ret0` re-pointed (`Lay3.Ok` mentions neither `ret0` nor `stubRet`, `s3/S3/Rel3.lean:38`).
+**The soundness premise, as used:** if d run from σ returns `(a, true)`, then a is the argument it was given and `P σ`. The store
+stays σ along every run (the read-only predicate, `S3.readOnly_mem` at the word level).
+**Effect on amend-27:** as E1's (NE1 and NE5 read for this form). NE4's "≥ 2 of `head_call`, `after_done`, `after_exit`" is now the plan.
