@@ -15,3 +15,5 @@ import S3.Fragment3
 import S3.Driver3
 import S3.SrcR
 import S3.ResFree
+import S3.NoFault
+import S3.Proved

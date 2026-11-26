@@ -92,7 +92,8 @@ theorem app_resWhy {L : Lay3} {tbl : Table} {f x : WOpd} {ρ : List W} {k : List
 /-- **sim_step.** Every word step from an R3 state whose `StepOk` holds is simulated: the successor as an R3 state, or RES with
     `Common` at the successor's word memory and `ResWhy` of the state stepped from. -/
 theorem sim_step {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : Table} (hT : TblOk C p tbl)
-    {W W' : WSt × WMem} {s : Cpu} (hR : R3 C p L W s) (hok : StepOk L W.1) (hstep : stepW tbl W = some W') :
+    {W W' : WSt × WMem} {s : Cpu} (hR : R3 C p L W s) (hok : StepOk L W.1) (hstep : stepW tbl W = some W')
+    (hnf : C.chk = false → W'.1 ≠ .fault) :
     ∃ n, 0 < n ∧ (R3 C p L W' (runP p n s) ∨ (ResExit L (runP p n s) ∧ Common L W'.2 (runP p n s) ∧ ResWhy L W.1)) := by
   obtain ⟨w, wm⟩ := W
   cases w with
@@ -112,12 +113,12 @@ theorem sim_step {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : 
       · exact ⟨n, hn, Or.inr ⟨h1, h2, Or.inr (by simpa only [StkOver, List.length_cons] using h3)⟩⟩
     | load off idx c =>
       simp only [StepOk] at hok
-      obtain ⟨n, hn, h | ⟨h1, h2, h3⟩⟩ := sim_load E hR hok.1 hok.2 hstep
+      obtain ⟨n, hn, h | ⟨h1, h2, h3⟩⟩ := sim_load E hR hok.1 hok.2 hstep hnf
       · exact ⟨n, hn, Or.inl h⟩
       · exact ⟨n, hn, Or.inr ⟨h1, by rw [stepW_load_mem hstep]; exact h2, Or.inl h3⟩⟩
     | store off idx v c =>
       simp only [StepOk] at hok
-      obtain ⟨n, hn, h | ⟨h1, h2, h3⟩⟩ := sim_store E hR hok.1 hok.2.1 hok.2.2.1 hok.2.2.2 hstep
+      obtain ⟨n, hn, h | ⟨h1, h2, h3⟩⟩ := sim_store E hR hok.1 hok.2.1 hok.2.2.1 hok.2.2.2 hstep hnf
       · exact ⟨n, hn, Or.inl h⟩
       · exact ⟨n, hn, Or.inr ⟨h1, h2, Or.inl h3⟩⟩
     | app f x =>
@@ -139,16 +140,19 @@ theorem sim_step {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : 
     run's end in at least as many steps, or returns RES at a reached state whose `ResWhy` holds. -/
 theorem s3_run {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : Table} (hT : TblOk C p tbl) :
     ∀ {n : Nat} {W Wf : WSt × WMem}, WN tbl n W Wf → ∀ s, R3 C p L W s → (∀ k W₁, WN tbl k W W₁ → StepOk L W₁.1) →
+      (C.chk = false → ∀ k W₁, WN tbl k W W₁ → W₁.1 ≠ .fault) →
       ∃ m, (n ≤ m ∧ R3 C p L Wf (runP p m s)) ∨
         (∃ Wr Wr' k, WN tbl k W Wr ∧ stepW tbl Wr = some Wr' ∧ ResWhy L Wr.1 ∧ ResExit L (runP p m s) ∧
           Common L Wr'.2 (runP p m s)) := by
   intro n W Wf hWN
   induction hWN with
-  | refl W => intro s hR _; exact ⟨0, Or.inl ⟨le_refl _, hR⟩⟩
+  | refl W => intro s hR _ _; exact ⟨0, Or.inl ⟨le_refl _, hR⟩⟩
   | step hst hrest ih =>
-    intro s hR hok
-    obtain ⟨n₁, hn₁, h | ⟨h1, h2, h3⟩⟩ := sim_step E hT hR (hok 0 _ (.refl _)) hst
+    intro s hR hok hnf
+    obtain ⟨n₁, hn₁, h | ⟨h1, h2, h3⟩⟩ :=
+      sim_step E hT hR (hok 0 _ (.refl _)) hst (fun hc => hnf hc 1 _ (.step hst (.refl _)))
     · obtain ⟨m, hm⟩ := ih _ h (fun k W₁ hk => hok (k + 1) W₁ (.step hst hk))
+        (fun hc k W₁ hk => hnf hc (k + 1) W₁ (.step hst hk))
       refine ⟨n₁ + m, ?_⟩
       rcases hm with ⟨hle, hR'⟩ | ⟨Wr, Wr', k, hk, hs, hy, he, hc⟩
       · exact Or.inl ⟨by omega, by rw [runP_add]; exact hR'⟩
