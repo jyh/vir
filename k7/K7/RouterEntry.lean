@@ -56,7 +56,7 @@ theorem pload_neg {P : Assn} {p i : Int} {τ : Ty₂} {e : Tm₂} {R : Atom₂ �
   cases hc with
   | step h₁ _ =>
     obtain ⟨vs', v', σ'', h₁', h₂', -⟩ := step₂_letOp_inv h₁
-    simp only [Atom.evalL, Atom.eval, Option.some.injEq] at h₁'
+    simp only [Atom.evalL, Atom.eval, Option.bind_some, Option.map_some, Option.some.injEq] at h₁'
     subst h₁'
     simp only [opStep, Option.map_eq_some_iff] at h₂'
     obtain ⟨x, hx, -⟩ := h₂'
