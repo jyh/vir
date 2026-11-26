@@ -2168,6 +2168,28 @@ def leanl4(d):
     return rows
 
 
+# amend-28 MK4, the LEAN half (STATUS-vir 449; selftest ARM69; compiler/DECLARATIONS-MK.md). The compiler's stage theorems' IN-LAYER
+# PROOF CLOSURE, l4/DECLARATIONS-LEAN Addendum 7's measure (l4_row): S1 = s1_refines and S2 = s2_refines over compiler/VIRC (S1's
+# closure never follows into S2 by construction: s1_refines names no S2 constant); S3 = s3_refines over s3/S3, with VIRC and lower
+# layers IMPORTED (named in crossRefs, not followed). BESIDE S3: s3_refines_from_s2 (the composed form). DIR is the vir repo root.
+def vircl(d):
+    d = os.path.abspath(d)
+    vc, s3 = os.path.join(d, 'compiler', 'VIRC'), os.path.join(d, 's3', 'S3')
+    dv, d3 = l4_decls(vc), l4_decls(s3)
+    def names(ds):
+        return {x[0] for x in ds if x[0]} | {x[0].rsplit('.', 1)[-1] for x in ds if x[0]}
+    low = set()
+    for n in (1, 2):
+        low |= names(l4_decls(os.path.join(d, 'l%d' % n, 'VIRL%d' % n)))
+    rows = []
+    _, r, _ = l4_row('MK4.L.S1', dv, ['s1_refines'], low, vc, ['S1.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S2', dv, ['s2_refines'], low, vc, ['S2.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S3', d3, ['s3_refines'], low | names(dv), s3, ['Top3.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S3c', d3, ['s3_refines_from_s2'], low | names(dv), s3, ['Sem3.lean'])
+    rows += [(c, v, ('BESIDE:' + st) if not st.startswith('BESIDE') else st) for c, v, st in r]
+    return rows
+
+
 # amend-23 D5 on the DEFLATE arm (STATUS-vir 293 (c); selftest ARM58). DIR is deflate/ (it holds VIRDeflate/). FILE-LEVEL C5 tokens, as
 # L4's syntax-copy row: comments stripped, whitespace-split. The canonical-code group is the one deflate/DECLARATIONS-DEFLATE.md fixed
 # before the arm's first file (Huffman.lean + Kraft.lean, "any later lemma about canonical codes goes in one of these two files"); the
@@ -2721,7 +2743,7 @@ def metaprll5(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2747,6 +2769,8 @@ def main():
         rows = leanl3(a.dir)
     elif a.arm == 'l4':
         rows = leanl4(a.dir)
+    elif a.arm == 'vircl':
+        rows = vircl(a.dir)
     elif a.arm == 'deflate':
         rows = deflate(a.dir)
     elif a.arm == 'lv9':

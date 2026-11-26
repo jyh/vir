@@ -1776,6 +1776,28 @@ if cmp -s "$V68/k5/tools/replay_filter.py" "$F/mutant68.py"; then say "ARM68 mut
 elif check68 "$F/mutant68.py"; then say "ARM68 mutant SURVIVED (the old closers kept the rows)"; fail=1
 else say "ARM68 mutant KILLED"; fi
 
+# ARM69 (STATUS-vir 449; amend-28 MK4, the Lean half): `--arm vircl` reads each compiler stage's IN-LAYER proof closure. Fixture:
+# S1 = s1_refines → a1 → a2 (unrelated stays out); S2 = s2_refines → b1; S3 = s3_refines → c1, which names VIRC's b1 (imported:
+# crossRefs 1, NOT followed); S3c = s3_refines_from_s2 → s3_refines → c1. Mutant: a ONE-PASS closure (a2, reached only through a1).
+R69="$F/vir69"; mkdir -p "$R69/compiler/VIRC" "$R69/s3/S3" "$R69/l1/VIRL1" "$R69/l2/VIRL2"
+printf 'theorem s1_refines : True := by exact a1\ntheorem a1 : True := by exact a2\ntheorem a2 : True := trivial\ntheorem unrelated : True := trivial\n' > "$R69/compiler/VIRC/S1.lean"
+printf 'theorem s2_refines : True := by exact b1\ntheorem b1 : True := trivial\n' > "$R69/compiler/VIRC/S2.lean"
+printf 'theorem s3_refines : True := by exact c1\ntheorem c1 : True := by exact b1\n' > "$R69/s3/S3/Top3.lean"
+printf 'theorem s3_refines_from_s2 : True := s3_refines\n' > "$R69/s3/S3/Sem3.lean"
+printf 'def l1d := 1\n' > "$R69/l1/VIRL1/L1.lean"; printf 'def l2d := 1\n' > "$R69/l2/VIRL2/L2.lean"
+check69() {
+  o=$(python3 "$1" --arm vircl "$R69") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK4.L.S1.closure)" = 3 ] && [ "$(v MK4.L.S2.closure)" = 2 ] && [ "$(v MK4.L.S3.closure)" = 2 ] && [ "$(v MK4.L.S3.crossRefs)" = 1 ] \
+  && [ "$(v MK4.L.S3c.closure)" = 3 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="MK4.L.S1.C5tok"' | grep -q 'MEASURED:3 blocks'
+}
+if check69 "$H/count.py"; then say "ARM69 vircl fixture OK (S1 3 blocks, unrelated out; S2 2; S3 2 with VIRC's b1 a crossRef, not followed; S3c 3)"
+else say "ARM69 vircl fixture FAIL"; python3 "$H/count.py" --arm vircl "$R69"; fail=1; fi
+sed 's/changed = True  # CLOSURE-FIXPOINT/pass/' "$H/count.py" > "$F/mutant69.py"  # one pass: a block reached only through another is missed
+if cmp -s "$H/count.py" "$F/mutant69.py"; then say "ARM69 mutant NOT PLANTED"; fail=1
+elif check69 "$F/mutant69.py"; then say "ARM69 mutant SURVIVED (a one-pass closure)"; fail=1
+else say "ARM69 mutant KILLED"; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
