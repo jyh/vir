@@ -1826,6 +1826,41 @@ for mm in a b; do
   else say "ARM70 mutant $mm KILLED"; fi
 done
 
+# ARM71 (STATUS-vir 448; amend-28 MK4, the MetaPRL half): `--arm vircm` reads each stage's IN-LAYER proof closure over its POOL of
+# module prefixes. Fixture: S1 (pool virc1_) r1 → a1 → a2, u1 stays out; S2 (pool virc1_,virc2_) r2 → a1 → a2, and reduceC admits hz
+# (virc1_'s reduce rule); S3 (pool virc3_) r3 → c1, which names virc1_'s a1 and virl2_'s lowx (crossRefs 2, NOT followed) and a1x
+# (a longer name, never a cite); S9's posted root has no derivation in its pool (RED, never a silent 0).
+# Mutants: a closure that stops at the roots' own texts' names; one that ignores the pool; one that drops the reduce resource.
+R71="$F/vir71/theories/vir"; mkdir -p "$R71"
+printf 'interactive r1 : sequent { <H> >- a }\ninteractive a1 : sequent { <H> >- a }\ninteractive a2 : sequent { <H> >- a }\ninteractive u1 : sequent { <H> >- a }\ninteractive_rw hz {| reduce |} : a <--> b\n' > "$R71/virc1_a.ml"
+T71r1="(a1 thenT autoT)"; T71a1="(a2 thenT x)"; T71a2="rw 0"; T71u1="rw u v 0"; T71hz="rw z 0"
+prla "$R71/virc1_a.prla" "r1=$T71r1" "a1=$T71a1" "a2=$T71a2" "u1=$T71u1" "hz=$T71hz"
+printf 'interactive r2 : sequent { <H> >- a }\n' > "$R71/virc2_a.ml"; T71r2="(a1 thenT reduceC)"; prla "$R71/virc2_a.prla" "r2=$T71r2"
+printf 'interactive r3 : sequent { <H> >- a }\ninteractive c1 : sequent { <H> >- a }\n' > "$R71/virc3_a.ml"
+T71r3="(c1 thenT autoT)"; T71c1="(a1 thenT lowx thenT a1x)"; prla "$R71/virc3_a.prla" "r3=$T71r3" "c1=$T71c1"
+printf 'interactive lowx : sequent { <H> >- a }\n' > "$R71/virl2_b.ml"; prla "$R71/virl2_b.prla" "lowx=rw l 0"
+E71_S1=$(( $(w "$T71r1") + $(w "$T71a1") + $(w "$T71a2") )); E71_S2=$(( $(w "$T71r2") + $(w "$T71a1") + $(w "$T71a2") + $(w "$T71hz") ))
+E71_S3=$(( $(w "$T71r3") + $(w "$T71c1") ))
+check71() {
+  o=$(VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_;S9=virc3_' VIR_MK4M_ROOTS='S1=r1;S2=r2;S3=r3;S9=absent' python3 "$1" --arm vircm "$F/vir71") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK4.M.rules)" = 9 ] && [ "$(v MK4.M.S1.closure)" = 3 ] && [ "$(v MK4.M.S1.C5tok)" = "$E71_S1" ] \
+  && [ "$(v MK4.M.S2.closure)" = 4 ] && [ "$(v MK4.M.S2.C5tok)" = "$E71_S2" ] \
+  && [ "$(v MK4.M.S3.closure)" = 2 ] && [ "$(v MK4.M.S3.C5tok)" = "$E71_S3" ] && [ "$(v MK4.M.S3.crossRefs)" = 2 ] \
+  && [ "$(v MK4.M.S1.rootTok)" = "$(w "$T71r1")" ] && [ "$(v MK4.M.S9.missing)" = 1 ] \
+  && printf '%s\n' "$o" | awk -F'\t' '$2=="MK4.M.S9.missing"' | grep -q RED
+}
+if check71 "$H/count.py"; then say "ARM71 vircm fixture OK (S1 3 rules, u1 out; S2 4 incl. hz by reduceC; S3 2 with crossRefs 2 not followed, a1x no cite; S9 RED)"
+else say "ARM71 vircm fixture FAIL"; VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_;S9=virc3_' VIR_MK4M_ROOTS='S1=r1;S2=r2;S3=r3;S9=absent' python3 "$H/count.py" --arm vircm "$F/vir71"; fail=1; fi
+sed 's/                todo += \[k for k in ks if inp(k)\]  # VIRCM-FIXPOINT/                todo += []  # VIRCM-FIXPOINT/' "$H/count.py" > "$F/mutant71a.py"  # roots only
+sed 's/ for k in ks if inp(k)\]  # VIRCM-FIXPOINT/ for k in ks]  # VIRCM-FIXPOINT/' "$H/count.py" > "$F/mutant71b.py"  # the pool ignored
+sed 's/                todo += sorted(k for k in red if inp(k))  # VIRCM-RESOURCE/                pass  # VIRCM-RESOURCE/' "$H/count.py" > "$F/mutant71c.py"
+for mm in a b c; do
+  if cmp -s "$H/count.py" "$F/mutant71$mm.py"; then say "ARM71 mutant $mm NOT PLANTED"; fail=1
+  elif check71 "$F/mutant71$mm.py"; then say "ARM71 mutant $mm SURVIVED"; fail=1
+  else say "ARM71 mutant $mm KILLED"; fi
+done
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

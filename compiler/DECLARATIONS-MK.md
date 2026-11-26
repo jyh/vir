@@ -27,3 +27,20 @@ arm has posted no count). Each instrument is declared here before it reads eithe
   (`virl4_`) at d257d2f29, mk5 reads 1,127 rules, 378 wf (type 28 + member 350), 335‰, and 409 eq. So 20 % sits below what the arm's
   own L4 already shows. The row is not moved. RESULTS-17 will print this beside MK5's verdict, because a threshold below the arm's
   base rate is weak evidence for "where MetaPRL pays".
+
+## Addendum 1 — MK4's MetaPRL half, built 2026-11-26 before the arm's first stage close (92nd vir head)
+Written before mojave posted any stage close or any count. At this time the arm had posted no stage roots, and no MetaPRL file was read
+for this addendum. The reader is built and tested against a synthetic fixture only.
+- **`count.py --arm vircm <tree>`** (selftest ARM71) uses metaprll4's in-layer closure (ARM57) over a working tree at the scored sha.
+  - A row's C5 is its posted roots, plus every rule of the stage's POOL that a closure text names as a whole identifier (fixpoint), plus
+    every pool `{| reduce |}` rule once a text invokes `reduceC`/`reduceT`. That last term makes the figure an UPPER BOUND, as on L4.
+  - `VIR_MK4M_POOLS='S1=..;S2=..;S3=..'` holds module-filename prefixes. `VIR_MK4M_ROOTS` holds the arm's posted roots.
+- **The pool is the Lean half's parallel.** On the Lean side, S1 and S2 share VIRC and S3 imports it, unfollowed. So S2's pool may hold
+  S1's modules, and S3's pool holds S3's modules alone.
+  - The pools are fixed from the arm's posted module list at its first stage close, before its counts are read, and recorded in a second
+    addendum.
+  - A stored rule of another vir module that a closure names is a **crossRef**: counted and listed beside, never followed. This matches
+    the Lean half's imported names.
+- Beside each row are the closure's rule list, roots-only tokens, refine steps, and crossRefs. Only `MK4.M.<S>.C5tok` is primary.
+- ARM71 mutants, all KILLED: (a) a closure that stops at the roots' own names; (b) one that ignores the pool; (c) one that drops the
+  reduce resource. A posted root with no derivation in its pool reads RED, never 0.
