@@ -33,6 +33,8 @@ structure Ctx3 where
   body : Nat → W
   fix : Nat → Bool
   tblLen : Nat
+  /-- OBJECT-NOCHECK fork N2 (a): emit the four index-check instructions per access. `ctxOf` keeps the default. -/
+  chk : Bool := true
 
 /-- S3-E: an instruction's length. Branches are rel32 forms of fixed length; everything else is `ilen`. -/
 def blen0 (ilen : Op → Nat) : Op → Nat
@@ -174,6 +176,30 @@ def dispatch (C : Ctx3) (wx : Nat) (pc : W) : Nat → Nat → List AI
 
 /-! ## Code -/
 
+/-- A `load`'s access block (OBJECT-NOCHECK NC-L): with `C.chk`, the four check instructions (`test`, `js`, `cmp`, `jge`) to FAULT;
+    without, the same block with exactly those four omitted. -/
+def ldChk (C : Ctx3) (off : Nat) : List AI :=
+  if C.chk then
+      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
+        .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
+        .op (.lea .q .rcx { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .rcx 0]
+  else
+      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.lea .q .rcx { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .rcx 0]
+
+/-- A `store`'s access block, as `ldChk`. -/
+def stChk (C : Ctx3) (off : Nat) : List AI :=
+  if C.chk then
+      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
+        .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
+        .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx]
+  else
+      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
+        .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx]
+
+
 /-- **gen C pc c**: the code for `c` placed at `pc`, its out-of-line parts included and contiguous (S3-L). -/
 def gen (C : Ctx3) : W → WCode → List AI
   | _, .ret o => evalTo C 0 o ++ [movi .r13 (BitVec.ofNat 64 (wid o)), .op .ret]
@@ -187,18 +213,12 @@ def gen (C : Ctx3) : W → WCode → List AI
     pre ++ [.callA p₁] ++ post ++ g₂ ++ gen C p₁ c₁
   | pc, .load off idx k =>
     let pre := evalTo C 0 idx ++
-      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
-       .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
-       .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rcx { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .rcx 0] ++
+      ldChk C off ++
       envRoom C 1 ++ [.op (.lea .q .r12 { base := some .r12, disp := -(slot 1) }), st .r12 0 .rdx]
     pre ++ gen C (pc + BitVec.ofNat 64 (bytes C pre)) k
   | pc, .store off idx v k =>
     let pre := evalTo C 0 idx ++ evalTo C 1 v ++
-      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
-       .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
-       .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx] ++
+      stChk C off ++
       envRoom C 2 ++ [ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
         .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]
     pre ++ gen C (pc + BitVec.ofNat 64 (bytes C pre)) k
@@ -240,9 +260,10 @@ def bodyAddrs (C0 : Ctx3) (tbl : Table) (start : W) : List W :=
     ([], start)).1
 
 /-- The whole layout context for `tbl` with main code `main` at code base `base`. -/
-def ctxOf (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Ctx3 :=
+def ctxOfB (b : Bool) (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Ctx3 :=
   let C0 : Ctx3 :=
     { ilen := ilen
+      chk := b
       fault := 0
       ovf := 0
       res := 0
@@ -258,6 +279,9 @@ def ctxOf (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Ctx3 :=
   let bs := bodyAddrs C1 tbl pB
   { C1 with body := fun i => bs.getD i 0 }
 
+/-- The checked layout (today's): `ctxOfB true`. -/
+def ctxOf (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Ctx3 := ctxOfB true ilen tbl main base
+
 /-- The main code's address in a layout (the entry stub's call target). -/
 def mainAddr (C : Ctx3) : W := C.res + BitVec.ofNat 64 (bytes C (exitCode stRes))
 
@@ -266,10 +290,16 @@ def allCode (C : Ctx3) (tbl : Table) (main : WCode) : List AI :=
   entryStub (mainAddr C) ++ exitCode stFault ++ exitCode stOvf ++ exitCode stRes ++ gen C (mainAddr C) main ++
     tbl.zipIdx.flatMap fun p => gen C (C.body p.2) p.1.2
 
-/-- **lower3**: the x86lean `Program` for a word program: table `tbl`, main code `main`, code base `base`. -/
-def lower3 (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Program :=
-  let C := ctxOf ilen tbl main base
+/-- **lower3B b**: the x86lean `Program` for a word program: table `tbl`, main code `main`, code base `base`, checks iff `b`. -/
+def lower3B (b : Bool) (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Program :=
+  let C := ctxOfB b ilen tbl main base
   { code := asm C base (allCode C tbl main) }
+
+/-- **lower3**: the checked lowering, `lower3B true`. -/
+def lower3 (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Program := lower3B true ilen tbl main base
+
+/-- **lower3u** (OBJECT-NOCHECK NC-L): the UNCHECKED lowering, `lower3B false`, for proved programs. -/
+def lower3u (ilen : Op → Nat) (tbl : Table) (main : WCode) (base : W) : Program := lower3B false ilen tbl main base
 
 /-! ## S3-E's consequence: a sub-term's code size is a function of the sub-term (`bytes_gen`), and of the context only through
     `ilen`, the fix flags and the table size (`gsz_congr`). The placement in `ctxOf` rests on both. -/
@@ -308,16 +338,10 @@ def gsz (C : Ctx3) : WCode → Nat
   | .letE c₁ c₂ => bytes C (stackRoom C ++ [.op (.push .q (.reg .r12))]) + 5 +
       bytes C ([.op (.pop .q (.reg .r12))] ++ prependLoop C 0) + gsz C c₂ + gsz C c₁
   | .load off idx k => bytes C (evalTo C 0 idx ++
-      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
-       .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
-       .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rcx { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .rcx 0] ++
+      ldChk C off ++
       envRoom C 1 ++ [.op (.lea .q .r12 { base := some .r12, disp := -(slot 1) }), st .r12 0 .rdx]) + gsz C k
   | .store off idx v k => bytes C (evalTo C 0 idx ++ evalTo C 1 v ++
-      [ld .rax .r14 (slot 0), ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
-       .op (.bin .test .q (.reg .rax) (.reg .rax)), .jccA .s C.fault,
-       .op (.bin .cmp .q (.reg .rax) (.reg .rdx)), .jccA .ge C.fault,
-       .op (.lea .q .rax { base := some .rcx, index := some .rax, scale := .s8 }), ld .rdx .r14 (slot 1), st .rax 0 .rdx] ++
+      stChk C off ++
       envRoom C 2 ++ [ld .rcx .r12 (slot off), ld .rdx .r12 (slot (off + 1)),
         .op (.lea .q .r12 { base := some .r12, disp := -(slot 2) }), st .r12 0 .rcx, st .r12 (slot 1) .rdx]) +
       gsz C k

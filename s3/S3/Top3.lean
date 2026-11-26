@@ -145,11 +145,12 @@ theorem entry_r3 {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {main :
 theorem s3_refines {C : Ctx3} {p : Program} {L : Lay3} (E : StepEnv C p L) {tbl : Table} (hT : TblOk C p tbl)
     {main : WCode} {ρ₀ : List W} {wm : WMem} {s : Cpu} (hE : Entry C p L main ρ₀ wm s) {n : Nat} {Wf : WSt × WMem}
     (hrun : WN tbl n (.run main ρ₀ [], wm) Wf)
-    (hok : ∀ k W₁, WN tbl k (.run main ρ₀ [], wm) W₁ → StepOk L W₁.1) :
+    (hok : ∀ k W₁, WN tbl k (.run main ρ₀ [], wm) W₁ → StepOk L W₁.1)
+    (hnf : C.chk = false → ∀ k W₁, WN tbl k (.run main ρ₀ [], wm) W₁ → W₁.1 ≠ .fault) :
     ∃ m, (n + 3 ≤ m ∧ R3 C p L Wf (runP p m s)) ∨
       (∃ Wr Wr' k, WN tbl k (.run main ρ₀ [], wm) Wr ∧ stepW tbl Wr = some Wr' ∧ ResWhy L Wr.1 ∧ ResExit L (runP p m s) ∧
         Common L Wr'.2 (runP p m s)) := by
-  obtain ⟨m, hm⟩ := s3_run E hT hrun (runP p 3 s) (entry_r3 E hE) hok
+  obtain ⟨m, hm⟩ := s3_run E hT hrun (runP p 3 s) (entry_r3 E hE) hok hnf
   refine ⟨3 + m, ?_⟩
   rcases hm with ⟨hle, hR⟩ | ⟨Wr, Wr', k, h1, h2, h3, h4, h5⟩
   · exact Or.inl ⟨by omega, by rw [runP_add]; exact hR⟩

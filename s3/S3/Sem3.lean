@@ -201,4 +201,26 @@ theorem s3_refines_from_s2 {ilen : Op → Nat} {tbl : Table} {main : WCode} {bas
   · obtain ⟨w, m⟩ := W₁
     rcases ht with ht | ht <;> (simp only at ht; subst ht; trivial)
 
+
+/-- **s3_refines_from_s2B** (OBJECT-NOCHECK): `s3_refines_from_s2` for `lower3B b`, given that no reached word state is FAULT when `b = false`. -/
+theorem s3_refines_from_s2B {b : Bool} {ilen : Op → Nat} {tbl : Table} {main : WCode} {base : W} {C : Ctx3} {p : Program} {L : Lay3}
+    {lay : Int → W} {τfin : VIRL2.Ty₂} {I₀ : St × VIRL2.Store}
+    (hCdef : C = ctxOfB b ilen tbl main base) (hp : p = lower3B b ilen tbl main base) (hC : ∀ o, 1 ≤ ilen o)
+    (hb : bytes C (allCode C tbl main) < 2 ^ 64) (hT64 : tbl.length < 2 ^ 64)
+    (hNm : needW main ≤ L.bufN) (hNt : ∀ e ∈ tbl, needW e.2 ≤ L.bufN)
+    (hL : L.Ok) (hcanon : ∀ a i, p.at? a = some i → canonical a = true) (hretc : canonical L.ret0 = true)
+    (hstub : L.stubRet = base + BitVec.ofNat 64 (bytes C (stubHead C)))
+    {ρ₀ : List W} {wm : WMem} {s : Cpu} (hD : DriverCall L ρ₀ wm s) (hrip : s.rip = base)
+    (h0 : SRel tbl lay τfin I₀ (.run main ρ₀ [], wm)) (hlive : ∀ a, VIRBridge.Live I₀.2 lay a → L.live a)
+    (hnf : C.chk = false → ∀ k W₁, WN tbl k (.run main ρ₀ [], wm) W₁ → W₁.1 ≠ .fault)
+    {n : Nat} {Wf : WSt × WMem} (hrun : WN tbl n (.run main ρ₀ [], wm) Wf) :
+    ∃ m, (n + 3 ≤ m ∧ R3 C p L Wf (runP p m s)) ∨
+      (∃ Wr Wr' k, WN tbl k (.run main ρ₀ [], wm) Wr ∧ stepW tbl Wr = some Wr' ∧ ResWhy L Wr.1 ∧ ResExit L (runP p m s) ∧
+        Common L Wr'.2 (runP p m s)) := by
+  refine s3_refines_lower3_staticB hCdef hp hC hb hT64 hNm hNt hL hcanon hretc hstub hD hrip hrun ?_ hnf
+  intro k W₁ hk
+  rcases srel_reach_R hT64 hk h0 with ⟨I₁, h1, h2⟩ | ht
+  · exact stepSem_of_srel hT64 h1 (fun a ha => hlive a (live_of_R h2 a ha))
+  · obtain ⟨w, m⟩ := W₁
+    rcases ht with ht | ht <;> (simp only at ht; subst ht; trivial)
 end S3
