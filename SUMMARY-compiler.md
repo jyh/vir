@@ -34,6 +34,13 @@ beside K7, never inside it.
 | DEFLATE at the machine | `K7.deflate_x86_N` (k7/K7/DeflateX86N.lean) | for every k steps of DEFLATE's iteration, the machine reaches its loop head with memory related to the k-th store, OR it has exited with RES; **OVF excluded** | **RES is NOT excluded** (4 table functions, all with non-tail calls; no static bound; empirical depth 10 is not a proof). A proof is a K5-scale campaign outside amend-23, posted as a fork (default: leave it a limit) | DECLARATIONS-DRIVER Add. 7–9; k7/STAGE-K7.md |
 | generic driver steps | `S3.drv_iter_N` (s3/S3/DriverN.lean), `K7.drv_iter_D` (k7/K7/DriverD.lean) | one driver iteration with OVF excluded (exit RES only); for an empty table, no exit at all | K3's tool reads them FALSIFIED on S3.* only, the same reading as `driver_x86`, under K3's open fork | compiler/STAGE-S3.md; k7/STAGE-K7.md |
 
+## After §K: proved programs without index checks (option (iv), his 11-25 word)
+
+| result | theorem (file) | what it says | record |
+|---|---|---|---|
+| no index checks for a proved program | `S3.compile_x86_proved` (s3/S3/Proved.lean) | under NC-P′ (every L2 triple supplies it), the UNCHECKED lowering `lower3u` matches every finishing run and n-step prefix; no FAULT clause | RESULTS-15 (+ Addendum 1, non-author CONCUR) |
+| one eager check for an external caller | `S3.compile_entry`, `S3.compile_entry_run` (s3/S3/Entry.lean); `K7.router_entry` (k7/K7/RouterEntry.lean) | a checked, read-only decider runs first; a rejecting or exiting decider leaves the machine at XF with every live cell unchanged; an accepting one enters the unchecked program, matched as `compile_x86_provedS` states | RESULTS-16 (non-author read owed) |
+
 ## Open, and whose
 
 - ~~**K3 and K7 non-author reads:** the helm's to route.~~ DONE 11-15 by paper (RESULTS-12 Add. 6): K3 HOLDS, K7 conjunct (2) was uncovered and is now proved, D7 HOLDS. D7's byte-type reading is retired by `safety_bytes` and

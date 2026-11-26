@@ -138,12 +138,18 @@ else echo "REPRODUCE MISSING-INPUT mojave/vir-l5 at $L5M_SHA"; exit 2; fi
 # the two logs read here were the old PAIR (compose/logs/audit-008, lean/repro/audit-control-002, `--legacy-pair`); they stay
 # in the tree as the record they were. Each receipt is named in full, so a newer log cannot silently replace it.
 for R in "compose/logs/audit-009.log --build compose/logs/build-025.log --control compose/logs/audit-control-001.log" \
-         "lean/repro/audit-control-003.log --build lean/repro/build-triple-001.log"; do
+         "lean/repro/audit-control-003.log --build lean/repro/build-triple-001.log" \
+         "s3/logs/ne-022.log --build s3/logs/ne-020.log --control s3/logs/ne-021.log" \
+         "k7/logs/ne-r-010.log --build k7/logs/ne-r-008.log --control k7/logs/ne-r-009.log"; do
   set -- $R; A=$1; shift; args=""
   while [ $# -gt 0 ]; do args="$args $1 $V/$2"; shift 2; done
   n=$((n+1)); python3 "$V/harness/axiom_gate.py" "$V/$A" $args > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
   sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
 done
+# row 445 (2026-11-25, RESULTS-16): OBJECT-NOCHECK-ENTRY's counts (NE8's print identity, NE1/NE2's statement reads, NE6's build
+# lines, dF's instruction counts) re-derived from the committed logs and captures by harness/ne_counts.py. Its two triple
+# receipts (s3 ne-020/021/022, k7 ne-r-008/009/010) are gated in the loop above.
+chk2 "$V/harness/ne-counts.tsv" "python3 -I '$V/harness/ne_counts.py' '$V'"
 # row 432 (2026-11-25): the triple's POPULATION, with no Lean run. harness/triple_drive.py --dry-run derives every lake project and
 # audit from the tracked tree and refuses (rc 2) any project that could not issue a triple receipt (no wrapper, no AuditControl.lean,
 # two in-file controls). No count is typed here: the script prints the population it found. The real drive (it builds) is
