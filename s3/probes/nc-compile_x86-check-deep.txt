@@ -1,0 +1,69 @@
+@S3.compile_x86 : ∀ {lay : ℤ → VIRC.W} {σ : VIRL2.Store} {m : VIRC.WMem} (Γ₀ : VIRL1.Ctx VIRL2.S₂) (Δ₀ : List Bool)
+  (e : VIRL2.Tm₂) (τ : VIRL2.Ty₂) (vs : List VIRL2.Atom₂) (ρw₀ : List VIRC.W),
+  VIRL2.HasType₂ Γ₀ Δ₀ e τ →
+    VIRC.Tm.wfB (List.length Γ₀) e = true →
+      VIRC.Tm.fnOk e = true →
+        VIRC.Tm.ok2 e = true →
+          vs.length = List.length Γ₀ →
+            VIRC.Good vs →
+              List.length (VIRC.lower2T Γ₀ e []).2 < 2 ^ 64 →
+                VIRC.EnvRel (VIRC.lower2T Γ₀ e []).2 lay σ Γ₀ (List.map VIRC.valOf vs) ρw₀ →
+                  VIRC.Layout σ lay →
+                    VIRC.MemRel lay σ m →
+                      ∀ {ilen : X86.Op → ℕ} {base : VIRC.W} {C : S3.Ctx3} {p : X86.Program} {L : S3.Lay3},
+                        C = S3.ctxOf ilen (VIRC.lower2T Γ₀ e []).2 (VIRC.lower2T Γ₀ e []).1 base →
+                          p = S3.lower3 ilen (VIRC.lower2T Γ₀ e []).2 (VIRC.lower2T Γ₀ e []).1 base →
+                            (∀ (o : X86.Op), 1 ≤ ilen o) →
+                              S3.bytes C (S3.allCode C (VIRC.lower2T Γ₀ e []).2 (VIRC.lower2T Γ₀ e []).1) < 2 ^ 64 →
+                                S3.needW (VIRC.lower2T Γ₀ e []).1 ≤ L.bufN →
+                                  (∀ x ∈ (VIRC.lower2T Γ₀ e []).2, S3.needW x.2 ≤ L.bufN) →
+                                    L.Ok →
+                                      (∀ (a : BitVec 64) (i : X86.Instr), p.at? a = some i → X86.canonical a = true) →
+                                        X86.canonical L.ret0 = true →
+                                          L.stubRet = base + BitVec.ofNat 64 (S3.bytes C (S3.stubHead C)) →
+                                            ∀ {s : X86.Cpu},
+                                              S3.DriverCall L ρw₀ m s →
+                                                s.rip = base →
+                                                  (∀ (a : VIRC.W), VIRBridge.Live σ lay a → L.live a) →
+                                                    (∀ (a : VIRL1.Atom VIRL2.S₂) (σ' : VIRL2.Store)
+                                                        (w : VIRL1.Atom VIRL2.S₂),
+                                                        VIRL2.Steps₂ (VIRC.instL 0 vs e, σ) (VIRL1.Tm.ret a, σ') →
+                                                          a.eval = some w →
+                                                            ∃ mm,
+                                                              (∃ W',
+                                                                  S3.R3 C p L W' (X86.runP p mm s) ∧
+                                                                    ((∃ ws m',
+                                                                        W' = (VIRC.WSt.done ws, m') ∧
+                                                                          VIRC.VRel (VIRC.lower2T Γ₀ e []).2 lay σ' τ
+                                                                            (VIRC.valOf w) ws) ∨
+                                                                      W'.1 = VIRC.WSt.ovf)) ∨
+                                                                ∃ j Wr,
+                                                                  VIRC.WN (VIRC.lower2T Γ₀ e []).2 j
+                                                                      (VIRC.WSt.run (VIRC.lower2T Γ₀ e []).1 ρw₀ [], m)
+                                                                      Wr ∧
+                                                                    S3.ResWhy L Wr.1 ∧ S3.ResExit L (X86.runP p mm s)) ∧
+                                                      (∀ (S : VIRL2.Config),
+                                                          VIRL2.Steps₂ (VIRC.instL 0 vs e, σ) S →
+                                                            VIRL2.Faults S →
+                                                              ∃ mm,
+                                                                (∃ W',
+                                                                    S3.R3 C p L W' (X86.runP p mm s) ∧
+                                                                      (W'.1 = VIRC.WSt.fault ∨ W'.1 = VIRC.WSt.ovf)) ∨
+                                                                  ∃ j Wr,
+                                                                    VIRC.WN (VIRC.lower2T Γ₀ e []).2 j
+                                                                        (VIRC.WSt.run (VIRC.lower2T Γ₀ e []).1 ρw₀ [],
+                                                                          m)
+                                                                        Wr ∧
+                                                                      S3.ResWhy L Wr.1 ∧
+                                                                        S3.ResExit L (X86.runP p mm s)) ∧
+                                                        ∀ (n : ℕ) (S : VIRL2.Config),
+                                                          VIRC.SrcN n (VIRC.instL 0 vs e, σ) S →
+                                                            ∃ mm,
+                                                              (∃ W',
+                                                                  S3.R3 C p L W' (X86.runP p mm s) ∧
+                                                                    (n ≤ mm ∨ W'.1 = VIRC.WSt.ovf)) ∨
+                                                                ∃ j Wr,
+                                                                  VIRC.WN (VIRC.lower2T Γ₀ e []).2 j
+                                                                      (VIRC.WSt.run (VIRC.lower2T Γ₀ e []).1 ρw₀ [], m)
+                                                                      Wr ∧
+                                                                    S3.ResWhy L Wr.1 ∧ S3.ResExit L (X86.runP p mm s)
