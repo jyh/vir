@@ -1798,6 +1798,34 @@ if cmp -s "$H/count.py" "$F/mutant69.py"; then say "ARM69 mutant NOT PLANTED"; f
 elif check69 "$F/mutant69.py"; then say "ARM69 mutant SURVIVED (a one-pass closure)"; fail=1
 else say "ARM69 mutant KILLED"; fi
 
+# ARM70 (STATUS-vir 450; amend-28 MK5): `--arm mk5` classifies the arm's interactive rules by the GOAL's CONCLUSION. Fixture in virc1_x
+# (a stage module): a_wf (member, wf) · b_typing ("type", wf) · c_eq (a = b in T: eq) · d_th (other) · g_wf (named wf, statement other)
+# · h_wf2 (named wf, statement other) · k_hyp (a membership in a HYPOTHESIS only: other) · e_rw (interactive_rw: beside) · a rule
+# commented out (not counted) · a wf rule in a NON-stage module (not counted). Population 7, wf 2 = 285 permille, held 1.
+# Mutant A: classify by NAME (`wf` in the name: 3). Mutant B: classify the WHOLE statement, not the conclusion (k_hyp read as wf: 3).
+R70="$F/vir70/theories/vir"; mkdir -p "$R70"
+printf '%s\n' "interactive a_wf : sequent { <H> >- 'x in nat }" "interactive b_typing : sequent { <H> >- \"type\"{'T} }" \
+  "interactive c_eq : sequent { <H> >- 'a = 'b in nat }" "interactive d_th : sequent { <H> >- foo{'x} }" \
+  "interactive g_wf : sequent { <H> >- bar{'x} }" "interactive h_wf2 : sequent { <H> >- baz{'x} }" \
+  "interactive k_hyp : sequent { <H>; y: 'y in nat >- foo{'y} }" "interactive_rw e_rw : foo{'x} <--> 'x" \
+  "(* interactive f_wf : sequent { <H> >- 'x in nat } *)" > "$R70/virc1_x.ml"
+printf '%s\n' "interactive z_wf : sequent { <H> >- 'x in nat }" > "$R70/virl2_other.ml"
+check70() {
+  o=$(VIR_MK5_PREFIXES=virc1_,virc2_ python3 "$1" --arm mk5 "$F/vir70") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK5.files)" = 1 ] && [ "$(v MK5.population)" = 7 ] && [ "$(v MK5.wf)" = 2 ] && [ "$(v MK5.share.permille)" = 285 ] \
+  && [ "$(v MK5.held)" = 1 ] && [ "$(v MK5.rw)" = 1 ] && [ "$(v MK5.class.eq)" = 1 ] && [ "$(v MK5.class.other)" = 4 ]
+}
+if check70 "$H/count.py"; then say "ARM70 mk5 fixture OK (population 7 in 1 stage module; wf 2 = member 1 + type 1; eq 1; other 4 incl. two named *wf* and a hypothesis-only membership; rw 1 beside; commented and non-stage rules not counted)"
+else say "ARM70 mk5 fixture FAIL"; VIR_MK5_PREFIXES=virc1_,virc2_ python3 "$H/count.py" --arm mk5 "$F/vir70"; fail=1; fi
+sed 's/            c = mk5_concl(blk)/            c = ("x in T" if "wf" in m.group(1) else "zz")/' "$H/count.py" > "$F/mutant70a.py"  # by NAME
+sed 's/    i = blk.rfind(.>-.)/    i = blk.find("sequent") - 2/' "$H/count.py" > "$F/mutant70b.py"  # the WHOLE statement, hypotheses included
+for mm in a b; do
+  if cmp -s "$H/count.py" "$F/mutant70$mm.py"; then say "ARM70 mutant $mm NOT PLANTED"; fail=1
+  elif check70 "$F/mutant70$mm.py"; then say "ARM70 mutant $mm SURVIVED"; fail=1
+  else say "ARM70 mutant $mm KILLED"; fi
+done
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
