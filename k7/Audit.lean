@@ -42,3 +42,4 @@ import K7
 #print axioms K7.router_served_x86
 #print axioms K7.router_triple_x86
 #print axioms K7.router_triple_x86_p
+#print axioms K7.router_triple_x86_proved_p
