@@ -78,3 +78,55 @@ roots of record. No proof text was read.
   declaration. MK2's measure stays the prediction's own: the arm's posted start and end per stage, summed. Two readings are printed
   beside it: lit head time, and the commit-time reconstruction. MK3 is scored on whether the checkpoint fires at the TRUE S1 close,
   in this unit.
+
+## Addendum 3 — MK2's instrument and its ledger rule, fixed 2026-11-27 before MK2 is scored (96th vir head)
+Written after the arm posted its X, X′ and S1a times (bus @111,482,987, its 11-25 21:34 post addressed to vir for MK2; @112,196,833,
+the withdrawn checkpoint) and before S1's true close. MK2 is unscored. The reader is built and tested against a synthetic fixture only.
+- **`count.py --arm mk2 <ledger>`** (selftest ARM74). The ledger has one row per stage: the stage, its posted start, its posted end,
+  the bus offset of the post that gives them, and, optionally, the start and end shas.
+- **Primary:** the posted durations, summed, in the 8 h seat-day (Addendum 2).
+  - The verdict needs all six stages (X, X′, S1, S2, S3 and the driver). It is HOLDS under 4 seat-days and FALSIFIED at 4 or more.
+  - While any stage is missing it is UNREACHED, by amend-28's scoring rule. A partial sum that has already reached 4 is printed
+    beside as the bound OVER, and it does not move the verdict.
+  - Each time carries its UTC offset, and a naive time reads RED. A row that cites no bus offset reads RED. A ledger with any RED row
+    reads RED.
+- **The ledger rule, fixed here because the arm's posts give S1 more than one start.** A stage's start is the EARLIEST time the arm
+  posts for work on that stage, its design page included. Its end is the LATEST time the arm posts for the stage's close. The other
+  posted times are listed in the source cell.
+  - For S1 the posted starts are the design page at 20:51, part 1 at 21:15, and 21:33 (the checkpoint's commit-time start). The
+    ledger takes 20:51.
+  - This is the larger reading, and it goes against the prediction this seat wrote.
+  - Time inside a stage's span is not subtracted, even when the stage is held: the measure is the posted span. Two stages may overlap,
+    for example a design page written while the previous stage is open. The primary still sums them, as MK2 says, and the union is
+    printed beside.
+- **Beside, deciding nothing:**
+  - the arm's 24 h reading;
+  - the union of the posted intervals, so an overlap is counted once;
+  - X + X′ + S1, the checkpoint's span (MK3 is scored from the arm's checkpoint post, not from this figure);
+  - with `VIR_MK2_GIT` and both shas, the commit-time reconstruction from committer dates.
+  - Lit head time, the other beside reading Addendum 2 names, is not read by this instrument. At scoring it is read from the arm's
+    BOOTED and BANKING markers and printed by hand, marked as such.
+- **ARM74's mutants, all KILLED:** (a) the 24 h unit; (b) a verdict on a partial ledger; (c) the offset dropped, so times are read
+  as wall clock; (d) the citation check dropped.
+- **The ledger and any control on the arm's posted times are kept outside this tree until RESULTS-17**, as Addendum 2 keeps the
+  per-stage figures.
+
+## Addendum 4 — MK6's instrument, built 2026-11-27 before the arm's S3 exists (96th vir head)
+Written while the arm is on S1b. No S3 module exists, and no MetaPRL file was read for this addendum. The reader is built and tested
+against a synthetic fixture only.
+- **`count.py --arm mk6 <tree>`** (selftest ARM75), with `VIR_MK6_PREFIXES` set to the S3 emitter modules' prefix. That is
+  `virc3_`, Addendum 2's S3 pool. If the arm names its S3 modules otherwise, Addendum 2's rule applies: it is recorded before S3's
+  count is read, and the prefix is the only thing that may change.
+- **Primary:** every identifier in those modules' text, with comments stripped. An identifier is flagged when its components include
+  `push` or `pop`, or one that starts with `cmov`. Components are split on `_` and at camelCase boundaries, and case is folded.
+  - So `x86_push`, `cmovle` and `X86Pop` are flagged, and `popcount`, `pushout` and `population` are not.
+  - The verdict is FALSIFIED if any identifier is flagged, HOLDS if none is, and UNREACHED when no S3 module exists.
+- **Beside, deciding nothing:** with `VIR_MK6_MODEL` pointing at the stage-X model (`virx86`) at the scored sha:
+  - the model's declared operators (its `declare` and `define … :` forms);
+  - the flagged ones among them (MK6 is INFORMED that the model declares none);
+  - the model operators the emitter names, which are its emitted forms.
+  The operator list is printed whole, so a misparse of the model is visible. Its check on the real model's syntax is owed at S3's close.
+- **Limit, printed beside the verdict:** the emitter's SOURCE is read, not its output on a program. A form built from a string, or
+  from encoded bytes, is not seen.
+- **ARM75's mutants, all KILLED:** (a) comments read; (b) a substring match instead of components; (c) case kept; (d) the prefix filter
+  dropped, so a non-stage module is read.

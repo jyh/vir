@@ -1911,6 +1911,104 @@ for mm in a b; do
   else say "ARM73 mutant $mm KILLED"; fi
 done
 
+# ARM74 (STATUS-vir 461; amend-28 MK2; DECLARATIONS-MK Addendum 3): `--arm mk2 <ledger>` sums the arm's POSTED start and end per stage
+# in the 8 h seat-day. Durations below are the fixture's construction, and every expected figure is derived from them, never typed.
+# Ledgers: (a) all six stages, total < 4 seat-days ⇒ HOLDS; (b) three of them ⇒ UNREACHED, bound UNDER; (c) three heavy rows reaching 4
+# ⇒ still UNREACHED (amend-28: "UNREACHED, never FALSIFIED"), bound OVER; (g) (c) plus the other three stages ⇒ FALSIFIED; (d) (a) with
+# one naive time and one uncited row ⇒ RED, 2 red rows; (e) (a) with S1's start at -08:00 and its end in UTC across midnight ⇒ S1 reads
+# its own duration; (f) the commit-time reconstruction beside, from a two-commit repo.
+# Mutants: the 24 h unit; a verdict on a partial ledger; the offset dropped (the wall-clock reading); the citation check dropped.
+L74="$F/mk2"; mkdir -p "$L74"
+S74=(X "X'" S1 S2 S3 driver); D74=(90 300 400 200 300 100); C74=(700 700 600)
+row74() { printf '%s\t2026-11-%02dT08:00-08:00\t2026-11-%02dT%02d:%02d-08:00\t%s\n' "$1" "$2" "$2" $((8 + $3 / 60)) $(($3 % 60)) "$4"; }
+: > "$L74/a.tsv"; T74a=0; i=0
+while [ $i -lt 6 ]; do row74 "${S74[$i]}" $((10 + i)) "${D74[$i]}" "@1000$i" >> "$L74/a.tsv"; T74a=$((T74a + D74[i])); i=$((i+1)); done
+head -3 "$L74/a.tsv" > "$L74/b.tsv"; T74b=$((D74[0] + D74[1] + D74[2]))
+: > "$L74/c.tsv"; T74c=0; i=0
+while [ $i -lt 3 ]; do row74 "${S74[$((i + 2))]}" $((20 + i)) "${C74[$i]}" "@2000$i" >> "$L74/c.tsv"; T74c=$((T74c + C74[i])); i=$((i+1)); done
+cp "$L74/c.tsv" "$L74/g.tsv"; T74g=$T74c; i=0
+while [ $i -lt 2 ]; do row74 "${S74[$i]}" $((24 + i)) "${D74[$i]}" "@3000$i" >> "$L74/g.tsv"; T74g=$((T74g + D74[i])); i=$((i+1)); done
+row74 driver 26 "${D74[5]}" @30005 >> "$L74/g.tsv"; T74g=$((T74g + D74[5]))
+awk -F'\t' -v OFS='\t' 'NR==2{$4=""} NR==3{sub(/-08:00$/, "", $2)} {print}' "$L74/a.tsv" > "$L74/d.tsv"
+E74=$((7 * 60 + D74[2])); printf '# a comment line\n' > "$L74/e.tsv"
+awk -F'\t' -v OFS='\t' -v e="$(printf '2026-11-26T%02d:%02dZ' $((E74 / 60)) $((E74 % 60)))" \
+  'NR==3{$2="2026-11-25T23:00-08:00"; $3=e} {print}' "$L74/a.tsv" >> "$L74/e.tsv"
+G74="$F/g74"; git -C "$F" init -q g74; G74C=150
+GIT_COMMITTER_DATE='2026-11-25T08:00:00-08:00' git -C "$G74" -c user.name=t -c user.email=t@t commit -q --allow-empty -m a
+GIT_COMMITTER_DATE="$(printf '2026-11-25T%02d:%02d:00-08:00' $((8 + G74C / 60)) $((G74C % 60)))" git -C "$G74" -c user.name=t -c user.email=t@t commit -q --allow-empty -m b
+A74=$(git -C "$G74" rev-parse HEAD~1); B74=$(git -C "$G74" rev-parse HEAD)
+awk -F'\t' -v OFS='\t' -v a="$A74" -v b="$B74" 'NR==1{$5=a; $6=b} {print}' "$L74/a.tsv" > "$L74/f.tsv"
+check74() {
+  local o; g74() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  o=$(python3 "$1" --arm mk2 "$L74/a.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = HOLDS ] && [ "$(g74 MK2.total.min)" = "$T74a" ] && [ "$(g74 MK2.stages.reached)" = 6 ] \
+  && [ "$(g74 MK2.total.seatdays.milli)" = $((1000 * T74a / 480)) ] && [ "$(g74 MK2.beside.seatdays24.milli)" = $((1000 * T74a / 1440)) ] \
+  && [ "$(g74 MK2.beside.XtoS1.milli)" = $((1000 * (D74[0] + D74[1] + D74[2]) / 480)) ] && [ "$(g74 MK2.red)" = 0 ] || return 1
+  o=$(python3 "$1" --arm mk2 "$L74/b.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = UNREACHED ] && [ "$(g74 MK2.total.min)" = "$T74b" ] && [ "$(g74 MK2.stages.reached)" = 3 ] \
+  && [ "$(g74 MK2.beside.bound)" = UNDER ] || return 1
+  o=$(python3 "$1" --arm mk2 "$L74/c.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = UNREACHED ] && [ "$(g74 MK2.total.min)" = "$T74c" ] && [ "$T74c" -ge 1920 ] && [ "$(g74 MK2.beside.bound)" = OVER ] || return 1
+  o=$(python3 "$1" --arm mk2 "$L74/g.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = FALSIFIED ] && [ "$(g74 MK2.total.min)" = "$T74g" ] && [ "$(g74 MK2.stages.reached)" = 6 ] || return 1
+  o=$(python3 "$1" --arm mk2 "$L74/d.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = RED ] && [ "$(g74 MK2.red)" = 2 ] || return 1
+  o=$(python3 "$1" --arm mk2 "$L74/e.tsv") || return 1
+  [ "$(g74 MK2.verdict)" = HOLDS ] && [ "$(g74 MK2.S1.min)" = "${D74[2]}" ] && [ "$(g74 MK2.total.min)" = "$T74a" ] || return 1
+  o=$(VIR_MK2_GIT="$G74" python3 "$1" --arm mk2 "$L74/f.tsv") || return 1
+  [ "$(g74 MK2.beside.commit.X.min)" = "$G74C" ] && [ "$(g74 MK2.verdict)" = HOLDS ]
+}
+if check74 "$H/count.py"; then say "ARM74 mk2 OK (a HOLDS $T74a min; b UNREACHED $T74b; c UNREACHED $T74c with 3 of 6, bound OVER; g FALSIFIED $T74g; d RED 2 rows; e S1 ${D74[2]} across a UTC midnight; f commit beside $G74C)"
+else say "ARM74 mk2 FAIL"; fail=1; fi
+sed 's/^UNIT_MIN = 480  # MK2-UNIT/UNIT_MIN = 1440  # MK2-UNIT/' "$H/count.py" > "$F/mutant74a.py"  # the arm's 24 h reading as the unit
+sed 's/elif len(have) < len(MK2_STAGES):  # MK2-ALL/elif False:  # MK2-ALL/' "$H/count.py" > "$F/mutant74b.py"  # a verdict on a partial ledger
+sed 's/    return t  # MK2-TZ/    return t.replace(tzinfo=None)  # MK2-TZ/' "$H/count.py" > "$F/mutant74c.py"  # the wall-clock reading
+sed 's/if not src:  # MK2-SRC/if False:  # MK2-SRC/' "$H/count.py" > "$F/mutant74d.py"  # an uncited time accepted
+for mm in a b c d; do
+  if cmp -s "$H/count.py" "$F/mutant74$mm.py"; then say "ARM74 mutant $mm NOT PLANTED"; fail=1
+  elif check74 "$F/mutant74$mm.py"; then say "ARM74 mutant $mm SURVIVED"; fail=1
+  else say "ARM74 mutant $mm KILLED"; fi
+done
+
+# ARM75 (STATUS-vir 462; amend-28 MK6; DECLARATIONS-MK Addendum 4): `--arm mk6 <tree>` reads the S3 emitter modules (VIR_MK6_PREFIXES)
+# for any identifier with a push, pop or cmov* COMPONENT (split on `_` and camelCase, case folded), comments stripped; beside, the stage-X
+# model's declared operators (VIR_MK6_MODEL) and which of them the emitter names. Fixture: a model with MOPS + one `define`d operator and
+# a decoy `popcount_helper`; (a) an emitter naming EMIT, with a comment saying push/pop, decoys population/pushout_lemma/popcounter,
+# and a NON-stage module that uses x86_push ⇒ HOLDS; (b) (a) plus FLAG ⇒ FALSIFIED with |FLAG| flagged; (c) no stage module ⇒ UNREACHED.
+# Mutants: comments read; a substring match; case kept; the prefix filter dropped.
+M75="$F/x86m"; mkdir -p "$M75" "$F/vir75a/theories/vir" "$F/vir75b/theories/vir" "$F/vir75c/theories/vir"
+MOPS=(mov add imul setcc jmp popcount_helper); EMIT=(mov add imul setcc); FLAG=(x86_push cmovle X86Pop)
+: > "$M75/virx86.ml"; for o in "${MOPS[@]}"; do printf "declare %s{'a; 'b}\n" "$o" >> "$M75/virx86.ml"; done
+printf "declare sequent [x86] { Term : Term >- Term } : Term\ndefine unfold_x86lea : x86lea{'a; 'b} <--> add{'a; 'b}\n" >> "$M75/virx86.ml"
+NM75=$(( ${#MOPS[@]} + 1 ))
+emit75() { printf '(* the emitter: we never emit push or pop here *)\nlet population = 3\nlet pushout_lemma = popcounter\n'
+  for o in "${EMIT[@]}"; do printf "interactive e_%s : sequent { <H> >- emits{%s{'x; 'y}} }\n" "$o" "$o"; done; }
+emit75 > "$F/vir75a/theories/vir/virc3_emit.ml"
+printf "interactive w : sequent { <H> >- x86_push{'r} }\n" > "$F/vir75a/theories/vir/virc2_other.ml"
+{ emit75; i=0; for o in "${FLAG[@]}"; do printf "interactive f_%d : sequent { <H> >- emits{%s{'r}} }\n" $i "$o"; i=$((i+1)); done; } > "$F/vir75b/theories/vir/virc3_emit.ml"
+printf "interactive w : sequent { <H> >- x86_push{'r} }\n" > "$F/vir75c/theories/vir/virc2_other.ml"
+check75() {
+  local o; g75() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75a") || return 1
+  [ "$(g75 MK6.verdict)" = HOLDS ] && [ "$(g75 MK6.emit.flagged)" = 0 ] && [ "$(g75 MK6.emit.files)" = 1 ] \
+  && [ "$(g75 MK6.model.ops)" = "$NM75" ] && [ "$(g75 MK6.model.flagged)" = 0 ] && [ "$(g75 MK6.emit.ops)" = "${#EMIT[@]}" ] || return 1
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75b") || return 1
+  [ "$(g75 MK6.verdict)" = FALSIFIED ] && [ "$(g75 MK6.emit.flagged)" = "${#FLAG[@]}" ] || return 1
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75c") || return 1
+  [ "$(g75 MK6.verdict)" = UNREACHED ] && [ "$(g75 MK6.emit.files)" = 0 ]
+}
+if check75 "$H/count.py"; then say "ARM75 mk6 OK (a HOLDS: ${#EMIT[@]} model ops named of $NM75, 0 flagged past a comment, 3 decoys and a non-stage module; b FALSIFIED ${#FLAG[@]}; c UNREACHED)"
+else say "ARM75 mk6 FAIL"; fail=1; fi
+sed 's/t = strip_ml_comments(read(os.path.join(root, f)))  # MK6-STRIP/t = read(os.path.join(root, f))  # MK6-STRIP/' "$H/count.py" > "$F/mutant75a.py"
+sed "s/return any(c in ('push', 'pop') or c.startswith('cmov') for c in comps)  # MK6-COMP/return any(k in name.lower() for k in ('push', 'pop', 'cmov'))  # MK6-COMP/" "$H/count.py" > "$F/mutant75b.py"
+sed 's/comps = \[c.lower() for c in comps\]  # MK6-CASE/comps = [c for c in comps]  # MK6-CASE/' "$H/count.py" > "$F/mutant75c.py"
+sed 's/ and f.startswith(tuple(pre))  # MK6-PRE/  # MK6-PRE/' "$H/count.py" > "$F/mutant75d.py"
+for mm in a b c d; do
+  if cmp -s "$H/count.py" "$F/mutant75$mm.py"; then say "ARM75 mutant $mm NOT PLANTED"; fail=1
+  elif check75 "$F/mutant75$mm.py"; then say "ARM75 mutant $mm SURVIVED"; fail=1
+  else say "ARM75 mutant $mm KILLED"; fi
+done
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
