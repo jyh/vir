@@ -44,3 +44,37 @@ for this addendum. The reader is built and tested against a synthetic fixture on
 - Beside each row are the closure's rule list, roots-only tokens, refine steps, and crossRefs. Only `MK4.M.<S>.C5tok` is primary.
 - ARM71 mutants, all KILLED: (a) a closure that stops at the roots' own names; (b) one that ignores the pool; (c) one that drops the
   reduce resource. A posted root with no derivation in its pool reads RED, never 0.
+
+## Addendum 2 — the MetaPRL pools, MK5's prefixes and MK2/MK3's unit, fixed 2026-11-27 at the arm's POSTED S1 close (found not to be S1's close; below), before any MetaPRL count is scored (94th vir head)
+Written after mojave posted S1 PROVED (bus @112,196,833: `virc1_sim` fresh 149/149 at metaprl `8c7ae9b48`, branch mojave/vir-s1e,
+local) and before `vircm` or `mk5` was run on any MetaPRL compiler-arm sha. What was read to write it: the file names under
+theories/vir at that sha, the rule names in `virc1_sim.ml`, and the arm's s1d/STEP-PLAN (tools `b83d456`), which names the three
+roots of record. No proof text was read.
+- **S1 scored sha: NOT FIXED HERE.** `8c7ae9b48` is NOT S1's close. A refuter pass over it (four read-only readers, two of
+  them independently) found that it proves let/eff flattening `anf : L2 → L2` preserves the L2 step relation (`anf_step`,
+  `anf_stuck`, `anf_run`). It does not prove the plan's S1: `compile1`, the function table and `fo2` are absent, and no theorem
+  says the output is flat. The arm's own plan lists "S1-F0 (b) naming + fo2 + S1's theorem" as owed after `anf_run`. S1's sha is
+  the commit at which S1's theorem is of record. It is fixed in a third addendum before S1's count is read.
+- **`VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_'`** — the comment's form in count.py, now fixed.
+  - S1's pool is the three modules the arm posted for S1: `virc1_anf`, `virc1_lem`, `virc1_sim`.
+  - S2's pool holds S1's modules too, as the Lean S2 shares VIRC with S1.
+  - S3's pool is `virc3_` alone; stage X (`virx86`, a separate tree, the parallel of x86lean) and L2 (`virl2_*`) are crossRefs, as L1/L2
+    and x86lean are imports the Lean half does not follow. If the arm names its S3 modules otherwise, that is recorded in a third
+    addendum BEFORE S3's count is read, and the prefix is the only thing that may change.
+- **`VIR_MK4M_ROOTS`: S1's roots are S1's theorem as the arm posts it at the true close.** If `anf_run`, `anf_step` and
+  `anf_stuck` are in that theorem's closure, they are counted there. S2's and S3's roots are fixed the same way, from the arm's
+  posts at those closes, before their counts, in this file.
+- **A reading at 8c7ae9b48 exists and is SEALED as a sub-stage reading.** `vircm` was run once with roots
+  `anf_run,anf_step,anf_stuck` before the refuter verdicts came back. It decides nothing and is not MK4's S1 row. It is printed
+  beside S1 in RESULTS-17 as "flattening only".
+- **`VIR_MK5_PREFIXES='virc1_,virc2_,virc3_'`** — the compiler stage modules. `virx86` (stage X) is kept out, as its Lean parallel
+  (x86lean) is not in the Lean population either; mk5 on `virx86` alone may be printed beside, and decides nothing. MK5 is read once,
+  at S3's close, over the sha that closes S3.
+- **Publication:** as on the Lean half, the per-stage MetaPRL figures are measured as stages close and NOT published before RESULTS-17,
+  so neither arm reads a target from the other.
+- **MK2 and MK3: the unit.** No unit was declared before now. The unit is the seat-day of the arm's price brief (2026-11-16,
+  "1 seat-day ≈ 8 h, the LESSONS ledger's unit"), because MK2's "< 4" and MK3's "2×" are both written against that brief's
+  calibrated bands. This line is written AFTER the arm posted X+S1a figures in a 24 h unit. It is a disclosure, not a blind
+  declaration. MK2's measure stays the prediction's own: the arm's posted start and end per stage, summed. Two readings are printed
+  beside it: lit head time, and the commit-time reconstruction. MK3 is scored on whether the checkpoint fires at the TRUE S1 close,
+  in this unit.
