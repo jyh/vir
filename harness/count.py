@@ -12,7 +12,7 @@ Artifacts the LEAN arm leaves (lean/ in this tree, built only by ../saltbuild.sh
 The METAPRL arm's artifact names are fixed with mojave (STATUS-vir row 6); until then only C5 is read (*.ml / *.mli).
 C2 has no extractor on either side until mojave's census label is known: it prints UNMEASURED, never 0.
 """
-import argparse, os, re, subprocess, sys
+import argparse, datetime, os, re, subprocess, sys
 
 # C1: the token class fixed in PREDICTIONS.md (elaborated-term spellings).
 CAST_RE = re.compile(r'(?<![A-Za-z0-9_.])(HEq|cast|Eq\.mpr|Eq\.rec|heq_of_eq|eq_rec|Eq\.ndrec|Nat\.sub_sub)(?![A-Za-z0-9_])|▸|≍')  # ≍ = HEq's notation
@@ -2248,6 +2248,97 @@ def mk5(d):
     return rows
 
 
+# amend-28 MK2 (STATUS-vir 461; selftest ARM74; compiler/DECLARATIONS-MK.md Addendum 3). TIME: the arm's POSTED start and end per stage,
+# summed, in the price brief's seat-day of 8 h (Addendum 2). LEDGER is a TSV, one row per stage:
+#   stage <TAB> posted start <TAB> posted end <TAB> source [<TAB> start sha <TAB> end sha]
+# stage is one of X, X', S1, S2, S3, driver (X′ is read as X'). Each time is ISO 8601 WITH its offset ('Z' or ±HH:MM); a naive time has
+# two readings on this box, so it reads RED, never local. source is the bus offset(s) of the post that gives the times; an uncited row
+# is RED. The verdict needs all six stages: HOLDS under 4 seat-days, FALSIFIED at 4 or more, and UNREACHED while any stage is missing,
+# as amend-28's scoring rule says ("UNREACHED, never FALSIFIED"). A partial sum that has already reached 4 is printed beside as the
+# bound OVER, and it does not move the verdict. A ledger with any RED row reads RED. BESIDE, deciding nothing: the arm's 24 h reading, the
+# union of the intervals (an overlap counted once), X + X' + S1 (the checkpoint's span; MK3 itself is read from the arm's post), and,
+# with VIR_MK2_GIT and both shas, the commit-time reconstruction (committer dates).
+MK2_STAGES = ('X', "X'", 'S1', 'S2', 'S3', 'driver')
+UNIT_MIN = 480  # MK2-UNIT
+
+
+def mk2_time(s):
+    s = s.strip()
+    try:
+        t = datetime.datetime.fromisoformat(s[:-1] + '+00:00' if s.endswith('Z') else s)
+    except ValueError:
+        return None
+    if t.tzinfo is None:
+        return None
+    return t  # MK2-TZ
+
+
+def mk2(ledger):
+    rows, red, have, spans = [], [], {}, []
+    lines = [l for l in read(ledger).splitlines() if l.strip() and not l.lstrip().startswith('#')] if os.path.isfile(ledger) else []
+    if not lines:
+        return [('MK2.verdict', 'UNREACHED', 'EMPTY:no ledger rows'), ('MK2.red', 0, 'EMPTY')]
+    git = os.environ.get('VIR_MK2_GIT', '')
+    for n, l in enumerate(lines, 1):
+        c = l.split('\t')
+        st = c[0].strip().replace('′', "'") if c else ''
+        src = c[3].strip() if len(c) > 3 else ''
+        a, b = (mk2_time(c[1]), mk2_time(c[2])) if len(c) > 2 else (None, None)
+        why = ('unknown stage %r' % st if st not in MK2_STAGES else 'duplicate stage' if st in have
+               else 'naive or unparsed time' if a is None or b is None else 'end before start' if b < a else '')
+        if not why:
+            if not src:  # MK2-SRC
+                why = 'uncited (no bus offset)'
+        if why:
+            red.append('row%d:%s:%s' % (n, st or '-', why))
+            continue
+        m = int((b - a).total_seconds()) // 60
+        have[st] = m
+        spans.append((a, b))
+        rows.append(('MK2.%s.min' % st, m, 'MEASURED:posted %s..%s (%s)' % (c[1].strip(), c[2].strip(), src)))
+        if git and len(c) > 5 and c[4].strip() and c[5].strip():
+            ts = []
+            for sha in (c[4].strip(), c[5].strip()):
+                r = subprocess.run(['git', '-C', git, 'show', '-s', '--format=%cI', sha], capture_output=True, text=True)
+                ts.append(mk2_time(r.stdout) if r.returncode == 0 else None)
+            rows.append(('MK2.beside.commit.%s.min' % st, int((ts[1] - ts[0]).total_seconds()) // 60 if None not in ts else 0,
+                         'BESIDE:committer dates %s..%s' % (c[4].strip()[:12], c[5].strip()[:12]) if None not in ts
+                         else 'RED:a sha did not resolve in VIR_MK2_GIT (beside only)'))
+    tot = sum(have.values())
+    if red:
+        v = 'RED'
+    elif len(have) < len(MK2_STAGES):  # MK2-ALL
+        v = 'UNREACHED'
+    elif tot < 4 * UNIT_MIN:
+        v = 'HOLDS'
+    else:
+        v = 'FALSIFIED'
+    union, cur = 0, None
+    for a, b in sorted(spans):
+        if cur and a <= cur[1]:
+            cur = (cur[0], max(cur[1], b))
+        else:
+            union += int((cur[1] - cur[0]).total_seconds()) // 60 if cur else 0
+            cur = (a, b)
+    union += int((cur[1] - cur[0]).total_seconds()) // 60 if cur else 0
+    xs1 = sum(have.get(k, 0) for k in ('X', "X'", 'S1'))
+    missing = [k for k in MK2_STAGES if k not in have]
+    rows += [('MK2.stages.reached', len(have), 'MEASURED:' + (','.join(k for k in MK2_STAGES if k in have) or '-')
+              + ';MISSING:' + (','.join(missing) or '-')),
+             ('MK2.total.min', tot, 'MEASURED:posted durations summed'),
+             ('MK2.total.seatdays.milli', 1000 * tot // UNIT_MIN, 'MEASURED:floor(1000 x minutes / %d), the 8 h seat-day' % UNIT_MIN),
+             ('MK2.verdict', v, 'MEASURED:< 4 seat-days over all six stages (%d of 6 posted; %d vs %d min)' % (len(have), tot, 4 * UNIT_MIN)),
+             ('MK2.red', len(red), 'RED:' + ' '.join(red) if red else 'MEASURED:none'),
+             ('MK2.beside.bound', 'OVER' if tot >= 4 * UNIT_MIN else 'UNDER',
+              'BESIDE:the posted sum against 4 seat-days now; OVER on a partial ledger means the six-stage total, if reached, cannot hold'),
+             ('MK2.beside.seatdays24.milli', 1000 * tot // 1440, 'BESIDE:the 24 h reading, decides nothing'),
+             ('MK2.beside.union.min', union, 'BESIDE:union of the posted intervals (an overlap counted once)'),
+             ('MK2.beside.XtoS1.milli', 1000 * xs1 // UNIT_MIN, "BESIDE:X + X' + S1 in the 8 h unit; MK3 is read from the arm's post"),
+             ('MK2.limits', 0, 'LIMIT:times are transcribed from the arm\'s posts (CORRECT-NOT-VERIFIED); this reads their form and sum, '
+              'not the posts; lit head time is not read here')]
+    return rows
+
+
 # amend-28 MK4, the MetaPRL HALF (STATUS-vir 448; selftest ARM71; compiler/DECLARATIONS-MK.md Addendum 1). The arm's stage roots' IN-LAYER
 # PROOF CLOSURE in C5 tokens, metaprll4's reading (ARM57) over a working tree: a row's closure = its posted roots + every rule of the
 # stage's POOL that a closure text names as a whole identifier (fixpoint) + every pool `{| reduce |}` rule when a text invokes reduceC/T.
@@ -2901,7 +2992,7 @@ def metaprll5(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl', 'mk5', 'vircm'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl', 'mk5', 'vircm', 'mk2'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2929,6 +3020,8 @@ def main():
         rows = leanl4(a.dir)
     elif a.arm == 'mk5':
         rows = mk5(a.dir)
+    elif a.arm == 'mk2':
+        rows = mk2(a.dir)
     elif a.arm == 'vircm':
         rows = vircm(a.dir)
     elif a.arm == 'vircl':
