@@ -2306,7 +2306,46 @@ def vircm(d):
                  ('MK4.M.%s.rootTok' % st, sum(R[k][1] for k in rk), 'BESIDE:roots only'),
                  ('MK4.M.%s.steps' % st, sum(R[k][0] for k in seen), 'BESIDE:refine steps in the closure'),
                  ('MK4.M.%s.crossRefs' % st, len(cross), 'BESIDE:stored rules outside the pool named by the closure, not followed:' + (','.join(sorted(cross)) or '-'))]
+        rows.append(vircm_replay(st, sorted({mod[k] for k in R if inp(k)}), R, mod))
     return rows
+
+
+# STATUS-vir 459 (selftest ARM73): the replay receipt beside a stage's closure (the S1 refuter's MEDIUM: no replay outside the working tree
+# that wrote the archive). VIR_MK4M_REPLAY='S1=virc1_anf:LOG,virc1_lem:LOG,...' maps EVERY pool module to a replay log; a module HOLDS when
+# the log's LAST `status_all: a/b complete` line has a == b == the module's stored derivations in its .prla (derived from the artifact,
+# never typed); a NOSTAT session's 0/0 fails it, since every pool module holds >= 1 derivation. Unset ⇒ UNREPLAYED (the count stands, unreceipted). LIMIT printed with the verdict.
+VIRCM_STAT_RE = re.compile(r'status_all:\s*(\d+)/(\d+)\s+complete')
+
+
+def vircm_replay(st, mods, R, mod):
+    spec = {}
+    for p in os.environ.get('VIR_MK4M_REPLAY', '').split(';'):
+        if '=' in p and p.split('=', 1)[0].strip() == st:
+            for e in p.split('=', 1)[1].split(','):
+                if ':' in e:
+                    spec[e.split(':', 1)[0].strip()] = e.split(':', 1)[1].strip()
+    lim = ':LIMIT the log cannot show it was taken from a cold clone or at the scored sha; the receipt names its logs, the reader checks their source'
+    if not spec:
+        return ('MK4.M.%s.replay' % st, 0, 'UNREPLAYED:no VIR_MK4M_REPLAY entry for this stage' + lim)
+    bad = []
+    for m in mods:
+        n = sum(1 for k in R if mod[k] == m)
+        lg = spec.get(m)
+        if not lg or not os.path.isfile(lg):
+            bad.append('%s:no log' % m)
+            continue
+        hits = VIRCM_STAT_RE.findall(read(lg))  # VIRCM-LAST
+        if not hits:
+            bad.append('%s:no status_all line' % m)
+            continue
+        a, b = int(hits[-1][0]), int(hits[-1][1])
+        if not a == b == n:  # VIRCM-EQ
+            bad.append('%s:status_all %d/%d vs %d stored' % (m, a, b, n))
+    extra = sorted(set(spec) - set(mods))
+    if bad:
+        return ('MK4.M.%s.replay' % st, 0, 'RED:' + ';'.join(bad) + lim)
+    return ('MK4.M.%s.replay' % st, len(mods), 'HELD:%d pool module(s) each status_all n/n = stored derivations:%s%s%s'
+            % (len(mods), ','.join(mods), (':BESIDE log(s) for non-pool modules ignored:' + ','.join(extra)) if extra else '', lim))
 
 
 # amend-23 D5 on the DEFLATE arm (STATUS-vir 293 (c); selftest ARM58). DIR is deflate/ (it holds VIRDeflate/). FILE-LEVEL C5 tokens, as
