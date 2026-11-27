@@ -110,3 +110,23 @@ the withdrawn checkpoint) and before S1's true close. MK2 is unscored. The reade
   as wall clock; (d) the citation check dropped.
 - **The ledger and any control on the arm's posted times are kept outside this tree until RESULTS-17**, as Addendum 2 keeps the
   per-stage figures.
+
+## Addendum 4 — MK6's instrument, built 2026-11-27 before the arm's S3 exists (96th vir head)
+Written while the arm is on S1b. No S3 module exists, and no MetaPRL file was read for this addendum. The reader is built and tested
+against a synthetic fixture only.
+- **`count.py --arm mk6 <tree>`** (selftest ARM75), with `VIR_MK6_PREFIXES` set to the S3 emitter modules' prefix. That is
+  `virc3_`, Addendum 2's S3 pool. If the arm names its S3 modules otherwise, Addendum 2's rule applies: it is recorded before S3's
+  count is read, and the prefix is the only thing that may change.
+- **Primary:** every identifier in those modules' text, with comments stripped. An identifier is flagged when its components include
+  `push` or `pop`, or one that starts with `cmov`. Components are split on `_` and at camelCase boundaries, and case is folded.
+  - So `x86_push`, `cmovle` and `X86Pop` are flagged, and `popcount`, `pushout` and `population` are not.
+  - The verdict is FALSIFIED if any identifier is flagged, HOLDS if none is, and UNREACHED when no S3 module exists.
+- **Beside, deciding nothing:** with `VIR_MK6_MODEL` pointing at the stage-X model (`virx86`) at the scored sha:
+  - the model's declared operators (its `declare` and `define … :` forms);
+  - the flagged ones among them (MK6 is INFORMED that the model declares none);
+  - the model operators the emitter names, which are its emitted forms.
+  The operator list is printed whole, so a misparse of the model is visible. Its check on the real model's syntax is owed at S3's close.
+- **Limit, printed beside the verdict:** the emitter's SOURCE is read, not its output on a program. A form built from a string, or
+  from encoded bytes, is not seen.
+- **ARM75's mutants, all KILLED:** (a) comments read; (b) a substring match instead of components; (c) case kept; (d) the prefix filter
+  dropped, so a non-stage module is read.

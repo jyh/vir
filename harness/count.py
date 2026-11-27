@@ -2339,6 +2339,52 @@ def mk2(ledger):
     return rows
 
 
+# amend-28 MK6 (STATUS-vir 462; selftest ARM75; compiler/DECLARATIONS-MK.md Addendum 4). INSTRUCTION SET: the arm's S3 emits no push, pop
+# or cmov. DIR holds theories/vir at the scored sha; VIR_MK6_PREFIXES = the S3 emitter modules' filename prefixes (Addendum 2: virc3_).
+# PRIMARY: every identifier in those modules' text, comments stripped, whose COMPONENTS (split on `_` and camelCase, case folded) include
+# push or pop, or one starting cmov. FALSIFIED if any; HOLDS if none; UNREACHED with no such module. BESIDE: VIR_MK6_MODEL (files or dirs
+# of the stage-X model, .ml/.mli) — its declared operators (`declare` and `define … :` forms), the flagged ones among them, and the model
+# operators the emitter names (its emitted forms). LIMIT: the emitter's SOURCE is read, not its output on a program.
+MK6_ID_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_']*")
+MK6_DECL_RE = re.compile(r'^[ \t]*declare[ \t]+(?!sequent\b|typeclass\b|rewrite\b)"?([A-Za-z_][A-Za-z0-9_\']*)', re.M)
+MK6_DEF_RE = re.compile(r'^[ \t]*define[ \t]+[A-Za-z_][A-Za-z0-9_\']*[ \t]*(?:\{\|[^|]*\|\}[ \t]*)?:[ \t]*"?([A-Za-z_][A-Za-z0-9_\']*)', re.M)
+
+
+def mk6_flag(name):
+    comps = [c for part in name.split('_') for c in re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?![a-z])|[0-9]+', part)]
+    comps = [c.lower() for c in comps]  # MK6-CASE
+    return any(c in ('push', 'pop') or c.startswith('cmov') for c in comps)  # MK6-COMP
+
+
+def mk6(d):
+    root = os.path.join(os.path.abspath(d), 'theories', 'vir')
+    pre = [x for x in os.environ.get('VIR_MK6_PREFIXES', '').split(',') if x]
+    keep = lambda f: f.endswith('.ml') and f.startswith(tuple(pre))  # MK6-PRE
+    files_ = sorted(f for f in os.listdir(root) if keep(f)) if pre and os.path.isdir(root) else []
+    ids = set()
+    for f in files_:
+        t = strip_ml_comments(read(os.path.join(root, f)))  # MK6-STRIP
+        ids |= set(MK6_ID_RE.findall(t))
+    model, mfiles = set(), []
+    for p in [x for x in os.environ.get('VIR_MK6_MODEL', '').split(',') if x]:
+        mfiles += sorted(os.path.join(p, f) for f in os.listdir(p) if f.endswith(('.ml', '.mli'))) if os.path.isdir(p) else [p]
+    for p in mfiles:
+        t = strip_ml_comments(read(p)) if os.path.isfile(p) else ''
+        model |= set(MK6_DECL_RE.findall(t)) | set(MK6_DEF_RE.findall(t))
+    flagged = sorted(i for i in ids if mk6_flag(i))
+    named = sorted(model & ids)
+    mflag = sorted(m for m in model if mk6_flag(m))
+    v = 'UNREACHED' if not files_ else 'FALSIFIED' if flagged else 'HOLDS'
+    return [('MK6.emit.files', len(files_), 'POPULATION:' + (','.join(files_) or '-')),
+            ('MK6.emit.flagged', len(flagged), 'MEASURED:' + (','.join(flagged) or 'none')),
+            ('MK6.verdict', v, 'MEASURED:no identifier with a push, pop or cmov* component in the S3 emitter modules'),
+            ('MK6.model.ops', len(model), 'BESIDE:' + (','.join(sorted(model)) or '-') + ' (from %d model file(s))' % len(mfiles)),
+            ('MK6.model.flagged', len(mflag), 'BESIDE:' + (','.join(mflag) or 'none')),
+            ('MK6.emit.ops', len(named), 'BESIDE:model operators the emitter names: ' + (','.join(named) or '-')),
+            ('MK6.limits', 0, 'LIMIT:reads the emitter\'s source identifiers, not its output on a program; a form built from a string or '
+             'from encoded bytes is not seen; the model\'s operators are printed so a misparse is visible')]
+
+
 # amend-28 MK4, the MetaPRL HALF (STATUS-vir 448; selftest ARM71; compiler/DECLARATIONS-MK.md Addendum 1). The arm's stage roots' IN-LAYER
 # PROOF CLOSURE in C5 tokens, metaprll4's reading (ARM57) over a working tree: a row's closure = its posted roots + every rule of the
 # stage's POOL that a closure text names as a whole identifier (fixpoint) + every pool `{| reduce |}` rule when a text invokes reduceC/T.
@@ -2992,7 +3038,7 @@ def metaprll5(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl', 'mk5', 'vircm', 'mk2'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl', 'mk5', 'vircm', 'mk2', 'mk6'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -3022,6 +3068,8 @@ def main():
         rows = mk5(a.dir)
     elif a.arm == 'mk2':
         rows = mk2(a.dir)
+    elif a.arm == 'mk6':
+        rows = mk6(a.dir)
     elif a.arm == 'vircm':
         rows = vircm(a.dir)
     elif a.arm == 'vircl':

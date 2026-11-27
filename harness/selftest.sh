@@ -1970,6 +1970,45 @@ for mm in a b c d; do
   else say "ARM74 mutant $mm KILLED"; fi
 done
 
+# ARM75 (STATUS-vir 462; amend-28 MK6; DECLARATIONS-MK Addendum 4): `--arm mk6 <tree>` reads the S3 emitter modules (VIR_MK6_PREFIXES)
+# for any identifier with a push, pop or cmov* COMPONENT (split on `_` and camelCase, case folded), comments stripped; beside, the stage-X
+# model's declared operators (VIR_MK6_MODEL) and which of them the emitter names. Fixture: a model with MOPS + one `define`d operator and
+# a decoy `popcount_helper`; (a) an emitter naming EMIT, with a comment saying push/pop, decoys population/pushout_lemma/popcounter,
+# and a NON-stage module that uses x86_push ⇒ HOLDS; (b) (a) plus FLAG ⇒ FALSIFIED with |FLAG| flagged; (c) no stage module ⇒ UNREACHED.
+# Mutants: comments read; a substring match; case kept; the prefix filter dropped.
+M75="$F/x86m"; mkdir -p "$M75" "$F/vir75a/theories/vir" "$F/vir75b/theories/vir" "$F/vir75c/theories/vir"
+MOPS=(mov add imul setcc jmp popcount_helper); EMIT=(mov add imul setcc); FLAG=(x86_push cmovle X86Pop)
+: > "$M75/virx86.ml"; for o in "${MOPS[@]}"; do printf "declare %s{'a; 'b}\n" "$o" >> "$M75/virx86.ml"; done
+printf "declare sequent [x86] { Term : Term >- Term } : Term\ndefine unfold_x86lea : x86lea{'a; 'b} <--> add{'a; 'b}\n" >> "$M75/virx86.ml"
+NM75=$(( ${#MOPS[@]} + 1 ))
+emit75() { printf '(* the emitter: we never emit push or pop here *)\nlet population = 3\nlet pushout_lemma = popcounter\n'
+  for o in "${EMIT[@]}"; do printf "interactive e_%s : sequent { <H> >- emits{%s{'x; 'y}} }\n" "$o" "$o"; done; }
+emit75 > "$F/vir75a/theories/vir/virc3_emit.ml"
+printf "interactive w : sequent { <H> >- x86_push{'r} }\n" > "$F/vir75a/theories/vir/virc2_other.ml"
+{ emit75; i=0; for o in "${FLAG[@]}"; do printf "interactive f_%d : sequent { <H> >- emits{%s{'r}} }\n" $i "$o"; i=$((i+1)); done; } > "$F/vir75b/theories/vir/virc3_emit.ml"
+printf "interactive w : sequent { <H> >- x86_push{'r} }\n" > "$F/vir75c/theories/vir/virc2_other.ml"
+check75() {
+  local o; g75() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75a") || return 1
+  [ "$(g75 MK6.verdict)" = HOLDS ] && [ "$(g75 MK6.emit.flagged)" = 0 ] && [ "$(g75 MK6.emit.files)" = 1 ] \
+  && [ "$(g75 MK6.model.ops)" = "$NM75" ] && [ "$(g75 MK6.model.flagged)" = 0 ] && [ "$(g75 MK6.emit.ops)" = "${#EMIT[@]}" ] || return 1
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75b") || return 1
+  [ "$(g75 MK6.verdict)" = FALSIFIED ] && [ "$(g75 MK6.emit.flagged)" = "${#FLAG[@]}" ] || return 1
+  o=$(VIR_MK6_PREFIXES=virc3_ VIR_MK6_MODEL="$M75" python3 "$1" --arm mk6 "$F/vir75c") || return 1
+  [ "$(g75 MK6.verdict)" = UNREACHED ] && [ "$(g75 MK6.emit.files)" = 0 ]
+}
+if check75 "$H/count.py"; then say "ARM75 mk6 OK (a HOLDS: ${#EMIT[@]} model ops named of $NM75, 0 flagged past a comment, 3 decoys and a non-stage module; b FALSIFIED ${#FLAG[@]}; c UNREACHED)"
+else say "ARM75 mk6 FAIL"; fail=1; fi
+sed 's/t = strip_ml_comments(read(os.path.join(root, f)))  # MK6-STRIP/t = read(os.path.join(root, f))  # MK6-STRIP/' "$H/count.py" > "$F/mutant75a.py"
+sed "s/return any(c in ('push', 'pop') or c.startswith('cmov') for c in comps)  # MK6-COMP/return any(k in name.lower() for k in ('push', 'pop', 'cmov'))  # MK6-COMP/" "$H/count.py" > "$F/mutant75b.py"
+sed 's/comps = \[c.lower() for c in comps\]  # MK6-CASE/comps = [c for c in comps]  # MK6-CASE/' "$H/count.py" > "$F/mutant75c.py"
+sed 's/ and f.startswith(tuple(pre))  # MK6-PRE/  # MK6-PRE/' "$H/count.py" > "$F/mutant75d.py"
+for mm in a b c d; do
+  if cmp -s "$H/count.py" "$F/mutant75$mm.py"; then say "ARM75 mutant $mm NOT PLANTED"; fail=1
+  elif check75 "$F/mutant75$mm.py"; then say "ARM75 mutant $mm SURVIVED"; fail=1
+  else say "ARM75 mutant $mm KILLED"; fi
+done
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
