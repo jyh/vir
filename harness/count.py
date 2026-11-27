@@ -2168,6 +2168,147 @@ def leanl4(d):
     return rows
 
 
+# amend-28 MK4, the LEAN half (STATUS-vir 449; selftest ARM69; compiler/DECLARATIONS-MK.md). The compiler's stage theorems' IN-LAYER
+# PROOF CLOSURE, l4/DECLARATIONS-LEAN Addendum 7's measure (l4_row): S1 = s1_refines and S2 = s2_refines over compiler/VIRC (S1's
+# closure never follows into S2 by construction: s1_refines names no S2 constant); S3 = s3_refines over s3/S3, with VIRC and lower
+# layers IMPORTED (named in crossRefs, not followed). BESIDE S3: s3_refines_from_s2 (the composed form). DIR is the vir repo root.
+def vircl(d):
+    d = os.path.abspath(d)
+    vc, s3 = os.path.join(d, 'compiler', 'VIRC'), os.path.join(d, 's3', 'S3')
+    dv, d3 = l4_decls(vc), l4_decls(s3)
+    def names(ds):
+        return {x[0] for x in ds if x[0]} | {x[0].rsplit('.', 1)[-1] for x in ds if x[0]}
+    low = set()
+    for n in (1, 2):
+        low |= names(l4_decls(os.path.join(d, 'l%d' % n, 'VIRL%d' % n)))
+    rows = []
+    _, r, _ = l4_row('MK4.L.S1', dv, ['s1_refines'], low, vc, ['S1.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S2', dv, ['s2_refines'], low, vc, ['S2.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S3', d3, ['s3_refines'], low | names(dv), s3, ['Top3.lean']); rows += r
+    _, r, _ = l4_row('MK4.L.S3c', d3, ['s3_refines_from_s2'], low | names(dv), s3, ['Sem3.lean'])
+    rows += [(c, v, ('BESIDE:' + st) if not st.startswith('BESIDE') else st) for c, v, st in r]
+    return rows
+
+
+# amend-28 MK5 (STATUS-vir 450; selftest ARM70; compiler/DECLARATIONS-MK.md): the share of the MetaPRL arm's interactive rules that are
+# WELL-FORMEDNESS or TYPING obligations, classified by the GOAL's CONCLUSION (the text after the rule's LAST `>-`), never by name or
+# module (the 11-07 lesson). wf = a membership `X in T` with no `=` before its `in`, or a `type`/`Type` judgement. An equality
+# `a = b in T` is printed as eq (not wf). interactive_rw is printed beside, never in the population. DIR holds theories/vir;
+# VIR_MK5_PREFIXES = comma-separated module filename prefixes (the arm's stage modules, posted by the arm).
+MK5_TYPE_RE = re.compile(r'(?:"type"\{|(?<![A-Za-z0-9_])[Tt]ype(?![A-Za-z0-9_]))')
+MK5_IN_RE = re.compile(r'(?<![A-Za-z0-9_])in(?![A-Za-z0-9_])')
+
+
+def mk5_concl(blk):
+    i = blk.rfind('>-')
+    if i < 0:
+        return None
+    c = blk[i + 2:]
+    j = c.rfind('}')
+    return ' '.join((c[:j] if j >= 0 else c).split())  # MK5-CONCL
+
+
+def mk5(d):
+    root = os.path.join(os.path.abspath(d), 'theories', 'vir')
+    pre = [x for x in os.environ.get('VIR_MK5_PREFIXES', '').split(',') if x]
+    if not pre or not os.path.isdir(root):
+        return [('MK5.population', 0, 'EMPTY:VIR_MK5_PREFIXES unset or no theories/vir')]
+    files_ = sorted(f for f in os.listdir(root) if f.endswith('.ml') and any(f.startswith(x) for x in pre))
+    cls = {'type': [], 'member': [], 'eq': [], 'other': [], 'noconcl': []}
+    rw = 0
+    for f in files_:
+        for blk in MPL_ITEM_RE.split(strip_ml_comments(read(os.path.join(root, f)))):
+            if blk.startswith('interactive_rw'):
+                rw += 1
+                continue
+            m = re.match(r'interactive\s+(\S+)', blk)
+            if not m:
+                continue
+            c = mk5_concl(blk)
+            name = m.group(1)
+            if c is None:
+                cls['noconcl'].append(name)
+            elif MK5_TYPE_RE.search(c):
+                cls['type'].append(name)
+            elif MK5_IN_RE.search(c):
+                head = c[:MK5_IN_RE.search(c).start()]
+                cls['eq' if '=' in head else 'member'].append(name)
+            else:
+                cls['other'].append(name)
+    pop = sum(len(v) for v in cls.values())
+    wf = len(cls['type']) + len(cls['member'])
+    rows = [('MK5.files', len(files_), 'POPULATION:' + (','.join(files_) or '-')),
+            ('MK5.population', pop, 'MEASURED:interactive rules (interactive_rw excluded)'),
+            ('MK5.wf', wf, 'MEASURED:type %d + member %d' % (len(cls['type']), len(cls['member']))),
+            ('MK5.share.permille', (1000 * wf) // pop if pop else 0, 'MEASURED:floor(1000 x wf / population)'),
+            ('MK5.held', 1 if pop and 5 * wf >= pop else 0, 'MEASURED:wf >= 20%% of population (%d vs %d)' % (5 * wf, pop)),
+            ('MK5.rw', rw, 'BESIDE:interactive_rw, not in the population')]
+    for k in ('type', 'member', 'eq', 'other', 'noconcl'):
+        rows.append(('MK5.class.' + k, len(cls[k]), 'NAMES:' + (','.join(cls[k]) or '-')))
+    return rows
+
+
+# amend-28 MK4, the MetaPRL HALF (STATUS-vir 448; selftest ARM71; compiler/DECLARATIONS-MK.md Addendum 1). The arm's stage roots' IN-LAYER
+# PROOF CLOSURE in C5 tokens, metaprll4's reading (ARM57) over a working tree: a row's closure = its posted roots + every rule of the
+# stage's POOL that a closure text names as a whole identifier (fixpoint) + every pool `{| reduce |}` rule when a text invokes reduceC/T.
+# The POOL is the Lean half's parallel: S1/S2 share VIRC there, S3 imports it. VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_'
+# (module filename prefixes); VIR_MK4M_ROOTS='S1=..;S2=..;S3=..' (the arm's posted roots). A name resolving to a stored rule of another
+# vir module (theories/vir/*.prla outside the pool) is a crossRef: counted, NOT followed. DIR holds theories/vir at the scored sha.
+def vircm(d):
+    root = os.path.join(os.path.abspath(d), 'theories', 'vir')
+    env = lambda k: {p.split('=', 1)[0].strip(): [x.strip() for x in p.split('=', 1)[1].split(',') if x.strip()]
+                     for p in os.environ.get(k, '').split(';') if '=' in p}
+    pools, roots = env('VIR_MK4M_POOLS'), env('VIR_MK4M_ROOTS')
+    if not pools or not roots or not os.path.isdir(root):
+        return [('MK4.M.src', 0, 'EMPTY:VIR_MK4M_POOLS/VIR_MK4M_ROOTS unset or no theories/vir')]
+    R, byname, mod = {}, {}, {}
+    for f in sorted(os.listdir(root)):
+        if f.endswith('.prla'):
+            for n, v in prla_rules(read(os.path.join(root, f))).items():
+                k = f[:-5] + ':' + n
+                R[k] = v
+                byname.setdefault(n, set()).add(k)
+                mod[k] = f[:-5]
+    red = {}
+    for f in sorted(os.listdir(root)):
+        if f.endswith('.ml'):
+            for n in re.findall(r'^\s*interactive(?:_rw)?\s+([A-Za-z_][A-Za-z0-9_\']*)\s*\{\|[^|]*\breduce\b[^|]*\|\}',
+                                strip_ml_comments(read(os.path.join(root, f))), re.M):
+                red.update({k: 1 for k in byname.get(n, ()) if mod[k] == f[:-3]})
+    rows = [('MK4.M.rules', len(R), 'MEASURED:stored derivations in theories/vir/*.prla')]
+    for st in sorted(roots):
+        pre = pools.get(st)
+        if not pre:
+            rows.append(('MK4.M.%s.pool' % st, 0, 'RED:no pool declared for this stage'))
+            continue
+        inp = lambda k: any(mod[k].startswith(p) for p in pre)
+        miss = [n for n in roots[st] if not any(inp(k) for k in byname.get(n, ()))]
+        if miss:
+            rows.append(('MK4.M.%s.missing' % st, len(miss), 'RED:posted root(s) with no stored derivation in the pool:' + ','.join(miss)))
+            continue
+        seen, cross, todo = set(), set(), [k for n in roots[st] for k in byname[n] if inp(k)]
+        while todo:
+            x = todo.pop()
+            if x in seen:
+                continue
+            seen.add(x)
+            t = ' '.join(R[x][4])
+            for n in set(re.findall(r"[A-Za-z0-9_']+", t)) - {x.split(':', 1)[1]}:
+                ks = byname.get(n, ())
+                todo += [k for k in ks if inp(k)]  # VIRCM-FIXPOINT
+                cross |= {k for k in ks if not inp(k)}
+            if L3M_RES_RE.search(t):
+                todo += sorted(k for k in red if inp(k))  # VIRCM-RESOURCE
+        cross -= seen
+        rk = [k for n in roots[st] for k in byname[n] if inp(k)]
+        rows += [('MK4.M.%s.C5tok' % st, sum(R[k][1] for k in seen), 'MEASURED:%d rules, in-layer closure over pool %s:LIMIT a reduce use admits every pool reduce rule, fired or not (an upper bound); other resources not modelled' % (len(seen), '+'.join(pre))),
+                 ('MK4.M.%s.closure' % st, len(seen), 'BESIDE:rules in the closure:' + ','.join(sorted(seen))),
+                 ('MK4.M.%s.rootTok' % st, sum(R[k][1] for k in rk), 'BESIDE:roots only'),
+                 ('MK4.M.%s.steps' % st, sum(R[k][0] for k in seen), 'BESIDE:refine steps in the closure'),
+                 ('MK4.M.%s.crossRefs' % st, len(cross), 'BESIDE:stored rules outside the pool named by the closure, not followed:' + (','.join(sorted(cross)) or '-'))]
+    return rows
+
+
 # amend-23 D5 on the DEFLATE arm (STATUS-vir 293 (c); selftest ARM58). DIR is deflate/ (it holds VIRDeflate/). FILE-LEVEL C5 tokens, as
 # L4's syntax-copy row: comments stripped, whitespace-split. The canonical-code group is the one deflate/DECLARATIONS-DEFLATE.md fixed
 # before the arm's first file (Huffman.lean + Kraft.lean, "any later lemma about canonical codes goes in one of these two files"); the
@@ -2721,7 +2862,7 @@ def metaprll5(repo, base, ext):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm'])
+    ap.add_argument('--arm', required=True, choices=['lean', 'metaprl', 'compiler', 'leanbp', 'metaprlbp', 'leanp', 'v3', 'l1', 'v3l1', 'metaprll1', 'w8', 'v3l1m', 'l2', 'l3', 'ind', 'indm', 'metaprll2', 'slangm', 'metaprll3', 'metaprll4', 'l4', 'deflate', 'lv9', 'l5', 'lv10', 'metaprll5', 'surfm', 'vircl', 'mk5', 'vircm'])
     ap.add_argument('--sha')
     ap.add_argument('--compose')
     ap.add_argument('--compose-sha')
@@ -2747,6 +2888,12 @@ def main():
         rows = leanl3(a.dir)
     elif a.arm == 'l4':
         rows = leanl4(a.dir)
+    elif a.arm == 'mk5':
+        rows = mk5(a.dir)
+    elif a.arm == 'vircm':
+        rows = vircm(a.dir)
+    elif a.arm == 'vircl':
+        rows = vircl(a.dir)
     elif a.arm == 'deflate':
         rows = deflate(a.dir)
     elif a.arm == 'lv9':

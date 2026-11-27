@@ -1776,6 +1776,112 @@ if cmp -s "$V68/k5/tools/replay_filter.py" "$F/mutant68.py"; then say "ARM68 mut
 elif check68 "$F/mutant68.py"; then say "ARM68 mutant SURVIVED (the old closers kept the rows)"; fail=1
 else say "ARM68 mutant KILLED"; fi
 
+# ARM69 (STATUS-vir 449; amend-28 MK4, the Lean half): `--arm vircl` reads each compiler stage's IN-LAYER proof closure. Fixture:
+# S1 = s1_refines → a1 → a2 (unrelated stays out); S2 = s2_refines → b1; S3 = s3_refines → c1, which names VIRC's b1 (imported:
+# crossRefs 1, NOT followed); S3c = s3_refines_from_s2 → s3_refines → c1. Mutant: a ONE-PASS closure (a2, reached only through a1).
+R69="$F/vir69"; mkdir -p "$R69/compiler/VIRC" "$R69/s3/S3" "$R69/l1/VIRL1" "$R69/l2/VIRL2"
+printf 'theorem s1_refines : True := by exact a1\ntheorem a1 : True := by exact a2\ntheorem a2 : True := trivial\ntheorem unrelated : True := trivial\n' > "$R69/compiler/VIRC/S1.lean"
+printf 'theorem s2_refines : True := by exact b1\ntheorem b1 : True := trivial\n' > "$R69/compiler/VIRC/S2.lean"
+printf 'theorem s3_refines : True := by exact c1\ntheorem c1 : True := by exact b1\n' > "$R69/s3/S3/Top3.lean"
+printf 'theorem s3_refines_from_s2 : True := s3_refines\n' > "$R69/s3/S3/Sem3.lean"
+printf 'def l1d := 1\n' > "$R69/l1/VIRL1/L1.lean"; printf 'def l2d := 1\n' > "$R69/l2/VIRL2/L2.lean"
+check69() {
+  o=$(python3 "$1" --arm vircl "$R69") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK4.L.S1.closure)" = 3 ] && [ "$(v MK4.L.S2.closure)" = 2 ] && [ "$(v MK4.L.S3.closure)" = 2 ] && [ "$(v MK4.L.S3.crossRefs)" = 1 ] \
+  && [ "$(v MK4.L.S3c.closure)" = 3 ] && printf '%s\n' "$o" | awk -F'\t' '$2=="MK4.L.S1.C5tok"' | grep -q 'MEASURED:3 blocks'
+}
+if check69 "$H/count.py"; then say "ARM69 vircl fixture OK (S1 3 blocks, unrelated out; S2 2; S3 2 with VIRC's b1 a crossRef, not followed; S3c 3)"
+else say "ARM69 vircl fixture FAIL"; python3 "$H/count.py" --arm vircl "$R69"; fail=1; fi
+sed 's/changed = True  # CLOSURE-FIXPOINT/pass/' "$H/count.py" > "$F/mutant69.py"  # one pass: a block reached only through another is missed
+if cmp -s "$H/count.py" "$F/mutant69.py"; then say "ARM69 mutant NOT PLANTED"; fail=1
+elif check69 "$F/mutant69.py"; then say "ARM69 mutant SURVIVED (a one-pass closure)"; fail=1
+else say "ARM69 mutant KILLED"; fi
+
+# ARM70 (STATUS-vir 450; amend-28 MK5): `--arm mk5` classifies the arm's interactive rules by the GOAL's CONCLUSION. Fixture in virc1_x
+# (a stage module): a_wf (member, wf) · b_typing ("type", wf) · c_eq (a = b in T: eq) · d_th (other) · g_wf (named wf, statement other)
+# · h_wf2 (named wf, statement other) · k_hyp (a membership in a HYPOTHESIS only: other) · e_rw (interactive_rw: beside) · a rule
+# commented out (not counted) · a wf rule in a NON-stage module (not counted). Population 7, wf 2 = 285 permille, held 1.
+# Mutant A: classify by NAME (`wf` in the name: 3). Mutant B: classify the WHOLE statement, not the conclusion (k_hyp read as wf: 3).
+R70="$F/vir70/theories/vir"; mkdir -p "$R70"
+printf '%s\n' "interactive a_wf : sequent { <H> >- 'x in nat }" "interactive b_typing : sequent { <H> >- \"type\"{'T} }" \
+  "interactive c_eq : sequent { <H> >- 'a = 'b in nat }" "interactive d_th : sequent { <H> >- foo{'x} }" \
+  "interactive g_wf : sequent { <H> >- bar{'x} }" "interactive h_wf2 : sequent { <H> >- baz{'x} }" \
+  "interactive k_hyp : sequent { <H>; y: 'y in nat >- foo{'y} }" "interactive_rw e_rw : foo{'x} <--> 'x" \
+  "(* interactive f_wf : sequent { <H> >- 'x in nat } *)" > "$R70/virc1_x.ml"
+printf '%s\n' "interactive z_wf : sequent { <H> >- 'x in nat }" > "$R70/virl2_other.ml"
+check70() {
+  o=$(VIR_MK5_PREFIXES=virc1_,virc2_ python3 "$1" --arm mk5 "$F/vir70") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK5.files)" = 1 ] && [ "$(v MK5.population)" = 7 ] && [ "$(v MK5.wf)" = 2 ] && [ "$(v MK5.share.permille)" = 285 ] \
+  && [ "$(v MK5.held)" = 1 ] && [ "$(v MK5.rw)" = 1 ] && [ "$(v MK5.class.eq)" = 1 ] && [ "$(v MK5.class.other)" = 4 ]
+}
+if check70 "$H/count.py"; then say "ARM70 mk5 fixture OK (population 7 in 1 stage module; wf 2 = member 1 + type 1; eq 1; other 4 incl. two named *wf* and a hypothesis-only membership; rw 1 beside; commented and non-stage rules not counted)"
+else say "ARM70 mk5 fixture FAIL"; VIR_MK5_PREFIXES=virc1_,virc2_ python3 "$H/count.py" --arm mk5 "$F/vir70"; fail=1; fi
+sed 's/            c = mk5_concl(blk)/            c = ("x in T" if "wf" in m.group(1) else "zz")/' "$H/count.py" > "$F/mutant70a.py"  # by NAME
+sed 's/    i = blk.rfind(.>-.)/    i = blk.find("sequent") - 2/' "$H/count.py" > "$F/mutant70b.py"  # the WHOLE statement, hypotheses included
+for mm in a b; do
+  if cmp -s "$H/count.py" "$F/mutant70$mm.py"; then say "ARM70 mutant $mm NOT PLANTED"; fail=1
+  elif check70 "$F/mutant70$mm.py"; then say "ARM70 mutant $mm SURVIVED"; fail=1
+  else say "ARM70 mutant $mm KILLED"; fi
+done
+
+# ARM71 (STATUS-vir 448; amend-28 MK4, the MetaPRL half): `--arm vircm` reads each stage's IN-LAYER proof closure over its POOL of
+# module prefixes. Fixture: S1 (pool virc1_) r1 → a1 → a2, u1 stays out; S2 (pool virc1_,virc2_) r2 → a1 → a2, and reduceC admits hz
+# (virc1_'s reduce rule); S3 (pool virc3_) r3 → c1, which names virc1_'s a1 and virl2_'s lowx (crossRefs 2, NOT followed) and a1x
+# (a longer name, never a cite); S9's posted root has no derivation in its pool (RED, never a silent 0).
+# Mutants: a closure that stops at the roots' own texts' names; one that ignores the pool; one that drops the reduce resource.
+R71="$F/vir71/theories/vir"; mkdir -p "$R71"
+printf 'interactive r1 : sequent { <H> >- a }\ninteractive a1 : sequent { <H> >- a }\ninteractive a2 : sequent { <H> >- a }\ninteractive u1 : sequent { <H> >- a }\ninteractive_rw hz {| reduce |} : a <--> b\n' > "$R71/virc1_a.ml"
+T71r1="(a1 thenT autoT)"; T71a1="(a2 thenT x)"; T71a2="rw 0"; T71u1="rw u v 0"; T71hz="rw z 0"
+prla "$R71/virc1_a.prla" "r1=$T71r1" "a1=$T71a1" "a2=$T71a2" "u1=$T71u1" "hz=$T71hz"
+printf 'interactive r2 : sequent { <H> >- a }\n' > "$R71/virc2_a.ml"; T71r2="(a1 thenT reduceC)"; prla "$R71/virc2_a.prla" "r2=$T71r2"
+printf 'interactive r3 : sequent { <H> >- a }\ninteractive c1 : sequent { <H> >- a }\n' > "$R71/virc3_a.ml"
+T71r3="(c1 thenT autoT)"; T71c1="(a1 thenT lowx thenT a1x)"; prla "$R71/virc3_a.prla" "r3=$T71r3" "c1=$T71c1"
+printf 'interactive lowx : sequent { <H> >- a }\n' > "$R71/virl2_b.ml"; prla "$R71/virl2_b.prla" "lowx=rw l 0"
+E71_S1=$(( $(w "$T71r1") + $(w "$T71a1") + $(w "$T71a2") )); E71_S2=$(( $(w "$T71r2") + $(w "$T71a1") + $(w "$T71a2") + $(w "$T71hz") ))
+E71_S3=$(( $(w "$T71r3") + $(w "$T71c1") ))
+check71() {
+  o=$(VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_;S9=virc3_' VIR_MK4M_ROOTS='S1=r1;S2=r2;S3=r3;S9=absent' python3 "$1" --arm vircm "$F/vir71") || return 1
+  v() { printf '%s\n' "$o" | awk -F'\t' -v c="$1" '$2==c{print $3}'; }
+  [ "$(v MK4.M.rules)" = 9 ] && [ "$(v MK4.M.S1.closure)" = 3 ] && [ "$(v MK4.M.S1.C5tok)" = "$E71_S1" ] \
+  && [ "$(v MK4.M.S2.closure)" = 4 ] && [ "$(v MK4.M.S2.C5tok)" = "$E71_S2" ] \
+  && [ "$(v MK4.M.S3.closure)" = 2 ] && [ "$(v MK4.M.S3.C5tok)" = "$E71_S3" ] && [ "$(v MK4.M.S3.crossRefs)" = 2 ] \
+  && [ "$(v MK4.M.S1.rootTok)" = "$(w "$T71r1")" ] && [ "$(v MK4.M.S9.missing)" = 1 ] \
+  && printf '%s\n' "$o" | awk -F'\t' '$2=="MK4.M.S9.missing"' | grep -q RED
+}
+if check71 "$H/count.py"; then say "ARM71 vircm fixture OK (S1 3 rules, u1 out; S2 4 incl. hz by reduceC; S3 2 with crossRefs 2 not followed, a1x no cite; S9 RED)"
+else say "ARM71 vircm fixture FAIL"; VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_;S9=virc3_' VIR_MK4M_ROOTS='S1=r1;S2=r2;S3=r3;S9=absent' python3 "$H/count.py" --arm vircm "$F/vir71"; fail=1; fi
+sed 's/                todo += \[k for k in ks if inp(k)\]  # VIRCM-FIXPOINT/                todo += []  # VIRCM-FIXPOINT/' "$H/count.py" > "$F/mutant71a.py"  # roots only
+sed 's/ for k in ks if inp(k)\]  # VIRCM-FIXPOINT/ for k in ks]  # VIRCM-FIXPOINT/' "$H/count.py" > "$F/mutant71b.py"  # the pool ignored
+sed 's/                todo += sorted(k for k in red if inp(k))  # VIRCM-RESOURCE/                pass  # VIRCM-RESOURCE/' "$H/count.py" > "$F/mutant71c.py"
+for mm in a b c; do
+  if cmp -s "$H/count.py" "$F/mutant71$mm.py"; then say "ARM71 mutant $mm NOT PLANTED"; fail=1
+  elif check71 "$F/mutant71$mm.py"; then say "ARM71 mutant $mm SURVIVED"; fail=1
+  else say "ARM71 mutant $mm KILLED"; fi
+done
+
+# ARM72 (the helm @112,040,858, 2026-11-27): reproduce.sh removes its mktemp scratch dir at EVERY exit (86 leaked dirs,
+# 11-01..11-25). Fixture: a MOJAVE_ROOT whose vir-metaprl is an EMPTY repo, so the run clones into its scratch dir and exits 2 at
+# the pinned checkout: the early-exit path, which is how the dirs leaked. The count left is derived by listing, never typed.
+# Mutant: the same script with its EXIT trap line deleted must leave exactly one dir. VIR_REPRO_KEEP=1 must keep it.
+mkdir -p "$F/m72/vir-metaprl" "$F/t72" "$F/v72/harness" "$F/v72/lean"
+git -C "$F/m72/vir-metaprl" init -q
+run72() {  # run72 <reproduce.sh copy> [env...]: prints how many scratch dirs the run left
+  local d; d=$(mktemp -d "$F/t72/run.XXXXXX")
+  cp "$1" "$F/v72/harness/reproduce.sh"; shift
+  env "$@" TMPDIR="$d" bash "$F/v72/harness/reproduce.sh" "$F/m72" > "$d.out" 2>&1
+  echo "$? $(ls -d "$d"/vir-repro-mj.* 2>/dev/null | wc -l | tr -d ' ')"
+}
+r=$(run72 "$H/reproduce.sh"); k=$(run72 "$H/reproduce.sh" VIR_REPRO_KEEP=1)
+grep -v 'VIR-REPRO-TRAP' "$H/reproduce.sh" > "$F/mutant72.sh"
+mu=$(run72 "$F/mutant72.sh")
+if [ "$r" = "2 0" ] && [ "$k" = "2 1" ]; then say "ARM72 reproduce scratch OK (exit 2 leaves 0 dirs; KEEP leaves 1)"
+else say "ARM72 reproduce scratch FAIL (rc+left: plain=$r keep=$k)"; fail=1; fi
+if cmp -s "$H/reproduce.sh" "$F/mutant72.sh"; then say "ARM72 mutant NOT PLANTED"; fail=1
+elif [ "$mu" = "2 1" ]; then say "ARM72 mutant KILLED (no trap: rc+left=$mu)"
+else say "ARM72 mutant SURVIVED (rc+left=$mu)"; fail=1; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
