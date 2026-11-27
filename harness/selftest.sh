@@ -1882,6 +1882,35 @@ if cmp -s "$H/reproduce.sh" "$F/mutant72.sh"; then say "ARM72 mutant NOT PLANTED
 elif [ "$mu" = "2 1" ]; then say "ARM72 mutant KILLED (no trap: rc+left=$mu)"
 else say "ARM72 mutant SURVIVED (rc+left=$mu)"; fail=1; fi
 
+# ARM73 (STATUS-vir 459; the S1 refuter's MEDIUM): `--arm vircm` prints MK4.M.<stage>.replay, a receipt that EVERY pool module's replay
+# log ends on `status_all: n/n complete` with n = the module's stored derivations, counted from the fixture's .prla (one `rule` node
+# per derivation), never typed. On ARM71's fixture: S1 (virc1_a) a log whose first line is a NOSTAT 0/0 and whose LAST is n/n ⇒ HELD;
+# S2 (virc1_a + virc2_a) virc2_a's log reads 1/1 then 0/1 ⇒ RED (the last line rules); S3 (virc3_a) 0/0 only ⇒ RED; S5 (virc2_a) 3/3
+# for a 1-rule module ⇒ RED; S4 no entry ⇒ UNREPLAYED. Mutants: the FIRST status line read; a/b == each other without == n.
+N73a=$(grep -c "$(printf '^O\tor')" "$R71/virc1_a.prla"); N73b=$(grep -c "$(printf '^O\tor')" "$R71/virc2_a.prla")
+L73="$F/log73"; mkdir -p "$L73"
+printf 'status_all: 0/0 complete; incomplete: \nstatus_all: %d/%d complete; incomplete: \n' "$N73a" "$N73a" > "$L73/a.log"
+printf 'status_all: %d/%d complete; incomplete: \nstatus_all: 0/%d complete; incomplete: r2\n' "$N73b" "$N73b" "$N73b" > "$L73/b.log"
+printf 'status_all: 0/0 complete; incomplete: \n' > "$L73/c.log"
+printf 'status_all: %d/%d complete; incomplete: \n' $((N73b + 2)) $((N73b + 2)) > "$L73/d.log"
+check73() {
+  o=$(VIR_MK4M_POOLS='S1=virc1_;S2=virc1_,virc2_;S3=virc3_;S4=virc3_;S5=virc2_' VIR_MK4M_ROOTS='S1=r1;S2=r2;S3=r3;S4=r3;S5=r2' \
+      VIR_MK4M_REPLAY="S1=virc1_a:$L73/a.log;S2=virc1_a:$L73/a.log,virc2_a:$L73/b.log;S3=virc3_a:$L73/c.log;S5=virc2_a:$L73/d.log" \
+      python3 "$1" --arm vircm "$F/vir71") || return 1
+  st() { printf '%s\n' "$o" | awk -F'\t' -v c="MK4.M.$1.replay" '$2==c{print $3":"$4}' | cut -d: -f1,2; }
+  [ "$(st S1)" = "1:HELD" ] && [ "$(st S2)" = "0:RED" ] && [ "$(st S3)" = "0:RED" ] && [ "$(st S4)" = "0:UNREPLAYED" ] \
+  && [ "$(st S5)" = "0:RED" ] && [ "$N73a" -ge 2 ] && [ "$N73b" -ge 1 ]
+}
+if check73 "$H/count.py"; then say "ARM73 vircm replay receipt OK (S1 HELD on the last line of $N73a; S2 RED last-line 0/$N73b; S3 RED 0/0; S5 RED n≠stored; S4 UNREPLAYED)"
+else say "ARM73 vircm replay receipt FAIL"; fail=1; fi
+sed 's/findall(read(lg))  # VIRCM-LAST/findall(read(lg))[:1]  # VIRCM-LAST/' "$H/count.py" > "$F/mutant73a.py"  # the first line read
+sed 's/if not a == b == n:  # VIRCM-EQ/if not a == b:  # VIRCM-EQ/' "$H/count.py" > "$F/mutant73b.py"  # n never compared
+for mm in a b; do
+  if cmp -s "$H/count.py" "$F/mutant73$mm.py"; then say "ARM73 mutant $mm NOT PLANTED"; fail=1
+  elif check73 "$F/mutant73$mm.py"; then say "ARM73 mutant $mm SURVIVED"; fail=1
+  else say "ARM73 mutant $mm KILLED"; fi
+done
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail
