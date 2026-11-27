@@ -1861,6 +1861,27 @@ for mm in a b c; do
   else say "ARM71 mutant $mm KILLED"; fi
 done
 
+# ARM72 (the helm @112,040,858, 2026-11-27): reproduce.sh removes its mktemp scratch dir at EVERY exit (86 leaked dirs,
+# 11-01..11-25). Fixture: a MOJAVE_ROOT whose vir-metaprl is an EMPTY repo, so the run clones into its scratch dir and exits 2 at
+# the pinned checkout: the early-exit path, which is how the dirs leaked. The count left is derived by listing, never typed.
+# Mutant: the same script with its EXIT trap line deleted must leave exactly one dir. VIR_REPRO_KEEP=1 must keep it.
+mkdir -p "$F/m72/vir-metaprl" "$F/t72" "$F/v72/harness" "$F/v72/lean"
+git -C "$F/m72/vir-metaprl" init -q
+run72() {  # run72 <reproduce.sh copy> [env...]: prints how many scratch dirs the run left
+  local d; d=$(mktemp -d "$F/t72/run.XXXXXX")
+  cp "$1" "$F/v72/harness/reproduce.sh"; shift
+  env "$@" TMPDIR="$d" bash "$F/v72/harness/reproduce.sh" "$F/m72" > "$d.out" 2>&1
+  echo "$? $(ls -d "$d"/vir-repro-mj.* 2>/dev/null | wc -l | tr -d ' ')"
+}
+r=$(run72 "$H/reproduce.sh"); k=$(run72 "$H/reproduce.sh" VIR_REPRO_KEEP=1)
+grep -v 'VIR-REPRO-TRAP' "$H/reproduce.sh" > "$F/mutant72.sh"
+mu=$(run72 "$F/mutant72.sh")
+if [ "$r" = "2 0" ] && [ "$k" = "2 1" ]; then say "ARM72 reproduce scratch OK (exit 2 leaves 0 dirs; KEEP leaves 1)"
+else say "ARM72 reproduce scratch FAIL (rc+left: plain=$r keep=$k)"; fail=1; fi
+if cmp -s "$H/reproduce.sh" "$F/mutant72.sh"; then say "ARM72 mutant NOT PLANTED"; fail=1
+elif [ "$mu" = "2 1" ]; then say "ARM72 mutant KILLED (no trap: rc+left=$mu)"
+else say "ARM72 mutant SURVIVED (rc+left=$mu)"; fail=1; fi
+
 find "${F:?}" -delete
 echo "SELFTEST rc=$fail"
 exit $fail

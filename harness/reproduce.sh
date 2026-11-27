@@ -15,6 +15,9 @@ METAPRL_SHA=${METAPRL_SHA:-81e0317b0c2b356491cffcb06f771d89a524761f}
 # Since 2026-11-01 the arm's tools are a snapshot INSIDE the metaprl branch (theories/vir/vir-arm-tools), so one pin covers
 # both. TOOLS_SHA, if set, reads a separate vir-arm-tools clone instead (the layout before the snapshot).
 M=$(mktemp -d "${TMPDIR:-/tmp}/vir-repro-mj.XXXXXX")
+# The scratch dir is removed at EVERY exit (the helm @112,040,858: 86 leaked dirs, 11-01..11-25). VIR_REPRO_KEEP=1 keeps it for
+# debugging and prints its path. Selftest ARM72 deletes the line tagged below as its mutant.
+trap 'if [ -n "${VIR_REPRO_KEEP:-}" ]; then echo "REPRODUCE KEPT $M" >&2; else find "${M:?}" -delete 2>/dev/null; fi' EXIT  # VIR-REPRO-TRAP
 git clone -q --no-checkout "$M0/vir-metaprl" "$M/vir-metaprl" 2>/dev/null && git -C "$M/vir-metaprl" checkout -q "$METAPRL_SHA" 2>/dev/null \
   || { echo "REPRODUCE MISSING-INPUT vir-metaprl at $METAPRL_SHA (from $M0/vir-metaprl)"; exit 2; }
 if [ -n "${TOOLS_SHA:-}" ]; then
@@ -143,8 +146,8 @@ for R in "compose/logs/audit-009.log --build compose/logs/build-025.log --contro
          "k7/logs/ne-r-010.log --build k7/logs/ne-r-008.log --control k7/logs/ne-r-009.log"; do
   set -- $R; A=$1; shift; args=""
   while [ $# -gt 0 ]; do args="$args $1 $V/$2"; shift 2; done
-  n=$((n+1)); python3 "$V/harness/axiom_gate.py" "$V/$A" $args > "${TMPDIR:-/tmp}/vir-ag.$$" 2>&1; r=$?   # rc of the GATE, not of a pipe
-  sed 's/^/  /' "${TMPDIR:-/tmp}/vir-ag.$$"; [ $r -eq 0 ] || fail=1
+  n=$((n+1)); python3 "$V/harness/axiom_gate.py" "$V/$A" $args > "$M/ag.out" 2>&1; r=$?   # rc of the GATE, not of a pipe
+  sed 's/^/  /' "$M/ag.out"; [ $r -eq 0 ] || fail=1
 done
 # row 445 (2026-11-25, RESULTS-16): OBJECT-NOCHECK-ENTRY's counts (NE8's print identity, NE1/NE2's statement reads, NE6's build
 # lines, dF's instruction counts) re-derived from the committed logs and captures by harness/ne_counts.py. Its two triple
@@ -154,7 +157,7 @@ chk2 "$V/harness/ne-counts.tsv" "python3 -I '$V/harness/ne_counts.py' '$V'"
 # audit from the tracked tree and refuses (rc 2) any project that could not issue a triple receipt (no wrapper, no AuditControl.lean,
 # two in-file controls). No count is typed here: the script prints the population it found. The real drive (it builds) is
 # `PRIO=P1 SEAT=<seat> python3 harness/triple_drive.py <scratch dir>`, opt-in and never run by this script.
-n=$((n+1)); python3 -I "$V/harness/triple_drive.py" "${TMPDIR:-/tmp}/vir-td.$$" --dry-run > "${TMPDIR:-/tmp}/vir-td-out.$$" 2>&1; r=$?
-grep -E '^(# population|TRIPLE-DRIVE)' "${TMPDIR:-/tmp}/vir-td-out.$$" | sed 's/^/  /'; [ $r -eq 0 ] || fail=1
+n=$((n+1)); python3 -I "$V/harness/triple_drive.py" "$M/td" --dry-run > "$M/td.out" 2>&1; r=$?
+grep -E '^(# population|TRIPLE-DRIVE)' "$M/td.out" | sed 's/^/  /'; [ $r -eq 0 ] || fail=1
 echo "REPRODUCE files=$n rc=$fail (limit: extraction only; no rebuild, no verdict re-run; Q rows stay Q)"
 exit $fail
